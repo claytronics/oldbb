@@ -1,0 +1,125 @@
+// THIS PROGRAM HAS NOT BEEN TESTED YET.
+
+extern int blockID(catom).
+extern int printInt(catom, int, int).
+
+type level(catom, max int).
+type virtual neighbor bottomNeighbor(catom, catom).
+type noBottomNeighbor(catom).
+type virtual neighbor topNeighbor(catom, catom).
+type virtual neighbor sideNeighbor(catom, catom).
+type highestCount(catom, int).
+
+bottomNeighbor(N, X) :- neighbor(N, X, P), P = 5.
+noBottomNeighbor(N) :- vacant(N, P),  P = 5.
+topNeighbor(N, X) :- neighbor(N, X, P), P = 0.
+sideNeighbor(N, X) :- neighbor(N, X, P), P != 0, P != 5.
+
+// determine how far from the bottom you are
+level(N, Z) :- noBottomNeighbor(N), Z=0.
+level(N, H) :- sideNeighbor(N, X), level(X, H).
+level(N, H) :- bottomNeighbor(N, X), level(X, BH), H = BH + 1.
+level(N, H) :- topNeighbor(N, X), level(X, TH), H = TH - 1.
+
+// set color according to your level in phase 0.
+//setColor2(N, COLOR) :- level(N, COLOR).
+
+type root(catom).
+root(N) :- neighbor(N, _, _), 1 = blockID(N).
+
+// create a spanning tree from root.
+type span(catom, first catom).
+span(N, N) :- root(N).
+span(N, P) :- neighbor(N, P, _), span(P, _), p = blockID(P).
+
+// propogate height of highest catom to root
+type maxsubtree(catom, max int).
+maxsubtree(N, h) :- level(N, h).
+maxsubtree(N, h) :- neighbor(N, C, _), span(C, N), maxsubtree(C, h).
+
+// propogate height of highest catom in ensemble to leaves
+type ensembleHeight(catom, int).
+ensembleHeight(N, h) :- root(N), maxsubtree(N, h).
+ensembleHeight(N, h) :- neighbor(N, P, _), span(N, P), ensembleHeight(P, h).
+
+// determine if this is one of the highest catoms
+type isHighest(catom).
+isHighest(N) :- ensembleHeight(N, h), level(N, h).
+
+// determine if this catom is below the highest
+type isLower(catom).
+isLower(N) :- ensembleHeight(N, h), level(N, g), g < h.
+
+// determine how many highest catoms there are
+type highestInSubtree(catom, sum int).
+highestInSubtree(N, x) :- isHighest(N), x=1.
+highestInSubtree(N, x) :- neighbor(N, C, _), span(C, N), highestInSubtree(C, x).
+
+// propogate # of highest catoms to leaves
+highestCount(N, x) :- root(N), highestInSubtree(N, x).
+highestCount(N, x) :- neighbor(N, P, _), span(N, P), highestCount(P, x).
+
+// see if there is only one highest catom
+type uniqueHighest(catom).
+uniqueHighest(N) :- highestCount(N, c), c=1.
+
+// see if there are many highest catoms
+type manyHighest(catom).
+manyHighest(N) :- highestCount(N, x), x > 1.
+
+// color result
+setColor2(N, color) :- isHighest(N), uniqueHighest(N), color = 5.
+setColor2(N, color) :- isLower(N), uniqueHighest(N), color = 0.
+setColor2(N, color) :- manyHighest(N), color = 7.
+
+// proposed ensemble level code:
+// 
+// type ensembleHeight(ensemble catom, max int).
+// ensembleHeight(N, x) :- level(N, x).
+// 
+// type numberHighest(ensemble catom, sum int).
+// numberHighest(N, c) :- ensembleHeight(N, x), level(N, x), c = 1.
+
+
+// uncomment lines with //xx infront of them.
+
+/////////////////////////////////////////////
+// now waves from level 0 -> highest and back
+
+type cycleCount(catom, max int).
+// start off everyone at 0
+cycleCount(N, x) :- neighbor(N, _, _), x = 0.
+
+// set bottom to 1
+cycleCount(N, x) :- level(N, y), y = 0, x = 1.
+
+// copy cyclecount from neighbors
+cycleCount(N, x) :- neighbor(N, M, _), cycleCount(M, x).
+
+// propogate a signal down
+type token(catom, max int).
+token(N, x) :- isHighest(N), x = 0.
+token(N, x) :- isHighest(N), cycleCount(N, y), token(N, z), y>=z, x = y+1.
+token(N, x) :- isLower(N), neighbor(N, M, _), x = 5.
+
+/*
+token(N, x) :- isLower(N), neighbor(N, M, _), token(M, y), x = y.
+
+
+// when you get a new token, incr cyclecount
+//xxcycleCount(N, x) :- level(N, y), y=0, token(N, x), _ = printInt(N, 1, x).
+
+setColor2(N, x) :- cycleCount(N, x).
+
+
+// // if your bottom is greater then you, copy it
+// cycleCount(N, x) :- bottomNeighbor(N, T), cycleCount(T, y), cycleCount(N, z), y > z, x = y.
+// 
+// // propogate on sides
+// cycleCount(N, x) :- sideNeighbor(N, S), cycleCount(S, y), cycleCount(N, z), y > z, x = z.
+// 
+// // when cycle count of highest gets bumped, bump it by one
+// cycleCount(N, x) :- isHighest(N), bottomNeighbor(N, B), cycleCount(B, y), x = y+1.
+
+
+*/

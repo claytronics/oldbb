@@ -1,0 +1,100 @@
+   1               		.file	"accelerometer.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	getAccelData
+  13               	getAccelData:
+  14               	.LFB5:
+  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb"
+   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** // SYSTEM INCLUDES
+   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** #include "accelerometer.bbh"
+   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** #include "handler.bbh"
+   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 
+   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** // HARDWARE INCLUDES
+   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** #include "../hw-api/hwAccelerometer.h"
+   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 
+   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** threadvar AccelData _acc;
+   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 
+  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** AccelData getAccelData()
+  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** {
+  16               		.loc 1 11 0
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 	return _acc;
+  21               		.loc 1 12 0
+  22 0000 6091 0000 		lds r22,_acc
+  23 0004 7091 0000 		lds r23,_acc+1
+  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** }
+  24               		.loc 1 13 0
+  25 0008 8091 0000 		lds r24,_acc+2
+  26 000c 9091 0000 		lds r25,_acc+3
+  27 0010 0895      		ret
+  28               	.LFE5:
+  30               	.global	newAccelData
+  32               	newAccelData:
+  33               	.LFB6:
+  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 
+  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** int newAccelData()
+  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** {
+  34               		.loc 1 16 0
+  35               	/* prologue: function */
+  36               	/* frame size = 0 */
+  37               	/* stack size = 0 */
+  38               	.L__stack_usage = 0
+  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 	return newHWAccelData();
+  39               		.loc 1 17 0
+  40 0012 0C94 0000 		jmp newHWAccelData
+  41               	.LVL0:
+  42               	.LFE6:
+  44               	.global	updateAccel
+  46               	updateAccel:
+  47               	.LFB7:
+  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** }
+  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 
+  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** void updateAccel()
+  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** {
+  48               		.loc 1 21 0
+  49               	/* prologue: function */
+  50               	/* frame size = 0 */
+  51               	/* stack size = 0 */
+  52               	.L__stack_usage = 0
+  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 	//byte oldstatus = _acc.status & ACC_O_MASK;
+  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 
+  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 	// this changes the _acc datastructure with new data, if available
+  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bb **** 	updateHWAccel();
+  53               		.loc 1 25 0
+  54 0016 0C94 0000 		jmp updateHWAccel
+  55               	.LVL1:
+  56               	.LFE7:
+  58               		.comm	_acc,4,1
+ 101               	.Letext0:
+ 102               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 103               		.file 3 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/defs.bbh"
+ 104               		.file 4 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bbh"
+ 105               		.file 5 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/../hw-api/hwAccelerome
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 accelerometer.c
+     /tmp/ccbsQi1r.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccbsQi1r.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccbsQi1r.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccbsQi1r.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccbsQi1r.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccbsQi1r.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccbsQi1r.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccbsQi1r.s:13     .text:0000000000000000 getAccelData
+                            *COM*:0000000000000004 _acc
+     /tmp/ccbsQi1r.s:32     .text:0000000000000012 newAccelData
+     /tmp/ccbsQi1r.s:46     .text:0000000000000016 updateAccel
+
+UNDEFINED SYMBOLS
+newHWAccelData
+updateHWAccel
+__do_clear_bss

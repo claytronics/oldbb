@@ -1,0 +1,24 @@
+const RED = 0.
+const BLUE = 5.
+const YELLOW = 2.
+
+type edged(addr, min int).
+
+setColor2(X, BLUE) :-
+	edged(X, N),
+	N > 1.
+
+edged(X, 0),
+setColor2(X, RED) :-
+	neighborCount(X, 1).
+
+edged(X, 1),
+setColor2(X, YELLOW) :-
+	neighborCount(X, C), C > 1,
+	neighbor(X, Y, _),
+	edged(Y, 0).
+
+edged(X, N) :-
+	 neighbor(X, Z, _),
+	 edged(Z, M),
+	 N = M+1.

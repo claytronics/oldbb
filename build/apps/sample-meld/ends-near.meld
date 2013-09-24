@@ -1,0 +1,21 @@
+const RED = 0.
+const GREEN = 3.
+const BLUE = 5.
+
+type end(addr).
+type middle(addr).
+type nearEnd(addr).
+
+setColor2(X, BLUE),
+middle(X) :-
+	neighborCount(X, C), C > 1.
+
+setColor2(X, RED),
+end(X) :-
+	neighborCount(X, 1).
+
+setColor2(X, GREEN),
+nearEnd(X) :-
+	neighbor(X, Y, _),
+	end(Y),
+	middle(X).

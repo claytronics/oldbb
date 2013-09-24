@@ -1,0 +1,35 @@
+TODO:
+
+- figure out a better way of dealing with extern_functions, so the
+  user can put them in the application directory.  This probably
+  involves dealing with the makefile.
+
+- virtual neighbors with aggregates
+
+- linear logic
+
+DONE:
+
+- constants
+	const int RED = 7.
+	setColor2(N, x) :- neighbor(N, _, _), x = RED.
+
+- allow constants in head clauses
+      setColor2(N, Red) :- vacant(N, x), x = 3.
+
+- allow constans in predicates.
+      setColor2(N, Red) :- vacant(N, 3).
+
+- incremement the line number when reporting an error, so it points to
+  the proper line in the file.
+
+- rewrite mode checker such that it actually functions.
+
+- somehow deduce that N, in the clause below, is a catom.  I.e., don't need the neighbor predicate.
+	const int RED = 7.
+	setColor2(N, x) :- x = RED.
+
+- support blockID(N) = 1000 (as opposed to 1000 = blockID(N))
+
+- give names to facts not derivable and also don't warn if builtins aren't used.
+

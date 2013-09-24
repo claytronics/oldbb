@@ -1,0 +1,227 @@
+extern int gen_fresh_file().
+extern int gen_fresh_tag().
+extern int gen_fresh_nonce().
+
+type contents(addr, int, int, int).
+type linear current(addr, int, int).
+
+type linear wants_docreate(addr).
+type linear wants_doread(addr, int).
+type linear wants_dowrite(addr, int, int).
+type linear wants_dodelete(addr, int).
+
+
+const empty = -1.
+
+/*
+ * Create Action
+ * -------------
+ * 
+ * All K:principal.
+ * [K]do(K, create) -o
+ *   {Exists f:file. Exists t:tag.
+ *      [fs]current(f, t) *
+ *      [[fs]]contents(f, t, empty) *
+ *      [[K]]contents(f, t, empty)}.
+ * 
+ * 1.  ttp: do(?K, create) --> all K
+ * 2.  k: do(k, create) --> ttp
+ * 3.  ttp: generates fresh f and t
+ * 4a. ttp: current(f, t) --> fs
+ *  b. ttp: !contents(f, t, empty) --> fs
+ *  c. ttp: !contents(f, t, empty) --> k
+ */
+
+type query_docreate(addr).
+type linear resp_docreate(addr, addr).
+
+query_docreate(K) :-
+  neighbor(ttp, K, _).
+
+!resp_docreate(ttp, K) :-
+  query_docreate(K),
+  !wants_docreate(K),
+  neighbor(K, ttp, _).
+
+!current(fs, F, T), 
+contents(fs, F, T, empty), 
+contents(K, F, T, empty) :-
+  !resp_docreate(ttp, K),
+  F = gen_fresh_file(),
+  T = gen_fresh_tag(),
+  neighbor(ttp, fs, _),
+  neighbor(ttp, K, _).
+
+/*
+ * Read Action
+ * -----------
+ * 
+ * All K:principal. All F:file.
+ * [K]do(K, onfile(F, read)) -o
+ * All T:tag.
+ * [fs]current(F, T) -o
+ * All S:string.
+ * [[fs]]contents(F, T, S) -o
+ *   {[[K]]contents(F, T, S) *
+ *    [fs]current(F, T)}.
+ *  
+ * 1.  ttp: do(?K, onfile(?F, read)) --> all K
+ * 2.  k: do(k, onfile(f, read)) --> ttp
+ * 3.  ttp: current(f, ?T) --> fs
+ * 4.  fs: current(f, t) --> ttp
+ * 5.  ttp: !contents(f, t, ?S) --> fs
+ * 6.  fs: !contents(f, t, s) --> ttp
+ * 7a. ttp: !contents(f, t, s) --> k
+ *  b. ttp: current(f, t) --> fs
+ */
+
+type query_doread(addr).
+type linear resp_doread(addr, addr, int).
+type linear query_current__read(addr, int, int).
+type linear queried_current__read (addr, addr, int, int).
+type linear resp_current__read(addr, int, int, int).
+type linear query_current__read(addr, int, int).
+type linear query_contents__read(addr, int, int, int).
+type linear queried_contents__read(addr, addr, int, int, int).
+type linear resp_contents__read(addr, int, int, int, int).
+
+query_doread(K) :-
+  neighbor(ttp, K, _).
+
+!resp_doread(ttp, K, F) :-
+  query_doread(K),
+  !wants_doread(K, F),
+  neighbor(K, ttp, _).
+
+!query_current__read(fs, N, F),
+!queried_current__read(ttp, K, F, N) :-
+  !resp_doread(ttp, K, F),
+  N = gen_fresh_nonce(),
+  neighbor(ttp, fs, _).
+
+!resp_current__read(ttp, N, F, T) :-
+  !query_current__read(fs, N, F), 
+  !current(fs, F, T),
+  neighbor(fs, ttp, _).
+
+!query_contents__read(fs, N', F, T),
+!queried_contents__read(ttp, K, F, T, N') :-
+  !queried_current__read(ttp, K, F, N),
+  !resp_current__read(ttp, N, F, T),
+  N' = gen_fresh_nonce(),
+  neighbor(ttp, fs, _).
+
+!resp_contents__read(ttp, N', F, T, S) :-
+  !query_contents__read(fs, N', F, T),
+  contents(fs, F, T, S),
+  neighbor(fs, ttp, _).
+
+contents(K, F, T, S),
+!current(fs, F, T) :-
+  !queried_contents__read(ttp, K, F, T, N'),
+  !resp_contents__read(ttp, N', F, T, S),
+  neighbor(ttp, K, _),
+  neighbor(ttp, fs, _).
+
+/*
+ * Write Action
+ * ------------
+ * 
+ * All K:principal. All F:file. All S:string.
+ * [K]do(K, onfile(F, write(S))) -o
+ * (Exists T:tag. [fs]current(F, T)) -o
+ *   {Exists t:tag.
+ *      [fs]current(F, t) *
+ *      [[fs]]contents(F, t, S) *
+ *      [[K]]contents(F, t, S)}.
+ * 
+ * 1.  ttp: do(?K, onfile(?F, write(?S))) --> all K
+ * 2.  k: do(k, onfile(f, write(s))) --> ttp
+ * 3.  ttp: current(f, ?_) --> fs
+ * 4.  fs: current(f, _) --> ttp
+ * 5.  ttp: generate fresh t
+ * 6a. ttp: current(f, t) --> fs
+ *  b. ttp: !contents(f, t, s) --> fs
+ *  c. ttp: !contents(f, t, s) --> k
+ */
+
+type query_dowrite(addr).
+type linear resp_dowrite(addr, addr, int, int).
+type linear query_current__write(addr, int, int).
+type linear queried_current__write(addr, addr, int, int, int).
+type linear resp_current__write(addr, int, int, int).
+
+query_dowrite(K) :-
+  neighbor(ttp, K, _).
+  
+!resp_dowrite(ttp, K, F, S) :-
+  query_dowrite(K),
+  !wants_dowrite(K, F, S),
+  neighbor(K, ttp, _).
+
+!query_current__write(fs, N, F),
+!queried_current__write(ttp, K, F, S, N) :-
+  !resp_dowrite(ttp, K, F, S),
+  N = gen_fresh_nonce(),
+  neighbor(ttp, fs, _).
+
+!resp_current__write(ttp, N, F, T) :-
+  !query_current__write(fs, N, F),
+  !current(fs, F, T),
+  neighbor(fs, ttp, _).
+
+!current(fs, F, T),
+contents(fs, F, T, S),
+contents(K, F, T, S) :-
+  !queried_current__write(ttp, K, F, S, N),
+  !resp_current__write(ttp, N, F, _),
+  T = gen_fresh_tag(),
+  neighbor(ttp, fs, _),
+  neighbor(ttp, K, _).
+
+/*
+ * Delete Action
+ * -------------
+ * 
+ * All K:principal. All F:file.
+ * [K]do(K, onfile(F, delete)) -o
+ * (Exists T:tag. [fs]current(F, T)) -o
+ *   {One}.
+ * 
+ * 1.  ttp: do(?K, onfile(?F, delete)) --> all K
+ * 2.  k: do(k, onfile(f, delete)) --> ttp
+ * 3.  ttp: current(f, ?_) --> fs
+ * 4.  fs: current(f, _) --> ttp
+ */
+
+type query_dodelete(addr).
+type linear resp_dodelete(addr, addr, int).
+type linear query_current__delete(addr, int, int).
+type linear queried_current__delete(addr, addr, int, int).
+type linear resp_current__delete(addr, int, int, int).
+
+query_dodelete(K) :-
+  neighbor(ttp, K).
+
+!resp_dodelete(ttp, K, F) :-
+  query_dodelete(K),
+  !wants_dodelete(K, F),
+  neighbor(K, ttp).
+
+!query_current__delete(fs, N, F),
+!queried_current__delete(ttp, K, F, N) :-
+  !resp_dodelete(ttp, K, F),
+  N = gen_fresh_nonce(),
+  neighbor(ttp, fs, _).
+
+!resp_current__delete(ttp, N, F, T) :-
+  !query_current__delete(fs, N, F),
+  !current(fs, F, T),
+  neighbor(fs, ttp, _).
+
+/* TODO: need to add 1... */
+type linear one(addr).
+
+!one(ttp) :-
+  !queried_current__delete(ttp, K, F, N),
+  !resp_current__delete(ttp, N, F, _).

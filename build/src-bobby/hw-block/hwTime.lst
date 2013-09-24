@@ -1,0 +1,302 @@
+   1               		.file	"hwTime.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	getHWTime
+  13               	getHWTime:
+  14               	.LFB5:
+  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c"
+   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** #include <util/atomic.h>
+   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** #include <avr/io.h>
+   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** #include <avr/interrupt.h>
+   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** #include "../hw-api/hwTime.h"
+   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** #include "../system/hardwaretime.h"
+   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 
+   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** uint16_t timeHi;			// semi-private data, do not modify outside of this file
+   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 
+   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** Time getHWTime()
+  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** {
+  16               		.loc 1 10 0
+  17 0000 0F93      		push r16
+  18               	.LCFI0:
+  19 0002 1F93      		push r17
+  20               	.LCFI1:
+  21               	/* prologue: function */
+  22               	/* frame size = 0 */
+  23               	/* stack size = 2 */
+  24               	.L__stack_usage = 2
+  25               	.LVL0:
+  26               	.LBB7:
+  27               	.LBB8:
+  28               	.LBB9:
+  29               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h"
+   1:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** /* Copyright (c) 2007 Dean Camera
+   2:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****    All rights reserved.
+   3:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+   4:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****    Redistribution and use in source and binary forms, with or without
+   5:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****    modification, are permitted provided that the following conditions are met:
+   6:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+   7:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****    * Redistributions of source code must retain the above copyright
+   8:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer.
+   9:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+  10:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****    * Redistributions in binary form must reproduce the above copyright
+  11:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****      notice, this list of conditions and the following disclaimer in
+  12:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****      the documentation and/or other materials provided with the
+  13:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****      distribution.
+  14:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+  15:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****    * Neither the name of the copyright holders nor the names of
+  16:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****      contributors may be used to endorse or promote products derived
+  17:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****      from this software without specific prior written permission.
+  18:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+  19:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+  20:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+  21:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+  22:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+  23:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+  24:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+  25:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+  26:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+  27:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+  28:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+  29:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****   POSSIBILITY OF SUCH DAMAGE.
+  30:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** */
+  31:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+  32:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** /* $Id: atomic.h 2158 2010-06-10 15:48:28Z joerg_wunsch $ */
+  33:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+  34:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** #ifndef _UTIL_ATOMIC_H_
+  35:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** #define _UTIL_ATOMIC_H_ 1
+  36:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+  37:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** #include <avr/io.h>
+  38:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** #include <avr/interrupt.h>
+  39:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+  40:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** #if !defined(__DOXYGEN__)
+  41:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** /* Internal helper functions. */
+  42:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** static __inline__ uint8_t __iSeiRetVal(void)
+  43:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** {
+  44:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     sei();
+  45:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     return 1;
+  46:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** }
+  47:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+  48:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** static __inline__ uint8_t __iCliRetVal(void)
+  49:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** {
+  50:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     cli();
+  30               		.loc 2 50 0
+  31               	/* #APP */
+  32               	 ;  50 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h" 1
+  33 0004 F894      		cli
+  34               	 ;  0 "" 2
+  35               	.LVL1:
+  36               	/* #NOAPP */
+  37               	.LBE9:
+  38               	.LBE8:
+  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	Time tmp;
+  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	// prevents ISRs from corrupting multibyte write
+  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	ATOMIC_BLOCK(ATOMIC_FORCEON)
+  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c ****     {
+  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 		tmp = (((Time)timeHi) << 16) | RTC.CNT;
+  39               		.loc 1 15 0
+  40 0006 E0E0      		ldi r30,0
+  41 0008 F4E0      		ldi r31,lo8(4)
+  42 000a 8085      		ldd r24,Z+8
+  43 000c 9185      		ldd r25,Z+9
+  44 000e 0091 0000 		lds r16,timeHi
+  45 0012 1091 0000 		lds r17,timeHi+1
+  46 0016 20E0      		ldi r18,0
+  47 0018 30E0      		ldi r19,0
+  48 001a 9801      		movw r18,r16
+  49 001c 1127      		clr r17
+  50 001e 0027      		clr r16
+  51 0020 A0E0      		ldi r26,0
+  52 0022 B0E0      		ldi r27,0
+  53 0024 082B      		or r16,r24
+  54 0026 192B      		or r17,r25
+  55 0028 2A2B      		or r18,r26
+  56 002a 3B2B      		or r19,r27
+  57               	.LVL2:
+  58               	.LBB10:
+  59               	.LBB11:
+  51:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     return 1;
+  52:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** }
+  53:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
+  54:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** static __inline__ void __iSeiParam(const uint8_t *__s)
+  55:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** {
+  56:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     sei();
+  60               		.loc 2 56 0
+  61               	/* #APP */
+  62               	 ;  56 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h" 1
+  63 002c 7894      		sei
+  64               	 ;  0 "" 2
+  57:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
+  65               		.loc 2 57 0
+  66               	/* #NOAPP */
+  67               	.LBE11:
+  68               	.LBE10:
+  69               	.LBE7:
+  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	}
+  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	
+  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	return tmp;
+  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** }
+  70               		.loc 1 19 0
+  71 002e B801      		movw r22,r16
+  72 0030 C901      		movw r24,r18
+  73               	/* epilogue start */
+  74 0032 1F91      		pop r17
+  75 0034 0F91      		pop r16
+  76               	.LVL3:
+  77 0036 0895      		ret
+  78               	.LFE5:
+  80               	.global	initClock
+  82               	initClock:
+  83               	.LFB6:
+  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 
+  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** void initClock(void)
+  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** {
+  84               		.loc 1 22 0
+  85               	/* prologue: function */
+  86               	/* frame size = 0 */
+  87               	/* stack size = 0 */
+  88               	.L__stack_usage = 0
+  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	OSC.CTRL |= _BV(OSC_RC32MEN_bp);			// turn on 32MHz internal RC oscillator
+  89               		.loc 1 23 0
+  90 0038 8091 5000 		lds r24,80
+  91 003c 8260      		ori r24,lo8(2)
+  92 003e 8093 5000 		sts 80,r24
+  93               	.L3:
+  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	while(!(OSC.STATUS & OSC_RC32MRDY_bm));  	// wait for it to be ready
+  94               		.loc 1 24 0 discriminator 1
+  95 0042 8091 5100 		lds r24,81
+  96 0046 81FF      		sbrs r24,1
+  97 0048 00C0      		rjmp .L3
+  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 
+  26:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	CCP=0xD8;							// allow modification of protected register
+  98               		.loc 1 26 0
+  99 004a 88ED      		ldi r24,lo8(-40)
+ 100 004c 84BF      		out __CCP__,r24
+  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;	// change from 2MHz to 32MHz
+ 101               		.loc 1 27 0
+ 102 004e 81E0      		ldi r24,lo8(1)
+ 103 0050 8093 4000 		sts 64,r24
+ 104 0054 0895      		ret
+ 105               	.LFE6:
+ 107               	.global	initRTC
+ 109               	initRTC:
+ 110               	.LFB7:
+  28:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** }
+  29:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 
+  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** void initRTC(void)
+  31:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** {
+ 111               		.loc 1 31 0
+ 112               	/* prologue: function */
+ 113               	/* frame size = 0 */
+ 114               	/* stack size = 0 */
+ 115               	.L__stack_usage = 0
+  32:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
+ 116               		.loc 1 32 0
+ 117 0056 E0E0      		ldi r30,0
+ 118 0058 F4E0      		ldi r31,lo8(4)
+ 119 005a 81E0      		ldi r24,lo8(1)
+ 120 005c 8083      		st Z,r24
+  33:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL = CLK_RTCSRC_ULP_gc | CLK_RTCEN_bm; 
+ 121               		.loc 1 33 0
+ 122 005e A0E4      		ldi r26,lo8(64)
+ 123 0060 B0E0      		ldi r27,0
+ 124 0062 1396      		adiw r26,3
+ 125 0064 8C93      		st X,r24
+  34:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 
+  35:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	RTC.INTCTRL = RTC_OVFINTLVL_HI_gc;
+ 126               		.loc 1 35 0
+ 127 0066 83E0      		ldi r24,lo8(3)
+ 128 0068 8283      		std Z+2,r24
+ 129 006a 0895      		ret
+ 130               	.LFE7:
+ 132               	.global	initHWTime
+ 134               	initHWTime:
+ 135               	.LFB8:
+  36:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** }
+  37:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 
+  38:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** void initHWTime()
+  39:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** {
+ 136               		.loc 1 39 0
+ 137               	/* prologue: function */
+ 138               	/* frame size = 0 */
+ 139               	/* stack size = 0 */
+ 140               	.L__stack_usage = 0
+  40:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	initClock();
+ 141               		.loc 1 40 0
+ 142 006c 0E94 0000 		call initClock
+ 143               	.LVL4:
+  41:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	initRTC();
+ 144               		.loc 1 41 0
+ 145 0070 0C94 0000 		jmp initRTC
+ 146               	.LVL5:
+ 147               	.LFE8:
+ 149               	.global	__vector_10
+ 151               	__vector_10:
+ 152               	.LFB9:
+  42:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** }
+  43:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 
+  44:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** ISR(RTC_OVF_vect)
+  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** {
+ 153               		.loc 1 45 0
+ 154 0074 1F92      		push r1
+ 155               	.LCFI2:
+ 156 0076 0F92      		push r0
+ 157               	.LCFI3:
+ 158 0078 0FB6      		in r0,__SREG__
+ 159 007a 0F92      		push r0
+ 160 007c 1124      		clr __zero_reg__
+ 161 007e 8F93      		push r24
+ 162               	.LCFI4:
+ 163 0080 9F93      		push r25
+ 164               	.LCFI5:
+ 165               	/* prologue: Signal */
+ 166               	/* frame size = 0 */
+ 167               	/* stack size = 5 */
+ 168               	.L__stack_usage = 5
+  46:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** 	timeHi++;
+ 169               		.loc 1 46 0
+ 170 0082 8091 0000 		lds r24,timeHi
+ 171 0086 9091 0000 		lds r25,timeHi+1
+ 172 008a 0196      		adiw r24,1
+ 173 008c 8093 0000 		sts timeHi,r24
+ 174 0090 9093 0000 		sts timeHi+1,r25
+ 175               	/* epilogue start */
+  47:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwTime.c **** }
+ 176               		.loc 1 47 0
+ 177 0094 9F91      		pop r25
+ 178 0096 8F91      		pop r24
+ 179 0098 0F90      		pop r0
+ 180 009a 0FBE      		out __SREG__,r0
+ 181 009c 0F90      		pop r0
+ 182 009e 1F90      		pop r1
+ 183 00a0 1895      		reti
+ 184               	.LFE9:
+ 186               		.comm	timeHi,2,1
+ 281               	.Letext0:
+ 282               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 283               		.file 4 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
+ 284               		.file 5 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/hardwaretime.bbh"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 hwTime.c
+     /tmp/ccesc6Xr.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccesc6Xr.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccesc6Xr.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccesc6Xr.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccesc6Xr.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccesc6Xr.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccesc6Xr.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccesc6Xr.s:13     .text:0000000000000000 getHWTime
+                            *COM*:0000000000000002 timeHi
+     /tmp/ccesc6Xr.s:82     .text:0000000000000038 initClock
+     /tmp/ccesc6Xr.s:109    .text:0000000000000056 initRTC
+     /tmp/ccesc6Xr.s:134    .text:000000000000006c initHWTime
+     /tmp/ccesc6Xr.s:151    .text:0000000000000074 __vector_10
+
+UNDEFINED SYMBOLS
+__do_clear_bss

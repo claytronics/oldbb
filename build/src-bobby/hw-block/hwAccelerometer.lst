@@ -1,0 +1,747 @@
+   1               		.file	"hwAccelerometer.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	newHWAccelData
+  13               	newHWAccelData:
+  14               	.LFB12:
+  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c"
+   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #include <avr/io.h>
+   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #include <avr/interrupt.h>
+   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #include "../hw-api/hwAccelerometer.h"
+   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #include "../system/defs.h"
+   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #include "../system/accelerometer.h"
+   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #include "../system/handler.h"
+   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #include "twi_master_driver.h"
+   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #define ACCEL_I2C_ADDR 0x4C    	// 0x98 >> 1;  << 1 and OR with 0x01 for i2c read address
+  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #define CPU_SPEED   32000000
+  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #define BAUDRATE	100000
+  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** #define TWI_BAUDSETTING TWI_BAUD(CPU_SPEED, BAUDRATE)
+  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** TWI_Master_t twiMaster;
+  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** extern AccelData _acc;
+  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** int newHWAccelData()
+  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** {
+  16               		.loc 1 18 0
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	return (twiMaster.result == TWIM_RESULT_OK && twiMaster.status == TWIM_STATUS_READY);
+  21               		.loc 1 19 0
+  22 0000 8091 0000 		lds r24,twiMaster+16
+  23 0004 8130      		cpi r24,lo8(1)
+  24 0006 01F4      		brne .L4
+  25               		.loc 1 19 0 is_stmt 0 discriminator 1
+  26 0008 8091 0000 		lds r24,twiMaster+15
+  27 000c 21E0      		ldi r18,lo8(1)
+  28 000e 30E0      		ldi r19,0
+  29 0010 8823      		tst r24
+  30 0012 01F0      		breq .L2
+  31               	.L4:
+  32               		.loc 1 19 0
+  33 0014 20E0      		ldi r18,0
+  34 0016 30E0      		ldi r19,0
+  35               	.L2:
+  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** }
+  36               		.loc 1 20 0 is_stmt 1 discriminator 4
+  37 0018 C901      		movw r24,r18
+  38 001a 0895      		ret
+  39               	.LFE12:
+  41               	.global	updateHWAccel
+  43               	updateHWAccel:
+  44               	.LFB13:
+  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** // this is currently non-blocking.
+  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** void updateHWAccel()
+  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** {
+  45               		.loc 1 24 0
+  46 001c CF93      		push r28
+  47               	.LCFI0:
+  48               	/* prologue: function */
+  49               	/* frame size = 0 */
+  50               	/* stack size = 1 */
+  51               	.L__stack_usage = 1
+  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	if(twiMaster.result == TWIM_RESULT_OK && twiMaster.status == TWIM_STATUS_READY)
+  52               		.loc 1 25 0
+  53 001e 8091 0000 		lds r24,twiMaster+16
+  54 0022 8130      		cpi r24,lo8(1)
+  55 0024 01F0      		breq .+2
+  56 0026 00C0      		rjmp .L8
+  57               		.loc 1 25 0 is_stmt 0 discriminator 1
+  58 0028 8091 0000 		lds r24,twiMaster+15
+  59 002c 8111      		cpse r24,__zero_reg__
+  60 002e 00C0      		rjmp .L8
+  61               	.LBB2:
+  26:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	{ 
+  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		byte oldstatus = _acc.status & ACC_O_MASK;
+  62               		.loc 1 27 0 is_stmt 1
+  63 0030 C091 0000 		lds r28,_acc+3
+  64               	.LVL0:
+  28:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		
+  29:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		// I2C reads in as unsigned - we need to convert back to 2s complement (+- 32)
+  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		_acc.x = (Angle)(twiMaster.readData[0] << 2) >> 2;
+  65               		.loc 1 30 0
+  66 0034 8091 0000 		lds r24,twiMaster+7
+  67 0038 24E0      		ldi r18,lo8(4)
+  68 003a 829F      		mul r24,r18
+  69 003c C001      		movw r24,r0
+  70 003e 1124      		clr __zero_reg__
+  71 0040 8595      		asr r24
+  72 0042 8595      		asr r24
+  73 0044 8093 0000 		sts _acc,r24
+  31:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		_acc.y = (Angle)(twiMaster.readData[1] << 2) >> 2;
+  74               		.loc 1 31 0
+  75 0048 8091 0000 		lds r24,twiMaster+8
+  76 004c 24E0      		ldi r18,lo8(4)
+  77 004e 829F      		mul r24,r18
+  78 0050 C001      		movw r24,r0
+  79 0052 1124      		clr __zero_reg__
+  80 0054 8595      		asr r24
+  81 0056 8595      		asr r24
+  82 0058 8093 0000 		sts _acc+1,r24
+  32:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		_acc.z = (Angle)(twiMaster.readData[2] << 2) >> 2;
+  83               		.loc 1 32 0
+  84 005c 8091 0000 		lds r24,twiMaster+9
+  85 0060 24E0      		ldi r18,lo8(4)
+  86 0062 829F      		mul r24,r18
+  87 0064 C001      		movw r24,r0
+  88 0066 1124      		clr __zero_reg__
+  89 0068 8595      		asr r24
+  90 006a 8595      		asr r24
+  91 006c 8093 0000 		sts _acc+2,r24
+  33:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		_acc.status = twiMaster.readData[3];
+  92               		.loc 1 33 0
+  93 0070 8091 0000 		lds r24,twiMaster+10
+  94 0074 8093 0000 		sts _acc+3,r24
+  34:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		
+  35:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		twiMaster.result = TWIM_RESULT_UNKNOWN;
+  95               		.loc 1 35 0
+  96 0078 1092 0000 		sts twiMaster+16,__zero_reg__
+  36:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		
+  37:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		// if superceding event isn't registered, register sub-events, if necessary
+  38:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		if(!triggerHandler(EVENT_ACCEL_CHANGE))
+  97               		.loc 1 38 0
+  98 007c 8BE0      		ldi r24,lo8(11)
+  99 007e 0E94 0000 		call triggerHandler
+ 100               	.LVL1:
+ 101 0082 892B      		or r24,r25
+ 102 0084 01F4      		brne .L8
+  39:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		{
+  40:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 			if(_acc.status & ACC_TAP)
+ 103               		.loc 1 40 0
+ 104 0086 8091 0000 		lds r24,_acc+3
+ 105 008a 85FF      		sbrs r24,5
+ 106 008c 00C0      		rjmp .L12
+  41:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 			{
+  42:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 				triggerHandler(EVENT_ACCEL_TAP);
+ 107               		.loc 1 42 0
+ 108 008e 8CE0      		ldi r24,lo8(12)
+ 109 0090 0E94 0000 		call triggerHandler
+ 110               	.LVL2:
+ 111               	.L12:
+  43:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 			}	
+  44:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 			if(_acc.status & ACC_SHAKE)
+ 112               		.loc 1 44 0
+ 113 0094 8091 0000 		lds r24,_acc+3
+ 114 0098 87FF      		sbrs r24,7
+ 115 009a 00C0      		rjmp .L13
+  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 			{
+  46:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 				triggerHandler(EVENT_ACCEL_SHAKE);
+ 116               		.loc 1 46 0
+ 117 009c 8DE0      		ldi r24,lo8(13)
+ 118 009e 0E94 0000 		call triggerHandler
+ 119               	.LVL3:
+ 120               	.L13:
+  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		byte oldstatus = _acc.status & ACC_O_MASK;
+ 121               		.loc 1 27 0
+ 122 00a2 CF71      		andi r28,lo8(31)
+ 123               	.LVL4:
+  47:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 			}	
+  48:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 			if(oldstatus != (_acc.status & ACC_O_MASK))
+ 124               		.loc 1 48 0
+ 125 00a4 2C2F      		mov r18,r28
+ 126 00a6 30E0      		ldi r19,0
+ 127 00a8 8091 0000 		lds r24,_acc+3
+ 128 00ac 8F71      		andi r24,lo8(31)
+ 129 00ae 90E0      		ldi r25,0
+ 130 00b0 2817      		cp r18,r24
+ 131 00b2 3907      		cpc r19,r25
+ 132 00b4 01F0      		breq .L8
+  49:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 			{
+  50:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 				triggerHandler(EVENT_ACCEL_TAP);
+ 133               		.loc 1 50 0
+ 134 00b6 8CE0      		ldi r24,lo8(12)
+ 135               	/* epilogue start */
+ 136               	.LBE2:
+  51:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 			}			
+  52:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		}
+  53:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	}
+  54:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** }
+ 137               		.loc 1 54 0
+ 138 00b8 CF91      		pop r28
+ 139               	.LBB3:
+  50:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 				triggerHandler(EVENT_ACCEL_TAP);
+ 140               		.loc 1 50 0
+ 141 00ba 0C94 0000 		jmp triggerHandler
+ 142               	.LVL5:
+ 143               	.L8:
+ 144               	/* epilogue start */
+ 145               	.LBE3:
+ 146               		.loc 1 54 0
+ 147 00be CF91      		pop r28
+ 148 00c0 0895      		ret
+ 149               	.LFE13:
+ 151               	.global	initHWAccel
+ 153               	initHWAccel:
+ 154               	.LFB14:
+  55:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+  56:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** // Doesn't *really* need to be blocking, just checked for success
+  57:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** // TODO: should block? yes no?
+  58:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** void initHWAccel()
+  59:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** {
+ 155               		.loc 1 59 0
+ 156 00c2 0F93      		push r16
+ 157               	.LCFI1:
+ 158 00c4 CF93      		push r28
+ 159               	.LCFI2:
+ 160 00c6 DF93      		push r29
+ 161               	.LCFI3:
+ 162 00c8 1F92      		push __zero_reg__
+ 163 00ca 1F92      		push __zero_reg__
+ 164               	.LCFI4:
+ 165 00cc CDB7      		in r28,__SP_L__
+ 166 00ce DEB7      		in r29,__SP_H__
+ 167               	.LCFI5:
+ 168               	/* prologue: function */
+ 169               	/* frame size = 2 */
+ 170               	/* stack size = 5 */
+ 171               	.L__stack_usage = 5
+  60:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	/* Initialize TWI master. */
+  61:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	TWI_MasterInit(&twiMaster,
+ 172               		.loc 1 61 0
+ 173 00d0 2BE9      		ldi r18,lo8(-101)
+ 174 00d2 40E4      		ldi r20,lo8(64)
+ 175 00d4 60EA      		ldi r22,lo8(-96)
+ 176 00d6 74E0      		ldi r23,lo8(4)
+ 177 00d8 80E0      		ldi r24,lo8(twiMaster)
+ 178 00da 90E0      		ldi r25,hi8(twiMaster)
+ 179 00dc 0E94 0000 		call TWI_MasterInit
+ 180               	.LVL6:
+  62:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	               &TWIE,
+  63:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	               TWI_MASTER_INTLVL_LO_gc,
+  64:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	               TWI_BAUDSETTING);
+  65:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+  66:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	// prepare configuration data for the accelerometer
+  67:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	byte buf[2];
+  68:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+  69:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	// set mode to STANDBY if it isn't already (can't update registers in ACTIVE mode!)
+  70:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[0] = 0x07;
+ 181               		.loc 1 70 0
+ 182 00e0 87E0      		ldi r24,lo8(7)
+ 183 00e2 8983      		std Y+1,r24
+  71:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[1] = 0x18;
+ 184               		.loc 1 71 0
+ 185 00e4 88E1      		ldi r24,lo8(24)
+ 186 00e6 8A83      		std Y+2,r24
+  72:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	TWI_MasterWriteRead(&twiMaster, ACCEL_I2C_ADDR, buf, 2, 0);
+ 187               		.loc 1 72 0
+ 188 00e8 00E0      		ldi r16,0
+ 189 00ea 22E0      		ldi r18,lo8(2)
+ 190 00ec AE01      		movw r20,r28
+ 191 00ee 4F5F      		subi r20,-1
+ 192 00f0 5F4F      		sbci r21,-1
+ 193 00f2 6CE4      		ldi r22,lo8(76)
+ 194 00f4 80E0      		ldi r24,lo8(twiMaster)
+ 195 00f6 90E0      		ldi r25,hi8(twiMaster)
+ 196 00f8 0E94 0000 		call TWI_MasterWriteRead
+ 197               	.LVL7:
+ 198               	.L18:
+  73:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	while (twiMaster.status != TWIM_STATUS_READY);
+ 199               		.loc 1 73 0 discriminator 1
+ 200 00fc 8091 0000 		lds r24,twiMaster+15
+ 201 0100 8111      		cpse r24,__zero_reg__
+ 202 0102 00C0      		rjmp .L18
+  74:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+  75:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	// set sleep mode
+  76:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[0] = 0x05;
+ 203               		.loc 1 76 0
+ 204 0104 85E0      		ldi r24,lo8(5)
+ 205 0106 8983      		std Y+1,r24
+  77:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[1] = 0x00;	// no sleep
+ 206               		.loc 1 77 0
+ 207 0108 1A82      		std Y+2,__zero_reg__
+  78:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	TWI_MasterWriteRead(&twiMaster, ACCEL_I2C_ADDR, buf, 2, 0);
+ 208               		.loc 1 78 0
+ 209 010a 00E0      		ldi r16,0
+ 210 010c 22E0      		ldi r18,lo8(2)
+ 211 010e AE01      		movw r20,r28
+ 212 0110 4F5F      		subi r20,-1
+ 213 0112 5F4F      		sbci r21,-1
+ 214 0114 6CE4      		ldi r22,lo8(76)
+ 215 0116 80E0      		ldi r24,lo8(twiMaster)
+ 216 0118 90E0      		ldi r25,hi8(twiMaster)
+ 217 011a 0E94 0000 		call TWI_MasterWriteRead
+ 218               	.LVL8:
+ 219               	.L19:
+  79:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	while (twiMaster.status != TWIM_STATUS_READY);
+ 220               		.loc 1 79 0 discriminator 1
+ 221 011e 8091 0000 		lds r24,twiMaster+15
+ 222 0122 8111      		cpse r24,__zero_reg__
+ 223 0124 00C0      		rjmp .L19
+  80:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+  81:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	// set interrupts
+  82:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[0] = 0x06;
+ 224               		.loc 1 82 0
+ 225 0126 86E0      		ldi r24,lo8(6)
+ 226 0128 8983      		std Y+1,r24
+  83:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[1] = 0x07;	// 0x06 Interrupt Setup Register -> PDINT | PLINT | FBINT
+ 227               		.loc 1 83 0
+ 228 012a 87E0      		ldi r24,lo8(7)
+ 229 012c 8A83      		std Y+2,r24
+  84:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	TWI_MasterWriteRead(&twiMaster, ACCEL_I2C_ADDR, buf, 2, 0);
+ 230               		.loc 1 84 0
+ 231 012e 00E0      		ldi r16,0
+ 232 0130 22E0      		ldi r18,lo8(2)
+ 233 0132 AE01      		movw r20,r28
+ 234 0134 4F5F      		subi r20,-1
+ 235 0136 5F4F      		sbci r21,-1
+ 236 0138 6CE4      		ldi r22,lo8(76)
+ 237 013a 80E0      		ldi r24,lo8(twiMaster)
+ 238 013c 90E0      		ldi r25,hi8(twiMaster)
+ 239 013e 0E94 0000 		call TWI_MasterWriteRead
+ 240               	.LVL9:
+ 241               	.L20:
+  85:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	while (twiMaster.status != TWIM_STATUS_READY);
+ 242               		.loc 1 85 0 discriminator 1
+ 243 0142 8091 0000 		lds r24,twiMaster+15
+ 244 0146 8111      		cpse r24,__zero_reg__
+ 245 0148 00C0      		rjmp .L20
+  86:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+  87:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	// set filter rate
+  88:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[0] = 0x08;
+ 246               		.loc 1 88 0
+ 247 014a 88E0      		ldi r24,lo8(8)
+ 248 014c 8983      		std Y+1,r24
+  89:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[1] = 0xE0;	// 0x08 Sample Register -> Fil[0:2]
+ 249               		.loc 1 89 0
+ 250 014e 80EE      		ldi r24,lo8(-32)
+ 251 0150 8A83      		std Y+2,r24
+  90:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	TWI_MasterWriteRead(&twiMaster, ACCEL_I2C_ADDR, buf, 2, 0);
+ 252               		.loc 1 90 0
+ 253 0152 00E0      		ldi r16,0
+ 254 0154 22E0      		ldi r18,lo8(2)
+ 255 0156 AE01      		movw r20,r28
+ 256 0158 4F5F      		subi r20,-1
+ 257 015a 5F4F      		sbci r21,-1
+ 258 015c 6CE4      		ldi r22,lo8(76)
+ 259 015e 80E0      		ldi r24,lo8(twiMaster)
+ 260 0160 90E0      		ldi r25,hi8(twiMaster)
+ 261 0162 0E94 0000 		call TWI_MasterWriteRead
+ 262               	.LVL10:
+ 263               	.L21:
+  91:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	while (twiMaster.status != TWIM_STATUS_READY);
+ 264               		.loc 1 91 0 discriminator 1
+ 265 0166 8091 0000 		lds r24,twiMaster+15
+ 266 016a 8111      		cpse r24,__zero_reg__
+ 267 016c 00C0      		rjmp .L21
+  92:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	
+  93:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	// set tap detection
+  94:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[0] = 0x09;
+ 268               		.loc 1 94 0
+ 269 016e 89E0      		ldi r24,lo8(9)
+ 270 0170 8983      		std Y+1,r24
+  95:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[1] = 0x10;	// 0x09	Pulse detection -> +- 4 counts
+ 271               		.loc 1 95 0
+ 272 0172 80E1      		ldi r24,lo8(16)
+ 273 0174 8A83      		std Y+2,r24
+  96:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	TWI_MasterWriteRead(&twiMaster, ACCEL_I2C_ADDR, buf, 2, 0);
+ 274               		.loc 1 96 0
+ 275 0176 00E0      		ldi r16,0
+ 276 0178 22E0      		ldi r18,lo8(2)
+ 277 017a AE01      		movw r20,r28
+ 278 017c 4F5F      		subi r20,-1
+ 279 017e 5F4F      		sbci r21,-1
+ 280 0180 6CE4      		ldi r22,lo8(76)
+ 281 0182 80E0      		ldi r24,lo8(twiMaster)
+ 282 0184 90E0      		ldi r25,hi8(twiMaster)
+ 283 0186 0E94 0000 		call TWI_MasterWriteRead
+ 284               	.LVL11:
+ 285               	.L22:
+  97:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	while (twiMaster.status != TWIM_STATUS_READY);
+ 286               		.loc 1 97 0 discriminator 1
+ 287 018a 8091 0000 		lds r24,twiMaster+15
+ 288 018e 8111      		cpse r24,__zero_reg__
+ 289 0190 00C0      		rjmp .L22
+  98:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+  99:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	// set tap debounce
+ 100:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[0] = 0x0A;
+ 290               		.loc 1 100 0
+ 291 0192 8AE0      		ldi r24,lo8(10)
+ 292 0194 8983      		std Y+1,r24
+ 101:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[1] = 0x10;	// 0x0A Tap debounce ->	4 detections
+ 293               		.loc 1 101 0
+ 294 0196 80E1      		ldi r24,lo8(16)
+ 295 0198 8A83      		std Y+2,r24
+ 102:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	TWI_MasterWriteRead(&twiMaster, ACCEL_I2C_ADDR, buf, 2, 0);
+ 296               		.loc 1 102 0
+ 297 019a 00E0      		ldi r16,0
+ 298 019c 22E0      		ldi r18,lo8(2)
+ 299 019e AE01      		movw r20,r28
+ 300 01a0 4F5F      		subi r20,-1
+ 301 01a2 5F4F      		sbci r21,-1
+ 302 01a4 6CE4      		ldi r22,lo8(76)
+ 303 01a6 80E0      		ldi r24,lo8(twiMaster)
+ 304 01a8 90E0      		ldi r25,hi8(twiMaster)
+ 305 01aa 0E94 0000 		call TWI_MasterWriteRead
+ 306               	.LVL12:
+ 307               	.L23:
+ 103:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	while (twiMaster.status != TWIM_STATUS_READY);	
+ 308               		.loc 1 103 0 discriminator 1
+ 309 01ae 8091 0000 		lds r24,twiMaster+15
+ 310 01b2 8111      		cpse r24,__zero_reg__
+ 311 01b4 00C0      		rjmp .L23
+ 104:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	
+ 105:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	// enable the accelerometer
+ 106:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[0] = 0x07;
+ 312               		.loc 1 106 0
+ 313 01b6 87E0      		ldi r24,lo8(7)
+ 314 01b8 8983      		std Y+1,r24
+ 107:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	buf[1] = 0x19;
+ 315               		.loc 1 107 0
+ 316 01ba 89E1      		ldi r24,lo8(25)
+ 317 01bc 8A83      		std Y+2,r24
+ 108:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	TWI_MasterWriteRead(&twiMaster, ACCEL_I2C_ADDR, buf, 2, 0);
+ 318               		.loc 1 108 0
+ 319 01be 00E0      		ldi r16,0
+ 320 01c0 22E0      		ldi r18,lo8(2)
+ 321 01c2 AE01      		movw r20,r28
+ 322 01c4 4F5F      		subi r20,-1
+ 323 01c6 5F4F      		sbci r21,-1
+ 324 01c8 6CE4      		ldi r22,lo8(76)
+ 325 01ca 80E0      		ldi r24,lo8(twiMaster)
+ 326 01cc 90E0      		ldi r25,hi8(twiMaster)
+ 327 01ce 0E94 0000 		call TWI_MasterWriteRead
+ 328               	.LVL13:
+ 329               	.L24:
+ 109:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	while (twiMaster.status != TWIM_STATUS_READY);
+ 330               		.loc 1 109 0 discriminator 1
+ 331 01d2 8091 0000 		lds r24,twiMaster+15
+ 332 01d6 8111      		cpse r24,__zero_reg__
+ 333 01d8 00C0      		rjmp .L24
+ 110:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	
+ 111:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	// set up input/interrupt to detect acceleromter IRQs
+ 112:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	PORTB.DIRCLR = PIN0_bm;					// set Pin0 as input
+ 334               		.loc 1 112 0
+ 335 01da 81E0      		ldi r24,lo8(1)
+ 336 01dc 8093 2206 		sts 1570,r24
+ 113:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	PORTB.PIN0CTRL = PORT_OPC_PULLUP_gc | PORT_ISC_FALLING_gc;	// set pullup, trigger interrupt on fal
+ 337               		.loc 1 113 0
+ 338 01e0 9AE1      		ldi r25,lo8(26)
+ 339 01e2 9093 3006 		sts 1584,r25
+ 114:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	PORTB.INT0MASK = PIN0_bm;				// enable PIN0 to trigger INT0
+ 340               		.loc 1 114 0
+ 341 01e6 8093 2A06 		sts 1578,r24
+ 115:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	PORTB.INTCTRL = PORT_INT0LVL_LO_gc;		// enable INT0 interrupt on LOW priority
+ 342               		.loc 1 115 0
+ 343 01ea 8093 2906 		sts 1577,r24
+ 344               	/* epilogue start */
+ 116:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** }
+ 345               		.loc 1 116 0
+ 346 01ee 0F90      		pop __tmp_reg__
+ 347 01f0 0F90      		pop __tmp_reg__
+ 348 01f2 DF91      		pop r29
+ 349 01f4 CF91      		pop r28
+ 350 01f6 0F91      		pop r16
+ 351 01f8 0895      		ret
+ 352               	.LFE14:
+ 354               	.global	__vector_34
+ 356               	__vector_34:
+ 357               	.LFB15:
+ 117:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+ 118:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** // Acceleromter status change detection interrupt
+ 119:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** ISR(PORTB_INT0_vect)
+ 120:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** {
+ 358               		.loc 1 120 0
+ 359 01fa 1F92      		push r1
+ 360               	.LCFI6:
+ 361 01fc 0F92      		push r0
+ 362               	.LCFI7:
+ 363 01fe 0FB6      		in r0,__SREG__
+ 364 0200 0F92      		push r0
+ 365 0202 1124      		clr __zero_reg__
+ 366 0204 0BB6      		in r0,__RAMPZ__
+ 367 0206 0F92      		push r0
+ 368 0208 0F93      		push r16
+ 369               	.LCFI8:
+ 370 020a 2F93      		push r18
+ 371               	.LCFI9:
+ 372 020c 3F93      		push r19
+ 373               	.LCFI10:
+ 374 020e 4F93      		push r20
+ 375               	.LCFI11:
+ 376 0210 5F93      		push r21
+ 377               	.LCFI12:
+ 378 0212 6F93      		push r22
+ 379               	.LCFI13:
+ 380 0214 7F93      		push r23
+ 381               	.LCFI14:
+ 382 0216 8F93      		push r24
+ 383               	.LCFI15:
+ 384 0218 9F93      		push r25
+ 385               	.LCFI16:
+ 386 021a AF93      		push r26
+ 387               	.LCFI17:
+ 388 021c BF93      		push r27
+ 389               	.LCFI18:
+ 390 021e EF93      		push r30
+ 391               	.LCFI19:
+ 392 0220 FF93      		push r31
+ 393               	.LCFI20:
+ 394 0222 CF93      		push r28
+ 395               	.LCFI21:
+ 396 0224 DF93      		push r29
+ 397               	.LCFI22:
+ 398 0226 1F92      		push __zero_reg__
+ 399               	.LCFI23:
+ 400 0228 CDB7      		in r28,__SP_L__
+ 401 022a DEB7      		in r29,__SP_H__
+ 402               	.LCFI24:
+ 403               	/* prologue: Signal */
+ 404               	/* frame size = 1 */
+ 405               	/* stack size = 20 */
+ 406               	.L__stack_usage = 20
+ 121:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+ 122:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	if(twiMaster.status == TWIM_STATUS_READY)
+ 407               		.loc 1 122 0
+ 408 022c 8091 0000 		lds r24,twiMaster+15
+ 409 0230 8111      		cpse r24,__zero_reg__
+ 410 0232 00C0      		rjmp .L32
+ 411               	.LBB4:
+ 123:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	{
+ 124:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		byte buf = 0x00;		// read 4 bytes, starting at 0x00 (x,y,z,status)
+ 412               		.loc 1 124 0
+ 413 0234 1982      		std Y+1,__zero_reg__
+ 414               	.LVL14:
+ 125:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 		TWI_MasterWriteRead(&twiMaster, ACCEL_I2C_ADDR, &buf, 1, 4);
+ 415               		.loc 1 125 0
+ 416 0236 04E0      		ldi r16,lo8(4)
+ 417 0238 21E0      		ldi r18,lo8(1)
+ 418 023a AE01      		movw r20,r28
+ 419 023c 4F5F      		subi r20,-1
+ 420 023e 5F4F      		sbci r21,-1
+ 421 0240 6CE4      		ldi r22,lo8(76)
+ 422 0242 80E0      		ldi r24,lo8(twiMaster)
+ 423 0244 90E0      		ldi r25,hi8(twiMaster)
+ 424 0246 0E94 0000 		call TWI_MasterWriteRead
+ 425               	.LVL15:
+ 426               	.L32:
+ 427               	/* epilogue start */
+ 428               	.LBE4:
+ 126:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	}
+ 127:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+ 128:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** }
+ 429               		.loc 1 128 0
+ 430 024a 0F90      		pop __tmp_reg__
+ 431 024c DF91      		pop r29
+ 432 024e CF91      		pop r28
+ 433 0250 FF91      		pop r31
+ 434 0252 EF91      		pop r30
+ 435 0254 BF91      		pop r27
+ 436 0256 AF91      		pop r26
+ 437 0258 9F91      		pop r25
+ 438 025a 8F91      		pop r24
+ 439 025c 7F91      		pop r23
+ 440 025e 6F91      		pop r22
+ 441 0260 5F91      		pop r21
+ 442 0262 4F91      		pop r20
+ 443 0264 3F91      		pop r19
+ 444 0266 2F91      		pop r18
+ 445 0268 0F91      		pop r16
+ 446 026a 0F90      		pop r0
+ 447 026c 0BBE      		out __RAMPZ__,r0
+ 448 026e 0F90      		pop r0
+ 449 0270 0FBE      		out __SREG__,r0
+ 450 0272 0F90      		pop r0
+ 451 0274 1F90      		pop r1
+ 452 0276 1895      		reti
+ 453               	.LFE15:
+ 455               	.global	__vector_46
+ 457               	__vector_46:
+ 458               	.LFB16:
+ 129:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+ 130:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** /*! TWIE Master Interrupt vector. */
+ 131:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** ISR(TWIE_TWIM_vect)
+ 132:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** {
+ 459               		.loc 1 132 0
+ 460 0278 1F92      		push r1
+ 461               	.LCFI25:
+ 462 027a 0F92      		push r0
+ 463               	.LCFI26:
+ 464 027c 0FB6      		in r0,__SREG__
+ 465 027e 0F92      		push r0
+ 466 0280 1124      		clr __zero_reg__
+ 467 0282 0BB6      		in r0,__RAMPZ__
+ 468 0284 0F92      		push r0
+ 469 0286 2F93      		push r18
+ 470               	.LCFI27:
+ 471 0288 3F93      		push r19
+ 472               	.LCFI28:
+ 473 028a 4F93      		push r20
+ 474               	.LCFI29:
+ 475 028c 5F93      		push r21
+ 476               	.LCFI30:
+ 477 028e 6F93      		push r22
+ 478               	.LCFI31:
+ 479 0290 7F93      		push r23
+ 480               	.LCFI32:
+ 481 0292 8F93      		push r24
+ 482               	.LCFI33:
+ 483 0294 9F93      		push r25
+ 484               	.LCFI34:
+ 485 0296 AF93      		push r26
+ 486               	.LCFI35:
+ 487 0298 BF93      		push r27
+ 488               	.LCFI36:
+ 489 029a EF93      		push r30
+ 490               	.LCFI37:
+ 491 029c FF93      		push r31
+ 492               	.LCFI38:
+ 493               	/* prologue: Signal */
+ 494               	/* frame size = 0 */
+ 495               	/* stack size = 16 */
+ 496               	.L__stack_usage = 16
+ 133:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+ 134:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 	TWI_MasterInterruptHandler(&twiMaster);
+ 497               		.loc 1 134 0
+ 498 029e 80E0      		ldi r24,lo8(twiMaster)
+ 499 02a0 90E0      		ldi r25,hi8(twiMaster)
+ 500 02a2 0E94 0000 		call TWI_MasterInterruptHandler
+ 501               	.LVL16:
+ 502               	/* epilogue start */
+ 135:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** }
+ 503               		.loc 1 135 0
+ 504 02a6 FF91      		pop r31
+ 505 02a8 EF91      		pop r30
+ 506 02aa BF91      		pop r27
+ 507 02ac AF91      		pop r26
+ 508 02ae 9F91      		pop r25
+ 509 02b0 8F91      		pop r24
+ 510 02b2 7F91      		pop r23
+ 511 02b4 6F91      		pop r22
+ 512 02b6 5F91      		pop r21
+ 513 02b8 4F91      		pop r20
+ 514 02ba 3F91      		pop r19
+ 515 02bc 2F91      		pop r18
+ 516 02be 0F90      		pop r0
+ 517 02c0 0BBE      		out __RAMPZ__,r0
+ 518 02c2 0F90      		pop r0
+ 519 02c4 0FBE      		out __SREG__,r0
+ 520 02c6 0F90      		pop r0
+ 521 02c8 1F90      		pop r1
+ 522 02ca 1895      		reti
+ 523               	.LFE16:
+ 525               	.global	setAccelRegister
+ 527               	setAccelRegister:
+ 528               	.LFB17:
+ 136:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+ 137:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** // helper function to setup accelerometer registers
+ 138:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** void setAccelRegister(byte one, byte two)
+ 139:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** {
+ 529               		.loc 1 139 0
+ 530               	.LVL17:
+ 531 02cc 0F93      		push r16
+ 532               	.LCFI39:
+ 533 02ce CF93      		push r28
+ 534               	.LCFI40:
+ 535 02d0 DF93      		push r29
+ 536               	.LCFI41:
+ 537 02d2 1F92      		push __zero_reg__
+ 538 02d4 1F92      		push __zero_reg__
+ 539               	.LCFI42:
+ 540 02d6 CDB7      		in r28,__SP_L__
+ 541 02d8 DEB7      		in r29,__SP_H__
+ 542               	.LCFI43:
+ 543               	/* prologue: function */
+ 544               	/* frame size = 2 */
+ 545               	/* stack size = 5 */
+ 546               	.L__stack_usage = 5
+ 140:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c ****     byte buf[2];
+ 141:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** 
+ 142:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c ****     buf[0] = one;
+ 547               		.loc 1 142 0
+ 548 02da 8983      		std Y+1,r24
+ 143:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c ****     buf[1] = two;
+ 549               		.loc 1 143 0
+ 550 02dc 6A83      		std Y+2,r22
+ 144:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c ****     
+ 145:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c ****     TWI_MasterWriteRead(&twiMaster, ACCEL_I2C_ADDR, buf, 2, 0);
+ 551               		.loc 1 145 0
+ 552 02de 00E0      		ldi r16,0
+ 553 02e0 22E0      		ldi r18,lo8(2)
+ 554 02e2 AE01      		movw r20,r28
+ 555 02e4 4F5F      		subi r20,-1
+ 556 02e6 5F4F      		sbci r21,-1
+ 557 02e8 6CE4      		ldi r22,lo8(76)
+ 558               	.LVL18:
+ 559 02ea 80E0      		ldi r24,lo8(twiMaster)
+ 560 02ec 90E0      		ldi r25,hi8(twiMaster)
+ 561               	.LVL19:
+ 562 02ee 0E94 0000 		call TWI_MasterWriteRead
+ 563               	.LVL20:
+ 564               	.L36:
+ 146:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c ****     while(twiMaster.status != TWIM_STATUS_READY);
+ 565               		.loc 1 146 0 discriminator 1
+ 566 02f2 8091 0000 		lds r24,twiMaster+15
+ 567 02f6 8111      		cpse r24,__zero_reg__
+ 568 02f8 00C0      		rjmp .L36
+ 569               	/* epilogue start */
+ 147:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwAccelerometer.c **** }
+ 570               		.loc 1 147 0
+ 571 02fa 0F90      		pop __tmp_reg__
+ 572 02fc 0F90      		pop __tmp_reg__
+ 573 02fe DF91      		pop r29
+ 574 0300 CF91      		pop r28
+ 575 0302 0F91      		pop r16
+ 576 0304 0895      		ret
+ 577               	.LFE17:
+ 579               		.comm	twiMaster,17,1
+ 898               	.Letext0:
+ 899               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 900               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
+ 901               		.file 4 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/defs.bbh"
+ 902               		.file 5 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/accelerometer.bbh"
+ 903               		.file 6 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bbh"
+ 904               		.file 7 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 hwAccelerometer.c
+     /tmp/ccnsydWU.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccnsydWU.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccnsydWU.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccnsydWU.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccnsydWU.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccnsydWU.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccnsydWU.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccnsydWU.s:13     .text:0000000000000000 newHWAccelData
+                            *COM*:0000000000000011 twiMaster
+     /tmp/ccnsydWU.s:43     .text:000000000000001c updateHWAccel
+     /tmp/ccnsydWU.s:153    .text:00000000000000c2 initHWAccel
+     /tmp/ccnsydWU.s:356    .text:00000000000001fa __vector_34
+     /tmp/ccnsydWU.s:457    .text:0000000000000278 __vector_46
+     /tmp/ccnsydWU.s:527    .text:00000000000002cc setAccelRegister
+
+UNDEFINED SYMBOLS
+_acc
+triggerHandler
+TWI_MasterInit
+TWI_MasterWriteRead
+TWI_MasterInterruptHandler
+__do_clear_bss

@@ -1,0 +1,9 @@
+const NUM_COLORS = 9.
+
+type linear color (catom, int).
+
+!color(X, 0).
+
+setColor2(X, N),
+!color(X, (N+1) % NUM_COLORS) :- !color(X, N), !tap(X).
+

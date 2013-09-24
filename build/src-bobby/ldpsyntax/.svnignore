@@ -1,0 +1,10 @@
+*.exe
+*.o
+*.stackdump
+*.tab.h
+*.tab.c
+scanner.h
+scanner.c
+ldpparser.exe
+.,*
+ldpparser

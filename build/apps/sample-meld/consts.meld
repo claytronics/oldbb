@@ -1,0 +1,19 @@
+const RED = 0.
+const ORANGE = 1.
+const YELLOW = 2.
+const GREEN = 3.
+const AQUA = 4.
+const BLUE = 5.
+const WHITE = 6.
+const PURPLE = 7.
+const PINK = 8.
+const NUM_COLORS = 9.
+
+const DOWN = 0.
+const NORTH = 1.
+const EAST = 2.
+const WEST = 3.
+const SOUTH = 4.
+const UP = 5.
+const NUM_PORTS = 6.
+

@@ -1,0 +1,21 @@
+type level(catom, max int).
+type virtual neighbor bottomNeighbor(catom, catom).
+type noBottomNeighbor(catom).
+type virtual neighbor topNeighbor(catom, catom).
+type virtual neighbor sideNeighbor(catom, catom).
+
+
+bottomNeighbor(N, X) :- neighbor(N, X, P), P = 5.
+noBottomNeighbor(N) :- vacant(N, P),  P = 5.
+topNeighbor(N, X) :- neighbor(N, X, P), P = 0.
+sideNeighbor(N, X) :- neighbor(N, X, P), P != 0, P != 5.
+
+level(N, Z) :- noBottomNeighbor(N), Z=0.
+level(N, H) :- sideNeighbor(N, X), level(X, H).
+level(N, H) :- bottomNeighbor(N, X), level(X, BH), H = BH + 1.
+level(N, H) :- topNeighbor(N, X), level(X, TH), H = TH - 1.
+
+setColor2(N, COLOR) :- level(N, COLOR).
+
+
+

@@ -1,0 +1,40 @@
+type linear tick(addr).
+type linear doTick(addr).
+
+type linear zero(addr).
+type linear one(addr).
+
+type prevBit(addr, first addr).
+
+extern int blockID(addr).
+
+const ONE_COLOR = 4.
+const ZERO_COLOR = 5.
+
+setColor2(N, ZERO_COLOR),
+!zero(N).
+
+!doTick(N)@+1s,
+prevBit(N, N) :-
+	1 = blockID(N).
+
+prevBit(N, M) :-
+	neighbor(N, M, _),
+	prevBit (M, _).
+
+!doTick(N)@+1s,
+!tick(N)@+1s :-
+	!doTick(N).
+
+
+setColor2(N, ONE_COLOR),
+!one(N) :-
+	!tick(N),
+	!zero(N).
+
+setColor2(N, ZERO_COLOR),
+!zero(N),
+!tick(M) :-
+	!one(N),
+	!tick(N),
+	prevBit(M, N), neighbor(M, N).

@@ -1,0 +1,13 @@
+use "inc/direction.meld"
+
+type level(catom, max int).
+
+level(N, 0) :- vacant(N, BOTTOM).
+level(N, H) :- neighbor(N, X, SIDE), level(X, H), SIDE != TOP, SIDE != BOTTOM.
+level(N, BH + 1) :- neighbor(N, X, BOTTOM), level(X, BH).
+level(N, TH - 1) :- neighbor(N, X, TOP), level(X, TH).
+
+setColor2(N, COLOR) :- level(N, COLOR).
+
+
+

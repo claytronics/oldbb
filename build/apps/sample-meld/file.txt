@@ -1,0 +1,1590 @@
+apache2-mpm-event - Apache HTTP Server - event driven model
+apache2-mpm-prefork - Apache HTTP Server - traditional non-threaded model
+apache2-mpm-worker - Apache HTTP Server - high speed threaded model
+brltty - Access software for a blind person using a braille display
+cups - Common UNIX Printing System(tm) - server
+cups-bsd - Common UNIX Printing System(tm) - BSD commands
+cups-client - Common UNIX Printing System(tm) - client programs (SysV)
+cups-common - Common UNIX Printing System(tm) - common files
+cups-daemon - Common UNIX Printing System(tm) - daemon
+cups-dbg - Common UNIX Printing System(tm) - debugging symbols
+cups-ppdc - Common UNIX Printing System(tm) - PPD manipulation utilities
+dmidecode - SMBIOS/DMI table decoder
+emacs-goodies-el - Miscellaneous add-ons for Emacs
+ghostscript - interpreter for the PostScript language and for PDF
+gir1.2-json-1.0 - GLib JSON manipulation library (introspection data)
+gir1.2-soup-2.4 - GObject introspection data for the libsoup HTTP library
+ibus-sunpinyin - sunpinyin engine for ibus
+jlex - A Lex-style lexical analyser generator for Java
+latex-xcolor - Easy driver-independent TeX class for color
+libart-2.0-2 - Library of functions for 2D graphics - runtime files
+libart-2.0-dev - Library of functions for 2D graphics - development files
+libaudio-dev - Network Audio System - development files
+libaudio2 - Network Audio System - shared libraries
+libboost-iostreams-dev - Boost.Iostreams Library development files (default version)
+libboost-iostreams1.49-dev - Boost.Iostreams Library development files
+libboost-iostreams1.49.0 - Boost.Iostreams Library
+libcairo2 - The Cairo 2D vector graphics library
+libcroco3 - Cascading Style Sheet (CSS) parsing and manipulation toolkit
+libcroco3-dev - Cascading Style Sheet (CSS) parsing and manipulation toolkit
+libcups2 - Common UNIX Printing System(tm) - Core library
+libcups2-dev - Common UNIX Printing System(tm) - Development files CUPS library
+libcupscgi1 - Common UNIX Printing System(tm) - CGI library
+libcupscgi1-dev - Common UNIX Printing System(tm) - Development files for CGI library
+libcupsimage2 - Common UNIX Printing System(tm) - Raster image library
+libcupsimage2-dev - Common UNIX Printing System(tm) - Development files CUPS image library
+libcupsmime1 - Common UNIX Printing System(tm) - MIME library
+libcupsmime1-dev - Common UNIX Printing System(tm) - Development files MIME library
+libcupsppdc1 - Common UNIX Printing System(tm) - PPD manipulation library
+libcupsppdc1-dev - Common UNIX Printing System(tm) - Development files PPD library
+libcwidget-dev - high-level terminal interface library for C++ (development files)
+libcwidget-doc - high-level terminal interface library for C++ (documentation)
+libcwidget3 - high-level terminal interface library for C++ (runtime files)
+libcwidget3-dbg - high-level terminal interface library for C++ (debugging files)
+libdee-1.0-4 - model to synchronize mutiple instances over DBus - shared lib
+libdee-1.0-4-dbg - model to synchronize mutiple instances over DBus
+libdee-dev - model to synchronize mutiple instances over DBus - dev files
+libdee-doc - model to synchronize mutiple instances over DBus - documentation
+libgnumail-java - free implementation of the javamail API
+libgnumail-java-doc - free implementation of the javamail API (Javadocs)
+libgoocanvas-common - translations for goocanvas
+libgoocanvas-dev - development libraries, include files and documentation for goocanvas
+libgoocanvas3 - canvas widget for GTK+ that uses the cairo 2D library
+libgphoto2-2 - gphoto2 digital camera library
+libgphoto2-2-dev - gphoto2 digital camera library (development files)
+libgphoto2-dev-doc - gphoto2 digital camera library (development documentation)
+libgphoto2-l10n - gphoto2 digital camera library - localized messages
+libgphoto2-port0 - gphoto2 digital camera port library
+libgsm1 - Shared libraries for GSM speech compressor
+libgsm1-dbg - Shared libraries for GSM speech compressor (debug symbols)
+libgsm1-dev - Development libraries for a GSM speech compressor
+libjaxen-java - Java XPath engine
+libjaxen-java-doc - Java XPath engine - documentation
+libjaxp1.3-java - Java XML parser and transformer APIs (DOM, SAX, JAXP, TrAX)
+libjson-glib-1.0-0 - GLib JSON manipulation library
+libjson-glib-1.0-0-dbg - GLib JSON manipulation library (debug symbols)
+libjson-glib-dev - GLib JSON manipulation library (development files)
+libjson-glib-doc - GLib JSON manipulation library (documentation)
+libleveldb1 - fast key-value storage library
+libmono-system-componentmodel-composition4.0-cil - Mono System.ComponentModel.Composition library (for CLI 4.0)
+libmono-system-componentmodel-dataannotations4.0-cil - Mono System.ComponentModel.DataAnnotations library (for CLI 4.0)
+libmono-system-identitymodel-selectors4.0-cil - Mono System.IdentityModel.Selectors Library (for CLI 4.0)
+libmono-system-identitymodel4.0-cil - Mono System.IdentityModel Library (for CLI 4.0)
+libmono-system-servicemodel-discovery4.0-cil - Mono System.ServiceModel.Discovery Library (for CLI 4.0)
+libmono-system-servicemodel-routing4.0-cil - Mono System.ServiceModel.Routing Library (for CLI 4.0)
+libmono-system-servicemodel-web4.0-cil - Mono System.ServiceModel.Web Library (for CLI 4.0)
+libmono-system-servicemodel4.0-cil - Mono System.ServiceModel Library (for CLI 4.0)
+libpixman-1-0 - pixel-manipulation library for X and cairo
+libqdox-java - Quickly parses declarations and Javadoc from Java source
+libqdox-java-doc - Documentation for qdox (javadoc)
+libqt4-xmlpatterns - Qt 4 XML patterns module
+libreoffice-nlpsolver - "Solver for Nonlinear Programming" extension for LibreOffice
+libsoup-gnome2.4-1 - HTTP library implementation in C -- GNOME support library
+libsoup-gnome2.4-dev - HTTP library implementation in C -- GNOME support development files
+libsoup2.4-1 - HTTP library implementation in C -- Shared library
+libsoup2.4-dbg - HTTP library implementation in C -- debugging symbols
+libsoup2.4-dev - HTTP library implementation in C -- Development files
+libsoup2.4-doc - HTTP library implementation in C -- API Reference
+libsunpinyin-dev - Simplified Chinese Input Method from SUN (development)
+libsunpinyin3 - Simplified Chinese Input Method from SUN (runtime)
+libsunpinyin3-dbg - Simplified Chinese Input Method from SUN (debug)
+libtdb-dev - Trivial Database - development files
+libtdb1 - Trivial Database - shared library
+libtdb1-dbg - Trivial Database - debug symbols
+libwacom-common - Wacom model feature query library (common files)
+libwacom-dev - Wacom model feature query library (development files)
+libwacom2 - Wacom model feature query library
+libwacom2-dbg - Wacom model feature query library (debug files)
+libxapian-dev - Development files for Xapian search engine library
+libxapian22 - Search engine library
+libxapian22-dbg - Debugging symbols for the Xapian Search engine library
+libxerces2-java - Validating XML parser for Java with DOM level 3 support
+libxml-dom-perl - Perl module for building DOM Level 1 compliant doc structures
+libxml-libxml-perl - Perl interface to the libxml2 library
+libxml-namespacesupport-perl - Perl module for supporting simple generic namespaces
+libxmlbeans-java - Java library for accessing XML by binding it to Java types
+libxom-java - A new XML object model for Java
+libxom-java-doc - Documentation for the libxom-java package
+libxrender-dev - X Rendering Extension client library (development files)
+libxrender1 - X Rendering Extension client library
+libxrender1-dbg - X Rendering Extension client library (unstripped)
+maven-ant-helper - helper scripts for building Maven components with ant
+maven-repo-helper - Helper tools for including Maven metadata in Debian packages
+nant - build tool similar to Ant
+nas-doc - Network Audio System - extra documentation
+pacemaker - HA cluster resource manager
+pacemaker-dev - HA cluster resource manager (development files)
+printer-driver-splix - Driver for Samsung and Xerox SPL2 and SPLc laser printers
+python-django - High-level Python web development framework
+python-django-doc - High-level Python web development framework (documentation)
+python-django-piston - Django mini-framework creating RESTful APIs
+python-egenix-mxproxy - generic proxy wrapper type for Python
+python-mako - fast and lightweight templating for the Python platform
+python-oops - Serialization, deserialization and allocation of OOPS reports
+python-swift - distributed virtual object store - Python libraries
+python-tdb - Python bindings for TDB
+python-tdb-dbg - Python bindings for TDB - debug extension
+python-warlock - object model built on top of JSON schema
+python-xapian - Xapian search engine interface for Python
+sunpinyin-data - Statistical language model data from open-gram
+sunpinyin-utils - Simplified Chinese Input Method from SUN (utilities)
+swift-account - distributed virtual object store - account server
+swift-container - distributed virtual object store - container server
+swift-doc - distributed virtual object store - documentation
+swift-object - distributed virtual object store - object server
+swift-proxy - distributed virtual object store - proxy server
+tdb-tools - Trivial Database - bundled binaries
+testng - testing framework for Java
+texlive-latex-extra - TeX Live: LaTeX supplementary packages
+texlive-pictures - TeX Live: Graphics packages and programs
+uno-libs3 - LibreOffice UNO runtime environment -- public shared libraries
+uno-libs3-dbg - LibreOffice UNO runtime environment -- public shared library debug symbols
+ure - LibreOffice UNO runtime environment
+ure-dbg - LibreOffice UNO runtime environment -- debug symbols
+x11-xserver-utils - X server utilities
+xapian-doc - Core Xapian documentation
+xapian-examples - Xapian simple example programs
+xserver-xorg-input-synaptics - Synaptics TouchPad driver for X.Org server
+xserver-xorg-input-synaptics-dbg - Synaptics TouchPad driver for X.Org server
+alien-arena - Standalone 3D first person online deathmatch shooter
+alien-arena-data - Game data files for Alien Arena
+alien-arena-server - Dedicated server for Alien Arena
+beast-mcmc - Bayesian MCMC phylogenetic inference
+beast-mcmc-doc - Bayesian MCMC phylogenetic inference - documentation
+beast-mcmc-examples - Bayesian MCMC phylogenetic inference - example data
+beast-mcmc-lib - Bayesian MCMC phylogenetic inference
+brother-cups-wrapper-ac - Cups Wrapper drivers for ac brother printers
+brother-cups-wrapper-bh7 - Cups Wrapper drivers for bh7 brother printers
+brother-cups-wrapper-extra - Cups Wrapper drivers for extra brother printers
+brother-cups-wrapper-laser - Cups Wrapper drivers for laser brother printers
+brother-cups-wrapper-mfc9420cn - Cups Wrapper drivers for mfc9420cn brother printers
+brother-lpr-drivers-ac - LPR drivers for ac brother printers
+brother-lpr-drivers-bh7 - LPR drivers for bh7 brother printers
+brother-lpr-drivers-extra - LPR drivers for extra brother printers
+brother-lpr-drivers-laser - LPR drivers for laser brother printers
+brother-lpr-drivers-laser1 - LPR drivers for laser1 brother printers
+brother-lpr-drivers-mfc9420cn - LPR driver for mfc9420cn brother printer
+cim-schema - DMTF CIM Schema
+clustalw - global multiple nucleotide or peptide sequence alignment
+dynare-matlab - MATLAB support for Dynare
+elmer-doc - Elmer multiphysics FEA package documentation
+etoys - A media-rich model, simulation construction kit and authoring tool
+etoys-doc - Documentation for etoys
+fsl-4.1 - analysis tools for FMRI, MRI and DTI brain imaging
+horae - interactive graphical processing and analysis of EXAFS data
+hts-voice-nitech-jp-atr503-m001 - Japanese male voice data for Open JTalk
+ivtv-utils - utilities for use with the ivtv kernel driver
+julius - speech recognition engine
+libjulius-dev - speech recognition engine - development headers
+libttspico-data - Small Footprint TTS (lingware)
+libttspico-dev - Small Footprint TTS (development files)
+libttspico-utils - Small Footprint TTS (binaries)
+libttspico0 - Small Footprint TTS (library)
+libvmtk-dev - shared links and header files for vmtk
+libvmtk1.0 - runtime libraries for vmtk
+madfuload - Firmware loader for M-Audio DFU audio devices
+midisport-firmware - Firmware loader for M-Audio's MidiSport devices
+netdisco-mibs-installer - Netdisco MIB bundle installer package
+python-vmtk - Python interface for vmtk
+raccoon - preparation of in silico drug screening projects
+redeclipse-data - data for the Red Eclipse FPS game
+sl-modem-dkms - SmartLink software modem driver - module building source
+sl-modem-source - SmartLink software modem driver (dummy transitional package)
+sugar-etoys-activity - Sugar wrapper around the Squeak Etoys programming language
+vmtk - the Vascular Modeling Toolkit
+w3-recs - Recommendations of the World Wide Web Consortium (W3C)
+xtrs - emulator for TRS-80 Model I/III/4/4P computers
+acl2 - Computational Logic for Applicative Common Lisp: main binary
+acl2-books - Computational Logic for Applicative Common Lisp: compiled libraries
+acl2-books-certs - Computational Logic for Applicative Common Lisp: library certificates
+acl2-books-source - Computational Logic for Applicative Common Lisp: library sources
+acl2-doc - Computational Logic for Applicative Common Lisp: documentation
+acl2-emacs - Computational Logic for Applicative Common Lisp: emacs interface
+acl2-infix - Computational Logic for Applicative Common Lisp: infix interface
+acl2-infix-source - Computational Logic for Applicative Common Lisp: infix source
+acl2-source - Computational Logic for Applicative Common Lisp: source files
+acm - Multi-player classic air combat simulator
+advene - Annotate DVDs, Exchange on the Net
+ahven-dbg - Unit test library for Ada (debug)
+alien-hunter - Interpolated Variable Order Motifs to identify horizontally acquired DNA
+alliance - VLSI CAD Tools
+altos - Altus Metrum firmware and utilities
+antennavis - antenna radiation pattern visualization software
+apachetop - Realtime Apache monitoring tool
+apbs - Adaptive Poisson Boltzmann Solver
+apcupsd - APC UPS Power Management (daemon)
+apcupsd-cgi - APC UPS Power Management (web interface)
+apcupsd-doc - APC UPS Power Management (documentation/examples)
+apertium - Shallow-transfer machine translation engine
+aptfs - FUSE filesystem for APT source repositories
+ardour - digital audio workstation (graphical gtk2 interface)
+argyll - Color Management System, calibrator and profiler
+assimp-utils - 3D model import library (utilities)
+asus-oled-dkms - Driver for Asus OLED display present in some Asus laptops
+auth2db-frontend - Web frontend view for auth2DB log engine
+avogadro - Molecular Graphics and Modelling System
+avogadro-data - Molecular Graphics and Modelling System (Data Files)
+ballview - free molecular modeling and molecular graphics tool
+ballview-dbg - debug symbols for BALL and VIEW libraries
+banshee-extension-mirage - Automatic Playlist Generation extension for Banshee
+bear-factory - Editors for Plee the Bear
+biber - Much-augmented BibTeX replacement for BibLaTeX users
+bitpim - utility to communicate with many CDMA phones
+bitpim-lib - architecture-dependent helper files for BitPim
+blender - Very fast and versatile 3D modeller/renderer
+blender-dbg - debug symbols for Blender
+boinc-app-milkyway - Milkyway@home application for the BOINC client
+bve-train-br-class-323 - British Rail Class 323 EMU train (for OpenBVE rail simulator)
+bve-train-br-class-323-3dcab - British Rail Class 323 EMU train 3D cab (for OpenBVE rail simulator)
+c-repl - read-eval-print loop for C
+cain - simulations of chemical reactions
+cain-examples - simulations of chemical reactions
+cain-solvers - simulations of chemical reactions
+cakephp - MVC rapid application development framework for PHP
+cakephp-instaweb - Development webserver for CakePHP applications
+cakephp-scripts - MVC rapid application development framework for PHP (scripts)
+camping - small Ruby web framework for Model-View-Controller type applications
+canna - input system for Japanese - server and dictionary
+canna-utils - input system for Japanese - utilities
+cbmc - bounded model checker for C and C++ programs
+cdo - Climate Data Operators
+cgdb - curses-based interface to the GNU Debugger (GDB)
+chuck - Concurrent, On-the-fly Audio Programming Language
+clam-networkeditor-examples - CLAM Network Editor, examples
+clasp - conflict-driven nogood learning answer set solver
+claws-mail-acpi-notifier - Laptop's Mail LED control for Claws Mail
+cloudprint - Server for Google Cloud Print
+cmip5-cmor-tables - CMIP5 tables for the Climate Model Output Rewriter library
+cnrun - NeuroML-capable neuronal network simulator
+coffeescript - interpreter and compiler for the CoffeeScript language
+coffeescript-doc - documentation for the CoffeeScript language
+coinor-libflopc++-dev - Formulation of Linear Optimization Problems in C++
+coinor-libflopc++-doc - Formulation of Linear Optimization Problems in C++
+coinor-libflopc++0 - Formulation of Linear Optimization Problems in C++
+coinor-libflopc++0-dbg - Formulation of Linear Optimization Problems in C++
+coinor-libipopt-dev - Interior-Point Optimizer - header files
+coinor-libipopt-doc - Interior-Point Optimizer - documentation
+coinor-libipopt1 - Interior-Point Optimizer, for large-scale nonlinear optimization
+coinor-libipopt1-dbg - Interior-Point Optimizer - debugging symbols
+cp2k - Ab Initio Molecular Dynamics
+cqrlog - Advanced logging program for hamradio operators
+crrcsim - Model-Airplane Flight Simulator
+crrcsim-data - Data files for crrcsim package
+crrcsim-doc - Documentation for crrcsim package
+csound - powerful and versatile sound synthesis software
+cvc3 - Automatic theorem prover for SMT problems
+cvc3-el - Emacs mode for CVC3
+db4otool - native OODBMS for CLI (documentation)
+dcraw - decode raw digital camera images
+debichem-modelling - DebiChem 3D Molecular Modelling and Visualization
+dee-tools - model to synchronize mutiple instances over DBus - tooling
+deets - decentralized model-based administration tool
+deluge - bittorrent client written in Python/PyGTK
+deluge-common - bittorrent client written in Python/PyGTK (common files)
+deluge-console - bittorrent client written in Python/PyGTK (console ui)
+deluge-gtk - bittorrent client written in Python/PyGTK (GTK+ ui)
+deluge-web - bittorrent client written in Python/PyGTK (web ui)
+deluged - bittorrent client written in Python/PyGTK (daemon)
+devicetype-detect - attempt to detect the type of the current device
+dita-ot - transforms DITA content (maps and topics) into deliverable formats
+dita-ot-doc - DITA Open Toolkit (documentation)
+doctest - test interactive Haskell examples; executable
+doctrine - Tool for object-relational mapping in PHP
+drawmap - draws customized maps, using raw USGS data files
+drawxtl - crystal structure viewer
+dreamchess-data - data files for dreamchess
+dsdp - Software for Semidefinite Programming
+dsdp-doc - Software for Semidefinite Programming
+dynare - platform for handling a wide class of economic models
+dynare-common - platform for handling a wide class of economic models (common files)
+dynare-doc - documentation for Dynare
+eclipse-cdt-valgrind - Valgrind integration for Eclipse CDT
+eclipse-emf - Eclipse Modeling Framework (EMF)
+eclipse-emf-examples - Eclipse EMF/XSD examples
+eclipse-emf-sdk - Eclipse Modeling Framework (EMF) - (Source/Documentation)
+eclipse-gef - Eclipse Graphical Editing Framework
+eclipse-gef-doc - Eclipse Graphical Editing Framework (documentation)
+eclipse-mylyn-context-cdt - Mylyn context integration for Eclipse CDT
+egoboo - 3D dungeon crawling adventure in the spirit of NetHack
+egoboo-data - Egoboo data files
+elmer - finite element multiphysics suite - binaries
+elmer-common - finite element multiphysics suite - architecture-independent files
+elmer-dbg - finite element multiphysics suite - debugging symbols
+esys-particle - Software for particle-based numerical modelling. MPI version.
+etherape - graphical network monitor
+exonerate - generic tool for pairwise sequence comparison
+fasttree - phylogenetic trees from alignments of nucleotide or protein sequences
+fcitx-sunpinyin - fcitx wrapper for Sunpinyin IM engine
+fenics - automation of computational mathematical modeling
+ferret - CASE tool for data model editing
+fgfs-aircraft-base - Flight Gear Flight Simulator -- standard aircraft
+fgfs-base - Flight Gear Flight Simulator -- base files
+fgfs-models-base - Flight Gear Flight Simulator -- standard models
+fgrun - graphical frontend for running FlightGear
+flatzinc - constraint problem modelling language
+fracplanet - Fractal planet generator
+freecad - Extensible Open Source CAx program (alpha)
+fuse-emulator-common - The Free Unix Spectrum Emulator (common files)
+fuse-emulator-gtk - The Free Unix Spectrum Emulator (GTK+ version)
+fuse-emulator-sdl - The Free Unix Spectrum Emulator (SDL version)
+g3dviewer - 3D model viewer for GTK+
+g3dviewer-dbg - g3dviewer debug symbols package
+gamgi - General Atomistic Modelling Graphic Interface (GAMGI)
+gamgi-data - General Atomistic Modelling Graphic Interface (data)
+gamgi-doc - General Atomistic Modelling Graphic Interface (documentation)
+gammaray - Tool for examining the internals of Qt application
+gammaray-dbg - debugging symbols for gammaray
+gammaray-dev - GammaRay plugin development files
+gammu - mobile phone management utility
+gammu-smsd - SMS message daemon
+gaphor - UML modeling tool
+garmin-forerunner-tools - retrieve data from Garmin Forerunner/Edge GPS devices
+gbrowse - GMOD Generic Genome Browser
+gcrystal - lightweight crystal structures visualizer
+gdal-bin - Geospatial Data Abstraction Library - Utility programs
+gdis - molecular and crystal model viewer
+gdis-data - molecular and crystal model viewer (data files)
+genus2reduction - Conductor and Reduction Types for Genus 2 Curves
+ghemical - GNOME molecular modelling environment
+gimp-dcraw - GIMP plug-in for loading RAW digital photos
+gir1.2-gda-5.0 - data abstraction library based on GLib -- GObject Introspection
+gir1.2-goocanvas-2.0-9 - Typelib file for goocanvas
+git-flow - Git extension to provide a high-level branching model
+gl-117-data - Data files for gl-117
+glpk-doc - linear programming kit - documentation files
+glue-schema - LDAP schema files for the GLUE Schema
+gmemusage - Displays a graph detailing memory usage of each process
+gnats-user - problem report management system - client tools
+gnome-audio - Audio files for GNOME
+gnucap - GNU Circuit Analysis package
+gnumeric - spreadsheet application for GNOME - main program
+gorm.app - Visual Interface Builder for GNUstep
+gphoto2 - The gphoto2 digital camera command-line client
+gpixpod - Organize photos on your iPod, freely!
+gpsprune - visualize, edit, convert and prune GPS data
+grads - Grid Analysis and Display System for earth science data
+grass - Geographic Resources Analysis Support System (GRASS GIS)
+grass-core - GRASS GIS core components
+grass-dev - GRASS GIS development files
+grass-dev-doc - GRASS GIS Programmers' Manual
+grass-doc - GRASS GIS user documentation
+grass-gui - GRASS GIS graphical user interfaces
+hdf4-tools - Hierarchical Data Format 4 library -- runtime package
+hdf5-helpers - Hierarchical Data Format 5 (HDF5) - Helper tools
+hdf5-tools - Hierarchical Data Format 5 (HDF5) - Runtime tools
+hdfview - Java HDF Object viewer
+herwig++ - Multi-purpose event generator for high energy physics
+herwig++-data - Herwig++ Data
+herwig++-dev - Herwig++ development files
+hexter - Yamaha DX7 modeling DSSI plugin
+hhsuite - sensitive protein sequence searching based on HMM-HMM alignment
+hhsuite-dbg - sensitive protein sequence searching based on HMM-HMM alignment (debug)
+hlbr - IPS that runs over layer 2 (no TCP/IP stack required)
+hmmer - profile hidden Markov models for protein sequence analysis
+hmmer-doc - profile hidden Markov models for protein sequence analysis (docs)
+hmmer2 - profile hidden Markov models for protein sequence analysis
+hmmer2-doc - profile hidden Markov models for protein sequence analysis (docs)
+hmmer2-pvm - HMMER programs with PVM (Parallel Virtual Machine) support
+htsengine - frontend of HMM-based speech synthesis engine
+i810switch - Enables/disables video output to CRT/LCD on i810 video hardware
+ifp-line-libifp - command line tool to access iRiver iFP audio players
+ifpgui - QT based manager for iRiver iFP audio players
+ikvm - Java virtual machine for the CLI
+infernal - inference of RNA secondary structural alignments
+infernal-doc - inference of RNA secondary structural alignments – documentation
+inventor-clients - Open Inventor client programs
+inventor-data - Open Inventor sample data files
+inventor-demo - Open Inventor demonstration programs and example code
+inventor-dev - Open Inventor development files
+inventor-doc - Open Inventor documentation
+ipe - drawing editor for creating figures in PDF or PS formats
+itcl3 - [incr Tcl] OOP extension for Tcl - run-time files
+itcl3-dev - [incr Tcl] OOP extension for Tcl - development files
+itcl3-doc - [incr Tcl] OOP extension for Tcl - manual pages
+jackeq - routes and manipulates audio from/to multiple sources
+jags - Just Another Gibbs Sampler for Bayesian MCMC simulation
+jbossas4 - JBoss Application Server
+julius-voxforge - acoustic models for Julius (English)
+k3d - 3D modeling and animation system, binary files
+k3d-data - 3D modeling and animation system, data files
+kicad - Electronic schematic and PCB design software
+ladr4-apps - the LADR deduction library, miscellaneous applications
+lammps - Molecular Dynamics Simulator.
+lammps-doc - Molecular Dynamics Simulator. Documentation and examples.
+latexml - LaTeX to XML Converter
+lbt - converts from LTL formulas to Büchi automata
+lfm - simple but powerful file manager for the UNIX console
+libacme-brainfck-perl - Embed Brainf*ck in your perl code
+libahven21.0 - Unit test library for Ada
+libahven3-dev - Unit test library for Ada (development)
+libalzabo-perl - Data modelling tool and RDBMS-OO mapper
+libamrita2-ruby - a xml/xhtml template library for Ruby
+libanyevent-perl - event loop framework with multiple implementations
+libasio-dev - cross-platform C++ library for network programming
+libasio-doc - cross-platform C++ library for network programming
+libassimp-dev - 3D model import library (development)
+libassimp-doc - 3D model import library (documentation)
+libassimp3 - 3D model import library
+libaudio-xmmsclient-perl - XMMS2 - Perl client library
+libavogadro-dev - Molecular Graphics and Modelling System (development files)
+libavogadro1 - Molecular Graphics and Modelling System (library)
+libaxiom-java - Apache AXIOM Java library (AXIs Object Model)
+libball1.4 - Biochemical Algorithms Library
+libball1.4-data - Biochemical Algorithms Library
+libball1.4-doc - documentation for the BALL library
+libballview1.4 - Biochemical Algorithms Library, VIEW framework
+libballview1.4-dev - Header files for the VIEW part of the Biochemical Algorithms Library
+libbdd-dev - Binary decision-diagram library (development)
+libbdd0c2 - Binary decision-diagram library (runtime)
+libbiococoa-dev - Bioinformatics framework for GNUstep and Cocoa (development files)
+libbiococoa2 - Bioinformatics framework for GNUstep and Cocoa (library files)
+libboost-iostreams1.53-dev - Boost.Iostreams Library development files
+libboost-iostreams1.53.0 - Boost.Iostreams Library
+libbytecode-java - Java bytecode manipulation library
+libcairo-ocaml - OCaml bindings for Cairo (runtime)
+libcairo-ocaml-dev - OCaml bindings for Cairo
+libcam-pdf-perl - PDF manipulation library
+libcanna1g - input system for Japanese - runtime library
+libcanna1g-dev - input system for Japanese - development files
+libcastor-anttasks-java - Data binding framework for Java (XML, Objects, DB) - Ant Tasks
+libcastor-codegen-java - Data binding framework for Java (XML, Objects, DB) - Codegen
+libcastor-core-java - Data binding framework for Java (XML, Objects, DB) - Core
+libcastor-ddlgen-java - Data binding framework for Java (XML, Objects, DB) - DDL generator
+libcastor-java-doc - Documentation for Castor Java databinding framework
+libcastor-jdo-java - Data binding framework for Java (XML, Objects, DB) - JDO
+libcastor-xml-java - Data binding framework for Java (XML, Objects, DB) - XML module
+libcastor-xml-schema-java - Data binding framework for Java (XML, Objects, DB) - XML Schema
+libcatalyst-manual-perl - developer's manual for Catalyst
+libcatalyst-model-cdbi-perl - CDBI Model Class for Catalyst
+libcatalyst-modules-extra-perl - collection of extra modules for Catalyst
+libcatalyst-modules-perl - modules for Catalyst MVC Web Application Framework
+libcatalyst-perl - elegant Model-View-Controller Web Application Framework
+libcatalystx-injectcomponent-perl - module for injecting components into Catalyst applications
+libcdi-dev - Development files for the climate data interface library
+libcdi0 - Climate Data Interface (cdi) library
+libcgikit-ruby1.8 - Ruby Web Application Framework
+libchemistry-openbabel-perl - Chemical toolbox library (perl bindings)
+libcitygml0 - Open source C++ library for parsing CityGML files
+libcitygml0-bin - Utils of libcitygml - citygml2vrml and citygmltest
+libcitygml0-dev - Static and header files of libcitygml
+libcmor-dev - Development files for Climate Model Output Rewriter
+libcmor2 - Climate Model Output Rewriter library
+libcodemodel-java - Java library for code generators
+libcodemodel-java-doc - Documentation for Java library for code generators
+libcojets2-dev - [Physics] COJETS p-p and pbar-p interaction Monte Carlo
+libcojets2-gfortran - [Physics] COJETS p-p and pbar-p interaction Monte Carlo library
+libcommons-jxpath-java - manipulate javabean using XPath syntax
+libcommons-math-java - Java lightweight mathematics and statistics components
+libcommons-math-java-doc - Java lightweight mathematics and statistics components - documentation
+libcommons-modeler-java - convenience library to use Java Management Extensions (JMX)
+libcommons-modeler-java-doc - documentation and examples for Commons Modeler
+libconfig-model-approx-perl - Approx proxy server configuration editor
+libconfig-model-backend-augeas-perl - configuration reader and writer powered by Augeas
+libconfig-model-cursesui-perl - curses interface to edit config data through Config::Model
+libconfig-model-dpkg-perl - editor for Dpkg source files with validation
+libconfig-model-itself-perl - graphical model editor for Config::Model
+libconfig-model-openssh-perl - configuration file editor for OpenSsh
+libconfig-model-perl - module for describing and editing configuration data
+libconfig-model-tkui-perl - Tk GUI to edit config data through Config::Model
+libcoro-perl - Perl framework implementing coroutines
+libcpan-meta-requirements-perl - set of version requirements for a CPAN dist
+libcroco-tools - Cascading Style Sheet (CSS) parsing and manipulation toolkit - utils
+libcss-dom-perl - interface to the Document Object Model for Cascading Style Sheets
+libcssparser-java - Java CSS2 Parser
+libcssparser-java-doc - Java CSS2 Parser (documentation)
+libcvc3-5 - Automatic theorem prover library for SMT problems
+libcvc3-5-java - Java bindings for CVC3 (bytecode library)
+libcvc3-5-jni - Java bindings for CVC3 (native library)
+libcvc3-dev - Automatic theorem prover library for SMT problems (development files)
+libdb4o-cil-dev - native OODBMS for CLI - development files
+libdb4o-doc - native OODBMS for CLI (documentation)
+libdb4o8.0-cil - native OODBMS for CLI
+libdbix-class-tree-nestedset-perl - module to manage trees of data using the nested set model
+libdbix-dbstag-perl - module providing relational database to hierarchical mapping
+libdogleg-dev - Powell's dog-leg nonlinear least squares solver for sparse matrices
+libdogleg2 - Powell's dog-leg nonlinear least squares solver for sparse matrices
+libdogleg2-dbg - Powell's dog-leg nonlinear least squares solver for sparse matrices
+libdsdp-5.8gf - Software for Semidefinite Programming
+libdsdp-dev - Software for Semidefinite Programming
+libdynalang-java - The JVM Dynamic Languages Metaobject Protocol Library
+libelmer-dev - finite element multiphysics suite - development files
+libelmersolver-6.1 - finite element multiphysics suite - library
+libelmersolver-dbg - finite element multiphysics suite - library debugging symbols
+libev-dev - static library, header files, and docs for libev
+libev-libevent-dev - libevent event loop compatibility wrapper for libev
+libev-perl - Perl interface to libev, the high performance event loop
+libev4 - high-performance event loop library modelled after libevent
+libexodusii-dev - exodusII datamodel for finite element analysis
+libexodusii5 - exodusII datamodel for finite element analysis
+libfacile-ocaml-dev - functional constraint library implemented in Objective Caml
+libfelix-bundlerepository-java - Felix OSGi bundle repository service
+libfelix-bundlerepository-java-doc - Documentation for Felix OSGi bundle repository service
+libfelix-shell-java - Felix OSGi shell to issue commands to the framework
+libfelix-shell-java-doc - Felix OSGi shell - documentation
+libfelix-shell-tui-java - Apache Felix Shell TUI
+libfelix-shell-tui-java-doc - Documentation for Apache Felix Shell TUI
+libfelix-utils-java - collection of utility classes for Apache Felix
+libfelix-utils-java-doc - collection of utility classes for Apache Felix - documentation
+libflute-java - Java CSS parser using SAC (JFree version)
+libflute-java-doc - Java CSS parser using SAC (JFree version) -- documentation
+libforks-perl - Perl module to emulate threads with fork
+libforms2 - The XForms graphical interface widget library
+libformsgl2 - The OpenGL XForms graphical interface widget library
+libfreemarker-java - template engine written in Java
+libfreemarker-java-doc - template engine written in Java (documentation)
+libg3d-dbg - LibG3D debug symbols package
+libg3d-dev - LibG3D development package
+libg3d-doc - LibG3D API documentation in HTML format
+libg3d-plugin-gdkpixbuf - plugin for the LibG3D library
+libg3d-plugins - plugins for the LibG3D library
+libg3d0 - library for loading and manipulating 3D model files
+libgammu-dbg - mobile phone management library (debugger symbols)
+libgammu-dev - mobile phone management library (development files)
+libgammu-i18n - mobile phone management library (i18n files)
+libgammu7 - mobile phone management library
+libgda-5.0-4 - data abstraction library based on GLib
+libgda-5.0-4-dbg - data abstraction library based on GLib -- debug files
+libgda-5.0-bin - data abstraction library based on GLib -- binary files
+libgda-5.0-common - data abstraction library based on GLib -- common files
+libgda-5.0-dev - data abstraction library based on GLib -- development files
+libgda-5.0-doc - data abstraction library based on GLib -- documentation files
+libgda-5.0-mysql - MySQL provider for libgda database abstraction library
+libgda-5.0-postgres - PostgreSQL provider for libgda database abstraction library
+libgdal-dev - Geospatial Data Abstraction Library - Development files
+libgdal-doc - Documentation for the Geospatial Data Abstraction Library
+libgdal-perl - Perl bindings to the Geospatial Data Abstraction Library
+libgdal-ruby1.8 - Ruby 1.8 bindings to the Geospatial Data Abstraction Library
+libgdal1 - Geospatial Data Abstraction Library
+libgdal1-1.9.0-grass - GRASS extension for the GDAL library
+libgdal1-dev - Geospatial Data Abstraction Library - Development files
+libgdome2-0 - DOM level2 library for accessing XML files
+libgdome2-dev - Development files for libgdome2
+libgecodeflatzinc32 - Gecode support for FlatZinc modelling language
+libgeo-coordinates-osgb-perl - converting module between Lat/Lon and the British National Grid
+libgeos++-dev - Geometry engine for GIS - C++ development files
+libgeos-3.3.3 - Geometry engine for Geographic Information Systems - C++ Library
+libgeos-c1 - Geometry engine for Geographic Information Systems - C Library
+libgeos-dbg - Debugging symbols for the GEOS library
+libgeos-dev - Geometry engine for GIS - Development files
+libgeos-doc - Documentation for the GEOS GIS geometry engine library
+libgeos-ruby1.8 - GEOS bindings for Ruby
+libgeronimo-jpa-2.0-spec-java - Geronimo JSR-317 Java Persistence (JPA) 2.0 Spec API
+libgeronimo-jpa-2.0-spec-java-doc - Documentation for libgeronimo-jpa-2.0-spec-java
+libgeronimo-validation-1.0-spec-java - Geronimo JSR-303 Bean Validation Spec API
+libgeronimo-validation-1.0-spec-java-doc - Documentation for libgeronimo-validation-1.0-spec-java
+libgettext-ruby-util - Gettext utilities for ruby (dummy package)
+libghc-colour-dev - A model for human colour/color perception
+libghc-colour-doc - A model for human colour/color perception; documentation
+libghc-colour-prof - A model for human colour/color perception; profiling libraries
+libghc-doctest-dev - test interactive Haskell examples
+libghc-doctest-doc - test interactive Haskell examples; documentation
+libghc-doctest-prof - test interactive Haskell examples; profiling libraries
+libghc-hdbc-dev - Haskell Database Connectivity, GHC package
+libghc-hdbc-doc - Haskell Database Connectivity, Documentation
+libghc-hjscript-dev - Haskell DSL for writing JavaScript programs - GHC libraries
+libghc-hjscript-doc - Haskell DSL for writing JavaScript programs - documentation
+libghc-hjscript-prof - Haskell DSL for writing JavaScript programs - GHC profiling libraries
+libghc-hsp-dev - Haskell library for dynamic server-side web pages - GHC libraries
+libghc-hsp-doc - Haskell library for dynamic server-side web pages - documentation
+libghc-hsp-prof - Haskell library for dynamic server-side web pages - GHC profiling libraries
+libghc-hxt-dev - xml toolkit for Haskell (library)
+libghc-hxt-doc - xml toolkit for Haskell (documentation)
+libghc-hxt-prof - xml toolkit for Haskell (profiling library)
+libghc-reactive-banana-dev - small but solid library for FRP
+libghc-reactive-banana-doc - small but solid library for FRP; documentation
+libghc-reactive-banana-prof - small but solid library for FRP; profiling libraries
+libghc-snap-server-dev - iteratee-based, epoll-enabled web server for the Snap Framework
+libghc-snap-server-doc - iteratee-based, epoll-enabled web server for the Snap Framework; documentation
+libghc-snap-server-prof - iteratee-based, epoll-enabled web server for the Snap Framework; profiling lib
+libghemical-data - Molecular Modelling Library (data files)
+libghemical-dev - Molecular Modelling Library (development files)
+libghemical5 - Molecular Modelling Library
+libglazedlists-java - java list transformation library
+libglazedlists-java-doc - java list transformation library (documentation)
+libglpk0 - linear programming kit with integer (MIP) support
+libgoocanvas-2.0-9 - canvas widget for GTK+ that uses the cairo 2D library
+libgoocanvas-2.0-9-common - translations for goocanvas
+libgoocanvas-2.0-dev - development libraries, include files and documentation for goocanvas
+libgoocanvasmm-1.0-5 - C++ bindings for GooCanvas - shared library
+libgoocanvasmm-2.0-6 - C++ bindings for GooCanvas - shared library
+libgoocanvasmm-2.0-dev - C++ bindings for GooCanvas - development files
+libgoocanvasmm-2.0-doc - C++ bindings for GooCanvas - documentation and examples
+libgoocanvasmm-dev - C++ bindings for GooCanvas - development files
+libgoocanvasmm-doc - C++ bindings for GooCanvas - documentation and examples
+libgrapple-1.0-1 - a network layer designed for games
+libgrapple-dev - a network layer designed for games (development files)
+libgsm-tools - User binaries for a GSM speech compressor
+libgsmsd7 - SMS daemon helper library
+libgtk2-ex-volumebutton-perl - Gtk2 widget to control volume and similar values
+libhdf4-0 - Hierarchical Data Format 4 library -- library package
+libhdf4-0-alt - Hierarchical Data Format 4 library -- library package
+libhdf4-alt-dev - Hierarchical Data Format 4 library -- development package
+libhdf4-dev - Hierarchical Data Format 4 library -- development package
+libhdf4-doc - Hierarchical Data Format 4 library -- documentation
+libhdf4g-dev - Hierarchical Data Format 4 library -- transitional development package
+libhdf5-7 - Hierarchical Data Format 5 (HDF5) - runtime files - serial version
+libhdf5-7-dbg - Hierarchical Data Format 5 (HDF5) - Debug package
+libhdf5-dev - Hierarchical Data Format 5 (HDF5) - development files - serial version
+libhdf5-doc - Hierarchical Data Format 5 (HDF5) - Documentation
+libhdf5-mpi-dev - Hierarchical Data Format 5 (HDF5) - development files - MPICH2 version
+libhdf5-mpich2-7 - Hierarchical Data Format 5 (HDF5) - runtime files - MPICH2 version
+libhdf5-mpich2-7-dbg - Hierarchical Data Format 5 (HDF5) - Mpich2 Debug package
+libhdf5-mpich2-dev - Hierarchical Data Format 5 (HDF5) - development files - MPICH2 version
+libhdf5-openmpi-7 - Hierarchical Data Format 5 (HDF5) - runtime files - OpenMPI version
+libhdf5-openmpi-7-dbg - Hierarchical Data Format 5 (HDF5) - OpenMPI Debug package
+libhdf5-openmpi-dev - Hierarchical Data Format 5 (HDF5) - development files - OpenMPI version
+libhdf5-serial-dev - Hierarchical Data Format 5 (HDF5) - development files - transitionnal package
+libhepmcinterface8 - HepMC interface for PYTHIA8
+libhepmcinterface8-dev - HepMC interface for PYTHIA8 - development files
+libhibernate-validator-java - Hibernate Validator
+libhtml-embedded-turtle-perl - embedding RDF in HTML the crazy way
+libhtml-formfu-model-dbic-perl - module to integrate HTML::FormFu with DBIx::Class
+libhtml-formhandler-model-dbic-perl - base class that holds DBIC model role
+libhtml-html5-microdata-parser-perl - fairly experimental parser for HTML 'microdata'
+libhtml-html5-outline-perl - implementation of the HTML5 Outline algorithm
+libhtml-html5-sanity-perl - make HTML5 DOM trees less insane
+libhtml-mason-perl - HTML::Mason Perl module
+libhtml-microformats-perl - parse microformats in HTML
+libhtml-toc-perl - module for creating and updating an HTML Table of Contents
+libhtmlunit-core-js-java - GUI-Less browser for Java programs - JavaScript engine
+libhtmlunit-java - GUI-Less browser for Java programs
+libhtsengine-dev - Development files for HMM-based speech synthesis engine API
+libhtsengine1 - HMM-based speech synthesis engine API
+libhttpcore-java - set of low level HTTP transport components for Java
+libidzebra-2.0-mod-dom - IDZebra filter 'dom' (XML DOM internal document model with XSLT)
+libinventor0 - Open Inventor runtime environment
+libisajet758-3-dev - [Physics] Monte Carlo generator for proton/electron reactions
+libisajet758-3-gfortran - [Physics] Monte Carlo generator for proton / electron reactions
+libjackson-json-java - streaming fast powerful standard conformant json processor in java
+libjackson-json-java-doc - standard conformant json processor in java - API documentation
+libjansson-dbg - C library for encoding, decoding and manipulating JSON data (debug)
+libjansson-dev - C library for encoding, decoding and manipulating JSON data (dev)
+libjansson-doc - C library for encoding, decoding and manipulating JSON data (doc)
+libjansson4 - C library for encoding, decoding and manipulating JSON data
+libjboss-aspects-java - JBoss Aspects
+libjboss-classloader-java - JBoss Classloader
+libjboss-cluster-java - JBoss Cluster
+libjboss-connector-java - JBoss Connector
+libjboss-deployers-java - JBoss Deployment Framework
+libjboss-deployment-java - JBoss Deployment
+libjboss-ejb3-java - JBoss Enterprise Java Beans (EJB) 3.0
+libjboss-ejb3x-java - JBoss Enterprise Java Beans (EJB3X)
+libjboss-integration-java - JBoss Integration
+libjboss-j2ee-java - JBoss J2EE core libraries
+libjboss-jms-java - JBoss Java Message Service (JMS)
+libjboss-managed-java - JBoss Managed
+libjboss-management-java - JBoss Management
+libjboss-messaging-java - JBoss Messaging
+libjboss-metadata-java - JBoss MetaData Repository
+libjboss-naming-java - JBoss Naming
+libjboss-reflect-java - JBoss Reflection api for ClassInfo and BeanInfo abstractions
+libjboss-security-java - JBoss Security
+libjboss-server-java - JBoss Server
+libjboss-system-java - JBoss System
+libjboss-transaction-java - JBoss Transaction
+libjboss-vfs-java - JBoss Virtual File System
+libjboss-web-services-java - JBoss Web Services (JBossWS)
+libjboss-webservices-java - JBoss Web Services
+libjboss-xml-binding-java - JBoss XML Binding
+libjcsp-java - Java library providing Communicating Sequential Processes (CSP) features
+libjcsp-java-doc - Documentation for libjcsp-java
+libjenkins-htmlunit-core-js-java - Jenkins branch of the HtmlUnit Core JS Interpreter
+libjenkins-xstream-java - Java library to serialize objects to XML and back again
+libjenkins-xstream-java-doc - Documentation for libjenkins-xstream-java
+libjgraphx-java - Java Swing Diagramming Library
+libjgraphx-java-doc - Java Swing Diagramming Library - API documentation and manual
+libjhdf-doc - Java HDF Object Package - Documentation
+libjhdf4-java - Java HDF4 Object Package
+libjhdf4-jni - Java HDF4 Object Package (Java JNI library)
+libjhdf5-java - Java HDF5 Object Package
+libjhdf5-jni - Java HDF5 Object Package (Java JNI library)
+libjifty-plugin-authentication-cas-perl - JA-SIG CAS authentication plugin for Jifty
+libjifty-plugin-authentication-facebook-perl - Facebook authentication plugin for Jifty
+libjifty-plugin-authentication-ldap-perl - Jifty plugin for authentication using LDAP
+libjifty-plugin-comment-perl - module to add comments to any record of your Jifty application
+libjifty-plugin-googlemap-perl - GoogleMap plugin for Jifty
+libjifty-plugin-openid-perl - OpenID authentication plugin for Jifty applications
+libjifty-plugin-sitenews-perl - site news plugin for Jifty applications
+libjifty-plugin-userpic-perl - user pictures plugin for Jifty applications
+libjinput-java - Java Game Controller API
+libjinput-java-doc - Java Game Controller API (javadoc)
+libjinput-jni - Java Game Controller API (jni)
+libjs-backbone - some Backbone for JavaScript applications - browser library
+libjs-coffeescript - client-side interpreter for the CoffeeScript language
+libjs-cssom - CSS parser written in pure JavaScript
+libjs-extjs - cross-browser JavaScript library
+libjs-extjs-doc - cross-browser JavaScript library (docs)
+libjs-mustache - Mustache rendering engine for Javascript
+libjs-scriptaculous - JavaScript library for dynamic web applications
+libjsf-api-java - JavaServer Faces 2.0 Java EE web framework - API
+libjsf-impl-java - JavaServer Faces 2.0 Java EE web framework - Implementation
+libjsf-java-doc - Documentation for libjsf-api-java
+libjts-java - JTS Topology Suite
+libkactivities-models1 - Activities models library
+libkohana-php - swift, secure, and small PHP 5 framework
+libkohana2-modules-php - lightweight PHP5 MVC framework (extension modules)
+libkohana2-php - lightweight PHP5 MVC framework
+libkohana3.1-core-php - PHP5 framework core classes
+libkohana3.1-mod-auth-php - swift, secure, and small PHP 5 framework, auth module
+libkohana3.1-mod-cache-php - swift, secure, and small PHP 5 framework, cache module
+libkohana3.1-mod-codebench-php - swift, secure, and small PHP 5 framework, codebench module
+libkohana3.1-mod-database-php - swift, secure, and small PHP 5 framework, database module
+libkohana3.1-mod-image-php - swift, secure, and small PHP 5 framework, image module
+libkohana3.1-mod-orm-php - swift, secure, and small PHP 5 framework, ORM module
+libkohana3.1-mod-unittest-php - swift, secure, and small PHP 5 framework, unittest module
+libkohana3.1-mod-userguide-php - swift, secure, and small PHP 5 framework, userguide module
+libkohana3.1-php - PHP5 framework metapackage
+libkohana3.2-core-php - PHP5 framework core classes
+libkohana3.2-mod-auth-php - swift, secure, and small PHP 5 framework, auth module
+libkohana3.2-mod-cache-php - swift, secure, and small PHP 5 framework, cache module
+libkohana3.2-mod-codebench-php - swift, secure, and small PHP 5 framework, codebench module
+libkohana3.2-mod-database-php - swift, secure, and small PHP 5 framework, database module
+libkohana3.2-mod-image-php - swift, secure, and small PHP 5 framework, image module
+libkohana3.2-mod-orm-php - swift, secure, and small PHP 5 framework, ORM module
+libkohana3.2-mod-unittest-php - swift, secure, and small PHP 5 framework, unittest module
+libkohana3.2-mod-userguide-php - swift, secure, and small PHP 5 framework, userguide module
+libkohana3.2-php - PHP5 framework metapackage
+libkwiki-perl - Kwiki Wiki Building Framework
+libkxml2-java - small XML parser, designed for small environments
+libkxml2-java-doc - small XML parser, designed for small environments - docs
+libladr-dev - the LADR deduction library, development files
+libladr4 - the LADR deduction library
+liblaf-widget-java - Java widget toolbox for other look-and-feel libraries
+liblaf-widget-java-doc - Java widget toolbox for look-and-feel libraries - documentation
+libldap-ocaml-dev - LDAP bindings for OCaml
+liblodo3.0 - Networked server for robots and sensors - laser-based odometry library
+liblodo3.0-dev - Networked server for robots and sensors - laser odometry dev files
+liblog4ada-dbg - Ada library for flexible logging (debug)
+liblog4ada-doc - Ada library for flexible logging (documentation)
+liblog4ada1 - Ada library for flexible logging (runtime)
+liblog4ada2-dev - Ada library for flexible logging (development)
+liblog4c-dev - C library for flexible logging (development)
+liblog4c-doc - C library for flexible logging (documentation)
+liblog4c3 - C library for flexible logging (runtime)
+liblog4cplus-1.0-4 - C++ logging API modeled after the Java log4j API - shared library
+liblog4cplus-dbg - C++ logging API modeled after the Java log4j API - debug library
+liblog4cplus-dev - C++ logging API modeled after the Java log4j API - development library
+liblog4cpp-doc - A C++ library for flexible logging (documentation)
+liblog4cpp5 - C++ library for flexible logging (runtime)
+liblog4cpp5-dev - C++ library for flexible logging (development)
+liblog4shib-dev - log4j-style configurable logging library for C++ (development)
+liblog4shib-doc - log4j-style configurable logging library for C++ (API docs)
+liblog4shib1 - log4j-style configurable logging library for C++ (runtime)
+liblog4tango4 - logging for TANGO - shared library
+liblog4tango4-dbg - logging for TANGO - debug library
+liblog4tango4-dev - logging for TANGO - development library
+liblog4tango4-doc - logging for TANGO - documentation
+libmath-random-oo-perl - consistent object-oriented interface for generating random numbers
+libmath-random-tt800-perl - Perl module implementing the TT800 algorithm
+libmaven-antrun-plugin-java - Maven AntRun Plugin
+libmaven-archiver-java - Archiver component for Maven
+libmaven-archiver-java-doc - Archiver component for Maven - API documentation
+libmaven-assembly-plugin-java - Maven Assembly Plugin
+libmaven-bundle-plugin-java - Maven plugin to handle artifact OSGi metadata
+libmaven-bundle-plugin-java-doc - Maven plugin to handle artifact OSGi metadata - documentation
+libmaven-clean-plugin-java - Maven clean plugin
+libmaven-clean-plugin-java-doc - Maven clean plugin - API documentation
+libmaven-common-artifact-filters-java - Maven Common Artifact Filters
+libmaven-common-artifact-filters-java-doc - Documentation for Maven Common Artifact Filters
+libmaven-compiler-plugin-java - Maven Compiler plugin
+libmaven-compiler-plugin-java-doc - Documentation for Maven Compiler Plugin
+libmaven-dependency-analyzer-java - Maven Dependency Analyzer
+libmaven-dependency-plugin-java - Maven Dependency Plugin
+libmaven-dependency-plugin-java-doc - Documentation for Maven Dependency Plugin
+libmaven-dependency-tree-java - Maven Dependency Tree
+libmaven-dependency-tree-java-doc - Documentation for Maven Dependency Tree
+libmaven-docck-plugin-java - Maven Documentation Checker Plugin
+libmaven-doxia-tools-java - utilities for integrating Doxia in Maven
+libmaven-doxia-tools-java-doc - Documentation for Maven Doxia Integration Tools
+libmaven-ear-plugin-java - Maven EAR Plugin
+libmaven-ejb-plugin-java - Maven EJB Plugin
+libmaven-embedder-java - Maven Embedder
+libmaven-embedder-java-doc - Documentation for Maven Embedder
+libmaven-file-management-java - Maven File Management API
+libmaven-file-management-java-doc - Documentation for Maven File Management API
+libmaven-filtering-java - Maven Filtering
+libmaven-install-plugin-java - Maven install plugin
+libmaven-install-plugin-java-doc - Documentation for Maven Install Plugin
+libmaven-invoker-java - Maven Invoker
+libmaven-invoker-plugin-java - Maven Invoker Plugin
+libmaven-jar-plugin-java - Maven Jar Plugin
+libmaven-jar-plugin-java-doc - Documentation Maven Jar Plugin
+libmaven-javadoc-plugin-java - Maven Javadoc Plugin
+libmaven-parent-java - Maven metadata for Apache Maven itself
+libmaven-plugin-testing-java - Maven Plugin Testing
+libmaven-plugin-testing-java-doc - Documentation for Maven Plugin Testing
+libmaven-plugin-tools-java - Maven Plugin Tools Base POM
+libmaven-project-info-reports-plugin-java - Maven Project Info Reports Plugin
+libmaven-project-info-reports-plugin-java-doc - Documentation for Maven Project Info Reports Plugin
+libmaven-reporting-impl-java - Maven Reporting API Implementation
+libmaven-reporting-impl-java-doc - Documentation for Maven Reporting API Implementation
+libmaven-repository-builder-java - Maven Repository Builder
+libmaven-repository-builder-java-doc - Documentation for Maven Repository Builder
+libmaven-resources-plugin-java - Maven resources plugin
+libmaven-resources-plugin-java-doc - Documentation for Maven resources plugin
+libmaven-scm-java - Maven SCM provides a common API for doing SCM operations
+libmaven-scm-java-doc - Maven SCM provides a common API for doing SCM operations
+libmaven-shade-plugin-java - Maven shade plugin
+libmaven-shade-plugin-java-doc - Documentation for Maven shade plugin
+libmaven-shared-io-java - Maven API for I/O support
+libmaven-shared-io-java-doc - Documentation for Maven API for I/O support
+libmaven-site-plugin-java - Maven Site Plugin for generating a site
+libmaven-site-plugin-java-doc - Documentation for Maven Site Plugin
+libmaven-verifier-java - Maven Verifier Component
+libmaven-verifier-java-doc - Documentation for Maven Verifier Component
+libmaven-war-plugin-java - Maven WAR Plugin
+libmaven-war-plugin-java-doc - Documentation for Maven WAR Plugin
+libmaven2-core-java - Core libraries for Maven2
+libmaven2-core-java-doc - API documentation for Maven2
+libmd3-1 - library to handle Quake .md3 files - runtime library
+libmd3-dev - library to handle Quake .md3 files - development files
+libmed-dev - Development files for libmed
+libmed-doc - Documentation for the MED-fichier library
+libmed-tools - Runtime tools to handle MED files
+libmed1 - Library to exchange meshed data (Fortran version)
+libmedc-dev - Development files for libmedc
+libmedc1 - Library to exchange meshed data (C version)
+libmedimport-dev - Development files for libmedimport0
+libmedimport0 - Library to import old version files
+libmeep-dev - development library for using meep
+libmeep-lam4-6 - library for using parallel (OpenMPI) version of meep
+libmeep-lam4-dev - development library for using parallel (OpenMPI) version of meep
+libmeep-mpi-default-dev - development library for using parallel (OpenMPI) version of meep
+libmeep-mpi-default6 - library for using parallel (OpenMPI) version of meep
+libmeep-mpich2-6 - library for using parallel (OpenMPI) version of meep
+libmeep-mpich2-dev - development library for using parallel (OpenMPI) version of meep
+libmeep-openmpi-dev - development library for using parallel (OpenMPI) version of meep
+libmeep-openmpi6 - library for using parallel (OpenMPI) version of meep
+libmeep6 - library for using meep
+libmetadata-extractor-java - JPEG metadata extraction framework
+libmetadata-extractor-java-doc - Documentation for the JPEG metadata extraction framework
+libmina-java - Java network application framework
+libmina-java-doc - Java network application framework - documentation
+libmina2-java - Java network application framework
+libmina2-java-doc - Java network application framework - documentation
+libmodello-java - a Data Model toolkit in use by the Maven 2 Project
+libmodello-java-doc - a Data Model toolkit in use by the Maven 2 Project
+libmodello-maven-plugin-java - Modello Maven Plugin enables the use of Modello in Maven builds
+libmodello-maven-plugin-java-doc - Documentation for Modello Maven Plugin
+libmodello-maven-plugin1.4-java - Modello Maven Plugin enables the use of Modello in Maven builds
+libmodello-maven-plugin1.4-java-doc - Documentation for Modello Maven Plugin
+libmodello1.4-java - a Data Model toolkit in use by the Maven 2 Project
+libmodello1.4-java-doc - a Data Model toolkit in use by the Maven 2 Project
+libmodule-install-doap-perl - generate META.yml data from DOAP
+libmodule-install-doapchangesets-perl - write your distribution change log in RDF
+libmodule-install-rdf-perl - advanced metadata for your Perl packaging
+libmodule-package-rdf-perl - drive your distribution with RDF
+libmojolicious-perl - simple, yet powerful, Web Application Framework
+libmosquitto0 - MQTT version 3.1 client library
+libmosquittopp0 - MQTT version 3.1 client C++ library
+libmqdb-perl - MappedQueryDB toolkit for federated databases
+libmusic-dev - Multi-Simulation Coordinator for MPI -- Development files
+libmusic1 - Multi-Simulation Coordinator for MPI -- Runtime library
+libnecpp-dev - development files for libnecpp
+libnecpp0 - library to use NEC2++
+libnemesis3 - Parallel extension to the EXODUSII datamodel
+libnet-z3950-simpleserver-perl - simple perl API for building Z39.50 servers
+libnss-rsbac2 - RSBAC NSS module
+libnuclient-dev - The authenticating firewall [client development files]
+libnuclient4 - The authenticating firewall [client library]
+libnumber-fraction-perl - Perl extension to model fractions
+libnussl-dev - The authenticating firewall [SSL development files]
+libnussl1 - The authenticating firewall [SSL library]
+liboasis3-0d - Shared libraries for OASIS3 coupler
+liboasis3-dev - Development files for OASIS3 climate model coupler
+liboce-foundation-dev - OpenCASCADE Community Edition CAE platform library development files
+liboce-foundation2 - OpenCASCADE Community Edition CAE platform shared library
+liboce-modeling-dev - OpenCASCADE Community Edition CAE platform library development files
+liboce-modeling2 - OpenCASCADE Community Edition CAE platform shared library
+liboce-ocaf-dev - OpenCASCADE Community Edition CAE platform library development files
+liboce-ocaf-lite-dev - OpenCASCADE Community Edition CAE platform library development files
+liboce-ocaf-lite2 - OpenCASCADE Community Edition CAE platform shared library
+liboce-ocaf2 - OpenCASCADE Community Edition CAE platform shared library
+liboce-visualization-dev - OpenCASCADE Community Edition CAE platform library development files
+liboce-visualization2 - OpenCASCADE Community Edition CAE platform shared library
+libopenbabel-dev - Chemical toolbox library (development files)
+libopenbabel-doc - Chemical toolbox library (documentation)
+libopenbabel4 - Chemical toolbox library
+libopencascade-dev - OpenCASCADE CAE platform library development files
+libopencascade-foundation-6.5.0 - OpenCASCADE CAE platform shared library
+libopencascade-foundation-dev - OpenCASCADE CAE platform library development files
+libopencascade-modeling-6.5.0 - OpenCASCADE CAE platform shared library
+libopencascade-modeling-dev - OpenCASCADE CAE platform library development files
+libopencascade-ocaf-6.5.0 - OpenCASCADE CAE platform shared library
+libopencascade-ocaf-dev - OpenCASCADE CAE platform library development files
+libopencascade-ocaf-lite-6.5.0 - OpenCASCADE CAE platform shared library
+libopencascade-ocaf-lite-dev - OpenCASCADE CAE platform library development files
+libopencascade-visualization-6.5.0 - OpenCASCADE CAE platform shared library
+libopencascade-visualization-dev - OpenCASCADE CAE platform library development files
+libopenthreads-dev - Object-Oriented (OO) thread interface for C++, development files
+libopenthreads14 - Object-Oriented (OO) thread interface for C++, shared libs
+libopenturns-dbg - debug symbols for OpenTURNS
+libopenturns-dev - headers and development libraries for OpenTURNS
+libopenturns0.1 - dynamic libraries for OpenTURNS
+libossim-dev - The OSSIM library -- development files
+libossim1 - The OSSIM library -- shared library
+libowl-directsemantics-perl - representation of the direct semantics of OWL2
+libpam-nufw - The authenticating firewall [PAM module]
+libpam-rsbac - RSBAC PAM module
+libpantomime1.2 - GNUstep framework for mail handling (runtime library)
+libpantomime1.2-dev - GNUstep framework for mail handling (development files)
+libpath-class-perl - module for cross-platform path specification manipulation
+libpdl-stats-perl - collection of statistics modules in Perl Data Language
+libpentaho-reporting-flow-engine-java - report library for java
+libpentaho-reporting-flow-engine-java-doc - report library for java documentation
+libpetsc3.2 - Shared libraries for version 3.2 of PETSc
+libpetsc3.2-dbg - Static debugging libraries for PETSc
+libpetsc3.2-dev - Static libraries, shared links, header files for PETSc
+libplayerc++3.0 - Networked server for robots and sensors - C++ client library
+libplayerc++3.0-dev - Networked server for robots and sensors - C++ client library development files
+libplayerc3.0 - Networked server for robots and sensors - C client library
+libplayerc3.0-dev - Networked server for robots and sensors - C client library development files
+libplayercommon3.0 - Networked server for robots and sensors - common functions
+libplayercommon3.0-dev - Networked server for robots and sensors - error handling development files
+libplayercore3.0 - Networked server for robots and sensors - core library
+libplayercore3.0-dev - Networked server for robots and sensors - core library development files
+libplayerdrivers3.0 - Networked server for robots and sensors - hardware drivers library
+libplayerdrivers3.0-dev - Networked server for robots and sensors - hardware drivers development files
+libplayerinterface3.0 - Networked server for robots and sensors - interface library
+libplayerinterface3.0-dev - Networked server for robots and sensors - interface library dev files
+libplayerjpeg3.0 - Networked server for robots and sensors - jpeg library
+libplayerjpeg3.0-dev - Networked server for robots and sensors - jpeg library development files
+libplayertcp3.0 - Networked server for robots and sensors - tcp library
+libplayertcp3.0-dev - Networked server for robots and sensors - tcp library development files
+libplayerwkb3.0 - Networked server for robots and sensors - WKB library
+libplayerwkb3.0-dev - Networked server for robots and sensors - WKB library dev files
+libpmap3.0 - Networked server for robots and sensors - particle-based mapping library
+libpmap3.0-dev - Networked server for robots and sensors - particle library dev files
+libpod-elemental-perl - module for manipulating POD elements
+libpod-pom-perl - module providing a Pod Object Model
+libpoe-component-server-http-perl - foundation of a POE HTTP Daemon
+libppd0 - postscript PPD file library
+libpresage1 - intelligent predictive text entry platform (shared library)
+libpresage1-dbg - intelligent predictive text entry platform (shared library debugging symbols)
+libpythia8 - PYTHIA event generator of high energy physics
+libpythia8-dev - PYTHIA event generator of high energy physics - development files
+libqdjango-db0 - Database library for the QDjango framework
+libqrencode-dev - QR Code encoding library -- development
+libqrencode3 - QR Code encoding library
+libqt4-declarative-folderlistmodel - Qt 4 folderlistmodel QML plugin
+libqt5xmlpatterns5 - Qt 5 XML patterns module
+libquantlib-1.2 - Quantitative Finance Library -- library package
+libquantlib0-dev - Quantitative Finance Library -- development package
+librdf-acl-perl - access control lists for the semantic web
+librdf-closure-perl - pure Perl RDF inferencing
+librdf-crypt-perl - semantic cryptography
+librdf-endpoint-perl - SPARQL Protocol Endpoint implementation
+librdf-generator-void-perl - generate VoID descriptions based on data in an RDF model
+librdf-helper-perl - consistent, high-level API for working with RDF with Perl
+librdf-helper-properties-perl - shortcuts to retrieve certain information
+librdf-icalendar-perl - convert between RDF and iCalendar
+librdf-kml-exporter-perl - export RDF geo data to KML (Google Earth)
+librdf-linkeddata-perl - simple Linked Data implementation
+librdf-prefixes-perl - simple way to turn URIs into QNames
+librdf-query-client-perl - get data from W3C SPARQL Protocol 1.0 servers
+librdf-query-perl - complete SPARQL 1.1 Query and Update implementation for RDF::Trine
+librdf-rdfa-generator-perl - generate some data in RDFa
+librdf-rdfa-parser-perl - flexible RDFa parser
+librdf-trin3-perl - notation 3 extensions for RDF::Trine
+librdf-trine-node-literal-xml-perl - RDF Node class for XML Literals
+librdf-trine-perl - RDF Framework for Perl
+librdf-trineshortcuts-perl - totally unauthorised module for cheats and charlatans
+librdf-trinex-functions-perl - shortcut functions for RDF::Trine's object-oriented interface
+librdf-vcard-perl - convert between RDF and vCard
+librivet-dev - Development files of Rivet
+librivet11 - Run-time library of Rivet
+librome-java - Java library to handle Atom and RSS feeds
+librome-java-doc - Documentation for librome-java
+libroot-roofit-dev - ROOT extension for modeling expected distribtions - development
+libroot-roofit5.34 - ROOT extension for modeling expected distribtions - libraries
+librsbac-dev - RSBAC development library
+librsbac1 - Rule Set Based Access Control administrative utilities
+libs3decoder0 - sphinx3 speech recognition - s3 decoder library
+libsbsms-dev - Subband Sinusoidal Modeling Synthesis (development files)
+libsbsms10 - Subband Sinusoidal Modeling Synthesis
+libscilab2-java - Scientific software package for numerical computations (Java v2 API)
+libscim-dev - development library for SCIM platform
+libsdo-api-java - Service Data Objects 2.1 Java API spec
+libsdo-api-java-doc - Documentation for libsdo-api-java
+libsearch-xapian-perl - Perl bindings for the Xapian search library
+libserd-0-0 - lightweight RDF syntax library
+libshogun-dev - Large Scale Machine Learning Toolbox
+libshogun11 - Large Scale Machine Learning Toolbox
+libsimple-http-java - high-performance, embeddable Java HTTP engine
+libsimple-http-java-doc - Documentation for libsimple-http-java
+libsofa-c-dev - Algorithms for models in fundamental astronomy (development files)
+libsofa-c0 - Algorithms for models in fundamental astronomy (shared library)
+libsphere-dev - Development files for Spherepack scientific library
+libsphere0d - Spherepack scientific library for geophysical processes
+libspring-webflow-2.0-java - Java MVC framework focused in View and Controller layers
+libspring-webflow-2.0-java-doc - documentation for libspring-webflow-2.0-java
+libsqlexpr-ocaml - type-safe, convenient SQLite database access (runtime)
+libsqlexpr-ocaml-dev - type-safe, convenient SQLite database access (development)
+libstarlink-ast-dev - Handle World Coordinate Systems in Astronomy (development package)
+libstarlink-ast-doc - Handle World Coordinate Systems in Astronomy (documentation)
+libstarlink-ast-err0 - Handle World Coordinate Systems in Astronomy (error reporting)
+libstarlink-ast-grf3d0 - Handle World Coordinate Systems in Astronomy (dummy 3d routines)
+libstarlink-ast0 - Handle World Coordinate Systems in Astronomy (main shared lib)
+libstk0-dev - Sound Synthesis Toolkit (development files)
+libstk0c2a - Sound Synthesis Toolkit
+libstringtemplate-java - StringTemplate templating engine for Java
+libstruts1.2-java - Java Framework for MVC web applications
+libsunflow-java - rendering system for photo-realistic image synthesis
+libsunflow-java-doc - rendering system for photo-realistic image synthesis (javadoc)
+libsurefire-java - Surefire test framework for Java
+libswe-dev - C library for The Swiss Ephemeris
+libswe0 - C library for the Swiss Ephemeris
+libswing-layout-java - Extensions to Swing layout
+libswing-layout-java-doc - Extensions to Swing layout - contains Javadoc API documentation
+libtango7 - TANGO distributed control system - shared library
+libtango7-dbg - TANGO distributed control system - debug library
+libtango7-dev - TANGO distributed control system - development library
+libtango7-doc - TANGO distributed control system - documentation
+libtemplate-plugin-xml-perl - XML plugins for the Template Toolkit
+libterralib - C++ library for Geographical Information Systems
+libterralib-dev - C++ library for Geographical Information Systems -- development package
+libterralib-doc - C++ library for Geographical Information Systems -- documentation package
+libtest-rdf-doap-version-perl - tests 'meta/changes.ttl' is up to date
+libtest-rdf-perl - Test RDF data for validity and equality
+libthepeg-dev - Development library of ThePEG
+libthepeg15 - Run-time library of ThePEG
+libtorch3-dev - State of the art machine learning library - development files
+libtorch3c2 - State of the art machine learning library - runtime library
+libtree-multinode-perl - a multi node tree object
+libtree-simple-perl - A simple tree object
+libtree-simple-visitorfactory-perl - collection of dispensing visitor objects for Tree::Simple
+libuser - user and group account administration library
+libvolpack1 - fast volume rendering library
+libvolpack1-dev - fast volume rendering library
+libwavefront-standalone3.0 - Networked server for robots and sensors - standalone wavefront library
+libwavefront-standalone3.0-dev - Networked server for robots and sensors - standalone wavefront dev files
+libwiki-toolkit-plugin-categoriser-perl - Category management for Wiki::Toolkit
+libxapian-ruby1.8 - Xapian search engine interface for Ruby 1.8
+libxapian-ruby1.9.1 - Xapian search engine interface for Ruby 1.9.1
+libxdmf-dev - eXtensible Data Model and Format development tools
+libxdmf2 - eXtensible Data Model and Format library
+libxml-atom-fromowl-perl - export RDF data to Atom
+libxml-atom-microformats-perl - parse microformats in Atom content
+libxml-atom-owl-perl - parse an Atom file into RDF
+libxml-filter-detectws-perl - Perl module for detecting ignorable whitespace
+libxml-grddl-perl - transform XML and XHTML to RDF
+libxmlbeans-maven-plugin-java - Maven XMLBeans Plugin
+libxmlbeans-maven-plugin-java-doc - Documentation for Maven XMLBeans Plugin
+libxmmsclient++-dev - XMMS2 - client library for c++ - development files
+libxmmsclient++-glib-dev - XMMS2 - glib client library for c++ - development files
+libxmmsclient++-glib1 - XMMS2 - glib client library for c++
+libxmmsclient++4 - XMMS2 - client library for c++
+libxmmsclient-dev - XMMS2 - client library development files
+libxmmsclient-glib-dev - XMMS2 - glib client library - development files
+libxmmsclient-glib1 - XMMS2 - glib client library
+libxmmsclient6 - XMMS2 - client library
+libxrd-parser-perl - parse XRD and host-meta files into RDF::Trine models
+libxstream-java - Java library to serialize objects to XML and back again
+libzend-framework-php - a simple, straightforward, open-source software framework for PHP 5
+libzend-framework-zendx-php - a simple, straightforward, open-source software framework for PHP 5
+libzinnia-dev - development files for the zinnia library
+libzinnia-doc - documention files for the zinnia library
+libzinnia0 - online handwriting recognition system with machine learning
+libzinnia0-dbg - debugging symbols for the zinnia library
+libzltext-data - ZLibrary text model/viewer part (support files)
+libzltext-dev - ZLibrary text model/viewer part (development files)
+libzltext0.12 - ZLibrary text model/viewer part (shared library)
+lua-orbit - MVC web framework for Lua
+mace2 - program that searches for finite models of first-order statements
+mailavenger - Highly configurable, MTA-independent SMTP filter server
+makehuman - Modelling of 3-Dimensional humanoid characters
+makehuman-data - Modelling of 3-Dimensional humanoid characters (application data)
+makehuman-doc - Modelling of 3-Dimensional humanoid characters (documentation)
+mapivi - Photo viewer and organizer with emphasis on IPTC fields
+maria - reachability analyzer for Algebraic System Nets
+maude - high-performance logical framework
+maven - Java software project management and comprehension tool
+maven-debian-helper - Helper tools for building Debian packages with Maven
+maven2 - Java software project management and comprehension tool
+mbw - memory bandwidth benchmark program
+meep - software package for FDTD simulation
+meep-lam4 - software package for FDTD simulation, parallel (OpenMPI) version
+meep-mpi-default - software package for FDTD simulation, parallel (OpenMPI) version
+meep-mpich2 - software package for FDTD simulation, parallel (OpenMPI) version
+meep-openmpi - software package for FDTD simulation, parallel (OpenMPI) version
+megaglest-data - data files for MegaGlest
+mercurial - easy-to-use, scalable distributed version control system
+meshlab - System for processing and editing triangular meshes
+mgdiff - xdiff clone
+minirok - a small music player written in Python and inspired by Amarok
+ml-lpt - SML/NJ language processing tools
+mldemos - Machine Learning Demos (MLDemos) with Visualization
+mm3d - OpenGL based 3D model editor
+model-builder - graphical ODE simulator
+monodoc-db4o-manual - compiled XML documentation for db4o
+morituri - CD ripper aiming for maximum quality
+morse-simulator - Multi-OpenRobot Simulation Engine
+morse-simulator-data - Multi-OpenRobot Simulation Engine
+morse-simulator-doc - Multi-OpenRobot Simulation Engine - Documentation
+mosquitto - MQTT version 3.1 compatible message broker
+mosquitto-clients - Mosquitto command line MQTT clients
+msrtool - Dump chipset-specific MSR contents
+mtink - Status monitor tool for Epson inkjet printers
+music-bin - Multi-Simulation Coordinator for MPI -- Utilities
+music-doc - Multi-Simulation Coordinator for MPI -- Manual
+mysql-workbench - MySQL Workbench - a visual database modeling, administration and queuing tool
+mysql-workbench-data - MySQL Workbench -- architecture independent data
+nas - Network Audio System - local server
+nas-bin - Network Audio System - client binaries
+nec - NEC2 Antenna Modelling System
+necpp - NEC2 Evolution Antenna Modelling System
+nescc - Programming Language for Deeply Networked Systems
+netdisco-backend - Gather data about network devices and connected nodes
+netdisco-common - Gather and report data about network devices and nodes
+netdisco-frontend - Web front-end for the NetDisco network manager
+nexuiz-textures - Textures for Nexuiz
+node-backbone - some Backbone for JavaScript applications - Node module
+node-backbone-dirty - server-side overrides for Backbone to use node-dirty
+node-cssom - CSS parser written in pure JavaScript - NodeJS module
+node-mustache - Mustache rendering engine for Javascript - CommonJS
+nodejs - Node.js event-based server-side javascript engine
+nodejs-dbg - Node.js event-based server-side javascript engine (debug)
+nodejs-dev - Development files for Node.js
+nodejs-legacy - Node.js event-based server-side javascript engine (legacy symlink)
+nova-compute-uml - OpenStack Compute - compute node (UserModeLinux)
+nqp - Not Quite Perl compiler
+nuauth - The authenticating firewall [authentication daemon]
+nuauth-extra - The authenticating firewall [extra modules]
+nuauth-log-mysql - The authenticating firewall [MySQL log module]
+nuauth-log-pgsql - The authenticating firewall [PostgreSQL log module]
+nuauth-utils - The authenticating firewall [tools for admin]
+nufw - The authenticating firewall [NFQUEUE daemon]
+nut-xml - network UPS tools - XML/HTTP driver
+nutcpc - The authenticating firewall [client]
+nwchem - High-performance computational chemistry software
+oasis3 - Coupler for exchanging fields between components of Earth system models
+oasis3-examples - Example models for the OASIS climate model coupler
+ocamlgraph-editor - graphical graph editor based on hyperbolic geometry
+oce-draw - OpenCASCADE Community Edition CAE platform shared library
+octave-fixed - fixed point computation for Octave
+octave-octgpr - functions to smooth and interpolate scattered data in Octave
+octave-tsa - time series analysis in Octave
+ofono - Mobile telephony stack (daemon)
+ofono-dbg - Mobile telephony stack (debugging files)
+ofono-dev - Mobile telephony stack (development files)
+openarena-081-players-mature - OpenArena game data - "mature" player graphics from 0.8.1
+openbabel - Chemical toolbox utilities (cli)
+openbabel-gui - Chemical toolbox utilities (graphical user interface)
+openbve - realistic 3D train/railway simulator (main program)
+opencascade-draw - OpenCASCADE CAE platform shared library
+opencascade-examples - OpenCASCADE CAE platform library input examples
+openhpi - SAF's HPI: Abstracted interface for managing computer hardware
+openmsx - MSX emulator that aims for perfection
+openmsx-data - datafiles for openMSX, an MSX emulator
+openrocket - Model Rocket Simulator
+openscad - script file based graphical CAD environment
+openscenegraph-plugin-citygml-shared - libcitygml OpenSceneGraph plugin (shared version)
+openscenegraph-plugin-citygml-static - libcitygml OpenSceneGraph plugin (static version)
+opense-basic - Free software ROM for the Sinclair ZX Spectrum
+openturns-examples - examples of OpenTURNS functionalities
+openturns-validation - validation files for OpenTURNS
+openuniverse-common - 3D Universe Simulator data files
+ossim-core - The OSSIM core utilities
+paraview - Parallel Visualization Application
+paraview-dev - Parallel Visualization Application. Development header files
+paraview-doc - Parallel Visualization Application. Comprehensive documentation
+paraview-python - Parallel Visualization Application. python-support
+parcimonie - privacy-friendly helper to refresh a GnuPG keyring
+pathogen - Puzzle game about matching 3D model structures
+pd-freeverb - studio-quality Schroeder/Moorer reverb as a Pd object
+pd-pmpd - physical modeling library for Pd
+pear-phpunit-channel - PEAR pear.phpunit.de channel definition file
+perceptualdiff - perceptual image comparison tool
+petsc3.2-doc - Documentation and examples for PETSc
+php-codecoverage - provides collection, processing and rendering for PHP code coverage information
+php-file-iterator - FilterIterator implementation for PHP
+php-invoker - utility class for invoking callables with a timeout
+php-text-template - Simple php template engine
+php-timer - PHP Utility class for timing
+php-token-stream - Wrapper around PHP's tokenizer extension
+php5-ps - ps module for PHP 5
+phpsysinfo - PHP based host information
+phpunit - Unit testing suite for PHP5
+phpunit-mock-object - Mock Object library for PHPUnit
+phpunit-selenium - Selenium RC integration for PHPUnit
+phpunit-story - extension to facilitate Behaviour-Driven Development
+phyml - Phylogenetic estimation using Maximum Likelihood
+picolisp - Lisp interpreter and application server framework
+piespy - An IRC bot to visualize social networks
+plasma-active-metadatamodels - Meta Data Plugin for Plasma
+pocketsphinx-hmm-en-hub4wsj - lightweight speech recognition - English acoustic model
+pocketsphinx-hmm-en-tidigits - lightweight speech recognition - TIDIGITS models
+pocketsphinx-hmm-zh-tdt - lightweight speech recognition - Mandarin acoustic model
+pocketsphinx-lm-en-hub4 - lightweight speech recognition - HUB4 language model
+pocketsphinx-lm-zh-hans-gigatdt - lightweight speech recognition - Simplified Chinese language model
+pocketsphinx-lm-zh-hant-gigatdt - lightweight speech recognition - Traditional Chinese language model
+pork - Console-based AOL Instant Messenger & IRC client
+postgresql-9.1-plr - Procedural language interface between PostgreSQL and R
+powstatd - Configurable UPS monitoring daemon
+ppmd - fast archiver program with good compression ratio
+printer-driver-cjet - printer driver for Canon LBP laser printers
+probcons - PROBabilistic CONSistency-based multiple sequence alignment
+promoe - GUI client for XMMS2
+prover9 - theorem prover and countermodel generator
+prover9-mace4 - GUI for Prover9 and Mace4
+pyformex - program to create 3D geometry from Python scripts.
+pyformex-lib - program to create 3D geometry from Python scripts.
+pyrocket - control Striker II and Dream Cheeky USB Missile Launchers
+pythia8-data - PYTHIA8 data files
+pythia8-doc-html - HTML Documentation of PYTHIA8
+pythia8-doc-worksheet - Worksheet Documentation of PYTHIA8
+pythia8-examples - Example source files of PYTHIA8
+pythia8-root-interface - Interfaces to call ROOT functions in PYTHIA8 code
+python-adodb - A database abstraction library for python
+python-avogadro - Molecular Graphics and Modelling System (Python module)
+python-ball - Python bindings for the Biochemical Algorithms Library
+python-ballview - Python bindings for VIEW-parts of the Biochemical Algorithms Library
+python-brian - simulator for spiking neural networks
+python-catwalk - model management interface for the Turbogears web framework
+python-cdo - Python module for Climate Data Operators
+python-cmor - python interface to CMOR
+python-cvxopt - Python package for convex optimization
+python-daap - DAAP client implemented in Python
+python-dialog - Python module for making simple Text/Console-mode user interfaces
+python-django-authority - more powerful permission system for Django
+python-django-countries - provides a country field for Django models
+python-django-djapian - Search API for Django using Xapian
+python-django-evolution - Implementation of schema evolution for the Django web framework
+python-django-extensions - Useful extensions for Django projects
+python-django-model-utils - Django model mixins and utilities
+python-django-mptt - Modified Preorder Tree Traversal Django application
+python-django-reversion - Provides comprehensive version control facilities for Django
+python-django-rosetta - Eases the translation process of your Django projects
+python-django-social-auth - Django social authentication made simple
+python-django-tagging - Generic tagging application for Django projects
+python-django-voting - generic voting application for Django
+python-drslib - Library for processing the CMIP5 Data Reference Syntax
+python-editobj - Python object editor
+python-elixir - Declarative Mapper for SQLAlchemy
+python-envisageplugins - Plugins for the Envisage framework
+python-formalchemy - HTML input form fields from your SQLAlchemy mapped classes
+python-gdal - Python bindings to the Geospatial Data Abstraction Library
+python-git - Python library to interact with Git repositories
+python-gluon - High-level Python web development framework
+python-gtkmvc - model-view-controller (MVC) implementation for pygtk
+python-gtkmvc-doc - pygtkmvc documentation, tutorial and examples
+python-liblarch - easily handle data structures
+python-mechanize - stateful programmatic web browsing
+python-mlpy - high-performance Python package for predictive modeling
+python-mosquitto - MQTT version 3.1 client library, python bindings
+python-necpp - Python module for using NEC2++
+python-nipy - Analysis of structural and functional neuroimaging data
+python-openbabel - Chemical toolbox library (python bindings)
+python-openturns - Python front-end of OpenTURNS (aka TUI)
+python-openturns-dev - Python front-end of OpenTURNS (aka TUI)
+python-peak.util - utilities from the Python Enterprise Application Kit
+python-playerc - Networked server for robots and sensors - Python wrapper
+python-pyasn1-modules - Collection of protocols modules written in ASN.1 language
+python-pyassimp - 3D model import library (Python bindings)
+python-pycalendar - iCalendar/vCard Library
+python-pymc - Bayesian statistical models and fitting algorithms
+python-pymc-doc - Bayesian statistical models and fitting algorithms
+python-pynn - simulator-independent specification of neuronal network models
+python-pypsignifit - psychometric analysis of psychophysics data in Python
+python-rivet - Python bindings of Rivet
+python-scikits.statsmodels - transitional compatibility package for statsmodels migration
+python-simpy - python-based simulation package
+python-simpy-doc - python-based simulation package, Documentation and examples
+python-simpy-gui - python-based simulation package, GUI
+python-sklearn - Python modules for machine learning and data mining
+python-sphinxbase - Sphinx base libraries - Python module
+python-sphinxbase-dbg - Sphinx base libraries - Python module (debug version)
+python-statsmodels - Python module for the estimation of statistical models
+python-statsmodels-doc - documentation and examples for statsmodels
+python-statsmodels-lib - low-level implementations and bindings for statsmodels
+python-sunpinyin - Simplified Chinese Input Method from SUN (Python binding)
+python-tegaki-gtk - GTK+ widget Python model for Tegaki
+python-tg.devtools - developer tools for the TurboGears web framework
+python-tgext.admin - user management controller add-on for TurboGears
+python-turbogears2 - Python web application framework
+python-turbogears2-doc - documentation for the TurboGears2 web framework
+python-web2py - High-level Python web development framework
+python-wtforms - flexible forms validation and rendering library for Python
+python-xmmsclient - XMMS2 - Python bindings
+python-zconfig - Structured Configuration Library
+python-zinnia - Python binding for the zinnia library
+python3-mako - fast and lightweight templating for the Python 3 platform
+python3-morse-simulator - Multi-OpenRobot Simulation Engine
+python3-simpy - python-based simulation package (Python3 version)
+qgis - Geographic Information System (GIS)
+qtdeclarative5-folderlistmodel-plugin - Qt 5 folderlistmodel QML plugin
+qtdeclarative5-xmllistmodel-plugin - Qt 5 xmllistmodel QML plugin
+quantlib-examples - Quantitative Finance Library -- example binaries
+quantlib-python - Python bindings for the Quantlib Quantitative Finance library
+quantlib-refman-html - Quantitative Finance Library -- reference manual in html
+quantum-espresso - Electronic-Structure and Ab-Initio Molecular Dynamics Suite
+quantum-espresso-data - Electronic-Structure and Ab-Initio Molecular Dynamics Suite (Documentation)
+r-bioc-limma - linear models for microarray data
+r-cran-amelia - GNU R package supporting multiple imputation of missing data
+r-cran-bayesm - GNU R package for Bayesian inference
+r-cran-car - GNU R Companion to Applied Regression by John Fox
+r-cran-coda - Output analysis and diagnostics for MCMC simulations in R
+r-cran-effects - GNU R graphical and tabular effects display for glm models
+r-cran-erm - GNU R package for 'extended Rasch modelling'
+r-cran-evd - GNU R Functions for extreme value distributions
+r-cran-fassets - GNU R package for financial engineering -- fAssets
+r-cran-fbonds - GNU R package for financial engineering -- fBonds
+r-cran-fcopulae - GNU R package for financial engineering -- fCopulae
+r-cran-fgarch - GNU R package for financial engineering -- fGarch
+r-cran-fnonlinear - GNU R package for financial engineering -- fNonlinear
+r-cran-fportfolio - GNU R package for financial engineering -- fPortfolio
+r-cran-funitroots - GNU R package for financial engineering -- fUnitRoots
+r-cran-gam - Generalized Additive Models for R
+r-cran-gmodels - GNU R package with tools for model fitting by Greg Warnes et al
+r-cran-gregmisc - GNU R package with miscellaneous functions by Greg Warnes et al
+r-cran-lme4 - GNU R package for linear mixed effects model fitting
+r-cran-lmtest - GNU R package for diagnostic checking in linear models
+r-cran-matchit - GNU R package of nonparametric matching methods
+r-cran-mcmcpack - R routines for Markov chain Monte Carlo model estimation
+r-cran-mgcv - GNU R package for multiple parameter smoothing estimation
+r-cran-mnp - GNU R package for fitting multinomial probit (MNP) models
+r-cran-msm - GNU R Multi-state Markov and hidden Markov models in continuous time
+r-cran-nlme - GNU R package for (non-)linear mixed effects models
+r-cran-nnet - GNU R package for feed-forward neural networks
+r-cran-permute - R functions for generating restricted permutations of data
+r-cran-plyr - Tools for splitting, applying and combining data
+r-cran-qtl - GNU R package for genetic marker linkage analysis
+r-cran-raschsampler - GNU R package for sampling binary matrices with fixed margins
+r-cran-relimp - GNU R package for inference on relative importance of regressors
+r-cran-rjags - R interface to the JAGS Bayesian statistics package
+r-cran-rms - GNU R regression modeling strategies by Frank Harrell
+r-cran-robustbase - GNU R package providing basic robust statistics
+r-cran-rquantlib - GNU R package interfacing the QuantLib finance library
+r-cran-sandwich - GNU R package for model-robust standard error estimates
+r-cran-strucchange - GNU R package for structural change regression estimation
+r-cran-survival - GNU R package for survival analysis
+r-cran-vgam - GNU R package for estimating vector generalized additive models
+r-cran-xml - GNU R package for XML parsing and generation
+r-cran-zelig - GNU R package providing a unified front-end for estimating statistical models
+r-other-mott-happy - GNU R package for fine-mapping complex diseases
+r-other-rot - GNU R package of few tools needed by OpenTURNS
+r-recommended - GNU R collection of recommended packages [metapackage]
+radiance - Lighting Simulation and Rendering System
+ratpoison - keyboard-only window manager
+ratproxy - passive web application security assessment tool
+repsnapper - STL to GCode Converter and print software for RepRap machines
+rivet - Robust Independent Validation of Experiment and Theory
+rivet-plugins - Analysis plugins of Rivet
+rivet-plugins-data - Data files of Rivet analysis plugins
+rivet-plugins-dev - Template generator of Rivet analysis plugin
+rivet-plugins-doc - HTML documentation for Rivet analysis plugins
+rivet-reference - Rivet code reference
+rivet-root-converter - Rivet and ROOT file format converter
+rivet-user-manual - Rivet User Manual
+robocut - Control program for Graphtec cutting plotters
+robot-player - Networked server for robots and sensors
+robot-player-dev - Networked server for robots and sensors - development package
+robot-player-doc - Networked server for robots and sensors (documentation)
+rsbac-admin - Rule Set Based Access Control administrative utilities
+rsbac-doc - RSBAC documentation
+rsbac-klogd - RSBAC messages logger
+ruby-actionpack - Controller and View framework used by Rails
+ruby-actionpack-2.3 - Controller and View framework used by Rails
+ruby-activemodel-3.2 - toolkit for building modeling frameworks (part of Rails)
+ruby-activerecord-3.2 - object-relational mapper framework (part of Rails)
+ruby-activeresource-3.2 - REST modeling framework (part of Rails)
+ruby-amrita - HTML/XML template library for Ruby 1.8
+ruby-amrita2 - XML/XHTML template library for Ruby
+ruby-arel - SQL AST manager for Ruby
+ruby-coffee-script-source - CoffeeScript Compiler - Ruby integration
+ruby-echoe - Rubygems packaging tool that provides common Rake tasks
+ruby-gettext - gettext for Ruby
+ruby-gettext-activerecord - GetText localization for Ruby programs using ActiveRecord
+ruby-gettext-rails - Gettext support for Rails >= 2.3
+ruby-mustache - Mustache is a framework-agnostic way to render logic-free views
+ruby-packet - Ruby library for Event driven network programming (dependency package)
+ruby-playerc - Networked server for robots and sensors - Ruby wrapper
+ruby-xmmsclient - XMMS2 - Ruby bindings
+ruby-zoom - Ruby/ZOOM provides a Ruby binding to the Z40.50 Object-Orientation Model
+sagcad - CAD/CAM of 2D program
+sagcad-doc - sagCAD documentation
+sbmltoolbox - libsbml toolbox for octave and matlab
+scantool - OBD-II vehicle diagnostic scanner
+science-config - Debian Science Project config package
+science-neuroscience-modeling - Debian Science packages for modeling of neural systems
+scilab - Scientific software package for numerical computations
+scilab-data - Scientific software package for numerical computations (data files)
+scilab-doc - Scientific software package (english documentations)
+scilab-doc-fr - Scientific software package (french documentation)
+scilab-doc-ja - Scientific software package (Japanese documentation)
+scilab-doc-pt-br - Scientific software package (Brazilian Portuguese documentation)
+scilab-full-bin - Scientific software package for numerical computations (all binary files)
+scilab-include - Scientific software package for numerical computations (include files)
+scilab-minimal-bin - Scientific software package for numerical computations (minimal binary files)
+scilab-minimal-bin-dbg - Scientific software package (scilab-cli debugging symbols)
+scilab-test - Scientific software package for numerical computations (test files)
+scim-canna - SCIM IMEngine module for Canna
+seq-gen - simulate the evolution of nucleotide or amino acid sequences
+sfact - toolchain to generate G-Code instructions from 3D models
+sfront - MPEG 4 Structured Audio decoder
+shogun-cmdline-static - Large Scale Machine Learning Toolbox
+shogun-csharp-modular - Large Scale Machine Learning Toolbox
+shogun-dbg - Large Scale Machine Learning Toolbox
+shogun-doc-cn - Large Scale Machine Learning Toolbox
+shogun-doc-en - Large Scale Machine Learning Toolbox
+shogun-elwms-static - Large Scale Machine Learning Toolbox
+shogun-java-modular - Large Scale Machine Learning Toolbox
+shogun-lua-modular - Large Scale Machine Learning Toolbox
+shogun-python-modular - Large Scale Machine Learning Toolbox
+shogun-python-static - Large Scale Machine Learning Toolbox
+shogun-r-static - Large Scale Machine Learning Toolbox
+shogun-ruby-modular - Large Scale Machine Learning Toolbox
+sigma-align - Simple greedy multiple alignment of non-coding DNA sequences
+simh - Emulators for 33 different computers
+skanlite - image scanner for KDE 4 based on the KSane backend
+skanlite-dbg - Skanlite's debugging symbols
+smuxi - graphical IRC client
+smuxi-engine - Engine library for Smuxi
+smuxi-engine-irc - IRC engine for Smuxi
+smuxi-engine-twitter - Twitter engine for Smuxi
+smuxi-engine-xmpp - XMPP / Jabber / GTalk / Facebook Chat engine for Smuxi
+smuxi-frontend - Frontend library for Smuxi
+smuxi-frontend-gnome - GNOME frontend for Smuxi
+smuxi-frontend-gnome-irc - IRC support for GNOME frontend for Smuxi
+smuxi-frontend-stfl - STFL frontend for Smuxi (experimental)
+smuxi-server - Server application for Smuxi
+sphinx-voxforge-hmm-en - English sphinx acoustic model built from Voxforge audio corpus
+sphinx-voxforge-lm-en - English sphinx language model built from Voxforge audio corpus
+sphinx3-doc - sphinx 3 speech recognition - documentation
+sphinx3-hmm-en-hub4 - sphinx 3 speech recognition - english acoustic model
+sphinx3-hmm-en-rm1 - sphinx 3 speech recognition - test english acoustic model
+sphinx3-lm-en-an4 - sphinx 3 speech recognition - AN4 language model
+sphinxtrain - Carnegie Mellon University's open source acoustic model trainer
+sphinxtrain-dev - CM University's acoustic model trainer - development files
+stella - Atari 2600 Emulator for SDL & the X Window System
+stk - Sound Synthesis Toolkit (example applications)
+stk-doc - Sound Synthesis Toolkit (documentation)
+stormbaancoureur-data - game data for Stormbaan Coureur
+styx - combined parser/scanner generator for C/C++
+sunflow - rendering system for photo-realistic image synthesis (GUI)
+swfmill - xml2swf and swf2xml processor
+swift - distributed virtual object store - common files
+syrthes - Transient thermal simulations in complex solid geometries
+sysinfo - display computer and system information
+t-coffee - Multiple Sequence Alignment
+tahoe-lafs - Secure distributed filesystem
+tclxapian - Xapian search engine interface for Tcl
+tcm - Toolkit for Conceptual Modeling (TCM)
+tcm-doc - Documentation for Toolkit for Conceptual Modeling (TCM)
+tegaki-zinnia-japanese - Japanese handwriting model for Zinnia
+tegaki-zinnia-simplified-chinese - Simplified Chinese handwriting model for Zinnia
+tegaki-zinnia-traditional-chinese - Traditional Chinese handwriting model for Zinnia
+terraintool - Generates survex format terrain models from SRTM and ASTER data
+thepeg - Toolkit for High Energy Physics Event Generation
+thepeg-gui - Java GUI of ThePEG
+thepeg-reference - Code reference of ThePEG
+therion - Cave surveying - 2D and 3D drawing software
+therion-doc - Documentation for Therion Cave surveying software
+therion-viewer - Cave surveying - 3D viewer for therion models
+tigr-glimmer - Gene detection in archea and bacteria
+tk2 - Tk GUI for the ICOM IC-R2 receiver
+trac-bitten - continuous integration plugin for Trac
+trac-bitten-slave - continuous integration plugin for Trac
+tryton-modules-stock-forecast - Tryton Application Platform (Stock Forecast Module)
+tryton-proteus - Tryton Application Platform (Proteus)
+twoftpd - a simple secure efficient FTP server (programs)
+twoftpd-run - a simple secure efficient FTP server
+ucimf-sunpinyin - ucimf wrapper for Sunpinyin IM engine
+umbrello - UML modelling tool and code generator
+umlet - simple, text driven UML drawing tool
+undertaker - static code analysis tool checking preprocessor directives
+undertaker-el - emacs integration for undertaker
+upnp-router-control - UPnP compliant routers manager
+usbmount - automatically mount and unmount USB mass storage devices
+velocity - Java-based template engine for web application
+velocity-doc - Documentation for velocity
+verilator - fast free Verilog simulator
+videogen - Create arbitrary-res modelines using hardware parameters
+virt-top - show stats of virtualized domains
+wammu - GTK application to control your mobile phone
+weex - Non-interactive FTP client for updating web pages
+weka - Machine learning algorithms for data mining tasks
+weka-doc - Machine learning algorithms for data mining tasks
+whitedune - graphical VRML97/X3D viewer, editor, 3D modeller and animation tool
+whitedune-docs - documentation for whitedune
+wings3d - Nendo-inspired 3D polygon mesh modeller
+wise - comparison of biopolymers, commonly DNA and protein sequences
+xacobeo - XPath (XML Path Language) visualizer
+xapian-tools - Basic tools for Xapian search engine library
+xblast-tnt - multiplayer blast-the-others game inspired by Dynablaster
+xblast-tnt-models - player models for xblast-tnt
+xbs - 3-d models and movies of molecules
+xlbiff - X Literate Biff. Displays From and Subject lines of your new mail
+xmlbeans - Java library for accessing XML by binding it to Java types - tools
+xmms2 - Client/server based media player system
+xmms2-client-avahi - XMMS2 - avahi client
+xmms2-client-cli - XMMS2 - cli client
+xmms2-client-nycli - XMMS2 - new cli client
+xmms2-core - XMMS2 - core package
+xmms2-dev - XMMS2 - plug-in development files
+xmms2-icon - XMMS2 - icon package
+xmms2-plugin-airplay - XMMS2 - airplay output plug-in
+xmms2-plugin-all - XMMS2 - all plug-ins
+xmms2-plugin-alsa - XMMS2 - ALSA output
+xmms2-plugin-ao - XMMS2 - libao output plug-in
+xmms2-plugin-apefile - XMMS2 - Monkey's Audio decoder plug-in
+xmms2-plugin-asf - XMMS2 - ASF plug-in
+xmms2-plugin-asx - XMMS2 - ASX playlist plug-in
+xmms2-plugin-avcodec - XMMS2 - avcodec decoder
+xmms2-plugin-cdda - XMMS2 - CDDA plug-in
+xmms2-plugin-cue - XMMS2 - CUE playlist plug-in
+xmms2-plugin-curl - XMMS2 - curl transport for HTTP
+xmms2-plugin-daap - XMMS2 - daap plug-in
+xmms2-plugin-faad - XMMS2 - faad decoder
+xmms2-plugin-flac - XMMS2 - FLAC decoder
+xmms2-plugin-flv - XMMS2 - Flash Video plug-in
+xmms2-plugin-gme - XMMS2 - gme plug-in
+xmms2-plugin-gvfs - XMMS2 - gvfs plug-in
+xmms2-plugin-html - XMMS2 - HTML playlist plug-in
+xmms2-plugin-ices - XMMS2 - Ogg streaming output
+xmms2-plugin-icymetaint - XMMS2 - shoutcast metadata plug-in
+xmms2-plugin-id3v2 - XMMS2 - ID3v2 plug-in
+xmms2-plugin-jack - XMMS2 - JACK output
+xmms2-plugin-karaoke - XMMS2 - karaoke plug-in
+xmms2-plugin-m3u - XMMS2 - M3U playlist plug-in
+xmms2-plugin-mad - XMMS2 - libmad based mp3 decoder
+xmms2-plugin-mms - XMMS2 - MMS transport
+xmms2-plugin-modplug - XMMS2 - modplug decoder
+xmms2-plugin-mp4 - XMMS2 - MPEG-4 plug-in
+xmms2-plugin-mpg123 - XMMS2 - libmpg123 based mp3 decoder
+xmms2-plugin-musepack - XMMS2 - mpc decoder
+xmms2-plugin-normalize - XMMS2 - Normalize plug-in
+xmms2-plugin-ofa - XMMS2 - Open Fingerprint Architecture plug-in
+xmms2-plugin-oss - XMMS2 - OSS output
+xmms2-plugin-pls - XMMS2 - PLS playlist plug-in
+xmms2-plugin-pulse - XMMS2 - PulseAudio output plug-in
+xmms2-plugin-rss - XMMS2 - RSS podcast plug-in
+xmms2-plugin-sid - XMMS2 - libsidplay2 based decoder
+xmms2-plugin-smb - XMMS2 - Server Message Block (SMB) transport
+xmms2-plugin-sndfile - XMMS2 - sndfile decoder
+xmms2-plugin-speex - XMMS2 - Speex decoder
+xmms2-plugin-tta - XMMS2 - TTA decoder plug-in
+xmms2-plugin-vocoder - XMMS2 - vocoder plug-in
+xmms2-plugin-vorbis - XMMS2 - vorbis decoder
+xmms2-plugin-wavpack - XMMS2 - WavPack decoder plug-in
+xmms2-plugin-xml - XMMS2 - XML plug-in
+xmms2-plugin-xspf - XMMS2 - XSPF playlist plug-in
+xnecview - NEC structure and gain pattern viewer
+xotcl - Extended Object Tcl (XOTcl): Object orientation for Tcl - shared library
+xsunpinyin - Standalone XIM server for Sunpinyin
+xtightvncviewer - virtual network computing client software for X
+xtrkcad - Model Train Track CAD Program
+xvnc4viewer - Virtual network computing client software for X
+yade - Platform for discrete element modeling
+yade-doc - Platform for discrete element modeling. Documentation
+yafaray-exporter - modern, xml-speaking raytracing-based rendering system
+yorick-mira - optical interferometry image reconstruction within Yorick
+yorick-yao - Yorick-based adaptive optics system simulator
+zend-framework - a simple, straightforward, open-source software framework for PHP 5
+zend-framework-bin - a simple, straightforward, open-source software framework for PHP 5
+zimpl - mathematical modeling language for optimization problems
+zinnia-utils - utils for the zinnia library
+ansible - Configuration management, deployment, and task execution system
+ansible-doc - Ansible documentation and examples
+ansible-fireball - Ansible fireball transport support
+ansible-node-fireball - Ansible fireball transport support for nodes

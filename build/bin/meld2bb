@@ -1,0 +1,19 @@
+#!/bin/sh
+if [ ! $?BBASE ]; then
+  echo "You must set BBASE to the directory which is the base of the blinkyblock code"
+  exit 1
+fi
+
+if [ ! $?ARCH ]; then
+  export ARCH=`uname -m`-`uname -o | sed -e 's+/+-+g'`
+  echo "setting ARCH to $ARCH"
+fi
+
+if [ $# != 2 ]; then
+  echo "Must be called with meld source file and destination file name"
+  exit 1
+fi
+
+echo "Calling: sml @SMLload=$BBASE/bin/arch-$ARCH/compiler.base -vm $*"
+sml @SMLload=$BBASE/bin/arch-$ARCH/compiler.heap -vm $*
+exit $?

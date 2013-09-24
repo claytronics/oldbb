@@ -1,0 +1,156 @@
+type linear tick(addr).
+type linear doTick(addr).
+type linear inc(addr).
+type linear incNext(addr).
+type linear incNextRow(addr).
+
+type linear value(addr, int).
+type linear setValue(addr, int).
+
+type linear reset(addr).
+type linear resetNext(addr).
+
+type linear rowValue(addr, int).
+
+type nextDigit(addr, first addr).
+type rowStart(addr, int).
+
+type linear init(addr).
+
+extern int blockID(addr).
+
+const COLOR_ZERO = 5.
+const COLOR_ONE = 4.
+
+const UP = 0.
+const DOWN = 5.
+
+const SECONDS = 0.
+const MINUTES = 1.
+const HOURS = 2.
+
+
+// init values
+!setValue(N, 0).
+
+// build up a line of digits in the plane
+nextDigit(N, M) :-
+	neighbor(N, M, DIR),
+	rowStart(N, _),
+	DIR != UP,
+	DIR != DOWN.
+
+nextDigit(N, M) :-
+	nextDigit(N', N),
+	neighbor(N', N, _),
+	neighbor(N, M, DIR),
+	M != N',
+	DIR != UP,
+	DIR != DOWN.
+
+// go up to the next plane
+!init(N),
+rowStart(N, SECONDS) :- 1 = blockID(N).
+
+!rowValue(M, 0),
+!init(M),
+rowStart(M, ROW+1) :-
+	!init(N),
+	rowStart(N, ROW),
+	neighbor(N, M, UP).
+
+// set the value and the color appropriately
+!value(N, 0),
+setColor2(N, COLOR_ZERO) :-
+	!setValue(N, 0).
+
+!value(N, 1),
+setColor2(N, COLOR_ONE) :-
+	!setValue(N, 1).
+
+
+// get a timer going
+!rowValue(N, 0),
+!tick(N) :- 1 = blockID(N).
+
+!tick(N)@+1s,
+!doTick(N) :-
+	!tick(N).
+
+!inc(N),
+!rowValue(N, X+1) :-
+	!doTick(N),
+	!rowValue(N, X), X < 60,
+	rowStart(N, SECONDS).
+
+!inc(N),
+!rowValue(N, X+1) :-
+	!doTick(N),
+	!rowValue(N, X), X < 60,
+	rowStart(N, MINUTES).
+
+!inc(N),
+!rowValue(N, X+1) :-
+	!doTick(N),
+	!rowValue(N, X), X < 60,
+	rowStart(N, HOURS).
+
+
+// increment a block
+!setValue(N, 1) :-
+	!inc(N),
+	!value(N, 0).
+
+!incNext(N),
+!setValue(N, 0) :-
+	!inc(N), !value(N, 1).
+
+!inc(M) :-
+	!incNext(N),
+	nextDigit(N, M), neighbor(N, M, _).
+
+
+// perform resets
+!setValue(N, 0),
+!resetNext(N) :-
+	!value(N, _),
+	!reset(N).
+
+!reset(M) :-
+	!resetNext(N),
+	nextDigit(N, M), neighbor(N, M, _).
+
+!rowValue(N, 0),
+!reset(N) :-
+	!tap(N),
+	!rowValue(N, _),
+	rowStart(N, SECONDS).
+
+!rowValue(N, X),
+!doTick(N) :-
+	!rowValue(N, X),
+	!tap(N),
+	rowStart(N, ROW), ROW != SECONDS.
+
+!incNextRow(N),
+!rowValue(N, 0),
+!reset(N) :-
+	!rowValue(N, 60),
+	rowStart(N, SECONDS).
+
+!incNextRow(N),
+!rowValue(N, 0),
+!reset(N) :-
+	!rowValue(N, 60),
+	rowStart(N, MINUTES).
+
+!incNextRow(N),
+!rowValue(N, 0),
+!reset(N) :-
+	!rowValue(N, 24),
+	rowStart(N, HOURS).
+
+
+!doTick(M) :-
+	!incNextRow(N),
+	neighbor(N, M, UP).

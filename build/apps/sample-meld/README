@@ -1,0 +1,32 @@
+THIS IS WRONG.  SEE README in ../..
+----------------------------------------------------------
+
+
+
+
+
+
+
+To build a meld program for simulator:
+   -Make sure the src-bobby build environment is installed 
+   	 cd into src-bobby
+	 make build
+	 make install 
+
+   - cd into build/apps/sample-meld	 
+   -define BBASE
+      export BBASE=build/src-bobby
+   -define MELDRAW
+      export MELDRAW=redMove.meld
+   -run make
+
+   -to run simulator:
+       executable is in  arch-*/ folder
+       launch with -R 1 (launching with configurations untested)
+
+   -To remake, first run make wipeout
+
+untested
+
+
+	 

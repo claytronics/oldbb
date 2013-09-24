@@ -1,0 +1,997 @@
+   1               		.file	"twi_master_driver.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	TWI_MasterInit
+  13               	TWI_MasterInit:
+  14               	.LFB7:
+  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c"
+   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /* This file has been prepared for Doxygen automatic documentation generation.*/
+   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \file *********************************************************************
+   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * \brief
+   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      XMEGA TWI master driver source file.
+   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      This file contains the function implementations the XMEGA master TWI
+   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      driver.
+   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      The driver is not intended for size and/or speed critical code, since
+  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      most functions are just a few lines of code, and the function call
+  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      overhead would decrease code performance. The driver is intended for
+  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      rapid prototyping and documentation purposes for getting started with
+  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      the XMEGA TWI master module.
+  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      For size and/or speed critical code, it is recommended to copy the
+  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      function contents directly into your application instead of making
+  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      a function call.
+  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      Several functions use the following construct:
+  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *          "some_register = ... | (some_parameter ? SOME_BIT_bm : 0) | ..."
+  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      Although the use of the ternary operator ( if ? then : else ) is
+  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      discouraged, in some occasions the operator makes it possible to write
+  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      pretty clean and neat code. In this driver, the construct is used to
+  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      set or not set a configuration bit based on a boolean input parameter,
+  26:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      such as the "some_parameter" in the example above.
+  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  28:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * \par Application note:
+  29:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      AVR1308: Using the XMEGA TWI
+  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  31:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * \par Documentation
+  32:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      For comprehensive code documentation, supported compilers, compiler
+  33:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      settings and supported devices see readme.html
+  34:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  35:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * \author
+  36:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      Atmel Corporation: http://www.atmel.com \n
+  37:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *      Support email: avr@atmel.com
+  38:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  39:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * $Revision: 1569 $
+  40:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * $Date: 2008-04-22 13:03:43 +0200 (ti, 22 apr 2008) $  \n
+  41:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  42:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * Copyright (c) 2008, Atmel Corporation All rights reserved.
+  43:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  44:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * Redistribution and use in source and binary forms, with or without
+  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * modification, are permitted provided that the following conditions are met:
+  46:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  47:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  48:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * this list of conditions and the following disclaimer.
+  49:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  50:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  51:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * this list of conditions and the following disclaimer in the documentation
+  52:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * and/or other materials provided with the distribution.
+  53:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  54:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * 3. The name of ATMEL may not be used to endorse or promote products derived
+  55:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * from this software without specific prior written permission.
+  56:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  57:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  58:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  59:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE EXPRESSLY AND
+  60:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT,
+  61:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  62:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  63:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  64:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  65:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+  66:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  67:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *****************************************************************************/
+  68:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+  69:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** #include "twi_master_driver.h"
+  70:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+  71:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+  72:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Initialize the TWI module.
+  73:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  74:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  TWI module initialization function.
+  75:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  Enables master read and write interrupts.
+  76:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  Remember to enable interrupts globally from the main application.
+  77:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  78:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi                      The TWI_Master_t struct instance.
+  79:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param module                   The TWI module to use.
+  80:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param intLevel                 Master interrupt level.
+  81:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param baudRateRegisterSetting  The baud rate register value.
+  82:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+  83:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterInit(TWI_Master_t *twi,
+  84:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                     TWI_t *module,
+  85:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                     TWI_MASTER_INTLVL_t intLevel,
+  86:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                     uint8_t baudRateRegisterSetting)
+  87:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+  16               		.loc 1 87 0
+  17               	.LVL0:
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  22 0000 FC01      		movw r30,r24
+  88:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface = module;
+  23               		.loc 1 88 0
+  24 0002 6083      		st Z,r22
+  25 0004 7183      		std Z+1,r23
+  89:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.CTRLA = intLevel |
+  26               		.loc 1 89 0
+  27 0006 4863      		ori r20,lo8(56)
+  28               	.LVL1:
+  29 0008 DB01      		movw r26,r22
+  30 000a 1196      		adiw r26,1
+  31 000c 4C93      		st X,r20
+  90:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	                               TWI_MASTER_RIEN_bm |
+  91:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	                               TWI_MASTER_WIEN_bm |
+  92:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	                               TWI_MASTER_ENABLE_bm;
+  93:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.BAUD = baudRateRegisterSetting;
+  32               		.loc 1 93 0
+  33 000e A081      		ld r26,Z
+  34 0010 B181      		ldd r27,Z+1
+  35 0012 1596      		adiw r26,5
+  36 0014 2C93      		st X,r18
+  94:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.STATUS = TWI_MASTER_BUSSTATE_IDLE_gc;
+  37               		.loc 1 94 0
+  38 0016 0190      		ld __tmp_reg__,Z+
+  39 0018 F081      		ld r31,Z
+  40 001a E02D      		mov r30,__tmp_reg__
+  41 001c 81E0      		ldi r24,lo8(1)
+  42               	.LVL2:
+  43 001e 8483      		std Z+4,r24
+  44 0020 0895      		ret
+  45               	.LFE7:
+  47               	.global	TWI_MasterState
+  49               	TWI_MasterState:
+  50               	.LFB8:
+  95:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+  96:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+  97:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+  98:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Returns the TWI bus state.
+  99:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 100:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  Returns the TWI bus state (type defined in device headerfile),
+ 101:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  unknown, idle, owner or busy.
+ 102:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 103:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
+ 104:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 105:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_UNKNOWN_gc Bus state is unknown.
+ 106:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_IDLE_gc    Bus state is idle.
+ 107:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_OWNER_gc   Bus state is owned by the master.
+ 108:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_BUSY_gc    Bus state is busy.
+ 109:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 110:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** TWI_MASTER_BUSSTATE_t TWI_MasterState(TWI_Master_t *twi)
+ 111:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+  51               		.loc 1 111 0
+  52               	.LVL3:
+  53               	/* prologue: function */
+  54               	/* frame size = 0 */
+  55               	/* stack size = 0 */
+  56               	.L__stack_usage = 0
+ 112:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	TWI_MASTER_BUSSTATE_t twi_status;
+ 113:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi_status = (TWI_MASTER_BUSSTATE_t) (twi->interface->MASTER.STATUS &
+  57               		.loc 1 113 0
+  58 0022 DC01      		movw r26,r24
+  59 0024 ED91      		ld r30,X+
+  60 0026 FC91      		ld r31,X
+  61 0028 8481      		ldd r24,Z+4
+  62               	.LVL4:
+ 114:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	                                      TWI_MASTER_BUSSTATE_gm);
+ 115:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
+ 116:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+  63               		.loc 1 116 0
+  64 002a 8370      		andi r24,lo8(3)
+  65               	.LVL5:
+  66 002c 0895      		ret
+  67               	.LFE8:
+  69               	.global	TWI_MasterReady
+  71               	TWI_MasterReady:
+  72               	.LFB9:
+ 117:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 118:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 119:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Returns true if transaction is ready.
+ 120:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 121:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function returns a boolean whether the TWI Master is ready
+ 122:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  for a new transaction.
+ 123:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 124:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
+ 125:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 126:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
+ 127:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
+ 128:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 129:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterReady(TWI_Master_t *twi)
+ 130:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+  73               		.loc 1 130 0
+  74               	.LVL6:
+  75               	/* prologue: function */
+  76               	/* frame size = 0 */
+  77               	/* stack size = 0 */
+  78               	.L__stack_usage = 0
+ 131:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = (twi->status & TWIM_STATUS_READY);
+  79               		.loc 1 131 0
+  80 002e FC01      		movw r30,r24
+  81 0030 8785      		ldd r24,Z+15
+  82               	.LVL7:
+ 132:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
+ 133:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+  83               		.loc 1 133 0
+  84 0032 80E0      		ldi r24,0
+  85 0034 0895      		ret
+  86               	.LFE9:
+  88               	.global	TWI_MasterWriteRead
+  90               	TWI_MasterWriteRead:
+  91               	.LFB12:
+ 134:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 135:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 136:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI write transaction.
+ 137:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 138:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function is TWI Master wrapper for a write-only transaction.
+ 139:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 140:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi          The TWI_Master_t struct instance.
+ 141:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param address      Slave address.
+ 142:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param writeData    Pointer to data to write.
+ 143:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToWrite Number of data bytes to write.
+ 144:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 145:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
+ 146:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
+ 147:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 148:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterWrite(TWI_Master_t *twi,
+ 149:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                      uint8_t address,
+ 150:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                      uint8_t *writeData,
+ 151:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                      uint8_t bytesToWrite)
+ 152:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 153:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, writeData, bytesToWrite, 0);
+ 154:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
+ 155:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 156:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 157:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 158:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI read transaction.
+ 159:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 160:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function is a TWI Maste wrapper for read-only transaction.
+ 161:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 162:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi            The TWI_Master_t struct instance.
+ 163:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param address        The slave address.
+ 164:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToRead    The number of bytes to read.
+ 165:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 166:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
+ 167:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
+ 168:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 169:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterRead(TWI_Master_t *twi,
+ 170:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                     uint8_t address,
+ 171:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                     uint8_t bytesToRead)
+ 172:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 173:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, 0, 0, bytesToRead);
+ 174:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
+ 175:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 176:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 177:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 178:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI write and/or read transaction.
+ 179:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 180:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function is a TWI Master write and/or read transaction. The function
+ 181:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  can be used to both write and/or read bytes to/from the TWI Slave in one
+ 182:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  transaction.
+ 183:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 184:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi            The TWI_Master_t struct instance.
+ 185:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param address        The slave address.
+ 186:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param writeData      Pointer to data to write.
+ 187:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToWrite   Number of bytes to write.
+ 188:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToRead    Number of bytes to read.
+ 189:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 190:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
+ 191:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
+ 192:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 193:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterWriteRead(TWI_Master_t *twi,
+ 194:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t address,
+ 195:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t *writeData,
+ 196:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t bytesToWrite,
+ 197:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t bytesToRead)
+ 198:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+  92               		.loc 1 198 0
+  93               	.LVL8:
+  94 0036 0F93      		push r16
+  95               	.LCFI0:
+  96 0038 CF93      		push r28
+  97               	.LCFI1:
+  98 003a DF93      		push r29
+  99               	.LCFI2:
+ 100               	/* prologue: function */
+ 101               	/* frame size = 0 */
+ 102               	/* stack size = 3 */
+ 103               	.L__stack_usage = 3
+ 104 003c FC01      		movw r30,r24
+ 199:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/*Parameter sanity check. */
+ 200:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if (bytesToWrite > TWIM_WRITE_BUFFER_SIZE) {
+ 105               		.loc 1 200 0
+ 106 003e 2530      		cpi r18,lo8(5)
+ 107 0040 00F4      		brsh .L11
+ 201:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
+ 202:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 203:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if (bytesToRead > TWIM_READ_BUFFER_SIZE) {
+ 108               		.loc 1 203 0
+ 109 0042 0530      		cpi r16,lo8(5)
+ 110 0044 00F4      		brsh .L11
+ 204:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
+ 205:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 206:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 207:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/*Initiate transaction if bus is ready. */
+ 208:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->status == TWIM_STATUS_READY) {
+ 111               		.loc 1 208 0
+ 112 0046 8785      		ldd r24,Z+15
+ 113               	.LVL9:
+ 114 0048 8111      		cpse r24,__zero_reg__
+ 115 004a 00C0      		rjmp .L11
+ 209:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 210:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->status = TWIM_STATUS_BUSY;
+ 116               		.loc 1 210 0
+ 117 004c 81E0      		ldi r24,lo8(1)
+ 118 004e 8787      		std Z+15,r24
+ 211:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_UNKNOWN;
+ 119               		.loc 1 211 0
+ 120 0050 108A      		std Z+16,__zero_reg__
+ 212:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 213:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->address = address<<1;
+ 121               		.loc 1 213 0
+ 122 0052 660F      		lsl r22
+ 123               	.LVL10:
+ 124 0054 6283      		std Z+2,r22
+ 125               	.LVL11:
+ 126 0056 DA01      		movw r26,r20
+ 127               	.LBB23:
+ 214:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 215:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		/* Fill write data buffer. */
+ 216:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		for (uint8_t bufferIndex=0; bufferIndex < bytesToWrite; bufferIndex++) {
+ 128               		.loc 1 216 0
+ 129 0058 80E0      		ldi r24,0
+ 130 005a 90E0      		ldi r25,0
+ 131 005c 00C0      		rjmp .L6
+ 132               	.LVL12:
+ 133               	.L7:
+ 217:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 			twi->writeData[bufferIndex] = writeData[bufferIndex];
+ 134               		.loc 1 217 0 discriminator 2
+ 135 005e 3D91      		ld r19,X+
+ 136 0060 EF01      		movw r28,r30
+ 137 0062 C80F      		add r28,r24
+ 138 0064 D91F      		adc r29,r25
+ 139 0066 3B83      		std Y+3,r19
+ 140 0068 0196      		adiw r24,1
+ 141               	.L6:
+ 216:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		for (uint8_t bufferIndex=0; bufferIndex < bytesToWrite; bufferIndex++) {
+ 142               		.loc 1 216 0 discriminator 1
+ 143 006a 8217      		cp r24,r18
+ 144 006c 00F0      		brlo .L7
+ 145               	.LBE23:
+ 218:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		}
+ 219:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 220:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesToWrite = bytesToWrite;
+ 146               		.loc 1 220 0
+ 147 006e 2387      		std Z+11,r18
+ 221:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesToRead = bytesToRead;
+ 148               		.loc 1 221 0
+ 149 0070 0487      		std Z+12,r16
+ 222:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesWritten = 0;
+ 150               		.loc 1 222 0
+ 151 0072 1586      		std Z+13,__zero_reg__
+ 223:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesRead = 0;
+ 152               		.loc 1 223 0
+ 153 0074 1686      		std Z+14,__zero_reg__
+ 224:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 225:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		/* If write command, send the START condition + Address +
+ 226:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		 * 'R/_W = 0'
+ 227:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		 */
+ 228:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		if (twi->bytesToWrite > 0) {
+ 154               		.loc 1 228 0
+ 155 0076 8385      		ldd r24,Z+11
+ 156 0078 8823      		tst r24
+ 157 007a 01F0      		breq .L8
+ 158               	.LBB24:
+ 229:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 			uint8_t writeAddress = twi->address & ~0x01;
+ 159               		.loc 1 229 0
+ 160 007c 8281      		ldd r24,Z+2
+ 161 007e 8E7F      		andi r24,lo8(-2)
+ 162               	.LVL13:
+ 163 0080 00C0      		rjmp .L13
+ 164               	.LVL14:
+ 165               	.L8:
+ 166               	.LBE24:
+ 230:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 			twi->interface->MASTER.ADDR = writeAddress;
+ 231:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		}
+ 232:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 233:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		/* If read command, send the START condition + Address +
+ 234:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		 * 'R/_W = 1'
+ 235:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		 */
+ 236:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		else if (twi->bytesToRead > 0) {
+ 167               		.loc 1 236 0
+ 168 0082 8485      		ldd r24,Z+12
+ 169 0084 8823      		tst r24
+ 170 0086 01F0      		breq .L12
+ 171               	.LVL15:
+ 172               	.LBB25:
+ 173               	.LBB26:
+ 174               	.LBB27:
+ 237:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 			uint8_t readAddress = twi->address | 0x01;
+ 175               		.loc 1 237 0
+ 176 0088 8281      		ldd r24,Z+2
+ 177 008a 8160      		ori r24,lo8(1)
+ 178               	.LVL16:
+ 179               	.L13:
+ 238:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 			twi->interface->MASTER.ADDR = readAddress;
+ 180               		.loc 1 238 0
+ 181 008c 0190      		ld __tmp_reg__,Z+
+ 182 008e F081      		ld r31,Z
+ 183 0090 E02D      		mov r30,__tmp_reg__
+ 184               	.LVL17:
+ 185 0092 8683      		std Z+6,r24
+ 186 0094 00C0      		rjmp .L12
+ 187               	.LVL18:
+ 188               	.L11:
+ 189               	.LBE27:
+ 190               	.LBE26:
+ 191               	.LBE25:
+ 201:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
+ 192               		.loc 1 201 0
+ 193 0096 80E0      		ldi r24,0
+ 194 0098 00C0      		rjmp .L5
+ 195               	.LVL19:
+ 196               	.L12:
+ 239:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		}
+ 240:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		return true;
+ 197               		.loc 1 240 0
+ 198 009a 81E0      		ldi r24,lo8(1)
+ 199               	.L5:
+ 200               	/* epilogue start */
+ 241:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	} else {
+ 242:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
+ 243:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 244:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 201               		.loc 1 244 0
+ 202 009c DF91      		pop r29
+ 203 009e CF91      		pop r28
+ 204 00a0 0F91      		pop r16
+ 205               	.LVL20:
+ 206 00a2 0895      		ret
+ 207               	.LFE12:
+ 209               	.global	TWI_MasterRead
+ 211               	TWI_MasterRead:
+ 212               	.LFB11:
+ 172:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 213               		.loc 1 172 0
+ 214               	.LVL21:
+ 215 00a4 0F93      		push r16
+ 216               	.LCFI3:
+ 217               	/* prologue: function */
+ 218               	/* frame size = 0 */
+ 219               	/* stack size = 1 */
+ 220               	.L__stack_usage = 1
+ 173:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, 0, 0, bytesToRead);
+ 221               		.loc 1 173 0
+ 222 00a6 042F      		mov r16,r20
+ 223 00a8 20E0      		ldi r18,0
+ 224 00aa 40E0      		ldi r20,0
+ 225 00ac 50E0      		ldi r21,0
+ 226               	.LVL22:
+ 227 00ae 0E94 0000 		call TWI_MasterWriteRead
+ 228               	.LVL23:
+ 229               	/* epilogue start */
+ 175:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 230               		.loc 1 175 0
+ 231 00b2 0F91      		pop r16
+ 232               	.LVL24:
+ 233 00b4 0895      		ret
+ 234               	.LFE11:
+ 236               	.global	TWI_MasterWrite
+ 238               	TWI_MasterWrite:
+ 239               	.LFB10:
+ 152:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 240               		.loc 1 152 0
+ 241               	.LVL25:
+ 242 00b6 0F93      		push r16
+ 243               	.LCFI4:
+ 244               	/* prologue: function */
+ 245               	/* frame size = 0 */
+ 246               	/* stack size = 1 */
+ 247               	.L__stack_usage = 1
+ 153:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, writeData, bytesToWrite, 0);
+ 248               		.loc 1 153 0
+ 249 00b8 00E0      		ldi r16,0
+ 250 00ba 0E94 0000 		call TWI_MasterWriteRead
+ 251               	.LVL26:
+ 252               	/* epilogue start */
+ 155:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 253               		.loc 1 155 0
+ 254 00be 0F91      		pop r16
+ 255 00c0 0895      		ret
+ 256               	.LFE10:
+ 258               	.global	TWI_MasterArbitrationLostBusErrorHandler
+ 260               	TWI_MasterArbitrationLostBusErrorHandler:
+ 261               	.LFB14:
+ 245:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 246:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 247:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Common TWI master interrupt service routine.
+ 248:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 249:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  Check current status and calls the appropriate handler.
+ 250:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 251:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi  The TWI_Master_t struct instance.
+ 252:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 253:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterInterruptHandler(TWI_Master_t *twi)
+ 254:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 255:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t currentStatus = twi->interface->MASTER.STATUS;
+ 256:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 257:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If arbitration lost or bus error. */
+ 258:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if ((currentStatus & TWI_MASTER_ARBLOST_bm) ||
+ 259:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	    (currentStatus & TWI_MASTER_BUSERR_bm)) {
+ 260:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 261:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterArbitrationLostBusErrorHandler(twi);
+ 262:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 263:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 264:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If master write interrupt. */
+ 265:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_WIF_bm) {
+ 266:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterWriteHandler(twi);
+ 267:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 268:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 269:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If master read interrupt. */
+ 270:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_RIF_bm) {
+ 271:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterReadHandler(twi);
+ 272:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 273:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 274:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If unexpected state. */
+ 275:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
+ 276:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_FAIL);
+ 277:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 278:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 279:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 280:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 281:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI master arbitration lost and bus error interrupt handler.
+ 282:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 283:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  Handles TWI responses to lost arbitration and bus error.
+ 284:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 285:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi  The TWI_Master_t struct instance.
+ 286:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 287:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterArbitrationLostBusErrorHandler(TWI_Master_t *twi)
+ 288:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 262               		.loc 1 288 0
+ 263               	.LVL27:
+ 264               	/* prologue: function */
+ 265               	/* frame size = 0 */
+ 266               	/* stack size = 0 */
+ 267               	.L__stack_usage = 0
+ 268 00c2 FC01      		movw r30,r24
+ 289:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t currentStatus = twi->interface->MASTER.STATUS;
+ 269               		.loc 1 289 0
+ 270 00c4 A081      		ld r26,Z
+ 271 00c6 B181      		ldd r27,Z+1
+ 272 00c8 1496      		adiw r26,4
+ 273 00ca 8C91      		ld r24,X
+ 274 00cc 1497      		sbiw r26,4
+ 275               	.LVL28:
+ 290:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 291:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If bus error. */
+ 292:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if (currentStatus & TWI_MASTER_BUSERR_bm) {
+ 276               		.loc 1 292 0
+ 277 00ce 82FF      		sbrs r24,2
+ 278 00d0 00C0      		rjmp .L17
+ 293:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_BUS_ERROR;
+ 279               		.loc 1 293 0
+ 280 00d2 94E0      		ldi r25,lo8(4)
+ 281 00d4 00C0      		rjmp .L19
+ 282               	.L17:
+ 294:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 295:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If arbitration lost. */
+ 296:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
+ 297:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_ARBITRATION_LOST;
+ 283               		.loc 1 297 0
+ 284 00d6 93E0      		ldi r25,lo8(3)
+ 285               	.L19:
+ 286 00d8 908B      		std Z+16,r25
+ 298:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 299:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 300:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Clear interrupt flag. */
+ 301:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.STATUS = currentStatus | TWI_MASTER_ARBLOST_bm;
+ 287               		.loc 1 301 0
+ 288 00da 8860      		ori r24,lo8(8)
+ 289               	.LVL29:
+ 290 00dc 1496      		adiw r26,4
+ 291 00de 8C93      		st X,r24
+ 302:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 303:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->status = TWIM_STATUS_READY;
+ 292               		.loc 1 303 0
+ 293 00e0 1786      		std Z+15,__zero_reg__
+ 294 00e2 0895      		ret
+ 295               	.LFE14:
+ 297               	.global	TWI_MasterWriteHandler
+ 299               	TWI_MasterWriteHandler:
+ 300               	.LFB15:
+ 304:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 305:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 306:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 307:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI master write interrupt handler.
+ 308:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 309:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  Handles TWI transactions (master write) and responses to (N)ACK.
+ 310:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 311:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
+ 312:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 313:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterWriteHandler(TWI_Master_t *twi)
+ 314:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 301               		.loc 1 314 0
+ 302               	.LVL30:
+ 303 00e4 CF93      		push r28
+ 304               	.LCFI5:
+ 305 00e6 DF93      		push r29
+ 306               	.LCFI6:
+ 307               	/* prologue: function */
+ 308               	/* frame size = 0 */
+ 309               	/* stack size = 2 */
+ 310               	.L__stack_usage = 2
+ 311 00e8 FC01      		movw r30,r24
+ 315:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Local variables used in if tests to avoid compiler warning. */
+ 316:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToWrite  = twi->bytesToWrite;
+ 312               		.loc 1 316 0
+ 313 00ea 9385      		ldd r25,Z+11
+ 314               	.LVL31:
+ 317:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToRead   = twi->bytesToRead;
+ 315               		.loc 1 317 0
+ 316 00ec 8485      		ldd r24,Z+12
+ 317               	.LVL32:
+ 318:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 319:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If NOT acknowledged (NACK) by slave cancel the transaction. */
+ 320:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->interface->MASTER.STATUS & TWI_MASTER_RXACK_bm) {
+ 318               		.loc 1 320 0
+ 319 00ee A081      		ld r26,Z
+ 320 00f0 B181      		ldd r27,Z+1
+ 321 00f2 1496      		adiw r26,4
+ 322 00f4 2C91      		ld r18,X
+ 323 00f6 1497      		sbiw r26,4
+ 324 00f8 24FF      		sbrs r18,4
+ 325 00fa 00C0      		rjmp .L21
+ 321:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
+ 326               		.loc 1 321 0
+ 327 00fc 83E0      		ldi r24,lo8(3)
+ 328               	.LVL33:
+ 329 00fe 1396      		adiw r26,3
+ 330 0100 8C93      		st X,r24
+ 322:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_NACK_RECEIVED;
+ 331               		.loc 1 322 0
+ 332 0102 85E0      		ldi r24,lo8(5)
+ 333 0104 00C0      		rjmp .L25
+ 334               	.LVL34:
+ 335               	.L21:
+ 323:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->status = TWIM_STATUS_READY;
+ 324:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 325:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 326:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If more bytes to write, send data. */
+ 327:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (twi->bytesWritten < bytesToWrite) {
+ 336               		.loc 1 327 0
+ 337 0106 2585      		ldd r18,Z+13
+ 338 0108 2917      		cp r18,r25
+ 339 010a 00F4      		brsh .L23
+ 340               	.LBB28:
+ 328:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t data = twi->writeData[twi->bytesWritten];
+ 341               		.loc 1 328 0
+ 342 010c 8585      		ldd r24,Z+13
+ 343               	.LVL35:
+ 344 010e EF01      		movw r28,r30
+ 345 0110 C80F      		add r28,r24
+ 346 0112 D11D      		adc r29,__zero_reg__
+ 347 0114 8B81      		ldd r24,Y+3
+ 348               	.LVL36:
+ 329:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.DATA = data;
+ 349               		.loc 1 329 0
+ 350 0116 1796      		adiw r26,7
+ 351 0118 8C93      		st X,r24
+ 330:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		++twi->bytesWritten;
+ 352               		.loc 1 330 0
+ 353 011a 8585      		ldd r24,Z+13
+ 354               	.LVL37:
+ 355 011c 8F5F      		subi r24,lo8(-(1))
+ 356 011e 8587      		std Z+13,r24
+ 357 0120 00C0      		rjmp .L20
+ 358               	.LVL38:
+ 359               	.L23:
+ 360               	.LBE28:
+ 331:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 332:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 333:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If bytes to read, send repeated START condition + Address +
+ 334:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	 * 'R/_W = 1'
+ 335:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	 */
+ 336:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (twi->bytesRead < bytesToRead) {
+ 361               		.loc 1 336 0
+ 362 0122 9685      		ldd r25,Z+14
+ 363               	.LVL39:
+ 364 0124 9817      		cp r25,r24
+ 365 0126 00F4      		brsh .L24
+ 366               	.LBB29:
+ 337:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t readAddress = twi->address | 0x01;
+ 367               		.loc 1 337 0
+ 368 0128 8281      		ldd r24,Z+2
+ 369               	.LVL40:
+ 370 012a 8160      		ori r24,lo8(1)
+ 371               	.LVL41:
+ 338:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.ADDR = readAddress;
+ 372               		.loc 1 338 0
+ 373 012c 1696      		adiw r26,6
+ 374 012e 8C93      		st X,r24
+ 375 0130 00C0      		rjmp .L20
+ 376               	.LVL42:
+ 377               	.L24:
+ 378               	.LBE29:
+ 339:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 340:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 341:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If transaction finished, send STOP condition and set RESULT OK. */
+ 342:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
+ 343:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
+ 379               		.loc 1 343 0
+ 380 0132 83E0      		ldi r24,lo8(3)
+ 381               	.LVL43:
+ 382 0134 1396      		adiw r26,3
+ 383 0136 8C93      		st X,r24
+ 384               	.LVL44:
+ 385               	.LBB30:
+ 386               	.LBB31:
+ 344:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_OK);
+ 345:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 346:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 347:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 348:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 349:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI master read interrupt handler.
+ 350:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 351:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  This is the master read interrupt handler that takes care of
+ 352:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  reading bytes from the TWI slave.
+ 353:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 354:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
+ 355:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 356:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterReadHandler(TWI_Master_t *twi)
+ 357:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 358:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Fetch data if bytes to be read. */
+ 359:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < TWIM_READ_BUFFER_SIZE) {
+ 360:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t data = twi->interface->MASTER.DATA;
+ 361:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->readData[twi->bytesRead] = data;
+ 362:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesRead++;
+ 363:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 364:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 365:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If buffer overflow, issue STOP and BUFFER_OVERFLOW condition. */
+ 366:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
+ 367:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
+ 368:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_BUFFER_OVERFLOW);
+ 369:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 370:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 371:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Local variable used in if test to avoid compiler warning. */
+ 372:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToRead = twi->bytesToRead;
+ 373:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 374:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If more bytes to read, issue ACK and start a byte read. */
+ 375:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < bytesToRead) {
+ 376:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_RECVTRANS_gc;
+ 377:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 378:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 379:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If transaction finished, issue NACK and STOP condition. */
+ 380:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
+ 381:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_ACKACT_bm |
+ 382:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		                               TWI_MASTER_CMD_STOP_gc;
+ 383:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_OK);
+ 384:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 385:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 386:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 387:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 388:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI transaction finished handler.
+ 389:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 390:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  Prepares module for new transaction.
+ 391:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 392:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi     The TWI_Master_t struct instance.
+ 393:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param result  The result of the operation.
+ 394:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 395:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterTransactionFinished(TWI_Master_t *twi, uint8_t result)
+ 396:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 397:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
+ 387               		.loc 1 397 0
+ 388 0138 81E0      		ldi r24,lo8(1)
+ 389               	.LVL45:
+ 390               	.L25:
+ 391 013a 808B      		std Z+16,r24
+ 398:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->status = TWIM_STATUS_READY;
+ 392               		.loc 1 398 0
+ 393 013c 1786      		std Z+15,__zero_reg__
+ 394               	.L20:
+ 395               	/* epilogue start */
+ 396               	.LBE31:
+ 397               	.LBE30:
+ 346:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 398               		.loc 1 346 0
+ 399 013e DF91      		pop r29
+ 400 0140 CF91      		pop r28
+ 401 0142 0895      		ret
+ 402               	.LFE15:
+ 404               	.global	TWI_MasterReadHandler
+ 406               	TWI_MasterReadHandler:
+ 407               	.LFB16:
+ 357:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 408               		.loc 1 357 0
+ 409               	.LVL46:
+ 410               	/* prologue: function */
+ 411               	/* frame size = 0 */
+ 412               	/* stack size = 0 */
+ 413               	.L__stack_usage = 0
+ 414 0144 FC01      		movw r30,r24
+ 359:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < TWIM_READ_BUFFER_SIZE) {
+ 415               		.loc 1 359 0
+ 416 0146 8685      		ldd r24,Z+14
+ 417               	.LVL47:
+ 418 0148 A081      		ld r26,Z
+ 419 014a B181      		ldd r27,Z+1
+ 420 014c 8430      		cpi r24,lo8(4)
+ 421 014e 00F4      		brsh .L27
+ 422               	.LBB32:
+ 360:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t data = twi->interface->MASTER.DATA;
+ 423               		.loc 1 360 0
+ 424 0150 1796      		adiw r26,7
+ 425 0152 8C91      		ld r24,X
+ 426               	.LVL48:
+ 361:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->readData[twi->bytesRead] = data;
+ 427               		.loc 1 361 0
+ 428 0154 9685      		ldd r25,Z+14
+ 429 0156 DF01      		movw r26,r30
+ 430 0158 A90F      		add r26,r25
+ 431 015a B11D      		adc r27,__zero_reg__
+ 432 015c 1796      		adiw r26,7
+ 433 015e 8C93      		st X,r24
+ 362:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesRead++;
+ 434               		.loc 1 362 0
+ 435 0160 8685      		ldd r24,Z+14
+ 436               	.LVL49:
+ 437 0162 8F5F      		subi r24,lo8(-(1))
+ 438 0164 8687      		std Z+14,r24
+ 439 0166 00C0      		rjmp .L28
+ 440               	.LVL50:
+ 441               	.L27:
+ 442               	.LBE32:
+ 367:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
+ 443               		.loc 1 367 0
+ 444 0168 83E0      		ldi r24,lo8(3)
+ 445 016a 1396      		adiw r26,3
+ 446 016c 8C93      		st X,r24
+ 447               	.LVL51:
+ 448               	.LBB33:
+ 449               	.LBB34:
+ 397:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
+ 450               		.loc 1 397 0
+ 451 016e 82E0      		ldi r24,lo8(2)
+ 452 0170 808B      		std Z+16,r24
+ 453               		.loc 1 398 0
+ 454 0172 1786      		std Z+15,__zero_reg__
+ 455               	.LVL52:
+ 456               	.L28:
+ 457               	.LBE34:
+ 458               	.LBE33:
+ 372:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToRead = twi->bytesToRead;
+ 459               		.loc 1 372 0
+ 460 0174 8485      		ldd r24,Z+12
+ 461               	.LVL53:
+ 375:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < bytesToRead) {
+ 462               		.loc 1 375 0
+ 463 0176 9685      		ldd r25,Z+14
+ 464 0178 A081      		ld r26,Z
+ 465 017a B181      		ldd r27,Z+1
+ 466 017c 9817      		cp r25,r24
+ 467 017e 00F4      		brsh .L29
+ 376:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_RECVTRANS_gc;
+ 468               		.loc 1 376 0
+ 469 0180 82E0      		ldi r24,lo8(2)
+ 470               	.LVL54:
+ 471 0182 1396      		adiw r26,3
+ 472 0184 8C93      		st X,r24
+ 473 0186 0895      		ret
+ 474               	.LVL55:
+ 475               	.L29:
+ 381:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_ACKACT_bm |
+ 476               		.loc 1 381 0
+ 477 0188 87E0      		ldi r24,lo8(7)
+ 478               	.LVL56:
+ 479 018a 1396      		adiw r26,3
+ 480 018c 8C93      		st X,r24
+ 481               	.LVL57:
+ 482               	.LBB35:
+ 483               	.LBB36:
+ 397:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
+ 484               		.loc 1 397 0
+ 485 018e 81E0      		ldi r24,lo8(1)
+ 486 0190 808B      		std Z+16,r24
+ 487               		.loc 1 398 0
+ 488 0192 1786      		std Z+15,__zero_reg__
+ 489 0194 0895      		ret
+ 490               	.LBE36:
+ 491               	.LBE35:
+ 492               	.LFE16:
+ 494               	.global	TWI_MasterInterruptHandler
+ 496               	TWI_MasterInterruptHandler:
+ 497               	.LFB13:
+ 254:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 498               		.loc 1 254 0
+ 499               	.LVL58:
+ 500               	/* prologue: function */
+ 501               	/* frame size = 0 */
+ 502               	/* stack size = 0 */
+ 503               	.L__stack_usage = 0
+ 255:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t currentStatus = twi->interface->MASTER.STATUS;
+ 504               		.loc 1 255 0
+ 505 0196 DC01      		movw r26,r24
+ 506 0198 ED91      		ld r30,X+
+ 507 019a FC91      		ld r31,X
+ 508 019c 2481      		ldd r18,Z+4
+ 509               	.LVL59:
+ 253:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterInterruptHandler(TWI_Master_t *twi)
+ 510               		.loc 1 253 0
+ 511 019e 322F      		mov r19,r18
+ 512 01a0 3C70      		andi r19,lo8(12)
+ 258:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	if ((currentStatus & TWI_MASTER_ARBLOST_bm) ||
+ 513               		.loc 1 258 0
+ 514 01a2 01F0      		breq .L32
+ 261:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterArbitrationLostBusErrorHandler(twi);
+ 515               		.loc 1 261 0
+ 516 01a4 0C94 0000 		jmp TWI_MasterArbitrationLostBusErrorHandler
+ 517               	.LVL60:
+ 518               	.L32:
+ 265:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_WIF_bm) {
+ 519               		.loc 1 265 0
+ 520 01a8 26FD      		sbrc r18,6
+ 266:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterWriteHandler(twi);
+ 521               		.loc 1 266 0
+ 522 01aa 0C94 0000 		jmp TWI_MasterWriteHandler
+ 523               	.LVL61:
+ 524               	.L33:
+ 270:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_RIF_bm) {
+ 525               		.loc 1 270 0
+ 526 01ae 27FD      		sbrc r18,7
+ 271:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterReadHandler(twi);
+ 527               		.loc 1 271 0
+ 528 01b0 0C94 0000 		jmp TWI_MasterReadHandler
+ 529               	.LVL62:
+ 530               	.L34:
+ 531               	.LBB37:
+ 532               	.LBB38:
+ 397:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
+ 533               		.loc 1 397 0
+ 534 01b4 26E0      		ldi r18,lo8(6)
+ 535               	.LVL63:
+ 536 01b6 FC01      		movw r30,r24
+ 537 01b8 208B      		std Z+16,r18
+ 538               		.loc 1 398 0
+ 539 01ba 1786      		std Z+15,__zero_reg__
+ 540 01bc 0895      		ret
+ 541               	.LBE38:
+ 542               	.LBE37:
+ 543               	.LFE13:
+ 545               	.global	TWI_MasterTransactionFinished
+ 547               	TWI_MasterTransactionFinished:
+ 548               	.LFB17:
+ 396:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 549               		.loc 1 396 0
+ 550               	.LVL64:
+ 551               	/* prologue: function */
+ 552               	/* frame size = 0 */
+ 553               	/* stack size = 0 */
+ 554               	.L__stack_usage = 0
+ 397:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
+ 555               		.loc 1 397 0
+ 556 01be FC01      		movw r30,r24
+ 557 01c0 608B      		std Z+16,r22
+ 558               		.loc 1 398 0
+ 559 01c2 1786      		std Z+15,__zero_reg__
+ 560 01c4 0895      		ret
+ 561               	.LFE17:
+ 711               	.Letext0:
+ 712               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 713               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
+ 714               		.file 4 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/twi_master_driver.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 twi_master_driver.c
+     /tmp/ccVVvvgO.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccVVvvgO.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccVVvvgO.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccVVvvgO.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccVVvvgO.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccVVvvgO.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccVVvvgO.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccVVvvgO.s:13     .text:0000000000000000 TWI_MasterInit
+     /tmp/ccVVvvgO.s:49     .text:0000000000000022 TWI_MasterState
+     /tmp/ccVVvvgO.s:71     .text:000000000000002e TWI_MasterReady
+     /tmp/ccVVvvgO.s:90     .text:0000000000000036 TWI_MasterWriteRead
+     /tmp/ccVVvvgO.s:211    .text:00000000000000a4 TWI_MasterRead
+     /tmp/ccVVvvgO.s:238    .text:00000000000000b6 TWI_MasterWrite
+     /tmp/ccVVvvgO.s:260    .text:00000000000000c2 TWI_MasterArbitrationLostBusErrorHandler
+     /tmp/ccVVvvgO.s:299    .text:00000000000000e4 TWI_MasterWriteHandler
+     /tmp/ccVVvvgO.s:406    .text:0000000000000144 TWI_MasterReadHandler
+     /tmp/ccVVvvgO.s:496    .text:0000000000000196 TWI_MasterInterruptHandler
+     /tmp/ccVVvvgO.s:547    .text:00000000000001be TWI_MasterTransactionFinished
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,57 @@
+So to get this all to compile to hardware - there should just be a few changes
+needed to bb_compiler (updated support for the thread keywords) and maybe a
+few other tweaks.  Compiling the source to the simulator might still take a
+decent amount of work, though.
+
+------------------------
+| system / bb_compiler |
+------------------------
+
+- EEMEM
+    - We need to change how we define variables in the EEPROM.  Currently,
+      there is a macro in memory.bbh that makes char* EEMEM x; into
+      char* __attribute__((section(".eeprom"))) x;.  This approach doesn't
+      work in the simulator - we want to emulate eeprom in a file saved
+      across multiple simulator executions.  So we'd basically want
+      char* EEMEM x; to become some sort of pointer to the position in the
+      file.  But the problem on the system/bb_compiler level is getting
+      this to cleanly build against sim or block.  The actual implementation
+      of the store/load functions for eeprom are going to be in the hw-block/
+      hw-sim/ directories.
+
+The following bb_compiler keywords need to be added/updated:
+
+- threadextern - for declaring a variable external to the current file.
+    - SIM: threadextern int x; ---> // int x;
+    - BLK: threadextern int x; ---> extern int x;
+- threadvar - for declaring a thread-local variable
+    - SIM: done
+    - BLK: threadvar int x; ---> int x;
+- threadtype - for defining a type used in defining a threadvar
+    - SIM: done
+    - BLK: threadtype typedef int t; ---> typedef int t;
+    - multi-line threadtype definitions,
+      currently only single line typedefs are supported
+- threaddef - for declaring a constant used in defining a threadtype/threadvar
+    - SIM: done
+    - BLK: threaddef #define ONE 1 ---> #define ONE 1;
+
+-------
+| sim |
+-------
+
+- block deletion
+    - We have to be careful about deleting a block from the blocklist - as
+      its neighbors might be currently accessing the block. This could be
+      accomplished by a ref count system (and a mutex on the block list), but
+      there are probably other approaches.
+
+------------
+| hw-sim   |
+------------
+
+- low-level simulator block implementation
+    - We need to implement the functionality in the hw-api/ folder (and
+      implemented on the blocks in hw-block/) to run in the simulator. This
+      serves as the layer between the physical blocks displayed on the screen
+      and the virtual blocks stored per thread.

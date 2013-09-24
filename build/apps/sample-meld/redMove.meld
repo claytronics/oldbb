@@ -1,0 +1,17 @@
+const RED = 0.
+const BLUE = 5.
+
+extern int blockID(catom).
+//extern int getGUID().
+
+type linear red (catom).
+
+setColor2(X, BLUE).
+
+setColor2(X, RED),
+!red(X) :- 1 = (blockID(X) % 4).
+
+setColor2(X, BLUE) @ +200ms,
+!red(Y) @ +200ms,
+setColor2(Y, RED) @ +200ms :- neighbor(X, Y, _),
+                              !red(X).

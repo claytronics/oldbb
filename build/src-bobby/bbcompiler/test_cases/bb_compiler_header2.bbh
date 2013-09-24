@@ -1,0 +1,6 @@
+#ifndef _BB_COMPILER_HEADER2_H_
+#define _BB_COMPILER_HEADER2_H_
+
+threadtype typedef struct test2 { int x; } test2;
+
+#endif

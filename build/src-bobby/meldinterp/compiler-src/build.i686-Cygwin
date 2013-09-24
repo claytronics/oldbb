@@ -1,0 +1,22 @@
+#!/bin/sh
+
+if [ $?ARCH ]; then
+  export ARCH=`uname -m`-`uname -o | sed -e 's+/+-+g'`
+  echo "setting ARCH to $ARCH"
+fi
+
+if [ $ARCH != i686-Cygwin ]; then
+  echo "This script is for windows"
+  exit -1
+fi
+
+tar -xf meldCompiler.tgz
+echo "sml" > /tmp/$$
+echo "CM.make \"sources.cm\";" >> /tmp/$$
+echo "Top.export();" >> /tmp/$$
+echo "exit" >> /tmp/$$
+cmd < /tmp/$$
+/bin/rm -f /tmp/$$
+
+
+

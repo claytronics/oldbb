@@ -1,0 +1,11 @@
+type dist(addr, min int).
+
+dist(X, 0) :-
+	neighborCount(X, 1).
+
+dist(X, N+1) :-
+	neighbor(X, Y, _),
+	dist(Y, N).
+
+
+setColor2(X, N) :- dist(X, N).

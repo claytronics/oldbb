@@ -1,0 +1,45 @@
+9/29/10
+
+This directory tree contains the code used to develop applications for
+the blinkyblocks.  At this point it has a reasonable makefile for meld
+and has been tested on Windows 7 + Cygwin.  Once you checkout the
+tree 
+
+- we recommend the bash shell
+- run ". ./initbb.sh"
+  this sets BBASE, ARCH, and your PATH. If you don't use bash or want to do it yourself
+  - set BBASE to this directory
+  - set ARCH to `uname -m`-`uname -s` , e.g., export ARCH=`uname -m`-`uname -s`
+  - add $BBASE/bin and $BBASE/bin/$ARCH to your path
+- check that there exists a bin/$(ARCH) directory.  If not, create one and fix everything, 
+  or try one of the ones that exists. (and, let us know??)
+- chdir to $BBASE/src-bobby
+- run make build
+- run make install
+
+Now you are set to compile for either the simulator or the block
+hardware.  If you are going to do this for meld programs, look in
+$BBASE/apps/sample-meld to see some sample meld applications and a
+basic Makefile.  Basically, you should only have to change the source
+you want to compile and run make.
+
+To run the resulting executable:
+
+arch-$ARCH/source-name.exe will invoke the simulator
+arch-blocks/source-name.hex is the file to load onto the blocks
+
+If you want to compile for the simulator you should set BB=SIM.
+If you want to compile for the blocks you should set BB=block.
+
+The reprogrammer in $BBASE/bin-$ARCH will load the .hex file onto the
+blocks.  It takes two important arguments -p <serial-device-name> -f
+<hex-file-name>.  <serial-device-name> is probably something like
+/dev/com4.  If the reprogrammer doesn't seem to work, then try running
+stty before you run the reprogrammer.  For example, if you are
+compiling ends.meld, then you might do the following from $BBASE/apps/sample-meld:
+
+stty /dev/com4 38400
+reprogrammer -p /dev/com4 -f arch-blocks/ends.hex
+
+Good Luck!
+

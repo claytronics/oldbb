@@ -1,0 +1,208 @@
+   1               		.file	"neighbor_count.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	myMain
+  13               	myMain:
+  14               	.LFB6:
+  15               		.file 1 "arch-blocks/system/neighbor_count.bb"
+   1:arch-blocks/system/neighbor_count.bb **** #include <stdio.h>
+   2:arch-blocks/system/neighbor_count.bb **** #include "block.bbh"
+   3:arch-blocks/system/neighbor_count.bb **** 
+   4:arch-blocks/system/neighbor_count.bb **** 
+   5:arch-blocks/system/neighbor_count.bb **** void myMain(void)
+   6:arch-blocks/system/neighbor_count.bb **** {
+  16               		.loc 1 6 0
+  17               	.L12:
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+   7:arch-blocks/system/neighbor_count.bb ****   int numNeighbors;
+   8:arch-blocks/system/neighbor_count.bb **** 
+   9:arch-blocks/system/neighbor_count.bb ****   setColor(WHITE);
+  22               		.loc 1 9 0
+  23 0000 86E0      		ldi r24,lo8(6)
+  24               	.L11:
+  25 0002 0E94 0000 		call setColor
+  26               	.LVL0:
+  10:arch-blocks/system/neighbor_count.bb **** 
+  11:arch-blocks/system/neighbor_count.bb ****   while(1)
+  12:arch-blocks/system/neighbor_count.bb ****   {
+  13:arch-blocks/system/neighbor_count.bb ****     numNeighbors = getNeighborCount();
+  27               		.loc 1 13 0
+  28 0006 0E94 0000 		call getNeighborCount
+  29               	.LVL1:
+  30 000a 90E0      		ldi r25,0
+  31               	.LVL2:
+  14:arch-blocks/system/neighbor_count.bb ****       
+  15:arch-blocks/system/neighbor_count.bb ****     if( numNeighbors == 1 ) { 
+  32               		.loc 1 15 0
+  33 000c 8130      		cpi r24,1
+  34 000e 9105      		cpc r25,__zero_reg__
+  35 0010 01F4      		brne .L3
+  16:arch-blocks/system/neighbor_count.bb ****       setColor(RED);
+  36               		.loc 1 16 0
+  37 0012 80E0      		ldi r24,0
+  38               	.LVL3:
+  39 0014 00C0      		rjmp .L11
+  40               	.LVL4:
+  41               	.L3:
+  17:arch-blocks/system/neighbor_count.bb ****     }
+  18:arch-blocks/system/neighbor_count.bb ****     else if( numNeighbors == 2 ) { 
+  42               		.loc 1 18 0
+  43 0016 8230      		cpi r24,2
+  44 0018 9105      		cpc r25,__zero_reg__
+  45 001a 01F4      		brne .L5
+  19:arch-blocks/system/neighbor_count.bb ****       setColor(ORANGE);
+  46               		.loc 1 19 0
+  47 001c 81E0      		ldi r24,lo8(1)
+  48               	.LVL5:
+  49 001e 00C0      		rjmp .L11
+  50               	.LVL6:
+  51               	.L5:
+  20:arch-blocks/system/neighbor_count.bb ****     }
+  21:arch-blocks/system/neighbor_count.bb ****     else if( numNeighbors == 3 ) { 
+  52               		.loc 1 21 0
+  53 0020 8330      		cpi r24,3
+  54 0022 9105      		cpc r25,__zero_reg__
+  55 0024 01F4      		brne .L6
+  22:arch-blocks/system/neighbor_count.bb ****       setColor(YELLOW);
+  56               		.loc 1 22 0
+  57 0026 82E0      		ldi r24,lo8(2)
+  58               	.LVL7:
+  59 0028 00C0      		rjmp .L11
+  60               	.LVL8:
+  61               	.L6:
+  23:arch-blocks/system/neighbor_count.bb ****     }
+  24:arch-blocks/system/neighbor_count.bb ****     else if( numNeighbors == 4 ) { 
+  62               		.loc 1 24 0
+  63 002a 8430      		cpi r24,4
+  64 002c 9105      		cpc r25,__zero_reg__
+  65 002e 01F4      		brne .L7
+  25:arch-blocks/system/neighbor_count.bb ****       setColor(GREEN);
+  66               		.loc 1 25 0
+  67 0030 83E0      		ldi r24,lo8(3)
+  68               	.LVL9:
+  69 0032 00C0      		rjmp .L11
+  70               	.LVL10:
+  71               	.L7:
+  26:arch-blocks/system/neighbor_count.bb ****     }
+  27:arch-blocks/system/neighbor_count.bb ****     else if( numNeighbors == 5 ) { 
+  72               		.loc 1 27 0
+  73 0034 8530      		cpi r24,5
+  74 0036 9105      		cpc r25,__zero_reg__
+  75 0038 01F4      		brne .L8
+  28:arch-blocks/system/neighbor_count.bb ****       setColor(BLUE);
+  76               		.loc 1 28 0
+  77 003a 85E0      		ldi r24,lo8(5)
+  78               	.LVL11:
+  79 003c 00C0      		rjmp .L11
+  80               	.LVL12:
+  81               	.L8:
+  29:arch-blocks/system/neighbor_count.bb ****     }
+  30:arch-blocks/system/neighbor_count.bb ****     else if( numNeighbors == 6 ) { 
+  82               		.loc 1 30 0
+  83 003e 0697      		sbiw r24,6
+  84 0040 01F4      		brne .L12
+  31:arch-blocks/system/neighbor_count.bb ****       setColor(PURPLE);
+  85               		.loc 1 31 0
+  86 0042 87E0      		ldi r24,lo8(7)
+  87               	.LVL13:
+  88 0044 00C0      		rjmp .L11
+  89               	.LFE6:
+  91               	.global	blocktap
+  93               	blocktap:
+  94               	.LFB7:
+  32:arch-blocks/system/neighbor_count.bb ****     }
+  33:arch-blocks/system/neighbor_count.bb ****     else {
+  34:arch-blocks/system/neighbor_count.bb ****       setColor(WHITE);
+  35:arch-blocks/system/neighbor_count.bb ****     }
+  36:arch-blocks/system/neighbor_count.bb ****   }
+  37:arch-blocks/system/neighbor_count.bb **** }
+  38:arch-blocks/system/neighbor_count.bb **** 
+  39:arch-blocks/system/neighbor_count.bb **** int tapCount=0;
+  40:arch-blocks/system/neighbor_count.bb **** void blocktap(void){
+  95               		.loc 1 40 0
+  96               	/* prologue: function */
+  97               	/* frame size = 0 */
+  98               	/* stack size = 0 */
+  99               	.L__stack_usage = 0
+  41:arch-blocks/system/neighbor_count.bb **** 	tapCount++;
+ 100               		.loc 1 41 0
+ 101 0046 8091 0000 		lds r24,tapCount
+ 102 004a 9091 0000 		lds r25,tapCount+1
+ 103 004e 0196      		adiw r24,1
+ 104 0050 8093 0000 		sts tapCount,r24
+ 105 0054 9093 0000 		sts tapCount+1,r25
+  42:arch-blocks/system/neighbor_count.bb **** 	if(tapCount==6){
+ 106               		.loc 1 42 0
+ 107 0058 0697      		sbiw r24,6
+ 108 005a 01F4      		brne .L13
+  43:arch-blocks/system/neighbor_count.bb **** 		jumpToBootSection();
+ 109               		.loc 1 43 0
+ 110 005c 0C94 0000 		jmp jumpToBootSection
+ 111               	.LVL14:
+ 112               	.L13:
+ 113 0060 0895      		ret
+ 114               	.LFE7:
+ 116               	.global	userRegistration
+ 118               	userRegistration:
+ 119               	.LFB8:
+  44:arch-blocks/system/neighbor_count.bb **** 	}
+  45:arch-blocks/system/neighbor_count.bb **** }
+  46:arch-blocks/system/neighbor_count.bb **** 
+  47:arch-blocks/system/neighbor_count.bb **** 
+  48:arch-blocks/system/neighbor_count.bb **** void userRegistration(void)
+  49:arch-blocks/system/neighbor_count.bb **** {
+ 120               		.loc 1 49 0
+ 121               	/* prologue: function */
+ 122               	/* frame size = 0 */
+ 123               	/* stack size = 0 */
+ 124               	.L__stack_usage = 0
+  50:arch-blocks/system/neighbor_count.bb **** 	registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);
+ 125               		.loc 1 50 0
+ 126 0062 60E0      		ldi r22,lo8(gs(myMain))
+ 127 0064 70E0      		ldi r23,hi8(gs(myMain))
+ 128 0066 81E0      		ldi r24,lo8(1)
+ 129 0068 0C94 0000 		jmp registerHandler
+ 130               	.LVL15:
+ 131               	.LFE8:
+ 133               	.global	tapCount
+ 134               		.section .bss
+ 137               	tapCount:
+ 138 0000 0000      		.zero	2
+ 181               	.Letext0:
+ 182               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 183               		.file 3 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/defs.bbh"
+ 184               		.file 4 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bbh"
+ 185               		.file 5 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/led.bbh"
+ 186               		.file 6 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/serial.bbh"
+ 187               		.file 7 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/ensemble.bbh"
+ 188               		.file 8 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bbh"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 neighbor_count.c
+     /tmp/ccuGfrTh.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccuGfrTh.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccuGfrTh.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccuGfrTh.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccuGfrTh.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccuGfrTh.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccuGfrTh.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccuGfrTh.s:13     .text:0000000000000000 myMain
+     /tmp/ccuGfrTh.s:93     .text:0000000000000046 blocktap
+     /tmp/ccuGfrTh.s:137    .bss:0000000000000000 tapCount
+     /tmp/ccuGfrTh.s:118    .text:0000000000000062 userRegistration
+
+UNDEFINED SYMBOLS
+setColor
+getNeighborCount
+jumpToBootSection
+registerHandler
+__do_clear_bss

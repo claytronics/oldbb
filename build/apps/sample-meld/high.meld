@@ -1,0 +1,86 @@
+// THIS PROGRAM HAS NOT BEEN TESTED YET.
+
+extern int blockID(catom).
+
+type level(catom, max int).
+type virtual neighbor bottomNeighbor(catom, catom).
+type noBottomNeighbor(catom).
+type virtual neighbor topNeighbor(catom, catom).
+type virtual neighbor sideNeighbor(catom, catom).
+type highestCount(catom, int).
+
+bottomNeighbor(N, X) :- neighbor(N, X, P), P = 5.
+noBottomNeighbor(N) :- vacant(N, P),  P = 5.
+topNeighbor(N, X) :- neighbor(N, X, P), P = 0.
+sideNeighbor(N, X) :- neighbor(N, X, P), P != 0, P != 5.
+
+// determine how far from the bottom you are
+level(N, Z) :- noBottomNeighbor(N), Z=0.
+level(N, H) :- sideNeighbor(N, X), level(X, H).
+level(N, H) :- bottomNeighbor(N, X), level(X, BH), H = BH + 1.
+level(N, H) :- topNeighbor(N, X), level(X, TH), H = TH - 1.
+
+// set color according to your level in phase 0.
+setColor2(N, COLOR) :- level(N, COLOR).
+
+type root(catom).
+root(N) :- neighbor(N, _, _), 1 = blockID(N).
+
+// create a spanning tree from root.
+type virtual neighbor span(catom, first catom).
+span(N, N) :- root(N).
+span(N, P) :- neighbor(N, P, _), span(P, _), p = blockID(P).
+
+
+// propogate height of highest catom to root
+type maxsubtree(catom, max int).
+maxsubtree(N, h) :- level(N, h).
+maxsubtree(N, h) :- span(C, N), level(C, h).
+
+// propogate height of highest catom in ensemble to leaves
+type ensembleHeight(catom, int).
+ensembleHeight(N, h) :- root(N), maxsubtree(N, h).
+ensembleHeight(N, h) :- span(N, P), ensembleHeight(P, h).
+
+// determine if this is one of the highest catoms
+type isHighest(catom).
+isHighest(N) :- ensembleHeight(N, h), level(N, h).
+
+// determine if this catom is below the highest
+type isLower(catom).
+isLower(N) :- ensembleHeight(N, h), level(N, g), g < h.
+
+// determine how many highest catoms there are
+type highestInSubtree(catom, sum int).
+highestInSubtree(N, x) :- isHighest(N), x=1.
+highestInSubtree(N, x) :- span(C, N), highestInSubtree(C, x).
+
+// propogate # of highest catoms to leaves
+highestCount(N, x) :- root(N), highestInSubtree(N, x).
+highestCount(N, x) :- span(N, P), highestCount(P, x).
+
+// see if there is only one highest catom
+type uniqueHighest(catom).
+uniqueHighest(N) :- highestCount(N, c), c=1.
+
+// see if there are many highest catoms
+type manyHighest(catom).
+manyHighest(N) :- highestCount(N, x), x > 1.
+
+// color result
+setColor2(N, color) :- isHighest(N), uniqueHighest(N), color = 5.
+setColor2(N, color) :- isLower(N), uniqueHighest(N), color = 0.
+setColor2(N, color) :- manyHighest(N), color = 7.
+
+// proposed ensemble level code:
+// 
+// type ensembleHeight(ensemble catom, max int).
+// ensembleHeight(N, x) :- level(N, x).
+// 
+// type numberHighest(ensemble catom, sum int).
+// numberHighest(N, c) :- ensembleHeight(N, x), level(N, x), c = 1.
+
+
+
+
+

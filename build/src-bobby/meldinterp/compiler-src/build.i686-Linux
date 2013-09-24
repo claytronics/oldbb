@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ $?ARCH ]; then
+  export ARCH=`uname -m`-`uname -s | sed -e 's+/+-+g'`
+  echo "setting ARCH to $ARCH"
+fi
+
+if [ $ARCH != i686-Linux ]; then
+  echo "This script is for linux"
+  exit -1
+fi
+
+mkdir -p src || exit 1
+cd src
+
+tar -xf ../meldCompiler.tgz
+make smlnj
+ln -fs src/meldCompiler.x86-linux ..

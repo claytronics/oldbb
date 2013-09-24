@@ -1,0 +1,508 @@
+   1               		.file	"handler.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	initHandlers
+  13               	initHandlers:
+  14               	.LFB5:
+  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb"
+   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** #include "handler.bbh"
+   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // System struct for managing callbacks.
+   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // Hardcoded a bit - NUM_HANDLERS must be less than sizeof(handlermask_t)
+   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** threadtype typedef struct _systemhandler { HandleMask HandlerMask; GenericHandler HandlerTable[NUM_
+   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** threadvar SystemHandler system;
+   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** void initHandlers(void){
+  16               		.loc 1 10 0
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb ****   int i;
+  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb ****   system.HandlerMask=0;
+  21               		.loc 1 12 0
+  22 0000 1092 0000 		sts system,__zero_reg__
+  23 0004 1092 0000 		sts system+1,__zero_reg__
+  24 0008 1092 0000 		sts system+2,__zero_reg__
+  25 000c 1092 0000 		sts system+3,__zero_reg__
+  26 0010 1092 0000 		sts system+4,__zero_reg__
+  27 0014 1092 0000 		sts system+5,__zero_reg__
+  28 0018 1092 0000 		sts system+6,__zero_reg__
+  29 001c 1092 0000 		sts system+7,__zero_reg__
+  30               	.LVL0:
+  31 0020 E0E0      		ldi r30,lo8(system+8)
+  32 0022 F0E0      		ldi r31,hi8(system+8)
+  33               	.LVL1:
+  34               	.L2:
+  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb ****   for( i=0; i<NUM_HANDLERS; i++){
+  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb ****     system.HandlerTable[i]=NULL;
+  35               		.loc 1 14 0 discriminator 2
+  36 0024 1192      		st Z+,__zero_reg__
+  37 0026 1192      		st Z+,__zero_reg__
+  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb ****   for( i=0; i<NUM_HANDLERS; i++){
+  38               		.loc 1 13 0 discriminator 2
+  39 0028 80E0      		ldi r24,hi8(system+72)
+  40 002a E030      		cpi r30,lo8(system+72)
+  41 002c F807      		cpc r31,r24
+  42 002e 01F4      		brne .L2
+  43               	/* epilogue start */
+  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb ****   }
+  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** }
+  44               		.loc 1 16 0
+  45 0030 0895      		ret
+  46               	.LFE5:
+  48               	.global	executeHandlers
+  50               	executeHandlers:
+  51               	.LFB6:
+  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** //  ExecuteHandlers
+  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** //
+  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** //  if any mask is set, will scan through and execute handlers in ascending numerical order.
+  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** //  it is technically possible to trigger handlers during earlier handlers, or even the same handle
+  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** //  triggering an earlier handler will cause it to execute during the next iteration.
+  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** void executeHandlers(void)
+  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** {
+  52               		.loc 1 24 0
+  53 0032 8F92      		push r8
+  54               	.LCFI0:
+  55 0034 9F92      		push r9
+  56               	.LCFI1:
+  57 0036 AF92      		push r10
+  58               	.LCFI2:
+  59 0038 BF92      		push r11
+  60               	.LCFI3:
+  61 003a CF92      		push r12
+  62               	.LCFI4:
+  63 003c DF92      		push r13
+  64               	.LCFI5:
+  65 003e EF92      		push r14
+  66               	.LCFI6:
+  67 0040 FF92      		push r15
+  68               	.LCFI7:
+  69 0042 0F93      		push r16
+  70               	.LCFI8:
+  71 0044 1F93      		push r17
+  72               	.LCFI9:
+  73 0046 CF93      		push r28
+  74               	.LCFI10:
+  75 0048 DF93      		push r29
+  76               	.LCFI11:
+  77               	/* prologue: function */
+  78               	/* frame size = 0 */
+  79               	/* stack size = 12 */
+  80               	.L__stack_usage = 12
+  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	if(system.HandlerMask)
+  81               		.loc 1 25 0
+  82 004a 2091 0000 		lds r18,system
+  83 004e 3091 0000 		lds r19,system+1
+  84 0052 4091 0000 		lds r20,system+2
+  85 0056 5091 0000 		lds r21,system+3
+  86 005a 6091 0000 		lds r22,system+4
+  87 005e 7091 0000 		lds r23,system+5
+  88 0062 8091 0000 		lds r24,system+6
+  89 0066 9091 0000 		lds r25,system+7
+  90 006a A0E0      		ldi r26,0
+  91 006c 0E94 0000 		call __cmpdi2_s8
+  92 0070 01F4      		brne .+2
+  93 0072 00C0      		rjmp .L4
+  94 0074 00E0      		ldi r16,lo8(system+8)
+  95 0076 10E0      		ldi r17,hi8(system+8)
+  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** void executeHandlers(void)
+  96               		.loc 1 23 0
+  97 0078 C12C      		mov r12,__zero_reg__
+  98 007a D12C      		mov r13,__zero_reg__
+  99 007c 7601      		movw r14,r12
+ 100 007e C394      		inc r12
+ 101               	.L7:
+ 102               	.LBB2:
+  26:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	{
+  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		Event i = 0;
+  28:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		uint32_t j = 0x00000001;
+  29:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	
+  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		while(i < NUM_HANDLERS)
+  31:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		{
+  32:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 			if(system.HandlerMask & j)
+ 103               		.loc 1 32 0
+ 104 0080 8090 0000 		lds r8,system
+ 105 0084 9090 0000 		lds r9,system+1
+ 106 0088 A090 0000 		lds r10,system+2
+ 107 008c B090 0000 		lds r11,system+3
+ 108 0090 D701      		movw r26,r14
+ 109 0092 C601      		movw r24,r12
+ 110 0094 2C2D      		mov r18,r12
+ 111 0096 2821      		and r18,r8
+ 112 0098 392F      		mov r19,r25
+ 113 009a 3921      		and r19,r9
+ 114 009c 4A2F      		mov r20,r26
+ 115 009e 4A21      		and r20,r10
+ 116 00a0 5B2F      		mov r21,r27
+ 117 00a2 5B21      		and r21,r11
+ 118 00a4 60E0      		ldi r22,0
+ 119 00a6 70E0      		ldi r23,0
+ 120 00a8 80E0      		ldi r24,0
+ 121 00aa 90E0      		ldi r25,0
+ 122 00ac A0E0      		ldi r26,0
+ 123 00ae 0E94 0000 		call __cmpdi2_s8
+ 124 00b2 01F0      		breq .L6
+  33:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 			{
+  34:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 				// clear mask bit1
+  35:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 				system.HandlerMask &= ~j;
+ 125               		.loc 1 35 0
+ 126 00b4 D701      		movw r26,r14
+ 127 00b6 C601      		movw r24,r12
+ 128 00b8 8095      		com r24
+ 129 00ba 9095      		com r25
+ 130 00bc A095      		com r26
+ 131 00be B095      		com r27
+ 132 00c0 8822      		and r8,r24
+ 133 00c2 9922      		and r9,r25
+ 134 00c4 AA22      		and r10,r26
+ 135 00c6 BB22      		and r11,r27
+ 136 00c8 8092 0000 		sts system,r8
+ 137 00cc 9092 0000 		sts system+1,r9
+ 138 00d0 A092 0000 		sts system+2,r10
+ 139 00d4 B092 0000 		sts system+3,r11
+ 140 00d8 1092 0000 		sts system+4,__zero_reg__
+ 141 00dc 1092 0000 		sts system+5,__zero_reg__
+ 142 00e0 1092 0000 		sts system+6,__zero_reg__
+ 143 00e4 1092 0000 		sts system+7,__zero_reg__
+  36:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 				
+  37:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 				// execute callback
+  38:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 				(*(system.HandlerTable[i]))();
+ 144               		.loc 1 38 0
+ 145 00e8 D801      		movw r26,r16
+ 146 00ea ED91      		ld r30,X+
+ 147 00ec FC91      		ld r31,X
+ 148 00ee 1995      		eicall
+ 149               	.LVL2:
+ 150               	.L6:
+  39:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 			}
+  40:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+  41:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 			i++;
+  42:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 			j <<= 1;
+ 151               		.loc 1 42 0
+ 152 00f0 CC0C      		lsl r12
+ 153 00f2 DD1C      		rol r13
+ 154 00f4 EE1C      		rol r14
+ 155 00f6 FF1C      		rol r15
+ 156               	.LVL3:
+ 157 00f8 0E5F      		subi r16,-2
+ 158 00fa 1F4F      		sbci r17,-1
+  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		while(i < NUM_HANDLERS)
+ 159               		.loc 1 30 0
+ 160 00fc B0E0      		ldi r27,hi8(system+72)
+ 161 00fe 0030      		cpi r16,lo8(system+72)
+ 162 0100 1B07      		cpc r17,r27
+ 163 0102 01F0      		breq .+2
+ 164 0104 00C0      		rjmp .L7
+ 165               	.LVL4:
+ 166               	.L4:
+ 167               	/* epilogue start */
+ 168               	.LBE2:
+  43:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		}
+  44:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	}
+  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** }
+ 169               		.loc 1 45 0
+ 170 0106 DF91      		pop r29
+ 171 0108 CF91      		pop r28
+ 172 010a 1F91      		pop r17
+ 173 010c 0F91      		pop r16
+ 174 010e FF90      		pop r15
+ 175 0110 EF90      		pop r14
+ 176 0112 DF90      		pop r13
+ 177 0114 CF90      		pop r12
+ 178 0116 BF90      		pop r11
+ 179 0118 AF90      		pop r10
+ 180 011a 9F90      		pop r9
+ 181 011c 8F90      		pop r8
+ 182 011e 0895      		ret
+ 183               	.LFE6:
+ 185               	.global	triggerHandler
+ 187               	triggerHandler:
+ 188               	.LFB7:
+  46:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+  47:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+  48:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** //TriggerHandler
+  49:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** //	will trigger a callback for a valid event and valid handler
+  50:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** //  execution will occur during the CURRENT or NEXT handler scan
+  51:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // 	returns 1 on success, 0 on failure
+  52:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** int triggerHandler(Event e)
+  53:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** {
+ 189               		.loc 1 53 0
+ 190               	.LVL5:
+ 191 0120 CF93      		push r28
+ 192               	.LCFI12:
+ 193 0122 DF93      		push r29
+ 194               	.LCFI13:
+ 195               	/* prologue: function */
+ 196               	/* frame size = 0 */
+ 197               	/* stack size = 2 */
+ 198               	.L__stack_usage = 2
+ 199 0124 482F      		mov r20,r24
+  54:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	if(e < NUM_HANDLERS)
+ 200               		.loc 1 54 0
+ 201 0126 8032      		cpi r24,lo8(32)
+ 202 0128 00F4      		brsh .L13
+  55:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	{
+  56:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		if(system.HandlerTable[e] == NULL)
+ 203               		.loc 1 56 0
+ 204 012a E82F      		mov r30,r24
+ 205 012c F0E0      		ldi r31,0
+ 206 012e EE0F      		lsl r30
+ 207 0130 FF1F      		rol r31
+ 208 0132 E050      		subi r30,lo8(-(system+8))
+ 209 0134 F040      		sbci r31,hi8(-(system+8))
+ 210 0136 2081      		ld r18,Z
+ 211 0138 3181      		ldd r19,Z+1
+ 212 013a 232B      		or r18,r19
+ 213 013c 01F0      		breq .L13
+  57:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		{
+  58:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 			return 0;
+  59:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		}
+  60:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		
+  61:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		system.HandlerMask |= (uint32_t)1 << e;
+ 214               		.loc 1 61 0
+ 215 013e 81E0      		ldi r24,lo8(1)
+ 216 0140 90E0      		ldi r25,0
+ 217 0142 A0E0      		ldi r26,0
+ 218 0144 B0E0      		ldi r27,0
+ 219               	.LVL6:
+ 220 0146 00C0      		rjmp 2f
+ 221               		1:
+ 222 0148 880F      		lsl r24
+ 223 014a 991F      		rol r25
+ 224 014c AA1F      		rol r26
+ 225 014e BB1F      		rol r27
+ 226               		2:
+ 227 0150 4A95      		dec r20
+ 228 0152 02F4      		brpl 1b
+ 229 0154 5091 0000 		lds r21,system
+ 230 0158 582B      		or r21,r24
+ 231 015a 4091 0000 		lds r20,system+1
+ 232               	.LVL7:
+ 233 015e 492B      		or r20,r25
+ 234 0160 3091 0000 		lds r19,system+2
+ 235 0164 3A2B      		or r19,r26
+ 236 0166 2091 0000 		lds r18,system+3
+ 237 016a 2B2B      		or r18,r27
+ 238 016c 5093 0000 		sts system,r21
+ 239 0170 4093 0000 		sts system+1,r20
+ 240 0174 3093 0000 		sts system+2,r19
+ 241 0178 2093 0000 		sts system+3,r18
+  62:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		return 1;
+ 242               		.loc 1 62 0
+ 243 017c 21E0      		ldi r18,lo8(1)
+ 244 017e 30E0      		ldi r19,0
+ 245 0180 00C0      		rjmp .L11
+ 246               	.LVL8:
+ 247               	.L13:
+  63:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	}
+  64:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	
+  65:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	return 0;	
+ 248               		.loc 1 65 0
+ 249 0182 20E0      		ldi r18,0
+ 250 0184 30E0      		ldi r19,0
+ 251               	.LVL9:
+ 252               	.L11:
+  66:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** }
+ 253               		.loc 1 66 0
+ 254 0186 C901      		movw r24,r18
+ 255               	/* epilogue start */
+ 256 0188 DF91      		pop r29
+ 257 018a CF91      		pop r28
+ 258 018c 0895      		ret
+ 259               	.LFE7:
+ 261               	.global	registerHandler
+ 263               	registerHandler:
+ 264               	.LFB8:
+  67:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+  68:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+  69:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // RegisterHandler
+  70:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // will register a callback for a valid event with currently NULL callback.
+  71:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // must unregister a valid handler before re-registering.
+  72:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // returns 1 on success, 0 on failure.
+  73:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** int registerHandler(Event e, GenericHandler callback)
+  74:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** {
+ 265               		.loc 1 74 0
+ 266               	.LVL10:
+ 267               	/* prologue: function */
+ 268               	/* frame size = 0 */
+ 269               	/* stack size = 0 */
+ 270               	.L__stack_usage = 0
+  75:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	if(e < NUM_HANDLERS)
+ 271               		.loc 1 75 0
+ 272 018e 8032      		cpi r24,lo8(32)
+ 273 0190 00F4      		brsh .L17
+  76:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	{
+  77:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		if(system.HandlerTable[e] == NULL)
+ 274               		.loc 1 77 0
+ 275 0192 E82F      		mov r30,r24
+ 276 0194 F0E0      		ldi r31,0
+ 277 0196 EE0F      		lsl r30
+ 278 0198 FF1F      		rol r31
+ 279 019a E050      		subi r30,lo8(-(system+8))
+ 280 019c F040      		sbci r31,hi8(-(system+8))
+ 281 019e 8081      		ld r24,Z
+ 282 01a0 9181      		ldd r25,Z+1
+ 283               	.LVL11:
+ 284 01a2 892B      		or r24,r25
+ 285 01a4 01F4      		brne .L17
+  78:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		{
+  79:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 			system.HandlerTable[e] = callback;
+ 286               		.loc 1 79 0
+ 287 01a6 6083      		st Z,r22
+ 288 01a8 7183      		std Z+1,r23
+  80:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 			return 1;
+ 289               		.loc 1 80 0
+ 290 01aa 21E0      		ldi r18,lo8(1)
+ 291 01ac 30E0      		ldi r19,0
+ 292 01ae 00C0      		rjmp .L15
+ 293               	.L17:
+  81:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		}
+  82:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		
+  83:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		return 0;
+  84:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	}
+  85:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	
+  86:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	return 0;
+ 294               		.loc 1 86 0
+ 295 01b0 20E0      		ldi r18,0
+ 296 01b2 30E0      		ldi r19,0
+ 297               	.L15:
+  87:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** }
+ 298               		.loc 1 87 0
+ 299 01b4 C901      		movw r24,r18
+ 300 01b6 0895      		ret
+ 301               	.LFE8:
+ 303               	.global	unregisterHandler
+ 305               	unregisterHandler:
+ 306               	.LFB9:
+  88:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+  89:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+  90:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // UnregisterHandler
+  91:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // will unregister a valid callback for a valid event, setting it to NULL.
+  92:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // must unregister a valid handler before re-registering.
+  93:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** // returns 1 on success, 0 on failure.
+  94:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** int unregisterHandler(Event e)
+  95:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** {
+ 307               		.loc 1 95 0
+ 308               	.LVL12:
+ 309               	/* prologue: function */
+ 310               	/* frame size = 0 */
+ 311               	/* stack size = 0 */
+ 312               	.L__stack_usage = 0
+  96:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	if(e < NUM_HANDLERS)
+ 313               		.loc 1 96 0
+ 314 01b8 8032      		cpi r24,lo8(32)
+ 315 01ba 00F4      		brsh .L21
+  97:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	{
+  98:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		if(system.HandlerTable[e] == NULL)
+ 316               		.loc 1 98 0
+ 317 01bc E82F      		mov r30,r24
+ 318 01be F0E0      		ldi r31,0
+ 319 01c0 EE0F      		lsl r30
+ 320 01c2 FF1F      		rol r31
+ 321 01c4 E050      		subi r30,lo8(-(system+8))
+ 322 01c6 F040      		sbci r31,hi8(-(system+8))
+ 323 01c8 8081      		ld r24,Z
+ 324 01ca 9181      		ldd r25,Z+1
+ 325               	.LVL13:
+ 326 01cc 892B      		or r24,r25
+ 327 01ce 01F0      		breq .L21
+  99:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		{
+ 100:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 			return 0;
+ 101:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		}
+ 102:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		
+ 103:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		system.HandlerTable[e] = NULL;
+ 328               		.loc 1 103 0
+ 329 01d0 1082      		st Z,__zero_reg__
+ 330 01d2 1182      		std Z+1,__zero_reg__
+ 104:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		return 1;
+ 331               		.loc 1 104 0
+ 332 01d4 21E0      		ldi r18,lo8(1)
+ 333 01d6 30E0      		ldi r19,0
+ 334 01d8 00C0      		rjmp .L19
+ 335               	.L21:
+ 105:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	}
+ 106:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	
+ 107:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	return 0;
+ 336               		.loc 1 107 0
+ 337 01da 20E0      		ldi r18,0
+ 338 01dc 30E0      		ldi r19,0
+ 339               	.L19:
+ 108:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** }
+ 340               		.loc 1 108 0
+ 341 01de C901      		movw r24,r18
+ 342 01e0 0895      		ret
+ 343               	.LFE9:
+ 345               	.global	callHandler
+ 347               	callHandler:
+ 348               	.LFB10:
+ 109:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 
+ 110:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** void callHandler(Event e)
+ 111:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** {
+ 349               		.loc 1 111 0
+ 350               	.LVL14:
+ 351               	/* prologue: function */
+ 352               	/* frame size = 0 */
+ 353               	/* stack size = 0 */
+ 354               	.L__stack_usage = 0
+ 112:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	if(e < NUM_HANDLERS)
+ 355               		.loc 1 112 0
+ 356 01e2 8032      		cpi r24,lo8(32)
+ 357 01e4 00F4      		brsh .L22
+ 113:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 	{
+ 114:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		if(system.HandlerTable[e] != NULL)
+ 358               		.loc 1 114 0
+ 359 01e6 E82F      		mov r30,r24
+ 360 01e8 F0E0      		ldi r31,0
+ 361 01ea EE0F      		lsl r30
+ 362 01ec FF1F      		rol r31
+ 363 01ee E050      		subi r30,lo8(-(system+8))
+ 364 01f0 F040      		sbci r31,hi8(-(system+8))
+ 365 01f2 0190      		ld __tmp_reg__,Z+
+ 366 01f4 F081      		ld r31,Z
+ 367 01f6 E02D      		mov r30,__tmp_reg__
+ 368 01f8 3097      		sbiw r30,0
+ 369 01fa 01F0      		breq .L22
+ 115:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 		{
+ 116:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bb **** 			(system.HandlerTable[e])();
+ 370               		.loc 1 116 0
+ 371 01fc 1994      		eijmp
+ 372               	.LVL15:
+ 373               	.L22:
+ 374 01fe 0895      		ret
+ 375               	.LFE10:
+ 377               		.comm	system,72,1
+ 528               	.Letext0:
+ 529               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 530               		.file 3 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/defs.bbh"
+ 531               		.file 4 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bbh"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 handler.c
+     /tmp/ccD4kh84.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccD4kh84.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccD4kh84.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccD4kh84.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccD4kh84.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccD4kh84.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccD4kh84.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccD4kh84.s:13     .text:0000000000000000 initHandlers
+                            *COM*:0000000000000048 system
+     /tmp/ccD4kh84.s:50     .text:0000000000000032 executeHandlers
+     /tmp/ccD4kh84.s:187    .text:0000000000000120 triggerHandler
+     /tmp/ccD4kh84.s:263    .text:000000000000018e registerHandler
+     /tmp/ccD4kh84.s:305    .text:00000000000001b8 unregisterHandler
+     /tmp/ccD4kh84.s:347    .text:00000000000001e2 callHandler
+
+UNDEFINED SYMBOLS
+__cmpdi2_s8
+__do_clear_bss

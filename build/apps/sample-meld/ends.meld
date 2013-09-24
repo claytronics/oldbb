@@ -1,0 +1,8 @@
+const RED = 0.
+const BLUE = 5.
+
+setColor2(X, BLUE) :-
+	neighborCount(X, C), C > 1.
+
+setColor2(X, RED) :-
+	neighborCount(X, 1).

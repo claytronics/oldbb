@@ -1,0 +1,13 @@
+#ifndef _EXTERN_FUNCTIONS_H_
+#define _EXTERN_FUNCTIONS_H_
+
+#include <stdlib.h>
+
+int blockID(int);
+void printInt(int, int, int);
+
+int gen_fresh_file();
+int gen_fresh_tag();
+int gen_fresh_nonce();
+
+#endif

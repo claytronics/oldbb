@@ -1,0 +1,457 @@
+   1               		.file	"message.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	sendMessageToUid
+  13               	sendMessageToUid:
+  14               	.LFB6:
+  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb"
+   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** #include "message.bbh"
+   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** #include "led.bbh"
+   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** byte sendMessageToUid(Chunk* c, Uid dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb
+   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** {
+  16               		.loc 1 7 0
+  17               	.LVL0:
+  18 0000 EF92      		push r14
+  19               	.LCFI0:
+  20 0002 FF92      		push r15
+  21               	.LCFI1:
+  22 0004 0F93      		push r16
+  23               	.LCFI2:
+  24 0006 1F93      		push r17
+  25               	.LCFI3:
+  26 0008 CF93      		push r28
+  27               	.LCFI4:
+  28 000a DF93      		push r29
+  29               	.LCFI5:
+  30               	/* prologue: function */
+  31               	/* frame size = 0 */
+  32               	/* stack size = 6 */
+  33               	.L__stack_usage = 6
+  34 000c EC01      		movw r28,r24
+  35 000e CB01      		movw r24,r22
+  36               	.LVL1:
+  37 0010 E0E0      		ldi r30,lo8(thisNeighborhood)
+  38 0012 F0E0      		ldi r31,hi8(thisNeighborhood)
+   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     byte i;
+   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     for(i = 0; i < NUM_PORTS; ++i)
+  39               		.loc 1 10 0
+  40 0014 60E0      		ldi r22,0
+  41               	.LVL2:
+  42               	.L5:
+  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     {
+  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         if(thisNeighborhood.n[i] == dest)
+  43               		.loc 1 12 0
+  44 0016 A191      		ld r26,Z+
+  45 0018 B191      		ld r27,Z+
+  46 001a A817      		cp r26,r24
+  47 001c B907      		cpc r27,r25
+  48 001e 01F4      		brne .L2
+  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         {
+  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             if(setupChunk(c,i, msg, length, mh, cb) == 0)
+  49               		.loc 1 14 0
+  50 0020 CE01      		movw r24,r28
+  51               	.LVL3:
+  52 0022 0E94 0000 		call setupChunk
+  53               	.LVL4:
+  54 0026 8111      		cpse r24,__zero_reg__
+  55 0028 00C0      		rjmp .L3
+  56               	.L6:
+  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             {
+  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****                 return 0;
+  57               		.loc 1 16 0
+  58 002a 80E0      		ldi r24,0
+  59 002c 00C0      		rjmp .L4
+  60               	.L3:
+  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             }
+  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             queueChunk(c);
+  61               		.loc 1 18 0
+  62 002e CE01      		movw r24,r28
+  63 0030 0E94 0000 		call queueChunk
+  64               	.LVL5:
+  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             return 1;
+  65               		.loc 1 19 0
+  66 0034 81E0      		ldi r24,lo8(1)
+  67 0036 00C0      		rjmp .L4
+  68               	.LVL6:
+  69               	.L2:
+  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     for(i = 0; i < NUM_PORTS; ++i)
+  70               		.loc 1 10 0
+  71 0038 6F5F      		subi r22,lo8(-(1))
+  72               	.LVL7:
+  73 003a 6630      		cpi r22,lo8(6)
+  74 003c 01F4      		brne .L5
+  75 003e 00C0      		rjmp .L6
+  76               	.LVL8:
+  77               	.L4:
+  78               	/* epilogue start */
+  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         }
+  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     }
+  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     return 0;
+  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** }
+  79               		.loc 1 24 0
+  80 0040 DF91      		pop r29
+  81 0042 CF91      		pop r28
+  82               	.LVL9:
+  83 0044 1F91      		pop r17
+  84 0046 0F91      		pop r16
+  85               	.LVL10:
+  86 0048 FF90      		pop r15
+  87 004a EF90      		pop r14
+  88               	.LVL11:
+  89 004c 0895      		ret
+  90               	.LFE6:
+  92               	.global	sendMessageToPort
+  94               	sendMessageToPort:
+  95               	.LFB7:
+  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+  26:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** byte sendMessageToPort(Chunk* c, PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler 
+  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** {
+  96               		.loc 1 27 0
+  97               	.LVL12:
+  98 004e EF92      		push r14
+  99               	.LCFI6:
+ 100 0050 FF92      		push r15
+ 101               	.LCFI7:
+ 102 0052 0F93      		push r16
+ 103               	.LCFI8:
+ 104 0054 1F93      		push r17
+ 105               	.LCFI9:
+ 106 0056 CF93      		push r28
+ 107               	.LCFI10:
+ 108 0058 DF93      		push r29
+ 109               	.LCFI11:
+ 110               	/* prologue: function */
+ 111               	/* frame size = 0 */
+ 112               	/* stack size = 6 */
+ 113               	.L__stack_usage = 6
+ 114 005a EC01      		movw r28,r24
+  28:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     // NOTE: Can no longer support BROADCAST since requires 6 memory chunks passed in
+  29:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     if(dest == BROADCAST)
+ 115               		.loc 1 29 0
+ 116 005c 6F3F      		cpi r22,lo8(-1)
+ 117 005e 01F4      		brne .L9
+ 118               	.LVL13:
+ 119               	.L11:
+  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     {
+  31:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         return 0;
+ 120               		.loc 1 31 0
+ 121 0060 80E0      		ldi r24,0
+ 122 0062 00C0      		rjmp .L10
+ 123               	.LVL14:
+ 124               	.L9:
+  32:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     }
+  33:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     else
+  34:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     {
+  35:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         if(dest < NUM_PORTS)
+ 125               		.loc 1 35 0
+ 126 0064 6630      		cpi r22,lo8(6)
+ 127 0066 00F4      		brsh .L11
+  36:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         {
+  37:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             if(setupChunk(c,dest, msg, length, mh, cb) == 0)
+ 128               		.loc 1 37 0
+ 129 0068 0E94 0000 		call setupChunk
+ 130               	.LVL15:
+ 131 006c 8823      		tst r24
+ 132 006e 01F0      		breq .L11
+  38:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             {
+  39:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****                 return 0;
+  40:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             }
+  41:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             queueChunk(c);
+ 133               		.loc 1 41 0
+ 134 0070 CE01      		movw r24,r28
+ 135 0072 0E94 0000 		call queueChunk
+ 136               	.LVL16:
+  42:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             return 1;
+ 137               		.loc 1 42 0
+ 138 0076 81E0      		ldi r24,lo8(1)
+ 139               	.L10:
+ 140               	/* epilogue start */
+  43:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         }
+  44:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     }
+  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     
+  46:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     return 0;
+  47:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** }
+ 141               		.loc 1 47 0
+ 142 0078 DF91      		pop r29
+ 143 007a CF91      		pop r28
+ 144               	.LVL17:
+ 145 007c 1F91      		pop r17
+ 146 007e 0F91      		pop r16
+ 147               	.LVL18:
+ 148 0080 FF90      		pop r15
+ 149 0082 EF90      		pop r14
+ 150               	.LVL19:
+ 151 0084 0895      		ret
+ 152               	.LFE7:
+ 154               	.global	sendSystemMessage
+ 156               	sendSystemMessage:
+ 157               	.LFB8:
+  48:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+  49:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+  50:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** // ----------- SEND SYSTEM MESSAGE to PORT
+  51:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** //
+  52:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** // Probably shouldn't be used by a user, but needed by various sytem routines.
+  53:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** byte sendSystemMessage(PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
+  54:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** {
+ 158               		.loc 1 54 0
+ 159               	.LVL20:
+ 160 0086 6F92      		push r6
+ 161               	.LCFI12:
+ 162 0088 7F92      		push r7
+ 163               	.LCFI13:
+ 164 008a 8F92      		push r8
+ 165               	.LCFI14:
+ 166 008c 9F92      		push r9
+ 167               	.LCFI15:
+ 168 008e AF92      		push r10
+ 169               	.LCFI16:
+ 170 0090 BF92      		push r11
+ 171               	.LCFI17:
+ 172 0092 CF92      		push r12
+ 173               	.LCFI18:
+ 174 0094 DF92      		push r13
+ 175               	.LCFI19:
+ 176 0096 EF92      		push r14
+ 177               	.LCFI20:
+ 178 0098 FF92      		push r15
+ 179               	.LCFI21:
+ 180 009a 0F93      		push r16
+ 181               	.LCFI22:
+ 182 009c 1F93      		push r17
+ 183               	.LCFI23:
+ 184 009e CF93      		push r28
+ 185               	.LCFI24:
+ 186 00a0 DF93      		push r29
+ 187               	.LCFI25:
+ 188               	/* prologue: function */
+ 189               	/* frame size = 0 */
+ 190               	/* stack size = 14 */
+ 191               	.L__stack_usage = 14
+ 192 00a2 782E      		mov r7,r24
+ 193 00a4 6B01      		movw r12,r22
+ 194 00a6 642E      		mov r6,r20
+ 195 00a8 5901      		movw r10,r18
+ 196 00aa 4801      		movw r8,r16
+  55:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     Chunk* c;
+  56:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+  57:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     if(dest == BROADCAST)
+ 197               		.loc 1 57 0
+ 198 00ac 8FEF      		ldi r24,lo8(-1)
+ 199               	.LVL21:
+ 200 00ae 7812      		cpse r7,r24
+ 201 00b0 00C0      		rjmp .L16
+ 202 00b2 712C      		mov r7,__zero_reg__
+ 203               	.LVL22:
+ 204               	.L19:
+ 205               	.LBB2:
+  58:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     {
+  59:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         byte i;
+  60:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         
+  61:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         for(i = 0; i < NUM_PORTS; ++i)
+  62:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         {
+  63:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             // set it to appropriate chunk
+  64:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             c = getSystemTXChunk();
+ 206               		.loc 1 64 0
+ 207 00b4 0E94 0000 		call getSystemTXChunk
+ 208               	.LVL23:
+ 209 00b8 EC01      		movw r28,r24
+ 210               	.LVL24:
+  65:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             
+  66:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             // in use - can't send
+  67:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             if( c == NULL ) 
+ 211               		.loc 1 67 0
+ 212 00ba 0097      		sbiw r24,0
+ 213 00bc 01F0      		breq .L17
+  68:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             {
+  69:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****                 continue;
+  70:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             }
+  71:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             
+  72:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             if(setupChunk(c,i, msg, length, mh, cb) == 0)
+ 214               		.loc 1 72 0
+ 215 00be 7401      		movw r14,r8
+ 216 00c0 8501      		movw r16,r10
+ 217 00c2 262D      		mov r18,r6
+ 218 00c4 A601      		movw r20,r12
+ 219 00c6 672D      		mov r22,r7
+ 220 00c8 0E94 0000 		call setupChunk
+ 221               	.LVL25:
+ 222 00cc 8111      		cpse r24,__zero_reg__
+ 223 00ce 00C0      		rjmp .L18
+  73:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             {
+  74:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****                 freeChunk(c);
+ 224               		.loc 1 74 0
+ 225 00d0 CE01      		movw r24,r28
+ 226 00d2 0E94 0000 		call freeChunk
+ 227               	.LVL26:
+  75:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****                 continue;
+ 228               		.loc 1 75 0
+ 229 00d6 00C0      		rjmp .L17
+ 230               	.L18:
+  76:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             }
+  77:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             queueChunk(c);
+ 231               		.loc 1 77 0
+ 232 00d8 CE01      		movw r24,r28
+ 233 00da 0E94 0000 		call queueChunk
+ 234               	.LVL27:
+ 235               	.L17:
+  61:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         for(i = 0; i < NUM_PORTS; ++i)
+ 236               		.loc 1 61 0
+ 237 00de 7394      		inc r7
+ 238               	.LVL28:
+ 239 00e0 86E0      		ldi r24,lo8(6)
+ 240 00e2 7812      		cpse r7,r24
+ 241 00e4 00C0      		rjmp .L19
+ 242 00e6 00C0      		rjmp .L20
+ 243               	.LVL29:
+ 244               	.L16:
+ 245               	.LBE2:
+  78:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         }    
+  79:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         
+  80:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         return i;
+  81:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     }
+  82:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     else
+  83:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     {
+  84:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         if(dest < NUM_PORTS)
+ 246               		.loc 1 84 0
+ 247 00e8 85E0      		ldi r24,lo8(5)
+ 248 00ea 8715      		cp r24,r7
+ 249 00ec 00F4      		brsh .L21
+ 250 00ee 00C0      		rjmp .L31
+ 251               	.L21:
+  85:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         {
+  86:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             // set it to appropriate chunk
+  87:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             c = getSystemTXChunk();
+ 252               		.loc 1 87 0
+ 253 00f0 0E94 0000 		call getSystemTXChunk
+ 254               	.LVL30:
+ 255 00f4 EC01      		movw r28,r24
+ 256               	.LVL31:
+  88:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             
+  89:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             // in use - can't send
+  90:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             if( c == NULL ) 
+ 257               		.loc 1 90 0
+ 258 00f6 0097      		sbiw r24,0
+ 259 00f8 01F0      		breq .L31
+  91:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             {
+  92:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****                 return 0;
+  93:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             }
+  94:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             
+  95:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             if(setupChunk(c,dest, msg, length, mh, cb) == 0)
+ 260               		.loc 1 95 0
+ 261 00fa 7801      		movw r14,r16
+ 262 00fc 8501      		movw r16,r10
+ 263 00fe 262D      		mov r18,r6
+ 264 0100 A601      		movw r20,r12
+ 265 0102 672D      		mov r22,r7
+ 266 0104 0E94 0000 		call setupChunk
+ 267               	.LVL32:
+ 268 0108 8111      		cpse r24,__zero_reg__
+ 269 010a 00C0      		rjmp .L23
+  96:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             {
+  97:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****                 freeChunk(c);
+ 270               		.loc 1 97 0
+ 271 010c CE01      		movw r24,r28
+ 272 010e 0E94 0000 		call freeChunk
+ 273               	.LVL33:
+ 274               	.L31:
+  98:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****                 return 0;
+ 275               		.loc 1 98 0
+ 276 0112 712C      		mov r7,__zero_reg__
+ 277               	.LVL34:
+ 278 0114 00C0      		rjmp .L20
+ 279               	.LVL35:
+ 280               	.L23:
+  99:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             }
+ 100:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             queueChunk(c);
+ 281               		.loc 1 100 0
+ 282 0116 CE01      		movw r24,r28
+ 283 0118 0E94 0000 		call queueChunk
+ 284               	.LVL36:
+ 101:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****             return 1;
+ 285               		.loc 1 101 0
+ 286 011c 7724      		clr r7
+ 287 011e 7394      		inc r7
+ 288               	.LVL37:
+ 289               	.L20:
+ 102:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****         }
+ 103:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     }
+ 104:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     
+ 105:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb ****     return 0;
+ 106:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** }
+ 290               		.loc 1 106 0
+ 291 0120 872D      		mov r24,r7
+ 292               	/* epilogue start */
+ 293 0122 DF91      		pop r29
+ 294 0124 CF91      		pop r28
+ 295 0126 1F91      		pop r17
+ 296 0128 0F91      		pop r16
+ 297 012a FF90      		pop r15
+ 298 012c EF90      		pop r14
+ 299 012e DF90      		pop r13
+ 300 0130 CF90      		pop r12
+ 301               	.LVL38:
+ 302 0132 BF90      		pop r11
+ 303 0134 AF90      		pop r10
+ 304               	.LVL39:
+ 305 0136 9F90      		pop r9
+ 306 0138 8F90      		pop r8
+ 307               	.LVL40:
+ 308 013a 7F90      		pop r7
+ 309 013c 6F90      		pop r6
+ 310               	.LVL41:
+ 311 013e 0895      		ret
+ 312               	.LFE8:
+ 314               	.global	initSystemMessage
+ 316               	initSystemMessage:
+ 317               	.LFB9:
+ 107:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+ 108:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** 
+ 109:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** void initSystemMessage()
+ 110:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/message.bb **** {
+ 318               		.loc 1 110 0
+ 319               	/* prologue: function */
+ 320               	/* frame size = 0 */
+ 321               	/* stack size = 0 */
+ 322               	.L__stack_usage = 0
+ 323 0140 0895      		ret
+ 324               	.LFE9:
+ 532               	.Letext0:
+ 533               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 534               		.file 3 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/defs.bbh"
+ 535               		.file 4 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bbh"
+ 536               		.file 5 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/memory.bbh"
+ 537               		.file 6 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/serial.bbh"
+ 538               		.file 7 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/ensemble.bbh"
+ 539               		.file 8 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/data_link.bbh"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 message.c
+     /tmp/ccWQ2nYg.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccWQ2nYg.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccWQ2nYg.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccWQ2nYg.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccWQ2nYg.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccWQ2nYg.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccWQ2nYg.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccWQ2nYg.s:13     .text:0000000000000000 sendMessageToUid
+     /tmp/ccWQ2nYg.s:94     .text:000000000000004e sendMessageToPort
+     /tmp/ccWQ2nYg.s:156    .text:0000000000000086 sendSystemMessage
+     /tmp/ccWQ2nYg.s:316    .text:0000000000000140 initSystemMessage
+
+UNDEFINED SYMBOLS
+thisNeighborhood
+setupChunk
+queueChunk
+getSystemTXChunk
+freeChunk

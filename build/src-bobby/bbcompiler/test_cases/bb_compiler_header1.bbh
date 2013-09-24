@@ -1,0 +1,8 @@
+#ifndef _BB_COMPILER_HEADER1_H_
+#define _BB_COMPILER_HEADER1_H_
+
+#include "bb_compiler_header2.h"
+
+threadtype typedef struct test1 { test2 *x; } test1;
+
+#endif

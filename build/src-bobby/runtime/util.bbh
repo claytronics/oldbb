@@ -1,0 +1,10 @@
+#ifndef _UTIL_H_
+#define _UTIL_H_
+
+#include <stdint.h>
+
+int16_t max (int16_t a, int16_t b);
+void delay (int16_t millis);
+int16_t getTime (void);
+
+#endif /* _UTIL_H_ */

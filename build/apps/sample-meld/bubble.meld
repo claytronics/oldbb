@@ -1,0 +1,15 @@
+// bubble.meld
+// Change color at bottom of ensemble and propagate up 
+use "inc/color.meld"
+use "inc/direction.meld"
+
+type linear bubbleGenerator(addr, int).
+type linear tappedOn(addr, int).
+type linear doBubble(addr, int).
+
+!bubbleGenerator(X, BLUE)@+500ms :- vacant(X, BOTTOM).
+!tappedOn(X,N), !bubbleGenerator(X,N+1)@+1000ms :- !bubbleGenerator(X,N), vacant(X, BOTTOM).
+
+setColor2(X,C), !doBubble(X,C)@+50ms :- !tappedOn(X,C).
+
+!tappedOn(Z,C) :- neighbor(X,Z,Top), !doBubble(X,C).
