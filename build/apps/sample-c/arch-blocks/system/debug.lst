@@ -11,34 +11,34 @@
   11               	.global	initDebug
   13               	initDebug:
   14               	.LFB1:
-  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/debug.bb"
-   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/debug.bb **** #include "debug.bbh"
-   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/debug.bb **** #include "../hw-api/hwDebug.h"
-   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/debug.bb **** 
-   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/debug.bb **** void initDebug() 
-   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/debug.bb **** {
+  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/debug.bb"
+   1:/home/pthalamy/CMU/build-modif/src-bobby/system/debug.bb **** #include "debug.bbh"
+   2:/home/pthalamy/CMU/build-modif/src-bobby/system/debug.bb **** #include "../hw-api/hwDebug.h"
+   3:/home/pthalamy/CMU/build-modif/src-bobby/system/debug.bb **** 
+   4:/home/pthalamy/CMU/build-modif/src-bobby/system/debug.bb **** void initDebug() 
+   5:/home/pthalamy/CMU/build-modif/src-bobby/system/debug.bb **** {
   16               		.loc 1 5 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
-   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/debug.bb ****   initHWDebug();
+   6:/home/pthalamy/CMU/build-modif/src-bobby/system/debug.bb ****   initHWDebug();
   21               		.loc 1 6 0
   22 0000 0C94 0000 		jmp initHWDebug
   23               	.LVL0:
   24               	.LFE1:
   52               	.Letext0:
-  53               		.file 2 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/../hw-api/hwDebug.h"
+  53               		.file 2 "/home/pthalamy/CMU/build-modif/src-bobby/system/../hw-api/hwDebug.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 debug.c
-     /tmp/ccjvuKxQ.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccjvuKxQ.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccjvuKxQ.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccjvuKxQ.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccjvuKxQ.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccjvuKxQ.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccjvuKxQ.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccjvuKxQ.s:13     .text:0000000000000000 initDebug
+     /tmp/cc3UoXuq.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc3UoXuq.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc3UoXuq.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc3UoXuq.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc3UoXuq.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cc3UoXuq.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc3UoXuq.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc3UoXuq.s:13     .text:0000000000000000 initDebug
 
 UNDEFINED SYMBOLS
 initHWDebug

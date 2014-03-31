@@ -1,0 +1,190 @@
+   1               		.file	"serial.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	initPortQueues
+  13               	initPortQueues:
+  14               	.LFB6:
+  15               		.file 1 "/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb"
+   1:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** #include "serial.bbh"
+   2:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** #include "../hw-api/hwSerial.h"
+   3:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 
+   4:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** threadvar Port port[NUM_PORTS];
+   5:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 
+   6:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** void initPortQueues(Port* p)
+   7:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** {
+  16               		.loc 1 7 0
+  17               	.LVL0:
+  18               	/* prologue: function */
+  19               	/* frame size = 0 */
+  20               	/* stack size = 0 */
+  21               	.L__stack_usage = 0
+  22 0000 FC01      		movw r30,r24
+   8:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb ****     // reset send queue status
+   9:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb ****     p->sq.retry         = 0;
+  23               		.loc 1 9 0
+  24 0002 1586      		std Z+13,__zero_reg__
+  10:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb ****     p->sq.flags         = CLEAR_TO_SEND;
+  25               		.loc 1 10 0
+  26 0004 80E4      		ldi r24,lo8(64)
+  27               	.LVL1:
+  28 0006 8687      		std Z+14,r24
+  11:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	
+  12:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	// send queue timers
+  13:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	p->sq.qtout.sq = &(p->sq);
+  29               		.loc 1 13 0
+  30 0008 CF01      		movw r24,r30
+  31 000a 0196      		adiw r24,1
+  32 000c 8387      		std Z+11,r24
+  33 000e 9487      		std Z+12,r25
+  14:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	p->sq.qtout.tout.callback = (GenericHandler)&retrySend;
+  34               		.loc 1 14 0
+  35 0010 80E0      		ldi r24,lo8(gs(retrySend))
+  36 0012 90E0      		ldi r25,hi8(gs(retrySend))
+  37 0014 8783      		std Z+7,r24
+  38 0016 9087      		std Z+8,r25
+  15:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 
+  16:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 
+  17:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	
+  18:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	// empty the send queue
+  19:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	//freeChunk(p->sq.head);
+  20:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb ****     p->sq.head = NULL;
+  39               		.loc 1 20 0
+  40 0018 1786      		std Z+15,__zero_reg__
+  41 001a 108A      		std Z+16,__zero_reg__
+  21:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb ****     //freeChunk(p->sq.tail);
+  22:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb ****     p->sq.tail = NULL;
+  42               		.loc 1 22 0
+  43 001c 118A      		std Z+17,__zero_reg__
+  44 001e 128A      		std Z+18,__zero_reg__
+  23:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	
+  24:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	// reset receive queue status
+  25:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb ****     p->rq.index         = 0;
+  45               		.loc 1 25 0
+  46 0020 138A      		std Z+19,__zero_reg__
+  26:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	p->rq.checksum      = 0;
+  47               		.loc 1 26 0
+  48 0022 148A      		std Z+20,__zero_reg__
+  27:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb ****     p->rq.flags         = NO_CHUNK_READY;
+  49               		.loc 1 27 0
+  50 0024 158A      		std Z+21,__zero_reg__
+  28:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 
+  29:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	// empty receive queues
+  30:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb ****     //freeReceiveChunk(p->rq.curr);
+  31:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	p->rq.curr = NULL;
+  51               		.loc 1 31 0
+  52 0026 168A      		std Z+22,__zero_reg__
+  53 0028 178A      		std Z+23,__zero_reg__
+  54 002a 0895      		ret
+  55               	.LFE6:
+  57               	.global	initPorts
+  59               	initPorts:
+  60               	.LFB7:
+  32:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** }
+  33:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 
+  34:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** void initPorts()
+  35:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** {
+  61               		.loc 1 35 0
+  62 002c FF92      		push r15
+  63               	.LCFI0:
+  64 002e 0F93      		push r16
+  65               	.LCFI1:
+  66 0030 1F93      		push r17
+  67               	.LCFI2:
+  68 0032 CF93      		push r28
+  69               	.LCFI3:
+  70 0034 DF93      		push r29
+  71               	.LCFI4:
+  72               	/* prologue: function */
+  73               	/* frame size = 0 */
+  74               	/* stack size = 5 */
+  75               	.L__stack_usage = 5
+  76               	.LVL2:
+  77 0036 00E0      		ldi r16,lo8(port)
+  78 0038 10E0      		ldi r17,hi8(port)
+  79               		.loc 1 35 0
+  80 003a C0E0      		ldi r28,0
+  81 003c D0E0      		ldi r29,0
+  36:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	PRef i;
+  37:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	for(i = 0; i < NUM_PORTS; i++)
+  38:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	{
+  39:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 		port[i].pnum  = i;
+  40:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 		initPortQueues(&port[i]);
+  82               		.loc 1 40 0
+  83 003e 88E5      		ldi r24,lo8(88)
+  84 0040 F82E      		mov r15,r24
+  85               	.LVL3:
+  86               	.L3:
+  39:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 		port[i].pnum  = i;
+  87               		.loc 1 39 0 discriminator 2
+  88 0042 F801      		movw r30,r16
+  89 0044 C083      		st Z,r28
+  90               		.loc 1 40 0 discriminator 2
+  91 0046 FC9E      		mul r15,r28
+  92 0048 C001      		movw r24,r0
+  93 004a FD9E      		mul r15,r29
+  94 004c 900D      		add r25,r0
+  95 004e 1124      		clr __zero_reg__
+  96 0050 8050      		subi r24,lo8(-(port))
+  97 0052 9040      		sbci r25,hi8(-(port))
+  98 0054 0E94 0000 		call initPortQueues
+  99               	.LVL4:
+ 100 0058 2196      		adiw r28,1
+ 101               	.LVL5:
+ 102 005a 085A      		subi r16,-88
+ 103 005c 1F4F      		sbci r17,-1
+  37:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	for(i = 0; i < NUM_PORTS; i++)
+ 104               		.loc 1 37 0 discriminator 2
+ 105 005e C630      		cpi r28,6
+ 106 0060 D105      		cpc r29,__zero_reg__
+ 107 0062 01F4      		brne .L3
+ 108               	/* epilogue start */
+  41:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	}
+  42:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	initHWPorts();
+  43:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** }
+ 109               		.loc 1 43 0
+ 110 0064 DF91      		pop r29
+ 111 0066 CF91      		pop r28
+ 112               	.LVL6:
+ 113 0068 1F91      		pop r17
+ 114 006a 0F91      		pop r16
+ 115 006c FF90      		pop r15
+  42:/home/anaz/blinkyblocks/build/src-bobby/system/serial.bb **** 	initHWPorts();
+ 116               		.loc 1 42 0
+ 117 006e 0C94 0000 		jmp initHWPorts
+ 118               	.LVL7:
+ 119               	.LFE7:
+ 121               		.comm	port,528,1
+ 186               	.Letext0:
+ 187               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 188               		.file 3 "/home/anaz/blinkyblocks/build/src-bobby/system/defs.bbh"
+ 189               		.file 4 "/home/anaz/blinkyblocks/build/src-bobby/system/circ_buffer.bbh"
+ 190               		.file 5 "/home/anaz/blinkyblocks/build/src-bobby/system/handler.bbh"
+ 191               		.file 6 "/home/anaz/blinkyblocks/build/src-bobby/system/memory.bbh"
+ 192               		.file 7 "/home/anaz/blinkyblocks/build/src-bobby/system/hardwaretime.bbh"
+ 193               		.file 8 "/home/anaz/blinkyblocks/build/src-bobby/system/queues.bbh"
+ 194               		.file 9 "/home/anaz/blinkyblocks/build/src-bobby/system/serial.bbh"
+ 195               		.file 10 "/home/anaz/blinkyblocks/build/src-bobby/system/../hw-api/hwSerial.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 serial.c
+/home/anaz/tmp/ccvxcAEp.s:2      *ABS*:000000000000003e __SP_H__
+/home/anaz/tmp/ccvxcAEp.s:3      *ABS*:000000000000003d __SP_L__
+/home/anaz/tmp/ccvxcAEp.s:4      *ABS*:000000000000003f __SREG__
+/home/anaz/tmp/ccvxcAEp.s:5      *ABS*:000000000000003b __RAMPZ__
+/home/anaz/tmp/ccvxcAEp.s:6      *ABS*:0000000000000034 __CCP__
+/home/anaz/tmp/ccvxcAEp.s:7      *ABS*:0000000000000000 __tmp_reg__
+/home/anaz/tmp/ccvxcAEp.s:8      *ABS*:0000000000000001 __zero_reg__
+/home/anaz/tmp/ccvxcAEp.s:13     .text:0000000000000000 initPortQueues
+/home/anaz/tmp/ccvxcAEp.s:59     .text:000000000000002c initPorts
+                            *COM*:0000000000000210 port
+
+UNDEFINED SYMBOLS
+retrySend
+initHWPorts
+__do_clear_bss

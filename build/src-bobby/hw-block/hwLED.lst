@@ -11,104 +11,104 @@
   11               	.global	setHWLED
   13               	setHWLED:
   14               	.LFB5:
-  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c"
-   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** #include <avr/io.h>
-   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** #include "../system/defs.h"
-   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** #include "../system/led.h"
-   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** #include "../hw-api/hwLED.h"
-   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** extern byte currentRGB[3];
-   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** void setHWLED(byte r, byte g, byte b, Intensity i)
-  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** {
+  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c"
+   1:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** #include <avr/io.h>
+   2:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+   3:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** #include "../system/defs.h"
+   4:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** #include "../system/led.h"
+   5:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+   6:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** #include "../hw-api/hwLED.h"
+   7:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+   8:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** extern byte currentRGB[3];
+   9:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+  10:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** void setHWLED(byte r, byte g, byte b, Intensity i)
+  11:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** {
   16               		.loc 1 11 0
   17               	.LVL0:
   18               	/* prologue: function */
   19               	/* frame size = 0 */
   20               	/* stack size = 0 */
   21               	.L__stack_usage = 0
-  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	uint16_t rr, gg, bb;
-  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	
-  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	//r = 255 - r;
-  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	//g = 255 - g;
-  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	//b = 255 - b;
-  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	currentRGB[0] = r;
+  12:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	uint16_t rr, gg, bb;
+  13:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	
+  14:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	//r = 255 - r;
+  15:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	//g = 255 - g;
+  16:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	//b = 255 - b;
+  17:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+  18:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	currentRGB[0] = r;
   22               		.loc 1 18 0
   23 0000 8093 0000 		sts currentRGB,r24
-  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	currentRGB[1] = g;
+  19:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	currentRGB[1] = g;
   24               		.loc 1 19 0
   25 0004 6093 0000 		sts currentRGB+1,r22
-  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	currentRGB[2] = b;
+  20:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	currentRGB[2] = b;
   26               		.loc 1 20 0
   27 0008 4093 0000 		sts currentRGB+2,r20
-  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	rr = (uint16_t)i*(uint16_t)r;
+  21:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+  22:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	rr = (uint16_t)i*(uint16_t)r;
   28               		.loc 1 22 0
   29 000c 289F      		mul r18,r24
   30 000e C001      		movw r24,r0
   31 0010 1124      		clr __zero_reg__
   32               	.LVL1:
-  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	gg = (uint16_t)i*(uint16_t)g;
+  23:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	gg = (uint16_t)i*(uint16_t)g;
   33               		.loc 1 23 0
   34 0012 269F      		mul r18,r22
   35 0014 B001      		movw r22,r0
   36 0016 1124      		clr __zero_reg__
   37               	.LVL2:
-  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	bb = (uint16_t)i*(uint16_t)b;
+  24:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	bb = (uint16_t)i*(uint16_t)b;
   38               		.loc 1 24 0
   39 0018 249F      		mul r18,r20
   40 001a A001      		movw r20,r0
   41 001c 1124      		clr __zero_reg__
   42               	.LVL3:
-  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	
-  26:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	rr = 0xFFFF - rr;
+  25:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	
+  26:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	rr = 0xFFFF - rr;
   43               		.loc 1 26 0
   44 001e 8095      		com r24
   45 0020 9095      		com r25
   46               	.LVL4:
-  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	gg = 0xFFFF - gg;
+  27:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	gg = 0xFFFF - gg;
   47               		.loc 1 27 0
   48 0022 6095      		com r22
   49 0024 7095      		com r23
   50               	.LVL5:
-  28:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	bb = 0xFFFF - bb;
+  28:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	bb = 0xFFFF - bb;
   51               		.loc 1 28 0
   52 0026 4095      		com r20
   53 0028 5095      		com r21
   54               	.LVL6:
-  29:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	
-  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC0.CCABUF = rr;
+  29:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	
+  30:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC0.CCABUF = rr;
   55               		.loc 1 30 0
   56 002a E0E0      		ldi r30,0
   57 002c F8E0      		ldi r31,lo8(8)
   58 002e 80AF      		std Z+56,r24
   59 0030 91AF      		std Z+57,r25
-  31:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC0.CCBBUF = rr;
+  31:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC0.CCBBUF = rr;
   60               		.loc 1 31 0
   61 0032 82AF      		std Z+58,r24
   62 0034 93AF      		std Z+59,r25
-  32:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-  33:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCD0.CCABUF = gg;
+  32:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+  33:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCD0.CCABUF = gg;
   63               		.loc 1 33 0
   64 0036 E0E0      		ldi r30,0
   65 0038 F9E0      		ldi r31,lo8(9)
   66 003a 60AF      		std Z+56,r22
   67 003c 71AF      		std Z+57,r23
-  34:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCD0.CCBBUF = bb;
+  34:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCD0.CCBBUF = bb;
   68               		.loc 1 34 0
   69 003e 42AF      		std Z+58,r20
   70 0040 53AF      		std Z+59,r21
-  35:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	
-  36:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC1.CCABUF = gg;
+  35:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	
+  36:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC1.CCABUF = gg;
   71               		.loc 1 36 0
   72 0042 E0E4      		ldi r30,lo8(64)
   73 0044 F8E0      		ldi r31,lo8(8)
   74 0046 60AF      		std Z+56,r22
   75 0048 71AF      		std Z+57,r23
-  37:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC1.CCBBUF = bb;
+  37:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC1.CCBBUF = bb;
   76               		.loc 1 37 0
   77 004a 42AF      		std Z+58,r20
   78 004c 53AF      		std Z+59,r21
@@ -117,43 +117,43 @@
   82               	.global	initHWLED
   84               	initHWLED:
   85               	.LFB6:
-  38:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** }
-  39:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-  40:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-  41:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** void initHWLED()
-  42:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** {
+  38:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** }
+  39:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+  40:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+  41:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** void initHWLED()
+  42:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** {
   86               		.loc 1 42 0
   87               	/* prologue: function */
   88               	/* frame size = 0 */
   89               	/* stack size = 0 */
   90               	.L__stack_usage = 0
-  43:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	// Initialize the RED
-  44:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC0.CTRLA |= TC_CLKSEL_DIV4_gc;	// RED clock source
+  43:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	// Initialize the RED
+  44:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC0.CTRLA |= TC_CLKSEL_DIV4_gc;	// RED clock source
   91               		.loc 1 44 0
   92 0050 E0E0      		ldi r30,0
   93 0052 F8E0      		ldi r31,lo8(8)
   94 0054 8081      		ld r24,Z
   95 0056 8360      		ori r24,lo8(3)
   96 0058 8083      		st Z,r24
-  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC0.CTRLB = TC0_CCAEN_bm | TC0_CCBEN_bm | TC_WGMODE_SS_gc;	// enable REDs, set WGM to SS PWM
+  45:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC0.CTRLB = TC0_CCAEN_bm | TC0_CCBEN_bm | TC_WGMODE_SS_gc;	// enable REDs, set WGM to SS PWM
   97               		.loc 1 45 0
   98 005a 33E3      		ldi r19,lo8(51)
   99 005c 3183      		std Z+1,r19
-  46:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC0.PERBUF = 0xFFFF;		// set period to 8-bit for 8-bit resolution
+  46:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC0.PERBUF = 0xFFFF;		// set period to 8-bit for 8-bit resolution
  100               		.loc 1 46 0
  101 005e 8FEF      		ldi r24,lo8(-1)
  102 0060 9FEF      		ldi r25,lo8(-1)
  103 0062 86AB      		std Z+54,r24
  104 0064 97AB      		std Z+55,r25
-  47:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC0.CCABUF = 0;		// set to off by default
+  47:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC0.CCABUF = 0;		// set to off by default
  105               		.loc 1 47 0
  106 0066 10AE      		std Z+56,__zero_reg__
  107 0068 11AE      		std Z+57,__zero_reg__
-  48:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC0.CCBBUF = 0;		// set to off by default
+  48:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC0.CCBBUF = 0;		// set to off by default
  108               		.loc 1 48 0
  109 006a 12AE      		std Z+58,__zero_reg__
  110 006c 13AE      		std Z+59,__zero_reg__
-  49:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	PORTC.DIRSET = PIN0_bm | PIN1_bm;  // set REDs to OUTPUT
+  49:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	PORTC.DIRSET = PIN0_bm | PIN1_bm;  // set REDs to OUTPUT
  111               		.loc 1 49 0
  112 006e A0E4      		ldi r26,lo8(64)
  113 0070 B6E0      		ldi r27,lo8(6)
@@ -161,54 +161,54 @@
  115 0074 1196      		adiw r26,1
  116 0076 2C93      		st X,r18
  117 0078 1197      		sbiw r26,1
-  50:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-  51:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC1.CTRLA = TC_CLKSEL_DIV4_gc;	// BLUE clock source
+  50:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+  51:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC1.CTRLA = TC_CLKSEL_DIV4_gc;	// BLUE clock source
  118               		.loc 1 51 0
  119 007a E0E4      		ldi r30,lo8(64)
  120 007c F8E0      		ldi r31,lo8(8)
  121 007e 2083      		st Z,r18
-  52:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC1.CTRLB = TC1_CCAEN_bm | TC1_CCBEN_bm | TC_WGMODE_SS_gc;	// enable BLUEs, set WGM to SS PWM
+  52:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC1.CTRLB = TC1_CCAEN_bm | TC1_CCBEN_bm | TC_WGMODE_SS_gc;	// enable BLUEs, set WGM to SS PWM
  122               		.loc 1 52 0
  123 0080 3183      		std Z+1,r19
-  53:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC1.PERBUF = 0xFFFF;		// set period to 8-bit for 8-bit resolution
+  53:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC1.PERBUF = 0xFFFF;		// set period to 8-bit for 8-bit resolution
  124               		.loc 1 53 0
  125 0082 86AB      		std Z+54,r24
  126 0084 97AB      		std Z+55,r25
-  54:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC1.CCABUF = 0;		// set to off by default
+  54:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC1.CCABUF = 0;		// set to off by default
  127               		.loc 1 54 0
  128 0086 10AE      		std Z+56,__zero_reg__
  129 0088 11AE      		std Z+57,__zero_reg__
-  55:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCC1.CCBBUF = 0;		// set to off by default
+  55:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCC1.CCBBUF = 0;		// set to off by default
  130               		.loc 1 55 0
  131 008a 12AE      		std Z+58,__zero_reg__
  132 008c 13AE      		std Z+59,__zero_reg__
-  56:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	PORTC.DIRSET = PIN4_bm | PIN5_bm;  // set BLUEs to OUTPUT
+  56:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	PORTC.DIRSET = PIN4_bm | PIN5_bm;  // set BLUEs to OUTPUT
  133               		.loc 1 56 0
  134 008e 40E3      		ldi r20,lo8(48)
  135 0090 1196      		adiw r26,1
  136 0092 4C93      		st X,r20
-  57:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 
-  58:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCD0.CTRLA = TC_CLKSEL_DIV4_gc;	// GREEN clock source
+  57:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 
+  58:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCD0.CTRLA = TC_CLKSEL_DIV4_gc;	// GREEN clock source
  137               		.loc 1 58 0
  138 0094 E0E0      		ldi r30,0
  139 0096 F9E0      		ldi r31,lo8(9)
  140 0098 2083      		st Z,r18
-  59:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCD0.CTRLB = TC0_CCAEN_bm | TC0_CCBEN_bm | TC_WGMODE_SS_gc;	// enable REDs, set WGM to SS PWM
+  59:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCD0.CTRLB = TC0_CCAEN_bm | TC0_CCBEN_bm | TC_WGMODE_SS_gc;	// enable REDs, set WGM to SS PWM
  141               		.loc 1 59 0
  142 009a 3183      		std Z+1,r19
-  60:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCD0.PERBUF = 0xFFFF;		// set period to 8-bit for 8-bit resolution
+  60:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCD0.PERBUF = 0xFFFF;		// set period to 8-bit for 8-bit resolution
  143               		.loc 1 60 0
  144 009c 86AB      		std Z+54,r24
  145 009e 97AB      		std Z+55,r25
-  61:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCD0.CCABUF = 0;		// set to off by default
+  61:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCD0.CCABUF = 0;		// set to off by default
  146               		.loc 1 61 0
  147 00a0 10AE      		std Z+56,__zero_reg__
  148 00a2 11AE      		std Z+57,__zero_reg__
-  62:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	TCD0.CCBBUF = 0;		// set to off by default
+  62:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	TCD0.CCBBUF = 0;		// set to off by default
  149               		.loc 1 62 0
  150 00a4 12AE      		std Z+58,__zero_reg__
  151 00a6 13AE      		std Z+59,__zero_reg__
-  63:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwLED.c **** 	PORTD.DIRSET = PIN0_bm | PIN1_bm;  // set GREENs to OUTPUT	
+  63:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwLED.c **** 	PORTD.DIRSET = PIN0_bm | PIN1_bm;  // set GREENs to OUTPUT	
  152               		.loc 1 63 0
  153 00a8 E0E6      		ldi r30,lo8(96)
  154 00aa F6E0      		ldi r31,lo8(6)
@@ -218,19 +218,19 @@
  193               	.Letext0:
  194               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
  195               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
- 196               		.file 4 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/defs.bbh"
- 197               		.file 5 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/led.bbh"
+ 196               		.file 4 "/home/pthalamy/CMU/build-modif/src-bobby/system/defs.bbh"
+ 197               		.file 5 "/home/pthalamy/CMU/build-modif/src-bobby/system/led.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwLED.c
-     /tmp/ccTP7k4m.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccTP7k4m.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccTP7k4m.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccTP7k4m.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccTP7k4m.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccTP7k4m.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccTP7k4m.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccTP7k4m.s:13     .text:0000000000000000 setHWLED
-     /tmp/ccTP7k4m.s:84     .text:0000000000000050 initHWLED
+     /tmp/cc0MpHRK.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc0MpHRK.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc0MpHRK.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc0MpHRK.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc0MpHRK.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cc0MpHRK.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc0MpHRK.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc0MpHRK.s:13     .text:0000000000000000 setHWLED
+     /tmp/cc0MpHRK.s:84     .text:0000000000000050 initHWLED
 
 UNDEFINED SYMBOLS
 currentRGB

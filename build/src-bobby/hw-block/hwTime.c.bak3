@@ -1,0 +1,60 @@
+#include <util/atomic.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include "../hw-api/hwTime.h"
+#include "../system/hardwaretime.h"
+
+#include "../hw-api/hwLED.h"
+
+// 31.250kHz (32MHz/1024)
+#define CLOCK_FREQUENCY 31.250
+
+uint32_t cntHi;			// semi-private data, do not modify outside of this file
+
+// Time in ms
+Time getHWTime()
+{
+	return getHWTimeUS()/1000;
+}
+
+Time getHWTimeUS() {
+	Time tmp;
+	// prevents ISRs from corrupting multibyte write
+	ATOMIC_BLOCK(ATOMIC_FORCEON)
+    {
+		tmp = cntHi;
+	}
+	return (Time) ( (float)tmp * 1000.0/CLOCK_FREQUENCY);
+}
+
+void initHWClock(void)
+{
+	OSC.CTRL |= _BV(OSC_RC32MEN_bp);			// turn on 32MHz internal RC oscillator
+	while(!(OSC.STATUS & OSC_RC32MRDY_bm));  	// wait for it to be ready
+
+	CCP=0xD8;							// allow modification of protected register
+	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;	// change from 2MHz to 32MHz
+}
+
+void initHWTC(void) {
+	TCE1.INTCTRLA = TC_OVFINTLVL_HI_gc;
+	TCE1.CTRLA = TC_CLKSEL_DIV1024_gc; //31.250kHz (32MHz/1024)
+	//TCE1.PER = 62500; // 2sec
+	TCE1.PER = 1;
+}
+
+void initHWTime()
+{
+	initHWClock();
+	initHWTC();
+}
+
+ISR(TCE1_OVF_vect) {
+	cntHi++;
+	/*static int i = 0; //TEST
+	if ((i % 2) == 0)
+		setHWLED(0xFF, 0x00, 0x00, 0xFF);
+	else
+		setHWLED(0x00, 0xFF, 0x00, 0xFF);
+	i++;*/
+}

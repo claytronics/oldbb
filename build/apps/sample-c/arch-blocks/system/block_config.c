@@ -1,4 +1,4 @@
-# 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/block_config.bb"
+# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/block_config.bb"
 // block_config.c
 //
 // Contains block configuration data

@@ -11,19 +11,19 @@
   11               	.global	push
   13               	push:
   14               	.LFB5:
-  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb"
-   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** #include "circ_buffer.bbh"
-   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 
-   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** // HARDWARE INCLUDE
-   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** // BOBBY:
-   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** // atomic block is a very simple mutex-like thing that turns off interrupts so things don't get cor
-   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** // this code is all system-level but you may need to define around ATOMIC_BLOCK for the simulator
-   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** #ifndef BBSIM
-   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** #include "util/atomic.h"
-   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** #endif
-  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 
-  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** void push(byte data, CircBuf * b)
-  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** { 
+  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb"
+   1:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** #include "circ_buffer.bbh"
+   2:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 
+   3:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** // HARDWARE INCLUDE
+   4:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** // BOBBY:
+   5:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** // atomic block is a very simple mutex-like thing that turns off interrupts so things don't get cor
+   6:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** // this code is all system-level but you may need to define around ATOMIC_BLOCK for the simulator
+   7:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** #ifndef BBSIM
+   8:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** #include "util/atomic.h"
+   9:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** #endif
+  10:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 
+  11:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** void push(byte data, CircBuf * b)
+  12:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** { 
   16               		.loc 1 12 0
   17               	.LVL0:
   18               	/* prologue: function */
@@ -32,8 +32,8 @@
   21               	.L__stack_usage = 0
   22 0000 FB01      		movw r30,r22
   23               	.LBB14:
-  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   #ifndef BBSIM
-  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  13:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   #ifndef BBSIM
+  14:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
   24               		.loc 1 14 0
   25 0002 2FB7      		in r18,__SREG__
   26               	.LVL1:
@@ -98,10 +98,10 @@
   35               	/* #NOAPP */
   36               	.LBE16:
   37               	.LBE15:
-  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   {
-  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   #endif
-  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 
-  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     b->buf[b->end++] = data;
+  15:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   {
+  16:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   #endif
+  17:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 
+  18:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     b->buf[b->end++] = data;
   38               		.loc 1 18 0
   39 0006 978D      		ldd r25,Z+31
   40 0008 DB01      		movw r26,r22
@@ -111,24 +111,24 @@
   44 0010 892F      		mov r24,r25
   45               	.LVL2:
   46 0012 8F5F      		subi r24,lo8(-(1))
-  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 
-  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     if(b->end == CIRC_BUF_LEN)
+  19:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 
+  20:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     if(b->end == CIRC_BUF_LEN)
   47               		.loc 1 20 0
   48 0014 8E31      		cpi r24,lo8(30)
   49 0016 01F0      		breq .L3
-  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     b->buf[b->end++] = data;
+  18:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     b->buf[b->end++] = data;
   50               		.loc 1 18 0
   51 0018 878F      		std Z+31,r24
   52 001a 00C0      		rjmp .L4
   53               	.L3:
-  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     {
-  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****       b->end = 0;
+  21:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     {
+  22:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****       b->end = 0;
   54               		.loc 1 22 0
   55 001c 178E      		std Z+31,__zero_reg__
   56               	.L4:
-  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     }
-  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 
-  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     if(b->end == b->start)
+  23:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     }
+  24:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 
+  25:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     if(b->end == b->start)
   57               		.loc 1 25 0
   58 001e 878D      		ldd r24,Z+31
   59 0020 968D      		ldd r25,Z+30
@@ -165,18 +165,18 @@
   69               	.L5:
   70               	.LBE18:
   71               	.LBE17:
-  26:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     {
-  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****       b->start++;
+  26:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     {
+  27:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****       b->start++;
   72               		.loc 1 27 0
   73 002a 8F5F      		subi r24,lo8(-(1))
   74 002c 868F      		std Z+30,r24
-  28:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 	
-  29:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****       if(b->start == CIRC_BUF_LEN)
+  28:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 	
+  29:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****       if(b->start == CIRC_BUF_LEN)
   75               		.loc 1 29 0
   76 002e 8E31      		cpi r24,lo8(30)
   77 0030 01F4      		brne .L6
-  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 	  {
-  31:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 	    b->start = 0;
+  30:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 	  {
+  31:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 	    b->start = 0;
   78               		.loc 1 31 0
   79 0032 168E      		std Z+30,__zero_reg__
   80 0034 00C0      		rjmp .L6
@@ -185,15 +185,15 @@
   84               	.global	pop
   86               	pop:
   87               	.LFB6:
-  32:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 	  }
-  33:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     }
-  34:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   #ifndef BBSIM
-  35:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   }
-  36:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   #endif
-  37:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** }
-  38:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 
-  39:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** int pop(CircBuf * b)
-  40:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** {
+  32:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 	  }
+  33:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     }
+  34:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   #ifndef BBSIM
+  35:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   }
+  36:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   #endif
+  37:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** }
+  38:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 
+  39:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** int pop(CircBuf * b)
+  40:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** {
   88               		.loc 1 40 0
   89               	.LVL3:
   90               	/* prologue: function */
@@ -204,32 +204,32 @@
   95               	.LVL4:
   96               	.LBB19:
   97               	.LBB20:
-  41:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   uint8_t data;
-  42:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 
-  43:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   if( isEmpty(b) )
-  44:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   {
-  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 	return -1;
-  46:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   }
-  47:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   #ifndef BBSIM
-  48:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
-  49:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   {
-  50:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   #endif
-  51:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     data = b->buf[b->start++];
-  52:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   
-  53:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     if(b->start == CIRC_BUF_LEN)
-  54:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     {
-  55:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****       b->start = 0;
-  56:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     }
-  57:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   #ifndef BBSIM
-  58:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   }
-  59:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   #endif
-  60:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   
-  61:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   return data;
-  62:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** }
-  63:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 
-  64:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** byte isEmpty(CircBuf * b)
-  65:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** {
-  66:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   if(b->start == b->end)
+  41:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   uint8_t data;
+  42:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 
+  43:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   if( isEmpty(b) )
+  44:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   {
+  45:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 	return -1;
+  46:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   }
+  47:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   #ifndef BBSIM
+  48:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  49:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   {
+  50:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   #endif
+  51:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     data = b->buf[b->start++];
+  52:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   
+  53:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     if(b->start == CIRC_BUF_LEN)
+  54:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     {
+  55:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****       b->start = 0;
+  56:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     }
+  57:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   #ifndef BBSIM
+  58:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   }
+  59:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   #endif
+  60:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   
+  61:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   return data;
+  62:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** }
+  63:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 
+  64:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** byte isEmpty(CircBuf * b)
+  65:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** {
+  66:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   if(b->start == b->end)
   98               		.loc 1 66 0
   99 0038 968D      		ldd r25,Z+30
  100 003a 878D      		ldd r24,Z+31
@@ -242,7 +242,7 @@
  107               	.LBE20:
  108               	.LBE19:
  109               	.LBB22:
-  55:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****       b->start = 0;
+  55:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****       b->start = 0;
  110               		.loc 1 55 0
  111 0042 168E      		std Z+30,__zero_reg__
  112               	.L13:
@@ -256,7 +256,7 @@
  119               	.LBE24:
  120               	.LBE23:
  121               	.LBE22:
-  61:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   return data;
+  61:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   return data;
  122               		.loc 1 61 0 discriminator 1
  123 0046 30E0      		ldi r19,0
  124 0048 00C0      		rjmp .L16
@@ -264,7 +264,7 @@
  126               	.L14:
  127               	.LBB27:
  128               	.LBB21:
-  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** 	return -1;
+  45:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** 	return -1;
  129               		.loc 1 45 0
  130 004a 2FEF      		ldi r18,lo8(-1)
  131 004c 3FEF      		ldi r19,lo8(-1)
@@ -273,7 +273,7 @@
  134               	.LBE21:
  135               	.LBE27:
  136               	.LBB28:
-  48:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
+  48:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
  137               		.loc 1 48 0
  138 0050 9FB7      		in r25,__SREG__
  139               	.LVL9:
@@ -289,7 +289,7 @@
  148               	/* #NOAPP */
  149               	.LBE26:
  150               	.LBE25:
-  51:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     data = b->buf[b->start++];
+  51:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     data = b->buf[b->start++];
  151               		.loc 1 51 0
  152 0054 868D      		ldd r24,Z+30
  153 0056 DF01      		movw r26,r30
@@ -298,18 +298,18 @@
  156 005c 2C91      		ld r18,X
  157               	.LVL11:
  158 005e 8F5F      		subi r24,lo8(-(1))
-  53:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     if(b->start == CIRC_BUF_LEN)
+  53:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     if(b->start == CIRC_BUF_LEN)
  159               		.loc 1 53 0
  160 0060 8E31      		cpi r24,lo8(30)
  161 0062 01F0      		breq .L12
-  51:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     data = b->buf[b->start++];
+  51:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     data = b->buf[b->start++];
  162               		.loc 1 51 0
  163 0064 868F      		std Z+30,r24
  164 0066 00C0      		rjmp .L13
  165               	.LVL12:
  166               	.L16:
  167               	.LBE28:
-  62:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** }
+  62:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** }
  168               		.loc 1 62 0
  169 0068 C901      		movw r24,r18
  170 006a 0895      		ret
@@ -317,7 +317,7 @@
  173               	.global	isEmpty
  175               	isEmpty:
  176               	.LFB7:
-  65:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** {
+  65:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** {
  177               		.loc 1 65 0
  178               	.LVL13:
  179               	/* prologue: function */
@@ -333,29 +333,29 @@
  189 0074 2913      		cpse r18,r25
  190 0076 80E0      		ldi r24,0
  191               	.L18:
-  67:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   {
-  68:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****     return 1;
-  69:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   }
-  70:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb ****   return 0;
-  71:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bb **** }
+  67:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   {
+  68:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****     return 1;
+  69:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   }
+  70:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb ****   return 0;
+  71:/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bb **** }
  192               		.loc 1 71 0
  193 0078 0895      		ret
  194               	.LFE7:
  238               	.Letext0:
  239               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
- 240               		.file 4 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/defs.bbh"
- 241               		.file 5 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bbh"
+ 240               		.file 4 "/home/pthalamy/CMU/build-modif/src-bobby/system/defs.bbh"
+ 241               		.file 5 "/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 circ_buffer.c
-     /tmp/cchOeuZH.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cchOeuZH.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cchOeuZH.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cchOeuZH.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cchOeuZH.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cchOeuZH.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cchOeuZH.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cchOeuZH.s:13     .text:0000000000000000 push
-     /tmp/cchOeuZH.s:86     .text:0000000000000036 pop
-     /tmp/cchOeuZH.s:175    .text:000000000000006c isEmpty
+     /tmp/ccopxpAk.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccopxpAk.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccopxpAk.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccopxpAk.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccopxpAk.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccopxpAk.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccopxpAk.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccopxpAk.s:13     .text:0000000000000000 push
+     /tmp/ccopxpAk.s:86     .text:0000000000000036 pop
+     /tmp/ccopxpAk.s:175    .text:000000000000006c isEmpty
 
 NO UNDEFINED SYMBOLS

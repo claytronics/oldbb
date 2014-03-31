@@ -1,0 +1,48 @@
+   1               		.file	"boot.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	jumpToBootSection
+  13               	jumpToBootSection:
+  14               	.LFB0:
+  15               		.file 1 "/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb"
+   1:/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb **** #include "boot.bbh"
+   2:/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb **** 
+   3:/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb **** // HARDWARE INCLUDES
+   4:/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb **** #include "../hw-api/hwBoot.h"
+   5:/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb **** 
+   6:/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb **** // Jumps into the bootloader section.  This function never returns.
+   7:/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb **** // Note that this function only works if the BOOTRST fuse is set to Boot Loader Reset
+   8:/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb **** void jumpToBootSection()
+   9:/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb **** {
+  16               		.loc 1 9 0
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  10:/home/anaz/blinkyblocks/build/src-bobby/system/boot.bb **** 	jumpToHWBootSection();
+  21               		.loc 1 10 0
+  22 0000 0C94 0000 		jmp jumpToHWBootSection
+  23               	.LVL0:
+  24               	.LFE0:
+  52               	.Letext0:
+  53               		.file 2 "/home/anaz/blinkyblocks/build/src-bobby/system/../hw-api/hwBoot.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 boot.c
+/home/anaz/tmp/ccfB5W3L.s:2      *ABS*:000000000000003e __SP_H__
+/home/anaz/tmp/ccfB5W3L.s:3      *ABS*:000000000000003d __SP_L__
+/home/anaz/tmp/ccfB5W3L.s:4      *ABS*:000000000000003f __SREG__
+/home/anaz/tmp/ccfB5W3L.s:5      *ABS*:000000000000003b __RAMPZ__
+/home/anaz/tmp/ccfB5W3L.s:6      *ABS*:0000000000000034 __CCP__
+/home/anaz/tmp/ccfB5W3L.s:7      *ABS*:0000000000000000 __tmp_reg__
+/home/anaz/tmp/ccfB5W3L.s:8      *ABS*:0000000000000001 __zero_reg__
+/home/anaz/tmp/ccfB5W3L.s:13     .text:0000000000000000 jumpToBootSection
+
+UNDEFINED SYMBOLS
+jumpToHWBootSection

@@ -19,7 +19,7 @@ ifeq ($(ARCH),i686-CYGWIN_NT-6.1-WOW64)
 else
  LIB_EXT := .a
  OBJ_EXT := .o
- EXE_EXT :=
+ EXE_EXT := 
 endif
 endif
 

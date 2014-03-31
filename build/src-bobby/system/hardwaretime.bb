@@ -75,7 +75,7 @@ int registerTimeout(Timeout * t)
 		
 		cur = timeoutList;
 		
-		while(cur->calltime < t->calltime && cur->next != NULL)
+		while((cur->calltime < t->calltime) && (cur->next != NULL))
 		{
 			prev = cur;
 			cur = cur->next;

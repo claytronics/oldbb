@@ -34,3 +34,7 @@ system.bbh
 hardwaretime.bbh
 myassert.h
 microphone.bbh
+log.bb
+log.bbh
+clock.bb
+clock.bbh

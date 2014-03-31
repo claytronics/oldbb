@@ -1,0 +1,2976 @@
+   1               		.file	"meldvm.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	free_chunk
+  13               	free_chunk:
+  14               	.LFB30:
+  15               		.file 1 "/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb"
+   1:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** //#include "bb.h"
+   2:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "../system/led.bbh"
+   3:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "../system/ensemble.bbh"
+   4:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "../system/accelerometer.bbh"
+   5:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "../system/message.bbh"
+   6:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "../hw-api/hwMemory.h"
+   7:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "../system/myassert.h"
+   8:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+   9:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #ifdef BBSIM
+  10:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include <unistd.h>
+  11:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include <sys/types.h>
+  12:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #else
+  13:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #endif
+  14:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  15:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "../system/defs.bbh"
+  16:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  17:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "set_runtime.h"
+  18:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "list_runtime.h"
+  19:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  20:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** //#include "util.h"
+  21:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  22:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "core.h"
+  23:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "api.h"
+  24:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** // include here to make sure we include the threadypes, etc.
+  25:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include "model.bbh"
+  26:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  27:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void vm_init(void);
+  28:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  29:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  30:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** threadvar tuple_t *oldTuples;
+  31:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  32:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** threadvar tuple_pqueue *delayedTuples;
+  33:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** threadvar tuple_queue *tuples;
+  34:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** threadvar tuple_pqueue *newStratTuples;
+  35:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** threadvar tuple_queue *newTuples;
+  36:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** threadvar tuple_queue receivedTuples[NUM_PORTS];
+  37:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  38:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** threadvar meld_int *proved;
+  39:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  40:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** threadvar NodeID blockId;
+  41:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  42:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** threadvar persistent_set *persistent;
+  43:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  44:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** threadvar Register reg[32];
+  45:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  46:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** static tuple_type TYPE_TAP = -1;
+  47:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  48:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** //#define DEBUG
+  49:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  50:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #ifdef BBSIM
+  51:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #include <sys/timeb.h>
+  52:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #endif
+  53:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  54:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** static inline
+  55:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** NodeID get_neighbor_ID(int face)
+  56:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+  57:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if (face == UP)
+  58:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return up();
+  59:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else if (face == DOWN)
+  60:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return down();
+  61:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else if (face == WEST)
+  62:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return west();
+  63:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else if (face == EAST)
+  64:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return east();
+  65:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else if (face == NORTH)
+  66:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return north();
+  67:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else if (face == SOUTH)
+  68:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return south();
+  69:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else {
+  70:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				assert(0);
+  71:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return -1;
+  72:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+  73:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+  74:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  75:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void enqueueNewTuple(tuple_t tuple, record_type isNew)
+  76:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+  77:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if (TYPE_IS_STRATIFIED(TUPLE_TYPE(tuple))) {
+  78:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 			p_enqueue(newStratTuples, TYPE_STRATIFICATION_ROUND(TUPLE_TYPE(tuple)), tuple, NULL, isNew);
+  79:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+  80:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else {
+  81:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 			queue_enqueue(newTuples, tuple, isNew);
+  82:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+  83:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+  84:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  85:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void enqueue_face(NodeID neighbor, meld_int face, int isNew)
+  86:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+  87:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuple_t tuple = NULL;
+  88:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  89:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if (neighbor <= 0) {
+  90:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				tuple = tuple_alloc(TYPE_VACANT);
+  91:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 0, &blockId);
+  92:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 1, &face);
+  93:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+  94:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else {
+  95:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		  void *null = NULL;
+  96:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+  97:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				tuple = tuple_alloc(TYPE_NEIGHBOR);
+  98:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 0, &blockId);
+  99:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 1, &neighbor);
+ 100:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 2, &face);
+ 101:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 3, &null);
+ 102:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+ 103:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 104:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueueNewTuple(tuple, (record_type) isNew);
+ 105:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 106:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 107:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** static
+ 108:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void enqueue_count(meld_int count, int isNew)
+ 109:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 110:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuple_t tuple = tuple_alloc(TYPE_NEIGHBORCOUNT);
+ 111:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 112:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		SET_TUPLE_FIELD(tuple, 0, &blockId);
+ 113:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		SET_TUPLE_FIELD(tuple, 1, &count);
+ 114:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 115:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueueNewTuple(tuple, (record_type) isNew);
+ 116:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 117:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 118:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** static
+ 119:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void enqueue_tap(void)
+ 120:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 121:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuple_t tuple = tuple_alloc(TYPE_TAP);
+ 122:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 123:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		SET_TUPLE_FIELD(tuple, 0, &blockId);
+ 124:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 125:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueueNewTuple(tuple, (record_type) 1);
+ 126:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 127:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		//#if DEBUG
+ 128:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		facts_dump();
+ 129:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		//#endif
+ 130:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 131:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 132:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** static
+ 133:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void enqueue_init(void)
+ 134:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 135:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if(TYPE_INIT == -1)
+ 136:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 			return;
+ 137:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 138:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuple_t tuple = tuple_alloc(TYPE_INIT);
+ 139:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 140:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		SET_TUPLE_FIELD(tuple, 0, &blockId);
+ 141:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 142:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueueNewTuple(tuple, (record_type) 1);
+ 143:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 144:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 145:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** static
+ 146:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void init_all_consts(void)
+ 147:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 148:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		init_consts();
+ 149:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 150:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuple_type i;
+ 151:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		for (i = 0; i < NUM_TYPES; i++) {
+ 152:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (strcmp(TYPE_NAME(i), "tap") == 0)
+ 153:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						TYPE_TAP = i;
+ 154:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (strcmp(TYPE_NAME(i), "_init") == 0)
+ 155:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						TYPE_INIT = i;
+ 156:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}	
+ 157:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 158:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 159:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #ifdef BBSIM
+ 160:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** extern pthread_mutex_t printmutex;
+ 161:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #endif
+ 162:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 163:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void meldMain(void)
+ 164:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 165:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		blockId = getGUID();
+ 166:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 167:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		// init stuff
+ 168:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuples = calloc(NUM_TYPES, sizeof(tuple_queue));
+ 169:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		newTuples = calloc(1, sizeof(tuple_queue));
+ 170:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		newStratTuples = calloc(1, sizeof(tuple_pqueue));
+ 171:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		oldTuples = calloc(NUM_TYPES, sizeof(tuple_t));
+ 172:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		delayedTuples = calloc(1, sizeof(tuple_pqueue));
+ 173:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		proved = calloc(NUM_TYPES, sizeof(meld_int));
+ 174:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
+ 175:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 176:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		vm_init();
+ 177:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 178:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		//block initialization
+ 179:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #if DEBUG
+ 180:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		printf("meld program started\n");
+ 181:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #endif
+ 182:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 183:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		//setColor(0);
+ 184:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		setLED(128,0,128,32);
+ 185:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 186:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueue_init();
+ 187:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 188:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		// introduce intial set of axioms
+ 189:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		NodeID neighbors[6];
+ 190:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		int numNeighbors = getNeighborCount();
+ 191:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 192:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueue_count(numNeighbors, 1);
+ 193:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	
+ 194:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		int i;
+ 195:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		for (i = 0; i < NUM_PORTS; i++) {
+ 196:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				neighbors[i] = get_neighbor_ID(i);
+ 197:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 198:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				enqueue_face(neighbors[i], i, 1);
+ 199:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+ 200:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 201:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		// loop forever, processing new facts and updating axioms
+ 202:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		while(1) {
+ 203:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				// loop for new facts to process
+ 204:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 205:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if(!queue_is_empty(newTuples)) {
+ 206:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						int isNew = 0;
+ 207:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_t tuple = queue_dequeue(newTuples, &isNew);
+ 208:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 209:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_handle(tuple, isNew, reg);
+ 210:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				}
+ 211:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (!p_empty(delayedTuples) && p_peek(delayedTuples)->priority <= getTime()) {
+ 212:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_pentry *entry = p_dequeue(delayedTuples);
+ 213:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 214:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_send(entry->tuple, entry->rt, 0, entry->records.count);
+ 215:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						free(entry);
+ 216:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				} else if (!(p_empty(newStratTuples))) {
+ 217:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_pentry *entry = p_dequeue(newStratTuples);
+ 218:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_handle(entry->tuple, entry->records.count, reg);
+ 219:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 220:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						free(entry);
+ 221:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				} else {
+ 222:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						// if we've processed everything, sleep for the sake of letting other blocks run in the simul
+ 223:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						delayMS(30);
+ 224:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				}
+ 225:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 226:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				updateAccel();
+ 227:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 228:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				// update axioms based upon any changes
+ 229:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				int newNumNeighbors = getNeighborCount();
+ 230:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (newNumNeighbors != numNeighbors) {
+ 231:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						enqueue_count(numNeighbors, -1);
+ 232:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						numNeighbors = newNumNeighbors;
+ 233:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						enqueue_count(numNeighbors, 1);			
+ 234:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				}
+ 235:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 236:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				for (i = 0; i < NUM_PORTS; i++) {
+ 237:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						NodeID neighbor = get_neighbor_ID(i);
+ 238:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 239:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						if (neighbor == neighbors[i])
+ 240:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 								continue;
+ 241:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 242:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						enqueue_face(neighbors[i], i, -1);
+ 243:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 244:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						while(!queue_is_empty(&(receivedTuples[i]))) {
+ 245:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						  tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
+ 246:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						  enqueueNewTuple(tuple, (record_type)-1);
+ 247:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						}
+ 248:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 249:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						neighbors[i] = neighbor;
+ 250:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						enqueue_face(neighbors[i], i, 1);
+ 251:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				}
+ 252:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+ 253:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 254:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 255:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void userRegistration(void)
+ 256:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 257:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		registerHandler(SYSTEM_MAIN, (GenericHandler)&meldMain);
+ 258:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		registerHandler(EVENT_ACCEL_TAP, (GenericHandler)&enqueue_tap);
+ 259:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 260:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 261:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #ifdef _LP64
+ 262:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** static inline
+ 263:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void endian_swap(Register* x)
+ 264:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 265:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	*x = (*x>>56) | 
+ 266:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		((*x<<40) & 0x00FF000000000000) |
+ 267:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		((*x<<24) & 0x0000FF0000000000) |
+ 268:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		((*x<<8)  & 0x000000FF00000000) |
+ 269:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		((*x>>8)  & 0x00000000FF000000) |
+ 270:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		((*x>>24) & 0x0000000000FF0000) |
+ 271:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		((*x>>40) & 0x000000000000FF00) |
+ 272:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		(*x<<56);
+ 273:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 274:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #endif
+ 275:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 276:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void receive_tuple(int isNew)
+ 277:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 278:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   tuple_t rcvdTuple = (tuple_t)thisChunk->data;
+ 279:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   tuple_t tuple;
+ 280:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   size_t tuple_size = TYPE_SIZE(TUPLE_TYPE(rcvdTuple));
+ 281:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 282:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   tuple = malloc(tuple_size);
+ 283:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   memcpy(tuple, rcvdTuple, tuple_size);
+ 284:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   queue_enqueue(&receivedTuples[faceNum(thisChunk)], tuple, (record_type)isNew);
+ 285:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 286:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   tuple = malloc(tuple_size);
+ 287:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   memcpy(tuple, rcvdTuple, tuple_size);
+ 288:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   enqueueNewTuple(tuple, (record_type)isNew);
+ 289:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 290:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 291:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void receive_tuple_delete(void)
+ 292:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 293:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	receive_tuple(-1);
+ 294:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 295:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 296:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void receive_tuple_add(void)
+ 297:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 298:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	receive_tuple(1);
+ 299:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 300:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 301:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void free_chunk(void) {
+  16               		.loc 1 301 0
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+ 302:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	free(thisChunk);
+  21               		.loc 1 302 0
+  22 0000 8091 0000 		lds r24,thisChunk
+  23 0004 9091 0000 		lds r25,thisChunk+1
+  24 0008 0C94 0000 		jmp free
+  25               	.LVL0:
+  26               	.LFE30:
+  28               		.section	.rodata.str1.1,"aMS",@progbits,1
+  29               	.LC0:
+  30 0000 556E 7265 		.string	"Unrecognized type: %d\n"
+  30      636F 676E 
+  30      697A 6564 
+  30      2074 7970 
+  30      653A 2025 
+  31               		.text
+  33               	tuple_alloc:
+  34               	.LFB13:
+  35               		.file 2 "/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h"
+   1:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #ifndef __CORE_H_
+   2:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define __CORE_H_
+   3:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+   4:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #include <stdlib.h>
+   5:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #include <stdio.h>
+   6:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+   7:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #include "api.h"
+   8:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #ifndef IGNORE_IN_PASS1_OFF_COMPILE_BB
+   9:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #include "model.h"
+  10:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #endif
+  11:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  12:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** /* print tuple allocations */
+  13:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** //#define TUPLE_ALLOC_DEBUG 1
+  14:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** /* tuple allocation checks */
+  15:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TUPLE_ALLOC_CHECKS 1
+  16:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  17:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** /* macros */
+  18:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define IF(x)     (((*(const unsigned char*)(x))&0xe0) == 0x60)
+  19:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ELSE(x)   ((*(const unsigned char*)(x)) == 0x02)
+  20:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ITER(x)   (((*(const unsigned char*)(x))&0xff) == 0xa0)
+  21:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define NEXT(x)   ((*(const unsigned char*)(x)) == 0x01)
+  22:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define SEND(x)   (((*(const unsigned char*)(x))&0xfc) == 0x08)
+  23:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define REMOVE(x) (((*(const unsigned char*)(x))&0xe0) == 0x80)
+  24:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP(x)     (((*(const unsigned char*)(x))&0xc0) == 0xc0)
+  25:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define MOVE(x)   (((*(const unsigned char*)(x))&0xf0) == 0x30)
+  26:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ALLOC(x)  (((*(const unsigned char*)(x))&0xe0) == 0x40)
+  27:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define RETURN(x) ((*(const unsigned char*)(x)) == 0x00)
+  28:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define CALL(x)   (((*(const unsigned char*)(x)) & 0xf0) == 0x20)
+  29:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  30:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define IF_REG(x)     ((*(const unsigned char*)(x))&0x1f)
+  31:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define IF_JUMP(x)    (*(unsigned short*)((const unsigned char*)(x)+1))
+  32:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define IF_BASE       3
+  33:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  34:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ITER_TYPE(x)  ((*(const unsigned char*)((x)+1))&0x7f)
+  35:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ITER_JUMP(x)  (*(unsigned short*)((const unsigned char*)((x)+2)))
+  36:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ITER_MATCH_END(x)   (((*(const unsigned char*)((x)+1))&0xc0) == 0x40)
+  37:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ITER_MATCH_NONE(x)  (((*(const unsigned char*)((x)+1))&0xc0) == 0xc0)
+  38:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ITER_MATCH_FIELD(x)   (*(const unsigned char*)(x))
+  39:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ITER_BASE     4
+  40:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  41:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ITER_MATCH_VAL(x)   (((*(const unsigned char*)((x)+1))&0x3f))
+  42:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define SEND_MSG(x)   ((((*(const unsigned char*)(x))&0x3) << 3) | \
+  43:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h ****                       (((*(const unsigned char*)((x)+1))&0xe0) >> 5))
+  44:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define SEND_RT(x)    ((*(const unsigned char*)((x)+1))&0x1f)
+  45:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define SEND_DELAY(x) (*(const unsigned char *)((x)+2))
+  46:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define REMOVE_REG(x) ((*(const unsigned char*)(x))&0x1f)
+  47:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  48:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define SEND_ARG1(x)  ((*((const unsigned char*)(x)+2)) & 0x3f)
+  49:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  50:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_ARG1(x)    (((*(const unsigned char*)(x)) & 0x3f))
+  51:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_ARG2(x)    (((*(const unsigned char*)((x)+1)) & 0xfc) >> 2)
+  52:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_OP(x)      ((*(const unsigned char*)((x)+2)) & 0x1f)
+  53:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_DST(x)     ((((*(const unsigned char*)((x)+1)) & 0x03) << 3) | \
+  54:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h ****                       (((*(const unsigned char*)((x)+2)) & 0xe0) >> 5))
+  55:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  56:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define MOVE_SRC(x)   ((((*(const unsigned char*)(x))&0xf) << 2) | \
+  57:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 					   (((*(const unsigned char*)((x)+1))&0xc0) >> 6))
+  58:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define MOVE_DST(x)   (((*(const unsigned char*)((x)+1))&0x3f))
+  59:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ALLOC_TYPE(x) ((((*(const unsigned char *)(x))&0x1f) << 2) | \
+  60:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 					   (((*(const unsigned char *)(x+1))&0xc0) >> 6))
+  61:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define ALLOC_DST(x)  ((*(const unsigned char *)((x)+1))&0x3f)
+  62:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  63:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define CALL_VAL(x)   (*(const unsigned char *)(x))
+  64:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define CALL_DST(x)   ((*(const unsigned char *)((x)+1)) & 0x1f)
+  65:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define CALL_ID(x)    ((((*(const unsigned char *)((x))) & 0x0f) << 3) | \
+  66:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 						(((*(const unsigned char *)((x)+1)) & 0xe0) >> 5))
+  67:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  68:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define CALL_ARGS(x)  (extern_functs_args[CALL_ID(x)])
+  69:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define CALL_FUNC(x)  (extern_functs[CALL_ID(x)])
+  70:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  71:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_NEQF       0x0
+  72:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_NEQI       0x1
+  73:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_EQF        0x2
+  74:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_EQI        0x3
+  75:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_LESSF      0x4
+  76:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_LESSI      0x5
+  77:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_LESSEQF    0x6
+  78:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_LESSEQI    0x7
+  79:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_GREATERF   0x8
+  80:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_GREATERI   0x9
+  81:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_GREATEREQF 0xa
+  82:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_GREATEREQI 0xb
+  83:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_MODF       0xc
+  84:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_MODI       0xd
+  85:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_PLUSF      0xe
+  86:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_PLUSI      0xf
+  87:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_MINUSF     0x10
+  88:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_MINUSI     0x11
+  89:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_TIMESF     0x12
+  90:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_TIMESI     0x13
+  91:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_DIVF       0x14
+  92:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_DIVI       0x15
+  93:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_NEQA       0x16
+  94:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define OP_EQA        0x17
+  95:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+  96:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VALUE_TYPE_FLOAT 0x00
+  97:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VALUE_TYPE_INT 0x01
+  98:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VALUE_TYPE_FIELD 0x02
+  99:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VALUE_TYPE_HOST 0x03
+ 100:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VALUE_TYPE_REVERSE 0x04
+ 101:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VALUE_TYPE_TUPLE 0x1f
+ 102:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 103:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VAL_IS_REG(x)   (((const unsigned char)(x)) & 0x20)
+ 104:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VAL_IS_TUPLE(x) (((const unsigned char)(x)) == VALUE_TYPE_TUPLE)
+ 105:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VAL_IS_FLOAT(x) (((const unsigned char)(x)) == VALUE_TYPE_FLOAT)
+ 106:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VAL_IS_INT(x)   (((const unsigned char)(x)) == VALUE_TYPE_INT)
+ 107:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VAL_IS_FIELD(x) (((const unsigned char)(x)) == VALUE_TYPE_FIELD)
+ 108:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VAL_IS_HOST(x)  (((const unsigned char)(x)) == VALUE_TYPE_HOST)
+ 109:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VAL_IS_REVERSE(x) (((const unsigned char)(x)) == VALUE_TYPE_REVERSE)
+ 110:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 111:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VAL_REG(x) (((const unsigned char)(x)) & 0x1f)
+ 112:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VAL_FIELD_NUM(x) ((*(const unsigned char *)(x)) & 0xff)
+ 113:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define VAL_FIELD_REG(x) ((*(const unsigned char *)((x)+1)) & 0x1f)
+ 114:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 115:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_DESCRIPTOR_SIZE 7
+ 116:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define DELTA_SIZE 2
+ 117:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_FIELD_SIZE 1
+ 118:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_FIELD_TYPE unsigned char
+ 119:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 120:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TUPLE_TYPE(x)   (*(TYPE_FIELD_TYPE *)(x))
+ 121:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TUPLE_FIELD(x,off)  ((void *)(((unsigned char*)(x)) + TYPE_FIELD_SIZE + (off)))
+ 122:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 123:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_OFFSET(x)     (meld_prog[1 + (x)])
+ 124:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_DESCRIPTOR(x) ((unsigned char *)(meld_prog + TYPE_OFFSET(x)))
+ 125:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 126:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_PROPERTIES(x) (*(TYPE_DESCRIPTOR(x) + 2))
+ 127:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_AGGREGATE(x)  (*(TYPE_DESCRIPTOR(x) + 3))
+ 128:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_NOARGS(x)     (*(TYPE_DESCRIPTOR(x) + 5))
+ 129:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_STRATIFICATION_ROUND(x) (*(TYPE_DESCRIPTOR(x)+5))
+ 130:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_IS_STRATIFIED(x) (TYPE_STRATIFICATION_ROUND(x) > 0)
+ 131:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_ARGS_DESC(x)  ((unsigned char*)(TYPE_DESCRIPTOR(x)+TYPE_DESCRIPTOR_SIZE))
+ 132:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_NODELTAS(x)   (*(TYPE_DESCRIPTOR(x) + 6))
+ 133:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_DELTAS(x)     (TYPE_ARGS_DESC(x) + 1*TYPE_NOARGS(x))
+ 134:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_START(x)      ((unsigned char*)(meld_prog + *(unsigned short *)TYPE_DESCRIPTOR(x)))
+ 135:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_NAME(x)       (tuple_names[x])
+ 136:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_ARG_DESC(x, f) ((unsigned char *)(TYPE_ARGS_DESC(x)+1*(f)))
+ 137:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_ARG_TYPE(x, f) ((unsigned char)(*TYPE_ARG_DESC(x, f)))
+ 138:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 139:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_SIZE(x)       (arguments[(x) * 2 + 1])
+ 140:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_ARGS(x)       (arguments + arguments[(x) * 2])
+ 141:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 142:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_ARG(x, f)     (TYPE_ARGS(x)+2*(f))
+ 143:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_ARG_SIZE(x, f) (*TYPE_ARG(x, f))
+ 144:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_ARG_OFFSET(x, f)   (*(TYPE_ARG(x, f) + 1))
+ 145:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 146:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define SET_TUPLE_FIELD(tuple, field, data) \
+ 147:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 		memcpy(TUPLE_FIELD(tuple, TYPE_ARG_OFFSET(TUPLE_TYPE(tuple), field)), \
+ 148:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 				data, TYPE_ARG_SIZE(TUPLE_TYPE(tuple), field))
+ 149:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define GET_TUPLE_FIELD(tuple, field) \
+ 150:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 		TUPLE_FIELD(tuple, TYPE_ARG_OFFSET(TUPLE_TYPE(tuple), field))
+ 151:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define GET_TUPLE_SIZE(tuple, field) \
+ 152:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 		TYPE_ARG_SIZE(TUPLE_TYPE(tuple), field)
+ 153:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 		
+ 154:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_IS_AGG(x)        (TYPE_PROPERTIES(x) & 0x01)
+ 155:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_IS_PERSISTENT(x) (TYPE_PROPERTIES(x) & 0x02)
+ 156:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_IS_LINEAR(x) 		(TYPE_PROPERTIES(x) & 0x04)
+ 157:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_IS_DELETE(x) 		(TYPE_PROPERTIES(x) & 0x08)
+ 158:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_IS_SCHEDULE(x) 	(TYPE_PROPERTIES(x) & 0x10)
+ 159:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_IS_ROUTING(x) 		(TYPE_PROPERTIES(x) & 0x20)
+ 160:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_IS_PROVED(x)     (TYPE_PROPERTIES(x) & 0x40)
+ 161:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 162:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_AGG(x)    (((x) & (0xf0)) >> 4)
+ 163:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_FIELD(x)  ((x) & 0x0f)
+ 164:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 165:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_NONE 0
+ 166:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_FIRST 1
+ 167:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_MAX_INT 2
+ 168:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_MIN_INT 3
+ 169:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_SUM_INT 4
+ 170:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_MAX_FLOAT 5
+ 171:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_MIN_FLOAT 6
+ 172:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_SUM_FLOAT 7
+ 173:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_SET_UNION_INT 8
+ 174:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_SET_UNION_FLOAT 9
+ 175:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_SUM_LIST_INT 10
+ 176:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define AGG_SUM_LIST_FLOAT 11
+ 177:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 178:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define FIELD_INT 0x0
+ 179:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define FIELD_FLOAT 0x1
+ 180:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define FIELD_ADDR 0x2
+ 181:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define FIELD_OTHER 0x2
+ 182:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define FIELD_LIST_INT 0x3
+ 183:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define FIELD_LIST_FLOAT 0x4
+ 184:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define FIELD_LIST_ADDR 0x5
+ 185:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define FIELD_SET_INT 0x6
+ 186:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define FIELD_SET_FLOAT 0x7
+ 187:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define FIELD_TYPE 0x8
+ 188:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 189:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_NEIGHBOR		0
+ 190:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_NEIGHBORCOUNT	1
+ 191:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_VACANT			2
+ 192:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_SETCOLOR		3
+ 193:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define TYPE_SETCOLOR2		4
+ 194:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 195:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 196:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define NUM_TYPES  (meld_prog[0])
+ 197:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 198:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define DELTA_TYPE(ori, id) (*(unsigned char*)(deltas[ori] + (id)*DELTA_SIZE))
+ 199:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define DELTA_POSITION(ori, id) (*(unsigned char*)(deltas[ori] + (id)*DELTA_SIZE + 1))
+ 200:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define DELTA_WITH(ori) (delta_sizes[ori])
+ 201:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define DELTA_TOTAL(ori) (delta_sizes[ori])
+ 202:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 203:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define RET_RET 0
+ 204:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #define RET_NEXT 1
+ 205:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 206:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** extern const unsigned char meld_prog[];
+ 207:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** typedef Register (*extern_funct_type)();
+ 208:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** extern extern_funct_type extern_functs[];
+ 209:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** extern int extern_functs_args[];
+ 210:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** extern char *tuple_names[];
+ 211:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** extern unsigned char *arguments;
+ 212:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** extern int *delta_sizes;
+ 213:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 214:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** static inline tuple_t
+ 215:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** tuple_alloc(tuple_type type)
+ 216:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** {
+  36               		.loc 2 216 0
+  37               	.LVL1:
+  38 000c CF93      		push r28
+  39               	.LCFI0:
+  40 000e DF93      		push r29
+  41               	.LCFI1:
+  42               	/* prologue: function */
+  43               	/* frame size = 0 */
+  44               	/* stack size = 2 */
+  45               	.L__stack_usage = 2
+  46 0010 EC01      		movw r28,r24
+ 217:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #ifdef TUPLE_ALLOC_CHECKS
+ 218:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h ****   if(type >= NUM_TYPES || type < 0) {
+  47               		.loc 2 218 0
+  48 0012 8091 0000 		lds r24,meld_prog
+  49               	.LVL2:
+  50 0016 90E0      		ldi r25,0
+  51 0018 C817      		cp r28,r24
+  52 001a D907      		cpc r29,r25
+  53 001c 04F4      		brge .L3
+  54               		.loc 2 218 0 is_stmt 0 discriminator 1
+  55 001e D7FF      		sbrs r29,7
+  56 0020 00C0      		rjmp .L4
+  57               	.L3:
+  58               	.LVL3:
+  59               	.LBB16:
+  60               	.LBB17:
+ 219:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h ****     fprintf(stderr, "Unrecognized type: %d\n", type);
+  61               		.loc 2 219 0 is_stmt 1
+  62 0022 DF93      		push r29
+  63               	.LCFI2:
+  64 0024 CF93      		push r28
+  65               	.LCFI3:
+  66 0026 80E0      		ldi r24,lo8(.LC0)
+  67 0028 90E0      		ldi r25,hi8(.LC0)
+  68 002a 9F93      		push r25
+  69               	.LCFI4:
+  70 002c 8F93      		push r24
+  71               	.LCFI5:
+  72 002e 8091 0000 		lds r24,__iob+5
+  73 0032 8F93      		push r24
+  74               	.LCFI6:
+  75 0034 8091 0000 		lds r24,__iob+4
+  76 0038 8F93      		push r24
+  77               	.LCFI7:
+  78 003a 0E94 0000 		call fprintf
+  79               	.LVL4:
+ 220:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h ****     exit(EXIT_FAILURE);
+  80               		.loc 2 220 0
+  81 003e 8FEF      		ldi r24,lo8(-1)
+  82 0040 9FEF      		ldi r25,lo8(-1)
+  83 0042 0E94 0000 		call exit
+  84               	.LVL5:
+  85               	.L4:
+  86               	.LCFI8:
+  87               	.LBE17:
+  88               	.LBE16:
+ 221:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h ****   }
+ 222:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #endif
+ 223:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h ****   
+ 224:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 	tuple_t tuple = ALLOC_TUPLE(TYPE_SIZE(type));
+  89               		.loc 2 224 0
+  90 0046 CE01      		movw r24,r28
+  91 0048 880F      		lsl r24
+  92 004a 991F      		rol r25
+  93 004c E091 0000 		lds r30,arguments
+  94 0050 F091 0000 		lds r31,arguments+1
+  95 0054 E80F      		add r30,r24
+  96 0056 F91F      		adc r31,r25
+  97 0058 8181      		ldd r24,Z+1
+  98 005a 90E0      		ldi r25,0
+  99 005c 0E94 0000 		call malloc
+ 100               	.LVL6:
+ 101 0060 FC01      		movw r30,r24
+ 102               	.LVL7:
+ 225:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 226:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 	TUPLE_TYPE(tuple) = type;
+ 103               		.loc 2 226 0
+ 104 0062 C083      		st Z,r28
+ 227:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 	
+ 228:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #ifdef TUPLE_ALLOC_DEBUG
+ 229:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h ****   printf("New %s(%d) tuple\n", tuple_names[type], type);
+ 230:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** #endif
+ 231:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 232:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 	return tuple;
+ 233:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** }
+ 105               		.loc 2 233 0
+ 106 0064 8E2F      		mov r24,r30
+ 107               	.LVL8:
+ 108               	/* epilogue start */
+ 109 0066 DF91      		pop r29
+ 110 0068 CF91      		pop r28
+ 111               	.LVL9:
+ 112 006a 0895      		ret
+ 113               	.LFE13:
+ 115               	.global	enqueueNewTuple
+ 117               	enqueueNewTuple:
+ 118               	.LFB19:
+  76:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 119               		.loc 1 76 0
+ 120               	.LVL10:
+ 121 006c EF92      		push r14
+ 122               	.LCFI9:
+ 123 006e FF92      		push r15
+ 124               	.LCFI10:
+ 125 0070 0F93      		push r16
+ 126               	.LCFI11:
+ 127 0072 1F93      		push r17
+ 128               	.LCFI12:
+ 129               	/* prologue: function */
+ 130               	/* frame size = 0 */
+ 131               	/* stack size = 4 */
+ 132               	.L__stack_usage = 4
+ 133 0074 7B01      		movw r14,r22
+  77:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if (TYPE_IS_STRATIFIED(TUPLE_TYPE(tuple))) {
+ 134               		.loc 1 77 0
+ 135 0076 DC01      		movw r26,r24
+ 136 0078 EC91      		ld r30,X
+ 137 007a F0E0      		ldi r31,0
+ 138 007c E050      		subi r30,lo8(-(meld_prog))
+ 139 007e F040      		sbci r31,hi8(-(meld_prog))
+ 140 0080 E181      		ldd r30,Z+1
+ 141 0082 F0E0      		ldi r31,0
+ 142 0084 E050      		subi r30,lo8(-(meld_prog+5))
+ 143 0086 F040      		sbci r31,hi8(-(meld_prog+5))
+ 144 0088 4081      		ld r20,Z
+ 145 008a 4423      		tst r20
+ 146 008c 01F0      		breq .L6
+  78:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 			p_enqueue(newStratTuples, TYPE_STRATIFICATION_ROUND(TUPLE_TYPE(tuple)), tuple, NULL, isNew);
+ 147               		.loc 1 78 0
+ 148 008e 50E0      		ldi r21,0
+ 149 0090 60E0      		ldi r22,0
+ 150 0092 70E0      		ldi r23,0
+ 151               	.LVL11:
+ 152 0094 00E0      		ldi r16,0
+ 153 0096 10E0      		ldi r17,0
+ 154 0098 9C01      		movw r18,r24
+ 155 009a 8091 0000 		lds r24,newStratTuples
+ 156 009e 9091 0000 		lds r25,newStratTuples+1
+ 157               	.LVL12:
+ 158 00a2 0E94 0000 		call p_enqueue
+ 159               	.LVL13:
+ 160 00a6 00C0      		rjmp .L8
+ 161               	.LVL14:
+ 162               	.L6:
+  81:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 			queue_enqueue(newTuples, tuple, isNew);
+ 163               		.loc 1 81 0
+ 164 00a8 AB01      		movw r20,r22
+ 165 00aa BC01      		movw r22,r24
+ 166               	.LVL15:
+ 167 00ac 8091 0000 		lds r24,newTuples
+ 168 00b0 9091 0000 		lds r25,newTuples+1
+ 169               	.LVL16:
+ 170               	/* epilogue start */
+  83:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 171               		.loc 1 83 0
+ 172 00b4 1F91      		pop r17
+ 173 00b6 0F91      		pop r16
+ 174 00b8 FF90      		pop r15
+ 175 00ba EF90      		pop r14
+  81:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 			queue_enqueue(newTuples, tuple, isNew);
+ 176               		.loc 1 81 0
+ 177 00bc 0C94 0000 		jmp queue_enqueue
+ 178               	.LVL17:
+ 179               	.L8:
+ 180               	/* epilogue start */
+  83:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 181               		.loc 1 83 0
+ 182 00c0 1F91      		pop r17
+ 183 00c2 0F91      		pop r16
+ 184 00c4 FF90      		pop r15
+ 185 00c6 EF90      		pop r14
+ 186 00c8 0895      		ret
+ 187               	.LFE19:
+ 190               	enqueue_tap:
+ 191               	.LFB22:
+ 120:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 192               		.loc 1 120 0
+ 193 00ca CF93      		push r28
+ 194               	.LCFI13:
+ 195 00cc DF93      		push r29
+ 196               	.LCFI14:
+ 197               	/* prologue: function */
+ 198               	/* frame size = 0 */
+ 199               	/* stack size = 2 */
+ 200               	.L__stack_usage = 2
+ 121:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuple_t tuple = tuple_alloc(TYPE_TAP);
+ 201               		.loc 1 121 0
+ 202 00ce 8091 0000 		lds r24,TYPE_TAP
+ 203 00d2 9091 0000 		lds r25,TYPE_TAP+1
+ 204 00d6 0E94 0000 		call tuple_alloc
+ 205               	.LVL18:
+ 206 00da EC01      		movw r28,r24
+ 207               	.LVL19:
+ 123:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		SET_TUPLE_FIELD(tuple, 0, &blockId);
+ 208               		.loc 1 123 0
+ 209 00dc 8091 0000 		lds r24,arguments
+ 210 00e0 9091 0000 		lds r25,arguments+1
+ 211               	.LVL20:
+ 212 00e4 2881      		ld r18,Y
+ 213 00e6 FC01      		movw r30,r24
+ 214 00e8 E20F      		add r30,r18
+ 215 00ea F11D      		adc r31,__zero_reg__
+ 216 00ec E20F      		add r30,r18
+ 217 00ee F11D      		adc r31,__zero_reg__
+ 218 00f0 2081      		ld r18,Z
+ 219 00f2 FC01      		movw r30,r24
+ 220 00f4 E20F      		add r30,r18
+ 221 00f6 F11D      		adc r31,__zero_reg__
+ 222 00f8 2181      		ldd r18,Z+1
+ 223 00fa 30E0      		ldi r19,0
+ 224 00fc 2F5F      		subi r18,-1
+ 225 00fe 3F4F      		sbci r19,-1
+ 226 0100 2C0F      		add r18,r28
+ 227 0102 3D1F      		adc r19,r29
+ 228 0104 4081      		ld r20,Z
+ 229 0106 80E0      		ldi r24,lo8(blockId)
+ 230 0108 90E0      		ldi r25,hi8(blockId)
+ 231 010a 50E0      		ldi r21,0
+ 232 010c BC01      		movw r22,r24
+ 233 010e C901      		movw r24,r18
+ 234 0110 0E94 0000 		call memcpy
+ 235               	.LVL21:
+ 125:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueueNewTuple(tuple, (record_type) 1);
+ 236               		.loc 1 125 0
+ 237 0114 61E0      		ldi r22,lo8(1)
+ 238 0116 70E0      		ldi r23,0
+ 239 0118 CE01      		movw r24,r28
+ 240 011a 0E94 0000 		call enqueueNewTuple
+ 241               	.LVL22:
+ 242               	/* epilogue start */
+ 130:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 243               		.loc 1 130 0
+ 244 011e DF91      		pop r29
+ 245 0120 CF91      		pop r28
+ 246               	.LVL23:
+ 128:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		facts_dump();
+ 247               		.loc 1 128 0
+ 248 0122 0C94 0000 		jmp facts_dump
+ 249               	.LVL24:
+ 250               	.LFE22:
+ 253               	enqueue_count:
+ 254               	.LFB21:
+ 109:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 255               		.loc 1 109 0
+ 256               	.LVL25:
+ 257 0126 EF92      		push r14
+ 258               	.LCFI15:
+ 259 0128 FF92      		push r15
+ 260               	.LCFI16:
+ 261 012a 0F93      		push r16
+ 262               	.LCFI17:
+ 263 012c 1F93      		push r17
+ 264               	.LCFI18:
+ 265 012e CF93      		push r28
+ 266               	.LCFI19:
+ 267 0130 DF93      		push r29
+ 268               	.LCFI20:
+ 269 0132 00D0      		rcall .
+ 270 0134 1F92      		push __zero_reg__
+ 271               	.LCFI21:
+ 272 0136 CDB7      		in r28,__SP_L__
+ 273 0138 DEB7      		in r29,__SP_H__
+ 274               	.LCFI22:
+ 275               	/* prologue: function */
+ 276               	/* frame size = 4 */
+ 277               	/* stack size = 10 */
+ 278               	.L__stack_usage = 10
+ 279 013a 6983      		std Y+1,r22
+ 280 013c 7A83      		std Y+2,r23
+ 281 013e 8B83      		std Y+3,r24
+ 282 0140 9C83      		std Y+4,r25
+ 283 0142 7A01      		movw r14,r20
+ 110:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuple_t tuple = tuple_alloc(TYPE_NEIGHBORCOUNT);
+ 284               		.loc 1 110 0
+ 285 0144 81E0      		ldi r24,lo8(1)
+ 286 0146 90E0      		ldi r25,0
+ 287 0148 0E94 0000 		call tuple_alloc
+ 288               	.LVL26:
+ 289 014c 8C01      		movw r16,r24
+ 290               	.LVL27:
+ 112:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		SET_TUPLE_FIELD(tuple, 0, &blockId);
+ 291               		.loc 1 112 0
+ 292 014e 8091 0000 		lds r24,arguments
+ 293 0152 9091 0000 		lds r25,arguments+1
+ 294 0156 F801      		movw r30,r16
+ 295 0158 2081      		ld r18,Z
+ 296 015a FC01      		movw r30,r24
+ 297 015c E20F      		add r30,r18
+ 298 015e F11D      		adc r31,__zero_reg__
+ 299 0160 E20F      		add r30,r18
+ 300 0162 F11D      		adc r31,__zero_reg__
+ 301 0164 2081      		ld r18,Z
+ 302 0166 FC01      		movw r30,r24
+ 303 0168 E20F      		add r30,r18
+ 304 016a F11D      		adc r31,__zero_reg__
+ 305 016c 2181      		ldd r18,Z+1
+ 306 016e 30E0      		ldi r19,0
+ 307 0170 2F5F      		subi r18,-1
+ 308 0172 3F4F      		sbci r19,-1
+ 309 0174 200F      		add r18,r16
+ 310 0176 311F      		adc r19,r17
+ 311 0178 4081      		ld r20,Z
+ 312 017a 80E0      		ldi r24,lo8(blockId)
+ 313 017c 90E0      		ldi r25,hi8(blockId)
+ 314 017e 50E0      		ldi r21,0
+ 315 0180 BC01      		movw r22,r24
+ 316 0182 C901      		movw r24,r18
+ 317 0184 0E94 0000 		call memcpy
+ 318               	.LVL28:
+ 113:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		SET_TUPLE_FIELD(tuple, 1, &count);
+ 319               		.loc 1 113 0
+ 320 0188 8091 0000 		lds r24,arguments
+ 321 018c 9091 0000 		lds r25,arguments+1
+ 322 0190 F801      		movw r30,r16
+ 323 0192 2081      		ld r18,Z
+ 324 0194 FC01      		movw r30,r24
+ 325 0196 E20F      		add r30,r18
+ 326 0198 F11D      		adc r31,__zero_reg__
+ 327 019a E20F      		add r30,r18
+ 328 019c F11D      		adc r31,__zero_reg__
+ 329 019e 2081      		ld r18,Z
+ 330 01a0 FC01      		movw r30,r24
+ 331 01a2 E20F      		add r30,r18
+ 332 01a4 F11D      		adc r31,__zero_reg__
+ 333 01a6 2381      		ldd r18,Z+3
+ 334 01a8 30E0      		ldi r19,0
+ 335 01aa 2F5F      		subi r18,-1
+ 336 01ac 3F4F      		sbci r19,-1
+ 337 01ae 200F      		add r18,r16
+ 338 01b0 311F      		adc r19,r17
+ 339 01b2 4281      		ldd r20,Z+2
+ 340 01b4 50E0      		ldi r21,0
+ 341 01b6 BE01      		movw r22,r28
+ 342 01b8 6F5F      		subi r22,-1
+ 343 01ba 7F4F      		sbci r23,-1
+ 344 01bc C901      		movw r24,r18
+ 345 01be 0E94 0000 		call memcpy
+ 346               	.LVL29:
+ 115:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueueNewTuple(tuple, (record_type) isNew);
+ 347               		.loc 1 115 0
+ 348 01c2 B701      		movw r22,r14
+ 349 01c4 C801      		movw r24,r16
+ 350 01c6 0E94 0000 		call enqueueNewTuple
+ 351               	.LVL30:
+ 352               	/* epilogue start */
+ 116:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 353               		.loc 1 116 0
+ 354 01ca 2496      		adiw r28,4
+ 355 01cc CDBF      		out __SP_L__,r28
+ 356 01ce DEBF      		out __SP_H__,r29
+ 357 01d0 DF91      		pop r29
+ 358 01d2 CF91      		pop r28
+ 359 01d4 1F91      		pop r17
+ 360 01d6 0F91      		pop r16
+ 361               	.LVL31:
+ 362 01d8 FF90      		pop r15
+ 363 01da EF90      		pop r14
+ 364               	.LVL32:
+ 365 01dc 0895      		ret
+ 366               	.LFE21:
+ 368               	.global	enqueue_face
+ 370               	enqueue_face:
+ 371               	.LFB20:
+  86:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 372               		.loc 1 86 0
+ 373               	.LVL33:
+ 374 01de EF92      		push r14
+ 375               	.LCFI23:
+ 376 01e0 FF92      		push r15
+ 377               	.LCFI24:
+ 378 01e2 0F93      		push r16
+ 379               	.LCFI25:
+ 380 01e4 1F93      		push r17
+ 381               	.LCFI26:
+ 382 01e6 CF93      		push r28
+ 383               	.LCFI27:
+ 384 01e8 DF93      		push r29
+ 385               	.LCFI28:
+ 386 01ea CDB7      		in r28,__SP_L__
+ 387 01ec DEB7      		in r29,__SP_H__
+ 388               	.LCFI29:
+ 389 01ee 2897      		sbiw r28,8
+ 390               	.LCFI30:
+ 391 01f0 CDBF      		out __SP_L__,r28
+ 392 01f2 DEBF      		out __SP_H__,r29
+ 393               	/* prologue: function */
+ 394               	/* frame size = 8 */
+ 395               	/* stack size = 14 */
+ 396               	.L__stack_usage = 14
+ 397 01f4 8B83      		std Y+3,r24
+ 398 01f6 9C83      		std Y+4,r25
+ 399 01f8 4D83      		std Y+5,r20
+ 400 01fa 5E83      		std Y+6,r21
+ 401 01fc 6F83      		std Y+7,r22
+ 402 01fe 7887      		std Y+8,r23
+ 403 0200 7901      		movw r14,r18
+ 404               	.LVL34:
+  89:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if (neighbor <= 0) {
+ 405               		.loc 1 89 0
+ 406 0202 892B      		or r24,r25
+ 407 0204 01F4      		brne .L12
+  90:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				tuple = tuple_alloc(TYPE_VACANT);
+ 408               		.loc 1 90 0
+ 409 0206 82E0      		ldi r24,lo8(2)
+ 410 0208 90E0      		ldi r25,0
+ 411 020a 0E94 0000 		call tuple_alloc
+ 412               	.LVL35:
+ 413 020e 8C01      		movw r16,r24
+ 414               	.LVL36:
+  91:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 0, &blockId);
+ 415               		.loc 1 91 0
+ 416 0210 A091 0000 		lds r26,arguments
+ 417 0214 B091 0000 		lds r27,arguments+1
+ 418 0218 FC01      		movw r30,r24
+ 419 021a 8081      		ld r24,Z
+ 420 021c FD01      		movw r30,r26
+ 421 021e E80F      		add r30,r24
+ 422 0220 F11D      		adc r31,__zero_reg__
+ 423 0222 E80F      		add r30,r24
+ 424 0224 F11D      		adc r31,__zero_reg__
+ 425 0226 8081      		ld r24,Z
+ 426 0228 A80F      		add r26,r24
+ 427 022a B11D      		adc r27,__zero_reg__
+ 428 022c 1196      		adiw r26,1
+ 429 022e EC91      		ld r30,X
+ 430 0230 1197      		sbiw r26,1
+ 431 0232 F0E0      		ldi r31,0
+ 432 0234 3196      		adiw r30,1
+ 433 0236 E00F      		add r30,r16
+ 434 0238 F11F      		adc r31,r17
+ 435 023a 4C91      		ld r20,X
+ 436 023c 80E0      		ldi r24,lo8(blockId)
+ 437 023e 90E0      		ldi r25,hi8(blockId)
+ 438 0240 50E0      		ldi r21,0
+ 439 0242 BC01      		movw r22,r24
+ 440 0244 CF01      		movw r24,r30
+ 441 0246 0E94 0000 		call memcpy
+ 442               	.LVL37:
+  92:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 1, &face);
+ 443               		.loc 1 92 0
+ 444 024a A091 0000 		lds r26,arguments
+ 445 024e B091 0000 		lds r27,arguments+1
+ 446 0252 F801      		movw r30,r16
+ 447 0254 8081      		ld r24,Z
+ 448 0256 FD01      		movw r30,r26
+ 449 0258 E80F      		add r30,r24
+ 450 025a F11D      		adc r31,__zero_reg__
+ 451 025c E80F      		add r30,r24
+ 452 025e F11D      		adc r31,__zero_reg__
+ 453 0260 8081      		ld r24,Z
+ 454 0262 A80F      		add r26,r24
+ 455 0264 B11D      		adc r27,__zero_reg__
+ 456 0266 1396      		adiw r26,3
+ 457 0268 EC91      		ld r30,X
+ 458 026a 1397      		sbiw r26,3
+ 459 026c F0E0      		ldi r31,0
+ 460 026e 3196      		adiw r30,1
+ 461 0270 E00F      		add r30,r16
+ 462 0272 F11F      		adc r31,r17
+ 463 0274 1296      		adiw r26,2
+ 464 0276 4C91      		ld r20,X
+ 465 0278 CE01      		movw r24,r28
+ 466 027a 0596      		adiw r24,5
+ 467 027c 50E0      		ldi r21,0
+ 468 027e BC01      		movw r22,r24
+ 469 0280 00C0      		rjmp .L14
+ 470               	.LVL38:
+ 471               	.L12:
+ 472               	.LBB18:
+  95:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		  void *null = NULL;
+ 473               		.loc 1 95 0
+ 474 0282 1982      		std Y+1,__zero_reg__
+ 475 0284 1A82      		std Y+2,__zero_reg__
+ 476               	.LVL39:
+  97:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				tuple = tuple_alloc(TYPE_NEIGHBOR);
+ 477               		.loc 1 97 0
+ 478 0286 80E0      		ldi r24,0
+ 479 0288 90E0      		ldi r25,0
+ 480               	.LVL40:
+ 481 028a 0E94 0000 		call tuple_alloc
+ 482               	.LVL41:
+ 483 028e 8C01      		movw r16,r24
+ 484               	.LVL42:
+  98:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 0, &blockId);
+ 485               		.loc 1 98 0
+ 486 0290 A091 0000 		lds r26,arguments
+ 487 0294 B091 0000 		lds r27,arguments+1
+ 488 0298 FC01      		movw r30,r24
+ 489 029a 8081      		ld r24,Z
+ 490 029c FD01      		movw r30,r26
+ 491 029e E80F      		add r30,r24
+ 492 02a0 F11D      		adc r31,__zero_reg__
+ 493 02a2 E80F      		add r30,r24
+ 494 02a4 F11D      		adc r31,__zero_reg__
+ 495 02a6 8081      		ld r24,Z
+ 496 02a8 A80F      		add r26,r24
+ 497 02aa B11D      		adc r27,__zero_reg__
+ 498 02ac 1196      		adiw r26,1
+ 499 02ae EC91      		ld r30,X
+ 500 02b0 1197      		sbiw r26,1
+ 501 02b2 F0E0      		ldi r31,0
+ 502 02b4 3196      		adiw r30,1
+ 503 02b6 E00F      		add r30,r16
+ 504 02b8 F11F      		adc r31,r17
+ 505 02ba 4C91      		ld r20,X
+ 506 02bc 80E0      		ldi r24,lo8(blockId)
+ 507 02be 90E0      		ldi r25,hi8(blockId)
+ 508 02c0 50E0      		ldi r21,0
+ 509 02c2 BC01      		movw r22,r24
+ 510 02c4 CF01      		movw r24,r30
+ 511 02c6 0E94 0000 		call memcpy
+ 512               	.LVL43:
+  99:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 1, &neighbor);
+ 513               		.loc 1 99 0
+ 514 02ca A091 0000 		lds r26,arguments
+ 515 02ce B091 0000 		lds r27,arguments+1
+ 516 02d2 F801      		movw r30,r16
+ 517 02d4 8081      		ld r24,Z
+ 518 02d6 FD01      		movw r30,r26
+ 519 02d8 E80F      		add r30,r24
+ 520 02da F11D      		adc r31,__zero_reg__
+ 521 02dc E80F      		add r30,r24
+ 522 02de F11D      		adc r31,__zero_reg__
+ 523 02e0 8081      		ld r24,Z
+ 524 02e2 A80F      		add r26,r24
+ 525 02e4 B11D      		adc r27,__zero_reg__
+ 526 02e6 1396      		adiw r26,3
+ 527 02e8 EC91      		ld r30,X
+ 528 02ea 1397      		sbiw r26,3
+ 529 02ec F0E0      		ldi r31,0
+ 530 02ee 3196      		adiw r30,1
+ 531 02f0 E00F      		add r30,r16
+ 532 02f2 F11F      		adc r31,r17
+ 533 02f4 1296      		adiw r26,2
+ 534 02f6 4C91      		ld r20,X
+ 535 02f8 CE01      		movw r24,r28
+ 536 02fa 0396      		adiw r24,3
+ 537 02fc 50E0      		ldi r21,0
+ 538 02fe BC01      		movw r22,r24
+ 539 0300 CF01      		movw r24,r30
+ 540 0302 0E94 0000 		call memcpy
+ 541               	.LVL44:
+ 100:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 2, &face);
+ 542               		.loc 1 100 0
+ 543 0306 A091 0000 		lds r26,arguments
+ 544 030a B091 0000 		lds r27,arguments+1
+ 545 030e F801      		movw r30,r16
+ 546 0310 8081      		ld r24,Z
+ 547 0312 FD01      		movw r30,r26
+ 548 0314 E80F      		add r30,r24
+ 549 0316 F11D      		adc r31,__zero_reg__
+ 550 0318 E80F      		add r30,r24
+ 551 031a F11D      		adc r31,__zero_reg__
+ 552 031c 8081      		ld r24,Z
+ 553 031e A80F      		add r26,r24
+ 554 0320 B11D      		adc r27,__zero_reg__
+ 555 0322 1596      		adiw r26,5
+ 556 0324 EC91      		ld r30,X
+ 557 0326 1597      		sbiw r26,5
+ 558 0328 F0E0      		ldi r31,0
+ 559 032a 3196      		adiw r30,1
+ 560 032c E00F      		add r30,r16
+ 561 032e F11F      		adc r31,r17
+ 562 0330 1496      		adiw r26,4
+ 563 0332 4C91      		ld r20,X
+ 564 0334 CE01      		movw r24,r28
+ 565 0336 0596      		adiw r24,5
+ 566 0338 50E0      		ldi r21,0
+ 567 033a BC01      		movw r22,r24
+ 568 033c CF01      		movw r24,r30
+ 569 033e 0E94 0000 		call memcpy
+ 570               	.LVL45:
+ 101:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				SET_TUPLE_FIELD(tuple, 3, &null);
+ 571               		.loc 1 101 0
+ 572 0342 A091 0000 		lds r26,arguments
+ 573 0346 B091 0000 		lds r27,arguments+1
+ 574 034a F801      		movw r30,r16
+ 575 034c 8081      		ld r24,Z
+ 576 034e FD01      		movw r30,r26
+ 577 0350 E80F      		add r30,r24
+ 578 0352 F11D      		adc r31,__zero_reg__
+ 579 0354 E80F      		add r30,r24
+ 580 0356 F11D      		adc r31,__zero_reg__
+ 581 0358 8081      		ld r24,Z
+ 582 035a A80F      		add r26,r24
+ 583 035c B11D      		adc r27,__zero_reg__
+ 584 035e 1796      		adiw r26,7
+ 585 0360 EC91      		ld r30,X
+ 586 0362 1797      		sbiw r26,7
+ 587 0364 F0E0      		ldi r31,0
+ 588 0366 3196      		adiw r30,1
+ 589 0368 E00F      		add r30,r16
+ 590 036a F11F      		adc r31,r17
+ 591 036c 1696      		adiw r26,6
+ 592 036e 4C91      		ld r20,X
+ 593 0370 50E0      		ldi r21,0
+ 594 0372 BE01      		movw r22,r28
+ 595 0374 6F5F      		subi r22,-1
+ 596 0376 7F4F      		sbci r23,-1
+ 597               	.L14:
+ 598 0378 CF01      		movw r24,r30
+ 599 037a 0E94 0000 		call memcpy
+ 600               	.LVL46:
+ 601               	.LBE18:
+ 104:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueueNewTuple(tuple, (record_type) isNew);
+ 602               		.loc 1 104 0
+ 603 037e B701      		movw r22,r14
+ 604 0380 C801      		movw r24,r16
+ 605 0382 0E94 0000 		call enqueueNewTuple
+ 606               	.LVL47:
+ 607               	/* epilogue start */
+ 105:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 608               		.loc 1 105 0
+ 609 0386 2896      		adiw r28,8
+ 610 0388 CDBF      		out __SP_L__,r28
+ 611 038a DEBF      		out __SP_H__,r29
+ 612 038c DF91      		pop r29
+ 613 038e CF91      		pop r28
+ 614 0390 1F91      		pop r17
+ 615 0392 0F91      		pop r16
+ 616               	.LVL48:
+ 617 0394 FF90      		pop r15
+ 618 0396 EF90      		pop r14
+ 619               	.LVL49:
+ 620 0398 0895      		ret
+ 621               	.LFE20:
+ 623               	.global	userRegistration
+ 625               	userRegistration:
+ 626               	.LFB26:
+ 256:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 627               		.loc 1 256 0
+ 628               	/* prologue: function */
+ 629               	/* frame size = 0 */
+ 630               	/* stack size = 0 */
+ 631               	.L__stack_usage = 0
+ 257:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		registerHandler(SYSTEM_MAIN, (GenericHandler)&meldMain);
+ 632               		.loc 1 257 0
+ 633 039a 60E0      		ldi r22,lo8(gs(meldMain))
+ 634 039c 70E0      		ldi r23,hi8(gs(meldMain))
+ 635 039e 81E0      		ldi r24,lo8(1)
+ 636 03a0 0E94 0000 		call registerHandler
+ 637               	.LVL50:
+ 258:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		registerHandler(EVENT_ACCEL_TAP, (GenericHandler)&enqueue_tap);
+ 638               		.loc 1 258 0
+ 639 03a4 60E0      		ldi r22,lo8(gs(enqueue_tap))
+ 640 03a6 70E0      		ldi r23,hi8(gs(enqueue_tap))
+ 641 03a8 8CE0      		ldi r24,lo8(12)
+ 642 03aa 0C94 0000 		jmp registerHandler
+ 643               	.LVL51:
+ 644               	.LFE26:
+ 646               	.global	receive_tuple
+ 648               	receive_tuple:
+ 649               	.LFB27:
+ 277:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 650               		.loc 1 277 0
+ 651               	.LVL52:
+ 652 03ae DF92      		push r13
+ 653               	.LCFI31:
+ 654 03b0 EF92      		push r14
+ 655               	.LCFI32:
+ 656 03b2 FF92      		push r15
+ 657               	.LCFI33:
+ 658 03b4 0F93      		push r16
+ 659               	.LCFI34:
+ 660 03b6 1F93      		push r17
+ 661               	.LCFI35:
+ 662 03b8 CF93      		push r28
+ 663               	.LCFI36:
+ 664 03ba DF93      		push r29
+ 665               	.LCFI37:
+ 666               	/* prologue: function */
+ 667               	/* frame size = 0 */
+ 668               	/* stack size = 7 */
+ 669               	.L__stack_usage = 7
+ 670 03bc F82E      		mov r15,r24
+ 671 03be 092F      		mov r16,r25
+ 278:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   tuple_t rcvdTuple = (tuple_t)thisChunk->data;
+ 672               		.loc 1 278 0
+ 673 03c0 C091 0000 		lds r28,thisChunk
+ 674 03c4 D091 0000 		lds r29,thisChunk+1
+ 280:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   size_t tuple_size = TYPE_SIZE(TUPLE_TYPE(rcvdTuple));
+ 675               		.loc 1 280 0
+ 676 03c8 8881      		ld r24,Y
+ 677               	.LVL53:
+ 678 03ca 2091 0000 		lds r18,arguments
+ 679 03ce 9091 0000 		lds r25,arguments+1
+ 680 03d2 E22F      		mov r30,r18
+ 681 03d4 F92F      		mov r31,r25
+ 682 03d6 E80F      		add r30,r24
+ 683 03d8 F11D      		adc r31,__zero_reg__
+ 684 03da E80F      		add r30,r24
+ 685 03dc F11D      		adc r31,__zero_reg__
+ 686 03de 1181      		ldd r17,Z+1
+ 282:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   tuple = malloc(tuple_size);
+ 687               		.loc 1 282 0
+ 688 03e0 812F      		mov r24,r17
+ 689 03e2 90E0      		ldi r25,0
+ 690 03e4 0E94 0000 		call malloc
+ 691               	.LVL54:
+ 692 03e8 D82E      		mov r13,r24
+ 693 03ea E92E      		mov r14,r25
+ 694               	.LVL55:
+ 283:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   memcpy(tuple, rcvdTuple, tuple_size);
+ 695               		.loc 1 283 0
+ 696 03ec 412F      		mov r20,r17
+ 697 03ee 50E0      		ldi r21,0
+ 698 03f0 BE01      		movw r22,r28
+ 699 03f2 0E94 0000 		call memcpy
+ 700               	.LVL56:
+ 284:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   queue_enqueue(&receivedTuples[faceNum(thisChunk)], tuple, (record_type)isNew);
+ 701               		.loc 1 284 0
+ 702 03f6 2989      		ldd r18,Y+17
+ 703 03f8 2770      		andi r18,lo8(7)
+ 704 03fa 34E0      		ldi r19,lo8(4)
+ 705 03fc 239F      		mul r18,r19
+ 706 03fe C001      		movw r24,r0
+ 707 0400 1124      		clr __zero_reg__
+ 708 0402 4F2D      		mov r20,r15
+ 709 0404 502F      		mov r21,r16
+ 710 0406 6D2D      		mov r22,r13
+ 711 0408 7E2D      		mov r23,r14
+ 712 040a 8050      		subi r24,lo8(-(receivedTuples))
+ 713 040c 9040      		sbci r25,hi8(-(receivedTuples))
+ 714 040e 0E94 0000 		call queue_enqueue
+ 715               	.LVL57:
+ 286:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   tuple = malloc(tuple_size);
+ 716               		.loc 1 286 0
+ 717 0412 812F      		mov r24,r17
+ 718 0414 90E0      		ldi r25,0
+ 719 0416 0E94 0000 		call malloc
+ 720               	.LVL58:
+ 721 041a D82E      		mov r13,r24
+ 722               	.LVL59:
+ 723 041c E92E      		mov r14,r25
+ 724               	.LVL60:
+ 287:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   memcpy(tuple, rcvdTuple, tuple_size);
+ 725               		.loc 1 287 0
+ 726 041e 412F      		mov r20,r17
+ 727 0420 50E0      		ldi r21,0
+ 728 0422 BE01      		movw r22,r28
+ 729 0424 0E94 0000 		call memcpy
+ 730               	.LVL61:
+ 288:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   enqueueNewTuple(tuple, (record_type)isNew);
+ 731               		.loc 1 288 0
+ 732 0428 6F2D      		mov r22,r15
+ 733 042a 702F      		mov r23,r16
+ 734 042c 8D2D      		mov r24,r13
+ 735 042e 9E2D      		mov r25,r14
+ 736 0430 0E94 0000 		call enqueueNewTuple
+ 737               	.LVL62:
+ 738               	/* epilogue start */
+ 289:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 739               		.loc 1 289 0
+ 740 0434 DF91      		pop r29
+ 741 0436 CF91      		pop r28
+ 742 0438 1F91      		pop r17
+ 743 043a 0F91      		pop r16
+ 744 043c FF90      		pop r15
+ 745 043e EF90      		pop r14
+ 746               	.LVL63:
+ 747 0440 DF90      		pop r13
+ 748 0442 0895      		ret
+ 749               	.LFE27:
+ 751               	.global	receive_tuple_add
+ 753               	receive_tuple_add:
+ 754               	.LFB29:
+ 297:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 755               		.loc 1 297 0
+ 756               	/* prologue: function */
+ 757               	/* frame size = 0 */
+ 758               	/* stack size = 0 */
+ 759               	.L__stack_usage = 0
+ 298:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	receive_tuple(1);
+ 760               		.loc 1 298 0
+ 761 0444 81E0      		ldi r24,lo8(1)
+ 762 0446 90E0      		ldi r25,0
+ 763 0448 0C94 0000 		jmp receive_tuple
+ 764               	.LVL64:
+ 765               	.LFE29:
+ 767               	.global	receive_tuple_delete
+ 769               	receive_tuple_delete:
+ 770               	.LFB28:
+ 292:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 771               		.loc 1 292 0
+ 772               	/* prologue: function */
+ 773               	/* frame size = 0 */
+ 774               	/* stack size = 0 */
+ 775               	.L__stack_usage = 0
+ 293:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	receive_tuple(-1);
+ 776               		.loc 1 293 0
+ 777 044c 8FEF      		ldi r24,lo8(-1)
+ 778 044e 9FEF      		ldi r25,lo8(-1)
+ 779 0450 0C94 0000 		jmp receive_tuple
+ 780               	.LVL65:
+ 781               	.LFE28:
+ 783               		.section	.rodata.str1.1
+ 784               	.LC1:
+ 785 0017 496E 2056 		.string	"In VM_init\n"
+ 785      4D5F 696E 
+ 785      6974 0A00 
+ 786               	.LC2:
+ 787 0023 7461 7000 		.string	"tap"
+ 788               	.LC3:
+ 789 0027 5F69 6E69 		.string	"_init"
+ 789      7400 
+ 790               		.text
+ 791               	.global	vm_init
+ 793               	vm_init:
+ 794               	.LFB33:
+ 303:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 304:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 305:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
+ 306:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 307:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		assert (TUPLE_TYPE(tuple) < NUM_TYPES);
+ 308:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 309:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if (delay > 0) {
+ 310:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				p_enqueue(delayedTuples, getTime() + delay, tuple, rt, (record_type) isNew);
+ 311:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return;
+ 312:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+ 313:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 314:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		NodeID target = MELD_NODE_ID(GET_TUPLE_FIELD(tuple, 0));
+ 315:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if (target == blockId) {
+ 316:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				enqueueNewTuple(tuple, (record_type) isNew);
+ 317:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+ 318:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else {
+ 319:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				int face = -1;
+ 320:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 321:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (target == up())
+ 322:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = UP;
+ 323:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (target == down())
+ 324:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = DOWN;
+ 325:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (target == west())
+ 326:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = WEST;
+ 327:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (target == east())
+ 328:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = EAST;
+ 329:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (target == north())
+ 330:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = NORTH;
+ 331:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (target == south())
+ 332:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = SOUTH;
+ 333:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 334:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (face != -1) {		  
+ 335:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						Chunk *c=calloc(sizeof(Chunk), 1);
+ 336:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						MsgHandler receiver;
+ 337:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 338:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						if (isNew > 0) {
+ 339:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							receiver = (MsgHandler)receive_tuple_add;
+ 340:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						}
+ 341:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						else {
+ 342:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							receiver = (MsgHandler)receive_tuple_delete;
+ 343:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						}
+ 344:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 345:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						assert(TYPE_SIZE(TUPLE_TYPE(tuple)) <= 17);
+ 346:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 347:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						if (sendMessageToPort(c, face, tuple, TYPE_SIZE(TUPLE_TYPE(tuple)), (MsgHandler)receiver, (Ge
+ 348:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							// Send failed :(
+ 349:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							free(c);
+ 350:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							fprintf(stderr, "SEND FAILED EVEN THOUGH BLOCK IS PRESENT! from %d to %d\n", (int)blockId, (
+ 351:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						};
+ 352:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				}
+ 353:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else {
+ 354:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						fprintf(stderr, "UNABLE TO ROUTE MESSAGE! from %d to %d\n", (int)blockId, (int)target);
+ 355:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						//exit(EXIT_FAILURE);
+ 356:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				}
+ 357:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				/* TODO-REAL: needs to free on real blinky blocks??? */
+ 358:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+ 359:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 360:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 361:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void tuple_handle(tuple_t tuple, int isNew, Register *registers)
+ 362:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 363:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #if DEBUG
+ 364:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	printf ("handling: ");
+ 365:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	tuple_print(tuple, stdout);
+ 366:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	printf ("\n");
+ 367:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #endif
+ 368:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 369:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 370:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuple_type type = TUPLE_TYPE(tuple);
+ 371:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 372:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		assert (type < NUM_TYPES);
+ 373:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 374:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		switch (type) {
+ 375:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		case TYPE_SETCOLOR:
+ 376:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (isNew <= 0) return;
+ 377:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 378:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				setLED(*(byte *)GET_TUPLE_FIELD(tuple, 1),
+ 379:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							 *(byte *)GET_TUPLE_FIELD(tuple, 2),
+ 380:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							 *(byte *)GET_TUPLE_FIELD(tuple, 3),
+ 381:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							 *(byte *)GET_TUPLE_FIELD(tuple, 4));
+ 382:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				FREE_TUPLE(tuple);
+ 383:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return;
+ 384:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 385:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		case TYPE_SETCOLOR2:
+ 386:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (isNew <= 0) return;
+ 387:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 388:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				setColor(MELD_INT(GET_TUPLE_FIELD(tuple, 1)) % NUM_COLORS);
+ 389:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				FREE_TUPLE(tuple);
+ 390:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return;
+ 391:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 392:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		default:
+ 393:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				tuple_do_handle(type, tuple, isNew, registers);
+ 394:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return;
+ 395:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		}
+ 396:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 397:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 398:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #ifdef BBSIM
+ 399:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** extern int alreadyExecuted(int flag);
+ 400:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #endif
+ 401:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 402:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** /* NOTE: this must be executed before running the virtual machine */
+ 403:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void
+ 404:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** vm_init(void)
+ 405:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 795               		.loc 1 405 0
+ 796 0454 CF92      		push r12
+ 797               	.LCFI38:
+ 798 0456 DF92      		push r13
+ 799               	.LCFI39:
+ 800 0458 EF92      		push r14
+ 801               	.LCFI40:
+ 802 045a FF92      		push r15
+ 803               	.LCFI41:
+ 804 045c 0F93      		push r16
+ 805               	.LCFI42:
+ 806 045e 1F93      		push r17
+ 807               	.LCFI43:
+ 808 0460 CF93      		push r28
+ 809               	.LCFI44:
+ 810 0462 DF93      		push r29
+ 811               	.LCFI45:
+ 812               	/* prologue: function */
+ 813               	/* frame size = 0 */
+ 814               	/* stack size = 8 */
+ 815               	.L__stack_usage = 8
+ 406:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #ifdef BBSIM
+ 407:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****    // We only want to do this once per executable, so in simulator make sure it happens only once a
+ 408:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 409:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****    if (alreadyExecuted(0)) return;
+ 410:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #endif
+ 411:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 412:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	fprintf(stderr, "In VM_init\n");
+ 816               		.loc 1 412 0
+ 817 0464 6091 0000 		lds r22,__iob+4
+ 818 0468 7091 0000 		lds r23,__iob+4+1
+ 819 046c 80E0      		ldi r24,lo8(.LC1)
+ 820 046e 90E0      		ldi r25,hi8(.LC1)
+ 821 0470 0E94 0000 		call fputs
+ 822               	.LVL66:
+ 823               	.LBB21:
+ 824               	.LBB22:
+ 148:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		init_consts();
+ 825               		.loc 1 148 0
+ 826 0474 0E94 0000 		call init_consts
+ 827               	.LVL67:
+ 151:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		for (i = 0; i < NUM_TYPES; i++) {
+ 828               		.loc 1 151 0
+ 829 0478 C090 0000 		lds r12,meld_prog
+ 830 047c D12C      		mov r13,__zero_reg__
+ 831 047e 00E0      		ldi r16,lo8(tuple_names)
+ 832 0480 10E0      		ldi r17,hi8(tuple_names)
+ 833 0482 C0E0      		ldi r28,0
+ 834 0484 D0E0      		ldi r29,0
+ 835 0486 00C0      		rjmp .L20
+ 836               	.LVL68:
+ 837               	.L23:
+ 152:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (strcmp(TYPE_NAME(i), "tap") == 0)
+ 838               		.loc 1 152 0
+ 839 0488 F801      		movw r30,r16
+ 840 048a E190      		ld r14,Z+
+ 841 048c F190      		ld r15,Z+
+ 842 048e 8F01      		movw r16,r30
+ 843 0490 60E0      		ldi r22,lo8(.LC2)
+ 844 0492 70E0      		ldi r23,hi8(.LC2)
+ 845 0494 C701      		movw r24,r14
+ 846 0496 0E94 0000 		call strcmp
+ 847               	.LVL69:
+ 848 049a 0097      		sbiw r24,0
+ 849 049c 01F4      		brne .L21
+ 153:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						TYPE_TAP = i;
+ 850               		.loc 1 153 0
+ 851 049e C093 0000 		sts TYPE_TAP,r28
+ 852 04a2 D093 0000 		sts TYPE_TAP+1,r29
+ 853 04a6 00C0      		rjmp .L22
+ 854               	.L21:
+ 154:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (strcmp(TYPE_NAME(i), "_init") == 0)
+ 855               		.loc 1 154 0
+ 856 04a8 60E0      		ldi r22,lo8(.LC3)
+ 857 04aa 70E0      		ldi r23,hi8(.LC3)
+ 858 04ac C701      		movw r24,r14
+ 859 04ae 0E94 0000 		call strcmp
+ 860               	.LVL70:
+ 861 04b2 0097      		sbiw r24,0
+ 862 04b4 01F4      		brne .L22
+ 155:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						TYPE_INIT = i;
+ 863               		.loc 1 155 0
+ 864 04b6 C093 0000 		sts TYPE_INIT,r28
+ 865 04ba D093 0000 		sts TYPE_INIT+1,r29
+ 866               	.L22:
+ 151:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		for (i = 0; i < NUM_TYPES; i++) {
+ 867               		.loc 1 151 0
+ 868 04be 2196      		adiw r28,1
+ 869               	.LVL71:
+ 870               	.L20:
+ 871 04c0 CC15      		cp r28,r12
+ 872 04c2 DD05      		cpc r29,r13
+ 873 04c4 04F0      		brlt .L23
+ 874               	.LBE22:
+ 875               	.LBE21:
+ 413:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 414:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   init_all_consts();
+ 415:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   init_fields();
+ 876               		.loc 1 415 0
+ 877 04c6 0E94 0000 		call init_fields
+ 878               	.LVL72:
+ 416:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   init_deltas();
+ 879               		.loc 1 416 0
+ 880 04ca 0E94 0000 		call init_deltas
+ 881               	.LVL73:
+ 417:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   set_init_descriptors();
+ 882               		.loc 1 417 0
+ 883 04ce 0E94 0000 		call set_init_descriptors
+ 884               	.LVL74:
+ 885               	/* epilogue start */
+ 418:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   list_init_descriptors();
+ 419:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #if DEBUG
+ 420:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	print_program_info();
+ 421:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #endif
+ 422:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 423:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #ifdef BBSIM
+ 424:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****        // indicate that the vm is inited.
+ 425:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****        alreadyExecuted(1);
+ 426:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #endif
+ 427:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 886               		.loc 1 427 0
+ 887 04d2 DF91      		pop r29
+ 888 04d4 CF91      		pop r28
+ 889               	.LVL75:
+ 890 04d6 1F91      		pop r17
+ 891 04d8 0F91      		pop r16
+ 892 04da FF90      		pop r15
+ 893 04dc EF90      		pop r14
+ 894 04de DF90      		pop r13
+ 895 04e0 CF90      		pop r12
+ 418:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****   list_init_descriptors();
+ 896               		.loc 1 418 0
+ 897 04e2 0C94 0000 		jmp list_init_descriptors
+ 898               	.LVL76:
+ 899               	.LFE33:
+ 901               	.global	__myassert
+ 903               	__myassert:
+ 904               	.LFB34:
+ 428:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 
+ 429:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** #ifndef BBSIM
+ 430:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** void __myassert(char* file, int line, char* exp) {
+ 905               		.loc 1 430 0
+ 906               	/* prologue: function */
+ 907               	/* frame size = 0 */
+ 908               	/* stack size = 0 */
+ 909               	.L__stack_usage = 0
+ 910               	.LVL77:
+ 911               	.L25:
+ 431:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb ****     while (1) {
+ 432:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 	setColor(RED); delayMS(50); setColor(BLUE); delayMS(50);}
+ 912               		.loc 1 432 0 discriminator 1
+ 913 04e6 80E0      		ldi r24,0
+ 914 04e8 0E94 0000 		call setColor
+ 915               	.LVL78:
+ 916 04ec 82E3      		ldi r24,lo8(50)
+ 917 04ee 90E0      		ldi r25,0
+ 918 04f0 0E94 0000 		call delayMS
+ 919               	.LVL79:
+ 920 04f4 85E0      		ldi r24,lo8(5)
+ 921 04f6 0E94 0000 		call setColor
+ 922               	.LVL80:
+ 923 04fa 82E3      		ldi r24,lo8(50)
+ 924 04fc 90E0      		ldi r25,0
+ 925 04fe 0E94 0000 		call delayMS
+ 926               	.LVL81:
+ 927 0502 00C0      		rjmp .L25
+ 928               	.LFE34:
+ 930               		.section	.rodata.str1.1
+ 931               	.LC4:
+ 932 002d 7479 7065 		.string	"type < NUM_TYPES"
+ 932      203C 204E 
+ 932      554D 5F54 
+ 932      5950 4553 
+ 932      00
+ 933               	.LC5:
+ 934 003e 2F68 6F6D 		.string	"/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb"
+ 934      652F 616E 
+ 934      617A 2F62 
+ 934      6C69 6E6B 
+ 934      7962 6C6F 
+ 935               		.text
+ 936               	.global	tuple_handle
+ 938               	tuple_handle:
+ 939               	.LFB32:
+ 362:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 940               		.loc 1 362 0
+ 941               	.LVL82:
+ 942 0504 0F93      		push r16
+ 943               	.LCFI46:
+ 944 0506 1F93      		push r17
+ 945               	.LCFI47:
+ 946 0508 CF93      		push r28
+ 947               	.LCFI48:
+ 948 050a DF93      		push r29
+ 949               	.LCFI49:
+ 950               	/* prologue: function */
+ 951               	/* frame size = 0 */
+ 952               	/* stack size = 4 */
+ 953               	.L__stack_usage = 4
+ 954 050c EC01      		movw r28,r24
+ 955 050e 9A01      		movw r18,r20
+ 370:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuple_type type = TUPLE_TYPE(tuple);
+ 956               		.loc 1 370 0
+ 957 0510 E881      		ld r30,Y
+ 958 0512 8E2F      		mov r24,r30
+ 959               	.LVL83:
+ 960 0514 90E0      		ldi r25,0
+ 961               	.LVL84:
+ 372:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		assert (type < NUM_TYPES);
+ 962               		.loc 1 372 0
+ 963 0516 4091 0000 		lds r20,meld_prog
+ 964               	.LVL85:
+ 965 051a 50E0      		ldi r21,0
+ 966 051c 8417      		cp r24,r20
+ 967 051e 9507      		cpc r25,r21
+ 968 0520 04F0      		brlt .L27
+ 372:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		assert (type < NUM_TYPES);
+ 969               		.loc 1 372 0 is_stmt 0 discriminator 1
+ 970 0522 40E0      		ldi r20,lo8(.LC4)
+ 971 0524 50E0      		ldi r21,hi8(.LC4)
+ 972 0526 64E7      		ldi r22,lo8(116)
+ 973 0528 71E0      		ldi r23,lo8(1)
+ 974               	.LVL86:
+ 975 052a 80E0      		ldi r24,lo8(.LC5)
+ 976 052c 90E0      		ldi r25,hi8(.LC5)
+ 977               	.LVL87:
+ 978 052e 0E94 0000 		call __myassert
+ 979               	.LVL88:
+ 980               	.L27:
+ 374:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		switch (type) {
+ 981               		.loc 1 374 0 is_stmt 1
+ 982 0532 E330      		cpi r30,lo8(3)
+ 983 0534 01F0      		breq .L29
+ 984 0536 E430      		cpi r30,lo8(4)
+ 985 0538 01F0      		breq .+2
+ 986 053a 00C0      		rjmp .L32
+ 987 053c 00C0      		rjmp .L30
+ 988               	.L29:
+ 376:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (isNew <= 0) return;
+ 989               		.loc 1 376 0
+ 990 053e 1616      		cp __zero_reg__,r22
+ 991 0540 1706      		cpc __zero_reg__,r23
+ 992 0542 04F0      		brlt .+2
+ 993 0544 00C0      		rjmp .L26
+ 381:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							 *(byte *)GET_TUPLE_FIELD(tuple, 4));
+ 994               		.loc 1 381 0
+ 995 0546 E091 0000 		lds r30,arguments
+ 996 054a F091 0000 		lds r31,arguments+1
+ 997 054e 8681      		ldd r24,Z+6
+ 998               	.LVL89:
+ 999 0550 E80F      		add r30,r24
+ 1000 0552 F11D      		adc r31,__zero_reg__
+ 1001 0554 8185      		ldd r24,Z+9
+ 378:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				setLED(*(byte *)GET_TUPLE_FIELD(tuple, 1),
+ 1002               		.loc 1 378 0
+ 1003 0556 9E01      		movw r18,r28
+ 1004               	.LVL90:
+ 1005 0558 280F      		add r18,r24
+ 1006 055a 311D      		adc r19,__zero_reg__
+ 380:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							 *(byte *)GET_TUPLE_FIELD(tuple, 3),
+ 1007               		.loc 1 380 0
+ 1008 055c 8781      		ldd r24,Z+7
+ 378:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				setLED(*(byte *)GET_TUPLE_FIELD(tuple, 1),
+ 1009               		.loc 1 378 0
+ 1010 055e AE01      		movw r20,r28
+ 1011 0560 480F      		add r20,r24
+ 1012 0562 511D      		adc r21,__zero_reg__
+ 1013 0564 CA01      		movw r24,r20
+ 379:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							 *(byte *)GET_TUPLE_FIELD(tuple, 2),
+ 1014               		.loc 1 379 0
+ 1015 0566 4581      		ldd r20,Z+5
+ 378:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				setLED(*(byte *)GET_TUPLE_FIELD(tuple, 1),
+ 1016               		.loc 1 378 0
+ 1017 0568 DE01      		movw r26,r28
+ 1018 056a A40F      		add r26,r20
+ 1019 056c B11D      		adc r27,__zero_reg__
+ 1020 056e 4381      		ldd r20,Z+3
+ 1021 0570 8E01      		movw r16,r28
+ 1022 0572 040F      		add r16,r20
+ 1023 0574 111D      		adc r17,__zero_reg__
+ 1024 0576 F901      		movw r30,r18
+ 1025 0578 2181      		ldd r18,Z+1
+ 1026 057a FC01      		movw r30,r24
+ 1027 057c 4181      		ldd r20,Z+1
+ 1028 057e 1196      		adiw r26,1
+ 1029 0580 6C91      		ld r22,X
+ 1030               	.LVL91:
+ 1031 0582 F801      		movw r30,r16
+ 1032 0584 8181      		ldd r24,Z+1
+ 1033 0586 0E94 0000 		call setLED
+ 1034               	.LVL92:
+ 1035 058a 00C0      		rjmp .L33
+ 1036               	.LVL93:
+ 1037               	.L30:
+ 386:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (isNew <= 0) return;
+ 1038               		.loc 1 386 0
+ 1039 058c 1616      		cp __zero_reg__,r22
+ 1040 058e 1706      		cpc __zero_reg__,r23
+ 1041 0590 04F4      		brge .L26
+ 388:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				setColor(MELD_INT(GET_TUPLE_FIELD(tuple, 1)) % NUM_COLORS);
+ 1042               		.loc 1 388 0
+ 1043 0592 E091 0000 		lds r30,arguments
+ 1044 0596 F091 0000 		lds r31,arguments+1
+ 1045 059a 8085      		ldd r24,Z+8
+ 1046               	.LVL94:
+ 1047 059c E80F      		add r30,r24
+ 1048 059e F11D      		adc r31,__zero_reg__
+ 1049 05a0 8381      		ldd r24,Z+3
+ 1050 05a2 FE01      		movw r30,r28
+ 1051 05a4 E80F      		add r30,r24
+ 1052 05a6 F11D      		adc r31,__zero_reg__
+ 1053 05a8 6181      		ldd r22,Z+1
+ 1054 05aa 7281      		ldd r23,Z+2
+ 1055 05ac 8381      		ldd r24,Z+3
+ 1056 05ae 9481      		ldd r25,Z+4
+ 1057               	.LVL95:
+ 1058 05b0 29E0      		ldi r18,lo8(9)
+ 1059 05b2 30E0      		ldi r19,0
+ 1060 05b4 40E0      		ldi r20,0
+ 1061 05b6 50E0      		ldi r21,0
+ 1062               	.LVL96:
+ 1063 05b8 0E94 0000 		call __divmodsi4
+ 1064 05bc 862F      		mov r24,r22
+ 1065 05be 0E94 0000 		call setColor
+ 1066               	.LVL97:
+ 1067               	.L33:
+ 389:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				FREE_TUPLE(tuple);
+ 1068               		.loc 1 389 0
+ 1069 05c2 CE01      		movw r24,r28
+ 1070               	/* epilogue start */
+ 396:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 1071               		.loc 1 396 0
+ 1072 05c4 DF91      		pop r29
+ 1073 05c6 CF91      		pop r28
+ 1074               	.LVL98:
+ 1075 05c8 1F91      		pop r17
+ 1076 05ca 0F91      		pop r16
+ 389:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				FREE_TUPLE(tuple);
+ 1077               		.loc 1 389 0
+ 1078 05cc 0C94 0000 		jmp free
+ 1079               	.LVL99:
+ 1080               	.L32:
+ 393:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				tuple_do_handle(type, tuple, isNew, registers);
+ 1081               		.loc 1 393 0
+ 1082 05d0 AB01      		movw r20,r22
+ 1083 05d2 BE01      		movw r22,r28
+ 1084               	.LVL100:
+ 1085               	/* epilogue start */
+ 396:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 1086               		.loc 1 396 0
+ 1087 05d4 DF91      		pop r29
+ 1088 05d6 CF91      		pop r28
+ 1089               	.LVL101:
+ 1090 05d8 1F91      		pop r17
+ 1091 05da 0F91      		pop r16
+ 393:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				tuple_do_handle(type, tuple, isNew, registers);
+ 1092               		.loc 1 393 0
+ 1093 05dc 0C94 0000 		jmp tuple_do_handle
+ 1094               	.LVL102:
+ 1095               	.L26:
+ 1096               	/* epilogue start */
+ 396:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 1097               		.loc 1 396 0
+ 1098 05e0 DF91      		pop r29
+ 1099 05e2 CF91      		pop r28
+ 1100               	.LVL103:
+ 1101 05e4 1F91      		pop r17
+ 1102 05e6 0F91      		pop r16
+ 1103 05e8 0895      		ret
+ 1104               	.LFE32:
+ 1106               		.section	.rodata.str1.1
+ 1107               	.LC6:
+ 1108 0083 5455 504C 		.string	"TUPLE_TYPE(tuple) < NUM_TYPES"
+ 1108      455F 5459 
+ 1108      5045 2874 
+ 1108      7570 6C65 
+ 1108      2920 3C20 
+ 1109               	.LC7:
+ 1110 00a1 5459 5045 		.string	"TYPE_SIZE(TUPLE_TYPE(tuple)) <= 17"
+ 1110      5F53 495A 
+ 1110      4528 5455 
+ 1110      504C 455F 
+ 1110      5459 5045 
+ 1111               	.LC8:
+ 1112 00c4 5345 4E44 		.string	"SEND FAILED EVEN THOUGH BLOCK IS PRESENT! from %d to %d\n"
+ 1112      2046 4149 
+ 1112      4C45 4420 
+ 1112      4556 454E 
+ 1112      2054 484F 
+ 1113               	.LC9:
+ 1114 00fd 554E 4142 		.string	"UNABLE TO ROUTE MESSAGE! from %d to %d\n"
+ 1114      4C45 2054 
+ 1114      4F20 524F 
+ 1114      5554 4520 
+ 1114      4D45 5353 
+ 1115               		.text
+ 1116               	.global	tuple_send
+ 1118               	tuple_send:
+ 1119               	.LFB31:
+ 306:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 1120               		.loc 1 306 0
+ 1121 05ea 8F92      		push r8
+ 1122               	.LCFI50:
+ 1123 05ec 9F92      		push r9
+ 1124               	.LCFI51:
+ 1125 05ee AF92      		push r10
+ 1126               	.LCFI52:
+ 1127 05f0 BF92      		push r11
+ 1128               	.LCFI53:
+ 1129 05f2 CF92      		push r12
+ 1130               	.LCFI54:
+ 1131 05f4 DF92      		push r13
+ 1132               	.LCFI55:
+ 1133 05f6 EF92      		push r14
+ 1134               	.LCFI56:
+ 1135 05f8 FF92      		push r15
+ 1136               	.LCFI57:
+ 1137 05fa 0F93      		push r16
+ 1138               	.LCFI58:
+ 1139 05fc 1F93      		push r17
+ 1140               	.LCFI59:
+ 1141 05fe CF93      		push r28
+ 1142               	.LCFI60:
+ 1143 0600 DF93      		push r29
+ 1144               	.LCFI61:
+ 1145               	/* prologue: function */
+ 1146               	/* frame size = 0 */
+ 1147               	/* stack size = 12 */
+ 1148               	.L__stack_usage = 12
+ 1149 0602 EC01      		movw r28,r24
+ 1150 0604 6B01      		movw r12,r22
+ 1151 0606 4901      		movw r8,r18
+ 1152 0608 5A01      		movw r10,r20
+ 307:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		assert (TUPLE_TYPE(tuple) < NUM_TYPES);
+ 1153               		.loc 1 307 0
+ 1154 060a 2881      		ld r18,Y
+ 1155 060c 8091 0000 		lds r24,meld_prog
+ 1156 0610 2817      		cp r18,r24
+ 1157 0612 00F0      		brlo .L35
+ 307:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		assert (TUPLE_TYPE(tuple) < NUM_TYPES);
+ 1158               		.loc 1 307 0 is_stmt 0 discriminator 1
+ 1159 0614 40E0      		ldi r20,lo8(.LC6)
+ 1160 0616 50E0      		ldi r21,hi8(.LC6)
+ 1161 0618 63E3      		ldi r22,lo8(51)
+ 1162 061a 71E0      		ldi r23,lo8(1)
+ 1163 061c 00C0      		rjmp .L51
+ 1164               	.L35:
+ 309:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if (delay > 0) {
+ 1165               		.loc 1 309 0 is_stmt 1
+ 1166 061e 1814      		cp __zero_reg__,r8
+ 1167 0620 1904      		cpc __zero_reg__,r9
+ 1168 0622 1A04      		cpc __zero_reg__,r10
+ 1169 0624 1B04      		cpc __zero_reg__,r11
+ 1170 0626 04F4      		brge .L36
+ 310:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				p_enqueue(delayedTuples, getTime() + delay, tuple, rt, (record_type) isNew);
+ 1171               		.loc 1 310 0
+ 1172 0628 0E94 0000 		call getTime
+ 1173 062c AB01      		movw r20,r22
+ 1174 062e BC01      		movw r22,r24
+ 1175 0630 480D      		add r20,r8
+ 1176 0632 591D      		adc r21,r9
+ 1177 0634 6A1D      		adc r22,r10
+ 1178 0636 7B1D      		adc r23,r11
+ 1179 0638 7801      		movw r14,r16
+ 1180 063a 8601      		movw r16,r12
+ 1181 063c 9E01      		movw r18,r28
+ 1182 063e 8091 0000 		lds r24,delayedTuples
+ 1183 0642 9091 0000 		lds r25,delayedTuples+1
+ 1184 0646 0E94 0000 		call p_enqueue
+ 311:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return;
+ 1185               		.loc 1 311 0
+ 1186 064a 00C0      		rjmp .L34
+ 1187               	.L36:
+ 314:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		NodeID target = MELD_NODE_ID(GET_TUPLE_FIELD(tuple, 0));
+ 1188               		.loc 1 314 0
+ 1189 064c 8091 0000 		lds r24,arguments
+ 1190 0650 9091 0000 		lds r25,arguments+1
+ 1191 0654 FC01      		movw r30,r24
+ 1192 0656 E20F      		add r30,r18
+ 1193 0658 F11D      		adc r31,__zero_reg__
+ 1194 065a E20F      		add r30,r18
+ 1195 065c F11D      		adc r31,__zero_reg__
+ 1196 065e 2081      		ld r18,Z
+ 1197 0660 FC01      		movw r30,r24
+ 1198 0662 E20F      		add r30,r18
+ 1199 0664 F11D      		adc r31,__zero_reg__
+ 1200 0666 8181      		ldd r24,Z+1
+ 1201 0668 FE01      		movw r30,r28
+ 1202 066a E80F      		add r30,r24
+ 1203 066c F11D      		adc r31,__zero_reg__
+ 1204 066e C180      		ldd r12,Z+1
+ 1205 0670 D280      		ldd r13,Z+2
+ 315:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if (target == blockId) {
+ 1206               		.loc 1 315 0
+ 1207 0672 8091 0000 		lds r24,blockId
+ 1208 0676 9091 0000 		lds r25,blockId+1
+ 1209 067a C816      		cp r12,r24
+ 1210 067c D906      		cpc r13,r25
+ 1211 067e 01F4      		brne .L38
+ 316:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				enqueueNewTuple(tuple, (record_type) isNew);
+ 1212               		.loc 1 316 0
+ 1213 0680 B801      		movw r22,r16
+ 1214 0682 CE01      		movw r24,r28
+ 1215 0684 0E94 0000 		call enqueueNewTuple
+ 1216 0688 00C0      		rjmp .L34
+ 1217               	.L38:
+ 1218               	.LBB23:
+ 321:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (target == up())
+ 1219               		.loc 1 321 0
+ 1220 068a 0E94 0000 		call up
+ 1221 068e C816      		cp r12,r24
+ 1222 0690 D906      		cpc r13,r25
+ 1223 0692 01F4      		brne .+2
+ 1224 0694 00C0      		rjmp .L43
+ 323:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (target == down())
+ 1225               		.loc 1 323 0
+ 1226 0696 0E94 0000 		call down
+ 1227 069a C816      		cp r12,r24
+ 1228 069c D906      		cpc r13,r25
+ 1229 069e 01F4      		brne .+2
+ 1230 06a0 00C0      		rjmp .L44
+ 325:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (target == west())
+ 1231               		.loc 1 325 0
+ 1232 06a2 0E94 0000 		call west
+ 1233 06a6 C816      		cp r12,r24
+ 1234 06a8 D906      		cpc r13,r25
+ 1235 06aa 01F4      		brne .+2
+ 1236 06ac 00C0      		rjmp .L45
+ 327:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (target == east())
+ 1237               		.loc 1 327 0
+ 1238 06ae 0E94 0000 		call east
+ 1239 06b2 C816      		cp r12,r24
+ 1240 06b4 D906      		cpc r13,r25
+ 1241 06b6 01F4      		brne .+2
+ 1242 06b8 00C0      		rjmp .L46
+ 329:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (target == north())
+ 1243               		.loc 1 329 0
+ 1244 06ba 0E94 0000 		call north
+ 1245 06be C816      		cp r12,r24
+ 1246 06c0 D906      		cpc r13,r25
+ 1247 06c2 01F4      		brne .+2
+ 1248 06c4 00C0      		rjmp .L47
+ 331:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (target == south())
+ 1249               		.loc 1 331 0
+ 1250 06c6 0E94 0000 		call south
+ 1251 06ca C816      		cp r12,r24
+ 1252 06cc D906      		cpc r13,r25
+ 1253 06ce 01F0      		breq .+2
+ 1254 06d0 00C0      		rjmp .L50
+ 1255 06d2 00C0      		rjmp .L48
+ 1256               	.L49:
+ 1257               	.LBB24:
+ 342:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							receiver = (MsgHandler)receive_tuple_delete;
+ 1258               		.loc 1 342 0
+ 1259 06d4 00E0      		ldi r16,lo8(gs(receive_tuple_delete))
+ 1260 06d6 10E0      		ldi r17,hi8(gs(receive_tuple_delete))
+ 1261               	.L42:
+ 345:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						assert(TYPE_SIZE(TUPLE_TYPE(tuple)) <= 17);
+ 1262               		.loc 1 345 0
+ 1263 06d8 8881      		ld r24,Y
+ 1264 06da 2091 0000 		lds r18,arguments
+ 1265 06de 9091 0000 		lds r25,arguments+1
+ 1266 06e2 E22F      		mov r30,r18
+ 1267 06e4 F92F      		mov r31,r25
+ 1268 06e6 E80F      		add r30,r24
+ 1269 06e8 F11D      		adc r31,__zero_reg__
+ 1270 06ea E80F      		add r30,r24
+ 1271 06ec F11D      		adc r31,__zero_reg__
+ 1272 06ee 2181      		ldd r18,Z+1
+ 1273 06f0 2231      		cpi r18,lo8(18)
+ 1274 06f2 00F0      		brlo .L41
+ 345:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						assert(TYPE_SIZE(TUPLE_TYPE(tuple)) <= 17);
+ 1275               		.loc 1 345 0 is_stmt 0 discriminator 1
+ 1276 06f4 40E0      		ldi r20,lo8(.LC7)
+ 1277 06f6 50E0      		ldi r21,hi8(.LC7)
+ 1278 06f8 69E5      		ldi r22,lo8(89)
+ 1279 06fa 71E0      		ldi r23,lo8(1)
+ 1280               	.L51:
+ 1281 06fc 80E0      		ldi r24,lo8(.LC5)
+ 1282 06fe 90E0      		ldi r25,hi8(.LC5)
+ 1283 0700 0E94 0000 		call __myassert
+ 1284               	.L41:
+ 347:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						if (sendMessageToPort(c, face, tuple, TYPE_SIZE(TUPLE_TYPE(tuple)), (MsgHandler)receiver, (Ge
+ 1285               		.loc 1 347 0 is_stmt 1
+ 1286 0704 E0E0      		ldi r30,lo8(gs(free_chunk))
+ 1287 0706 EE2E      		mov r14,r30
+ 1288 0708 E0E0      		ldi r30,hi8(gs(free_chunk))
+ 1289 070a FE2E      		mov r15,r30
+ 1290 070c AE01      		movw r20,r28
+ 1291 070e 6A2D      		mov r22,r10
+ 1292 0710 892D      		mov r24,r9
+ 1293 0712 982D      		mov r25,r8
+ 1294 0714 0E94 0000 		call sendMessageToPort
+ 1295 0718 8111      		cpse r24,__zero_reg__
+ 1296 071a 00C0      		rjmp .L34
+ 349:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							free(c);
+ 1297               		.loc 1 349 0
+ 1298 071c 892D      		mov r24,r9
+ 1299 071e 982D      		mov r25,r8
+ 1300 0720 0E94 0000 		call free
+ 350:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							fprintf(stderr, "SEND FAILED EVEN THOUGH BLOCK IS PRESENT! from %d to %d\n", (int)blockId, (
+ 1301               		.loc 1 350 0
+ 1302 0724 DF92      		push r13
+ 1303               	.LCFI62:
+ 1304 0726 CF92      		push r12
+ 1305               	.LCFI63:
+ 1306 0728 8091 0000 		lds r24,blockId+1
+ 1307 072c 8F93      		push r24
+ 1308               	.LCFI64:
+ 1309 072e 8091 0000 		lds r24,blockId
+ 1310 0732 8F93      		push r24
+ 1311               	.LCFI65:
+ 1312 0734 80E0      		ldi r24,lo8(.LC8)
+ 1313 0736 90E0      		ldi r25,hi8(.LC8)
+ 1314 0738 9F93      		push r25
+ 1315               	.LCFI66:
+ 1316 073a 8F93      		push r24
+ 1317               	.LCFI67:
+ 1318 073c 8091 0000 		lds r24,__iob+5
+ 1319 0740 8F93      		push r24
+ 1320               	.LCFI68:
+ 1321 0742 8091 0000 		lds r24,__iob+4
+ 1322 0746 8F93      		push r24
+ 1323               	.LCFI69:
+ 1324 0748 0E94 0000 		call fprintf
+ 1325 074c 8DB7      		in r24,__SP_L__
+ 1326 074e 9EB7      		in r25,__SP_H__
+ 1327 0750 0896      		adiw r24,8
+ 1328 0752 8DBF      		out __SP_L__,r24
+ 1329 0754 9EBF      		out __SP_H__,r25
+ 1330               	.LCFI70:
+ 1331 0756 00C0      		rjmp .L34
+ 1332               	.L50:
+ 1333               	.LBE24:
+ 354:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						fprintf(stderr, "UNABLE TO ROUTE MESSAGE! from %d to %d\n", (int)blockId, (int)target);
+ 1334               		.loc 1 354 0
+ 1335 0758 DF92      		push r13
+ 1336               	.LCFI71:
+ 1337 075a CF92      		push r12
+ 1338               	.LCFI72:
+ 1339 075c 8091 0000 		lds r24,blockId+1
+ 1340 0760 8F93      		push r24
+ 1341               	.LCFI73:
+ 1342 0762 8091 0000 		lds r24,blockId
+ 1343 0766 8F93      		push r24
+ 1344               	.LCFI74:
+ 1345 0768 80E0      		ldi r24,lo8(.LC9)
+ 1346 076a 90E0      		ldi r25,hi8(.LC9)
+ 1347 076c 9F93      		push r25
+ 1348               	.LCFI75:
+ 1349 076e 8F93      		push r24
+ 1350               	.LCFI76:
+ 1351 0770 8091 0000 		lds r24,__iob+5
+ 1352 0774 8F93      		push r24
+ 1353               	.LCFI77:
+ 1354 0776 8091 0000 		lds r24,__iob+4
+ 1355 077a 8F93      		push r24
+ 1356               	.LCFI78:
+ 1357 077c 0E94 0000 		call fprintf
+ 1358 0780 8DB7      		in r24,__SP_L__
+ 1359 0782 9EB7      		in r25,__SP_H__
+ 1360 0784 0896      		adiw r24,8
+ 1361 0786 8DBF      		out __SP_L__,r24
+ 1362 0788 9EBF      		out __SP_H__,r25
+ 1363               	.LCFI79:
+ 1364 078a 00C0      		rjmp .L34
+ 1365               	.L43:
+ 322:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = UP;
+ 1366               		.loc 1 322 0
+ 1367 078c 75E0      		ldi r23,lo8(5)
+ 1368 078e A72E      		mov r10,r23
+ 1369 0790 B12C      		mov r11,__zero_reg__
+ 1370 0792 00C0      		rjmp .L39
+ 1371               	.L44:
+ 324:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = DOWN;
+ 1372               		.loc 1 324 0
+ 1373 0794 A12C      		mov r10,__zero_reg__
+ 1374 0796 B12C      		mov r11,__zero_reg__
+ 1375 0798 00C0      		rjmp .L39
+ 1376               	.L45:
+ 326:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = WEST;
+ 1377               		.loc 1 326 0
+ 1378 079a 63E0      		ldi r22,lo8(3)
+ 1379 079c A62E      		mov r10,r22
+ 1380 079e B12C      		mov r11,__zero_reg__
+ 1381 07a0 00C0      		rjmp .L39
+ 1382               	.L46:
+ 328:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = EAST;
+ 1383               		.loc 1 328 0
+ 1384 07a2 52E0      		ldi r21,lo8(2)
+ 1385 07a4 A52E      		mov r10,r21
+ 1386 07a6 B12C      		mov r11,__zero_reg__
+ 1387 07a8 00C0      		rjmp .L39
+ 1388               	.L47:
+ 330:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = NORTH;
+ 1389               		.loc 1 330 0
+ 1390 07aa AA24      		clr r10
+ 1391 07ac A394      		inc r10
+ 1392 07ae B12C      		mov r11,__zero_reg__
+ 1393 07b0 00C0      		rjmp .L39
+ 1394               	.L48:
+ 332:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						face = SOUTH;
+ 1395               		.loc 1 332 0
+ 1396 07b2 34E0      		ldi r19,lo8(4)
+ 1397 07b4 A32E      		mov r10,r19
+ 1398 07b6 B12C      		mov r11,__zero_reg__
+ 1399               	.L39:
+ 1400               	.LBB25:
+ 335:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						Chunk *c=calloc(sizeof(Chunk), 1);
+ 1401               		.loc 1 335 0
+ 1402 07b8 61E0      		ldi r22,lo8(1)
+ 1403 07ba 70E0      		ldi r23,0
+ 1404 07bc 88E1      		ldi r24,lo8(24)
+ 1405 07be 90E0      		ldi r25,0
+ 1406 07c0 0E94 0000 		call calloc
+ 1407 07c4 982E      		mov r9,r24
+ 1408 07c6 892E      		mov r8,r25
+ 338:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						if (isNew > 0) {
+ 1409               		.loc 1 338 0
+ 1410 07c8 1016      		cp __zero_reg__,r16
+ 1411 07ca 1106      		cpc __zero_reg__,r17
+ 1412 07cc 04F0      		brlt .+2
+ 1413 07ce 00C0      		rjmp .L49
+ 339:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 							receiver = (MsgHandler)receive_tuple_add;
+ 1414               		.loc 1 339 0
+ 1415 07d0 00E0      		ldi r16,lo8(gs(receive_tuple_add))
+ 1416 07d2 10E0      		ldi r17,hi8(gs(receive_tuple_add))
+ 1417 07d4 00C0      		rjmp .L42
+ 1418               	.L34:
+ 1419               	/* epilogue start */
+ 1420               	.LBE25:
+ 1421               	.LBE23:
+ 359:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** }
+ 1422               		.loc 1 359 0
+ 1423 07d6 DF91      		pop r29
+ 1424 07d8 CF91      		pop r28
+ 1425 07da 1F91      		pop r17
+ 1426 07dc 0F91      		pop r16
+ 1427 07de FF90      		pop r15
+ 1428 07e0 EF90      		pop r14
+ 1429 07e2 DF90      		pop r13
+ 1430 07e4 CF90      		pop r12
+ 1431 07e6 BF90      		pop r11
+ 1432 07e8 AF90      		pop r10
+ 1433 07ea 9F90      		pop r9
+ 1434 07ec 8F90      		pop r8
+ 1435 07ee 0895      		ret
+ 1436               	.LFE31:
+ 1438               		.section	.rodata.str1.1
+ 1439               	.LC10:
+ 1440 0125 3000      		.string	"0"
+ 1441               		.text
+ 1443               	get_neighbor_ID:
+ 1444               	.LFB18:
+  56:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 1445               		.loc 1 56 0
+ 1446               	.LVL104:
+ 1447               	/* prologue: function */
+ 1448               	/* frame size = 0 */
+ 1449               	/* stack size = 0 */
+ 1450               	.L__stack_usage = 0
+  57:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if (face == UP)
+ 1451               		.loc 1 57 0
+ 1452 07f0 8530      		cpi r24,5
+ 1453 07f2 9105      		cpc r25,__zero_reg__
+ 1454 07f4 01F4      		brne .L53
+  58:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return up();
+ 1455               		.loc 1 58 0
+ 1456 07f6 0C94 0000 		jmp up
+ 1457               	.LVL105:
+ 1458               	.L53:
+  59:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else if (face == DOWN)
+ 1459               		.loc 1 59 0
+ 1460 07fa 0097      		sbiw r24,0
+ 1461 07fc 01F4      		brne .L54
+  60:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return down();
+ 1462               		.loc 1 60 0
+ 1463 07fe 0C94 0000 		jmp down
+ 1464               	.LVL106:
+ 1465               	.L54:
+  61:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else if (face == WEST)
+ 1466               		.loc 1 61 0
+ 1467 0802 8330      		cpi r24,3
+ 1468 0804 9105      		cpc r25,__zero_reg__
+ 1469 0806 01F4      		brne .L55
+  62:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return west();
+ 1470               		.loc 1 62 0
+ 1471 0808 0C94 0000 		jmp west
+ 1472               	.LVL107:
+ 1473               	.L55:
+  63:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else if (face == EAST)
+ 1474               		.loc 1 63 0
+ 1475 080c 8230      		cpi r24,2
+ 1476 080e 9105      		cpc r25,__zero_reg__
+ 1477 0810 01F4      		brne .L56
+  64:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return east();
+ 1478               		.loc 1 64 0
+ 1479 0812 0C94 0000 		jmp east
+ 1480               	.LVL108:
+ 1481               	.L56:
+  65:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else if (face == NORTH)
+ 1482               		.loc 1 65 0
+ 1483 0816 8130      		cpi r24,1
+ 1484 0818 9105      		cpc r25,__zero_reg__
+ 1485 081a 01F4      		brne .L57
+  66:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return north();
+ 1486               		.loc 1 66 0
+ 1487 081c 0C94 0000 		jmp north
+ 1488               	.LVL109:
+ 1489               	.L57:
+  67:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		else if (face == SOUTH)
+ 1490               		.loc 1 67 0
+ 1491 0820 0497      		sbiw r24,4
+ 1492 0822 01F4      		brne .L58
+  68:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				return south();
+ 1493               		.loc 1 68 0
+ 1494 0824 0C94 0000 		jmp south
+ 1495               	.LVL110:
+ 1496               	.L58:
+ 1497               	.LBB28:
+ 1498               	.LBB29:
+  70:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				assert(0);
+ 1499               		.loc 1 70 0
+ 1500 0828 40E0      		ldi r20,lo8(.LC10)
+ 1501 082a 50E0      		ldi r21,hi8(.LC10)
+ 1502 082c 66E4      		ldi r22,lo8(70)
+ 1503 082e 70E0      		ldi r23,0
+ 1504 0830 80E0      		ldi r24,lo8(.LC5)
+ 1505 0832 90E0      		ldi r25,hi8(.LC5)
+ 1506               	.LVL111:
+ 1507 0834 0E94 0000 		call __myassert
+ 1508               	.LVL112:
+ 1509               	.LBE29:
+ 1510               	.LBE28:
+ 1511               	.LFE18:
+ 1513               	.global	meldMain
+ 1515               	meldMain:
+ 1516               	.LFB25:
+ 164:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** {
+ 1517               		.loc 1 164 0
+ 1518 0838 CF93      		push r28
+ 1519               	.LCFI80:
+ 1520 083a DF93      		push r29
+ 1521               	.LCFI81:
+ 1522 083c CDB7      		in r28,__SP_L__
+ 1523 083e DEB7      		in r29,__SP_H__
+ 1524               	.LCFI82:
+ 1525 0840 2E97      		sbiw r28,14
+ 1526               	.LCFI83:
+ 1527 0842 CDBF      		out __SP_L__,r28
+ 1528 0844 DEBF      		out __SP_H__,r29
+ 1529               	/* prologue: function */
+ 1530               	/* frame size = 14 */
+ 1531               	/* stack size = 16 */
+ 1532               	.L__stack_usage = 16
+ 165:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		blockId = getGUID();
+ 1533               		.loc 1 165 0
+ 1534 0846 0E94 0000 		call getGUID
+ 1535               	.LVL113:
+ 1536 084a 8093 0000 		sts blockId,r24
+ 1537 084e 9093 0000 		sts blockId+1,r25
+ 168:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuples = calloc(NUM_TYPES, sizeof(tuple_queue));
+ 1538               		.loc 1 168 0
+ 1539 0852 1091 0000 		lds r17,meld_prog
+ 1540 0856 64E0      		ldi r22,lo8(4)
+ 1541 0858 70E0      		ldi r23,0
+ 1542 085a 812F      		mov r24,r17
+ 1543 085c 90E0      		ldi r25,0
+ 1544 085e 0E94 0000 		call calloc
+ 1545               	.LVL114:
+ 1546 0862 8093 0000 		sts tuples,r24
+ 1547 0866 9093 0000 		sts tuples+1,r25
+ 169:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		newTuples = calloc(1, sizeof(tuple_queue));
+ 1548               		.loc 1 169 0
+ 1549 086a 64E0      		ldi r22,lo8(4)
+ 1550 086c 70E0      		ldi r23,0
+ 1551 086e 81E0      		ldi r24,lo8(1)
+ 1552 0870 90E0      		ldi r25,0
+ 1553 0872 0E94 0000 		call calloc
+ 1554               	.LVL115:
+ 1555 0876 8093 0000 		sts newTuples,r24
+ 1556 087a 9093 0000 		sts newTuples+1,r25
+ 170:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		newStratTuples = calloc(1, sizeof(tuple_pqueue));
+ 1557               		.loc 1 170 0
+ 1558 087e 62E0      		ldi r22,lo8(2)
+ 1559 0880 70E0      		ldi r23,0
+ 1560 0882 81E0      		ldi r24,lo8(1)
+ 1561 0884 90E0      		ldi r25,0
+ 1562 0886 0E94 0000 		call calloc
+ 1563               	.LVL116:
+ 1564 088a 8093 0000 		sts newStratTuples,r24
+ 1565 088e 9093 0000 		sts newStratTuples+1,r25
+ 171:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		oldTuples = calloc(NUM_TYPES, sizeof(tuple_t));
+ 1566               		.loc 1 171 0
+ 1567 0892 62E0      		ldi r22,lo8(2)
+ 1568 0894 70E0      		ldi r23,0
+ 1569 0896 812F      		mov r24,r17
+ 1570 0898 90E0      		ldi r25,0
+ 1571 089a 0E94 0000 		call calloc
+ 1572               	.LVL117:
+ 1573 089e 8093 0000 		sts oldTuples,r24
+ 1574 08a2 9093 0000 		sts oldTuples+1,r25
+ 172:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		delayedTuples = calloc(1, sizeof(tuple_pqueue));
+ 1575               		.loc 1 172 0
+ 1576 08a6 62E0      		ldi r22,lo8(2)
+ 1577 08a8 70E0      		ldi r23,0
+ 1578 08aa 81E0      		ldi r24,lo8(1)
+ 1579 08ac 90E0      		ldi r25,0
+ 1580 08ae 0E94 0000 		call calloc
+ 1581               	.LVL118:
+ 1582 08b2 8093 0000 		sts delayedTuples,r24
+ 1583 08b6 9093 0000 		sts delayedTuples+1,r25
+ 173:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		proved = calloc(NUM_TYPES, sizeof(meld_int));
+ 1584               		.loc 1 173 0
+ 1585 08ba 64E0      		ldi r22,lo8(4)
+ 1586 08bc 70E0      		ldi r23,0
+ 1587 08be 812F      		mov r24,r17
+ 1588 08c0 90E0      		ldi r25,0
+ 1589 08c2 0E94 0000 		call calloc
+ 1590               	.LVL119:
+ 1591 08c6 8093 0000 		sts proved,r24
+ 1592 08ca 9093 0000 		sts proved+1,r25
+ 174:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
+ 1593               		.loc 1 174 0
+ 1594 08ce 88E1      		ldi r24,lo8(24)
+ 1595 08d0 E0E0      		ldi r30,lo8(receivedTuples)
+ 1596 08d2 F0E0      		ldi r31,hi8(receivedTuples)
+ 1597 08d4 DF01      		movw r26,r30
+ 1598               		0:
+ 1599 08d6 1D92      		st X+,__zero_reg__
+ 1600 08d8 8A95      		dec r24
+ 1601 08da 01F4      		brne 0b
+ 176:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		vm_init();
+ 1602               		.loc 1 176 0
+ 1603 08dc 0E94 0000 		call vm_init
+ 1604               	.LVL120:
+ 184:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		setLED(128,0,128,32);
+ 1605               		.loc 1 184 0
+ 1606 08e0 20E2      		ldi r18,lo8(32)
+ 1607 08e2 40E8      		ldi r20,lo8(-128)
+ 1608 08e4 60E0      		ldi r22,0
+ 1609 08e6 80E8      		ldi r24,lo8(-128)
+ 1610 08e8 0E94 0000 		call setLED
+ 1611               	.LVL121:
+ 1612               	.LBB42:
+ 1613               	.LBB43:
+ 135:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		if(TYPE_INIT == -1)
+ 1614               		.loc 1 135 0
+ 1615 08ec 8091 0000 		lds r24,TYPE_INIT
+ 1616 08f0 9091 0000 		lds r25,TYPE_INIT+1
+ 1617 08f4 8F3F      		cpi r24,-1
+ 1618 08f6 BFEF      		ldi r27,-1
+ 1619 08f8 9B07      		cpc r25,r27
+ 1620 08fa 01F0      		breq .L60
+ 138:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		tuple_t tuple = tuple_alloc(TYPE_INIT);
+ 1621               		.loc 1 138 0
+ 1622 08fc 0E94 0000 		call tuple_alloc
+ 1623               	.LVL122:
+ 1624 0900 8C01      		movw r16,r24
+ 1625               	.LVL123:
+ 140:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		SET_TUPLE_FIELD(tuple, 0, &blockId);
+ 1626               		.loc 1 140 0
+ 1627 0902 8091 0000 		lds r24,arguments
+ 1628 0906 9091 0000 		lds r25,arguments+1
+ 1629 090a F801      		movw r30,r16
+ 1630 090c 2081      		ld r18,Z
+ 1631 090e FC01      		movw r30,r24
+ 1632 0910 E20F      		add r30,r18
+ 1633 0912 F11D      		adc r31,__zero_reg__
+ 1634 0914 E20F      		add r30,r18
+ 1635 0916 F11D      		adc r31,__zero_reg__
+ 1636 0918 2081      		ld r18,Z
+ 1637 091a FC01      		movw r30,r24
+ 1638 091c E20F      		add r30,r18
+ 1639 091e F11D      		adc r31,__zero_reg__
+ 1640 0920 2181      		ldd r18,Z+1
+ 1641 0922 30E0      		ldi r19,0
+ 1642 0924 2F5F      		subi r18,-1
+ 1643 0926 3F4F      		sbci r19,-1
+ 1644 0928 200F      		add r18,r16
+ 1645 092a 311F      		adc r19,r17
+ 1646 092c 4081      		ld r20,Z
+ 1647 092e 80E0      		ldi r24,lo8(blockId)
+ 1648 0930 90E0      		ldi r25,hi8(blockId)
+ 1649 0932 50E0      		ldi r21,0
+ 1650 0934 BC01      		movw r22,r24
+ 1651 0936 C901      		movw r24,r18
+ 1652 0938 0E94 0000 		call memcpy
+ 1653               	.LVL124:
+ 142:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueueNewTuple(tuple, (record_type) 1);
+ 1654               		.loc 1 142 0
+ 1655 093c 61E0      		ldi r22,lo8(1)
+ 1656 093e 70E0      		ldi r23,0
+ 1657 0940 C801      		movw r24,r16
+ 1658 0942 0E94 0000 		call enqueueNewTuple
+ 1659               	.LVL125:
+ 1660               	.L60:
+ 1661               	.LBE43:
+ 1662               	.LBE42:
+ 190:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		int numNeighbors = getNeighborCount();
+ 1663               		.loc 1 190 0
+ 1664 0946 0E94 0000 		call getNeighborCount
+ 1665               	.LVL126:
+ 1666 094a E82E      		mov r14,r24
+ 1667 094c F12C      		mov r15,__zero_reg__
+ 1668               	.LVL127:
+ 192:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		enqueue_count(numNeighbors, 1);
+ 1669               		.loc 1 192 0
+ 1670 094e 682F      		mov r22,r24
+ 1671 0950 70E0      		ldi r23,0
+ 1672 0952 80E0      		ldi r24,0
+ 1673 0954 90E0      		ldi r25,0
+ 1674 0956 41E0      		ldi r20,lo8(1)
+ 1675 0958 50E0      		ldi r21,0
+ 1676 095a 0E94 0000 		call enqueue_count
+ 1677               	.LVL128:
+ 1678 095e 8E01      		movw r16,r28
+ 1679 0960 0F5F      		subi r16,-1
+ 1680 0962 1F4F      		sbci r17,-1
+ 1681 0964 412C      		mov r4,__zero_reg__
+ 1682 0966 512C      		mov r5,__zero_reg__
+ 1683 0968 3201      		movw r6,r4
+ 1684               	.LVL129:
+ 1685               	.L61:
+ 196:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				neighbors[i] = get_neighbor_ID(i);
+ 1686               		.loc 1 196 0 discriminator 2
+ 1687 096a C201      		movw r24,r4
+ 1688 096c 0E94 0000 		call get_neighbor_ID
+ 1689               	.LVL130:
+ 1690 0970 D801      		movw r26,r16
+ 1691 0972 8D93      		st X+,r24
+ 1692 0974 9D93      		st X+,r25
+ 1693 0976 8D01      		movw r16,r26
+ 198:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				enqueue_face(neighbors[i], i, 1);
+ 1694               		.loc 1 198 0 discriminator 2
+ 1695 0978 21E0      		ldi r18,lo8(1)
+ 1696 097a 30E0      		ldi r19,0
+ 1697 097c B301      		movw r22,r6
+ 1698 097e A201      		movw r20,r4
+ 1699 0980 0E94 0000 		call enqueue_face
+ 1700               	.LVL131:
+ 1701 0984 BFEF      		ldi r27,-1
+ 1702 0986 4B1A      		sub r4,r27
+ 1703 0988 5B0A      		sbc r5,r27
+ 1704 098a 6B0A      		sbc r6,r27
+ 1705 098c 7B0A      		sbc r7,r27
+ 1706               	.LVL132:
+ 195:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 		for (i = 0; i < NUM_PORTS; i++) {
+ 1707               		.loc 1 195 0 discriminator 2
+ 1708 098e E6E0      		ldi r30,6
+ 1709 0990 4E16      		cp r4,r30
+ 1710 0992 5104      		cpc r5,__zero_reg__
+ 1711 0994 6104      		cpc r6,__zero_reg__
+ 1712 0996 7104      		cpc r7,__zero_reg__
+ 1713 0998 01F4      		brne .L61
+ 1714               	.LVL133:
+ 1715               	.L80:
+ 1716               	.LBB44:
+ 205:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if(!queue_is_empty(newTuples)) {
+ 1717               		.loc 1 205 0
+ 1718 099a 8091 0000 		lds r24,newTuples
+ 1719 099e 9091 0000 		lds r25,newTuples+1
+ 1720 09a2 0E94 0000 		call queue_is_empty
+ 1721               	.LVL134:
+ 1722 09a6 8111      		cpse r24,__zero_reg__
+ 1723 09a8 00C0      		rjmp .L62
+ 1724               	.LBB45:
+ 206:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						int isNew = 0;
+ 1725               		.loc 1 206 0
+ 1726 09aa 1D86      		std Y+13,__zero_reg__
+ 1727 09ac 1E86      		std Y+14,__zero_reg__
+ 207:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_t tuple = queue_dequeue(newTuples, &isNew);
+ 1728               		.loc 1 207 0
+ 1729 09ae BE01      		movw r22,r28
+ 1730 09b0 635F      		subi r22,-13
+ 1731 09b2 7F4F      		sbci r23,-1
+ 1732 09b4 8091 0000 		lds r24,newTuples
+ 1733 09b8 9091 0000 		lds r25,newTuples+1
+ 1734 09bc 0E94 0000 		call queue_dequeue
+ 1735               	.LVL135:
+ 209:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_handle(tuple, isNew, reg);
+ 1736               		.loc 1 209 0
+ 1737 09c0 6D85      		ldd r22,Y+13
+ 1738 09c2 7E85      		ldd r23,Y+14
+ 1739 09c4 40E0      		ldi r20,lo8(reg)
+ 1740 09c6 50E0      		ldi r21,hi8(reg)
+ 1741 09c8 0E94 0000 		call tuple_handle
+ 1742               	.LVL136:
+ 1743 09cc 00C0      		rjmp .L63
+ 1744               	.L62:
+ 1745               	.LVL137:
+ 1746               	.LBE45:
+ 1747               	.LBB46:
+ 1748               	.LBB47:
+ 234:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 235:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 236:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** void tuple_handle(tuple_t tuple, int isNew, Register *reg);
+ 237:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew);
+ 238:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** void tuple_do_handle(tuple_type type,	void *tuple, int isNew, Register *reg);
+ 239:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** int tuple_process(tuple_t tuple, const unsigned char *pc,
+ 240:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 	int isNew, Register *reg);
+ 241:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** void tuple_print(tuple_t tuple, FILE *fp);
+ 242:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 243:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 244:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** static inline void
+ 245:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** tuple_dump(void *tuple)
+ 246:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** {
+ 247:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 	tuple_print(tuple, stderr);
+ 248:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 	fprintf(stderr, "\n");
+ 249:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** }
+ 250:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 251:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** void print_program_info(void);
+ 252:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 253:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** void init_deltas(void);
+ 254:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** void init_fields(void);
+ 255:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** void facts_dump(void);
+ 256:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** void init_consts(void);
+ 257:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 258:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** tuple_entry* queue_enqueue(tuple_queue *queue, tuple_t tuple, record_type isNew);
+ 259:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** bool queue_is_empty(tuple_queue *queue);
+ 260:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** tuple_t queue_dequeue(tuple_queue *queue, int *isNew);
+ 261:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** tuple_t queue_pop_tuple(tuple_queue *queue);
+ 262:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** void queue_push_tuple(tuple_queue *queue, tuple_entry *entry);
+ 263:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 264:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** static inline void
+ 265:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** queue_init(tuple_queue *queue)
+ 266:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** {
+ 267:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h ****   queue->head = queue->tail = NULL;
+ 268:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** }
+ 269:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 
+ 270:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** static inline bool
+ 271:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** p_empty(tuple_pqueue *q)
+ 272:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** {
+ 273:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/core.h **** 	return q->queue == NULL;
+ 1749               		.loc 2 273 0
+ 1750 09ce E091 0000 		lds r30,delayedTuples
+ 1751 09d2 F091 0000 		lds r31,delayedTuples+1
+ 1752 09d6 0190      		ld __tmp_reg__,Z+
+ 1753 09d8 F081      		ld r31,Z
+ 1754 09da E02D      		mov r30,__tmp_reg__
+ 1755               	.LBE47:
+ 1756               	.LBE46:
+ 211:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (!p_empty(delayedTuples) && p_peek(delayedTuples)->priority <= getTime()) {
+ 1757               		.loc 1 211 0
+ 1758 09dc 3097      		sbiw r30,0
+ 1759 09de 01F0      		breq .L64
+ 1760               	.LVL138:
+ 211:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				else if (!p_empty(delayedTuples) && p_peek(delayedTuples)->priority <= getTime()) {
+ 1761               		.loc 1 211 0 is_stmt 0 discriminator 1
+ 1762 09e0 4080      		ld r4,Z
+ 1763 09e2 5180      		ldd r5,Z+1
+ 1764 09e4 6280      		ldd r6,Z+2
+ 1765 09e6 7380      		ldd r7,Z+3
+ 1766 09e8 0E94 0000 		call getTime
+ 1767               	.LVL139:
+ 1768 09ec 6415      		cp r22,r4
+ 1769 09ee 7505      		cpc r23,r5
+ 1770 09f0 8605      		cpc r24,r6
+ 1771 09f2 9705      		cpc r25,r7
+ 1772 09f4 00F0      		brlo .L64
+ 1773               	.LBB48:
+ 212:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_pentry *entry = p_dequeue(delayedTuples);
+ 1774               		.loc 1 212 0 is_stmt 1 discriminator 1
+ 1775 09f6 8091 0000 		lds r24,delayedTuples
+ 1776 09fa 9091 0000 		lds r25,delayedTuples+1
+ 1777 09fe 0E94 0000 		call p_dequeue
+ 1778               	.LVL140:
+ 1779 0a02 6C01      		movw r12,r24
+ 1780               	.LVL141:
+ 214:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_send(entry->tuple, entry->rt, 0, entry->records.count);
+ 1781               		.loc 1 214 0 discriminator 1
+ 1782 0a04 DC01      		movw r26,r24
+ 1783 0a06 1696      		adiw r26,6
+ 1784 0a08 0D91      		ld r16,X+
+ 1785 0a0a 1C91      		ld r17,X
+ 1786 0a0c 1797      		sbiw r26,6+1
+ 1787 0a0e 1A96      		adiw r26,10
+ 1788 0a10 6D91      		ld r22,X+
+ 1789 0a12 7C91      		ld r23,X
+ 1790 0a14 1B97      		sbiw r26,10+1
+ 1791 0a16 20E0      		ldi r18,0
+ 1792 0a18 30E0      		ldi r19,0
+ 1793 0a1a A901      		movw r20,r18
+ 1794 0a1c 1896      		adiw r26,8
+ 1795 0a1e 8D91      		ld r24,X+
+ 1796 0a20 9C91      		ld r25,X
+ 1797 0a22 1997      		sbiw r26,8+1
+ 1798 0a24 0E94 0000 		call tuple_send
+ 1799               	.LVL142:
+ 215:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						free(entry);
+ 1800               		.loc 1 215 0 discriminator 1
+ 1801 0a28 C601      		movw r24,r12
+ 1802 0a2a 00C0      		rjmp .L81
+ 1803               	.LVL143:
+ 1804               	.L64:
+ 1805               	.LBE48:
+ 216:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				} else if (!(p_empty(newStratTuples))) {
+ 1806               		.loc 1 216 0
+ 1807 0a2c 8091 0000 		lds r24,newStratTuples
+ 1808 0a30 9091 0000 		lds r25,newStratTuples+1
+ 1809               	.LVL144:
+ 1810 0a34 FC01      		movw r30,r24
+ 1811 0a36 2081      		ld r18,Z
+ 1812 0a38 3181      		ldd r19,Z+1
+ 1813 0a3a 232B      		or r18,r19
+ 1814 0a3c 01F0      		breq .L65
+ 1815               	.LBB49:
+ 217:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_pentry *entry = p_dequeue(newStratTuples);
+ 1816               		.loc 1 217 0
+ 1817 0a3e 0E94 0000 		call p_dequeue
+ 1818               	.LVL145:
+ 1819 0a42 8C01      		movw r16,r24
+ 1820               	.LVL146:
+ 218:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						tuple_handle(entry->tuple, entry->records.count, reg);
+ 1821               		.loc 1 218 0
+ 1822 0a44 DC01      		movw r26,r24
+ 1823 0a46 1696      		adiw r26,6
+ 1824 0a48 6D91      		ld r22,X+
+ 1825 0a4a 7C91      		ld r23,X
+ 1826 0a4c 1797      		sbiw r26,6+1
+ 1827 0a4e 40E0      		ldi r20,lo8(reg)
+ 1828 0a50 50E0      		ldi r21,hi8(reg)
+ 1829 0a52 1896      		adiw r26,8
+ 1830 0a54 8D91      		ld r24,X+
+ 1831 0a56 9C91      		ld r25,X
+ 1832 0a58 1997      		sbiw r26,8+1
+ 1833 0a5a 0E94 0000 		call tuple_handle
+ 1834               	.LVL147:
+ 220:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						free(entry);
+ 1835               		.loc 1 220 0
+ 1836 0a5e C801      		movw r24,r16
+ 1837               	.LVL148:
+ 1838               	.L81:
+ 1839 0a60 0E94 0000 		call free
+ 1840               	.LVL149:
+ 1841 0a64 00C0      		rjmp .L63
+ 1842               	.LVL150:
+ 1843               	.L65:
+ 1844               	.LBE49:
+ 223:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						delayMS(30);
+ 1845               		.loc 1 223 0
+ 1846 0a66 8EE1      		ldi r24,lo8(30)
+ 1847 0a68 90E0      		ldi r25,0
+ 1848               	.LVL151:
+ 1849 0a6a 0E94 0000 		call delayMS
+ 1850               	.LVL152:
+ 1851               	.L63:
+ 226:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				updateAccel();
+ 1852               		.loc 1 226 0
+ 1853 0a6e 0E94 0000 		call updateAccel
+ 1854               	.LVL153:
+ 229:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				int newNumNeighbors = getNeighborCount();
+ 1855               		.loc 1 229 0
+ 1856 0a72 0E94 0000 		call getNeighborCount
+ 1857               	.LVL154:
+ 1858 0a76 D82E      		mov r13,r24
+ 1859 0a78 082F      		mov r16,r24
+ 1860 0a7a 10E0      		ldi r17,0
+ 1861               	.LVL155:
+ 230:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				if (newNumNeighbors != numNeighbors) {
+ 1862               		.loc 1 230 0
+ 1863 0a7c 0E15      		cp r16,r14
+ 1864 0a7e 1F05      		cpc r17,r15
+ 1865 0a80 01F0      		breq .L66
+ 231:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						enqueue_count(numNeighbors, -1);
+ 1866               		.loc 1 231 0
+ 1867 0a82 B701      		movw r22,r14
+ 1868 0a84 8827      		clr r24
+ 1869 0a86 77FD      		sbrc r23,7
+ 1870 0a88 8095      		com r24
+ 1871 0a8a 982F      		mov r25,r24
+ 1872 0a8c 4FEF      		ldi r20,lo8(-1)
+ 1873 0a8e 5FEF      		ldi r21,lo8(-1)
+ 1874 0a90 0E94 0000 		call enqueue_count
+ 1875               	.LVL156:
+ 233:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						enqueue_count(numNeighbors, 1);			
+ 1876               		.loc 1 233 0
+ 1877 0a94 6D2D      		mov r22,r13
+ 1878 0a96 70E0      		ldi r23,0
+ 1879 0a98 80E0      		ldi r24,0
+ 1880 0a9a 90E0      		ldi r25,0
+ 1881 0a9c 41E0      		ldi r20,lo8(1)
+ 1882 0a9e 50E0      		ldi r21,0
+ 1883 0aa0 0E94 0000 		call enqueue_count
+ 1884               	.LVL157:
+ 1885 0aa4 7801      		movw r14,r16
+ 1886               	.LVL158:
+ 1887               	.L66:
+ 1888 0aa6 8E01      		movw r16,r28
+ 1889               	.LVL159:
+ 1890 0aa8 0F5F      		subi r16,-1
+ 1891 0aaa 1F4F      		sbci r17,-1
+ 1892 0aac 412C      		mov r4,__zero_reg__
+ 1893 0aae 512C      		mov r5,__zero_reg__
+ 1894 0ab0 3201      		movw r6,r4
+ 1895               	.LVL160:
+ 1896               	.L70:
+ 1897 0ab2 5201      		movw r10,r4
+ 1898               	.LBB50:
+ 237:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						NodeID neighbor = get_neighbor_ID(i);
+ 1899               		.loc 1 237 0
+ 1900 0ab4 C201      		movw r24,r4
+ 1901 0ab6 0E94 0000 		call get_neighbor_ID
+ 1902               	.LVL161:
+ 1903 0aba 6C01      		movw r12,r24
+ 1904               	.LVL162:
+ 239:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						if (neighbor == neighbors[i])
+ 1905               		.loc 1 239 0
+ 1906 0abc F801      		movw r30,r16
+ 1907 0abe 8081      		ld r24,Z
+ 1908 0ac0 9181      		ldd r25,Z+1
+ 1909 0ac2 C816      		cp r12,r24
+ 1910 0ac4 D906      		cpc r13,r25
+ 1911 0ac6 01F0      		breq .L67
+ 242:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						enqueue_face(neighbors[i], i, -1);
+ 1912               		.loc 1 242 0
+ 1913 0ac8 1201      		movw r2,r4
+ 1914 0aca 4301      		movw r8,r6
+ 1915 0acc 2FEF      		ldi r18,lo8(-1)
+ 1916 0ace 3FEF      		ldi r19,lo8(-1)
+ 1917 0ad0 A201      		movw r20,r4
+ 1918 0ad2 B301      		movw r22,r6
+ 1919 0ad4 0E94 0000 		call enqueue_face
+ 1920               	.LVL163:
+ 244:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						while(!queue_is_empty(&(receivedTuples[i]))) {
+ 1921               		.loc 1 244 0
+ 1922 0ad8 AA0C      		lsl r10
+ 1923 0ada BB1C      		rol r11
+ 1924 0adc AA0C      		lsl r10
+ 1925 0ade BB1C      		rol r11
+ 1926 0ae0 80E0      		ldi r24,lo8(receivedTuples)
+ 1927 0ae2 90E0      		ldi r25,hi8(receivedTuples)
+ 1928 0ae4 A80E      		add r10,r24
+ 1929 0ae6 B91E      		adc r11,r25
+ 1930 0ae8 00C0      		rjmp .L68
+ 1931               	.L69:
+ 1932               	.LBB51:
+ 245:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						  tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
+ 1933               		.loc 1 245 0
+ 1934 0aea 60E0      		ldi r22,0
+ 1935 0aec 70E0      		ldi r23,0
+ 1936 0aee C501      		movw r24,r10
+ 1937 0af0 0E94 0000 		call queue_dequeue
+ 1938               	.LVL164:
+ 246:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						  enqueueNewTuple(tuple, (record_type)-1);
+ 1939               		.loc 1 246 0
+ 1940 0af4 6FEF      		ldi r22,lo8(-1)
+ 1941 0af6 7FEF      		ldi r23,lo8(-1)
+ 1942 0af8 0E94 0000 		call enqueueNewTuple
+ 1943               	.LVL165:
+ 1944               	.L68:
+ 1945               	.LBE51:
+ 244:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						while(!queue_is_empty(&(receivedTuples[i]))) {
+ 1946               		.loc 1 244 0 discriminator 1
+ 1947 0afc C501      		movw r24,r10
+ 1948 0afe 0E94 0000 		call queue_is_empty
+ 1949               	.LVL166:
+ 1950 0b02 8823      		tst r24
+ 1951 0b04 01F0      		breq .L69
+ 249:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						neighbors[i] = neighbor;
+ 1952               		.loc 1 249 0
+ 1953 0b06 D801      		movw r26,r16
+ 1954 0b08 CD92      		st X+,r12
+ 1955 0b0a DC92      		st X,r13
+ 250:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 						enqueue_face(neighbors[i], i, 1);
+ 1956               		.loc 1 250 0
+ 1957 0b0c 21E0      		ldi r18,lo8(1)
+ 1958 0b0e 30E0      		ldi r19,0
+ 1959 0b10 A101      		movw r20,r2
+ 1960 0b12 B401      		movw r22,r8
+ 1961 0b14 C601      		movw r24,r12
+ 1962 0b16 0E94 0000 		call enqueue_face
+ 1963               	.LVL167:
+ 1964               	.L67:
+ 1965 0b1a 0E5F      		subi r16,-2
+ 1966 0b1c 1F4F      		sbci r17,-1
+ 1967 0b1e BFEF      		ldi r27,-1
+ 1968 0b20 4B1A      		sub r4,r27
+ 1969 0b22 5B0A      		sbc r5,r27
+ 1970 0b24 6B0A      		sbc r6,r27
+ 1971 0b26 7B0A      		sbc r7,r27
+ 1972               	.LBE50:
+ 236:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/meldvm.bb **** 				for (i = 0; i < NUM_PORTS; i++) {
+ 1973               		.loc 1 236 0
+ 1974 0b28 E6E0      		ldi r30,6
+ 1975 0b2a 4E16      		cp r4,r30
+ 1976 0b2c 5104      		cpc r5,__zero_reg__
+ 1977 0b2e 6104      		cpc r6,__zero_reg__
+ 1978 0b30 7104      		cpc r7,__zero_reg__
+ 1979 0b32 01F0      		breq .+2
+ 1980 0b34 00C0      		rjmp .L70
+ 1981 0b36 00C0      		rjmp .L80
+ 1982               	.LBE44:
+ 1983               	.LFE25:
+ 1985               		.comm	reg,128,1
+ 1986               		.comm	persistent,2,1
+ 1987               		.comm	blockId,2,1
+ 1988               		.comm	proved,2,1
+ 1989               		.comm	receivedTuples,24,1
+ 1990               		.comm	newTuples,2,1
+ 1991               		.comm	newStratTuples,2,1
+ 1992               		.comm	tuples,2,1
+ 1993               		.comm	delayedTuples,2,1
+ 1994               		.comm	oldTuples,2,1
+ 1995               		.data
+ 1998               	TYPE_TAP:
+ 1999 0000 FFFF      		.word	-1
+ 2588               	.Letext0:
+ 2589               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 2590               		.file 4 "/home/anaz/blinkyblocks/build/src-bobby/system/defs.bbh"
+ 2591               		.file 5 "/home/anaz/blinkyblocks/build/src-bobby/system/led.bbh"
+ 2592               		.file 6 "/usr/lib/gcc/avr/4.7.2/include/stddef.h"
+ 2593               		.file 7 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdio.h"
+ 2594               		.file 8 "/home/anaz/blinkyblocks/build/src-bobby/system/handler.bbh"
+ 2595               		.file 9 "/home/anaz/blinkyblocks/build/src-bobby/system/memory.bbh"
+ 2596               		.file 10 "/home/anaz/blinkyblocks/build/src-bobby/system/hardwaretime.bbh"
+ 2597               		.file 11 "/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/model.bbh"
+ 2598               		.file 12 "/home/anaz/blinkyblocks/build/src-bobby/system/data_link.bbh"
+ 2599               		.file 13 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdlib.h"
+ 2600               		.file 14 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/string.h"
+ 2601               		.file 15 "/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.h"
+ 2602               		.file 16 "/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/list_runtime.h"
+ 2603               		.file 17 "/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bbh"
+ 2604               		.file 18 "/home/anaz/blinkyblocks/build/src-bobby/system/accelerometer.bbh"
+ 2605               		.file 19 "/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/../hw-api/hwMemory.h"
+ 2606               		.file 20 "/home/anaz/blinkyblocks/build/src-bobby/system/serial.bbh"
+ 2607               		.file 21 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 meldvm.c
+/home/anaz/tmp/ccypBwvv.s:2      *ABS*:000000000000003e __SP_H__
+/home/anaz/tmp/ccypBwvv.s:3      *ABS*:000000000000003d __SP_L__
+/home/anaz/tmp/ccypBwvv.s:4      *ABS*:000000000000003f __SREG__
+/home/anaz/tmp/ccypBwvv.s:5      *ABS*:000000000000003b __RAMPZ__
+/home/anaz/tmp/ccypBwvv.s:6      *ABS*:0000000000000034 __CCP__
+/home/anaz/tmp/ccypBwvv.s:7      *ABS*:0000000000000000 __tmp_reg__
+/home/anaz/tmp/ccypBwvv.s:8      *ABS*:0000000000000001 __zero_reg__
+/home/anaz/tmp/ccypBwvv.s:13     .text:0000000000000000 free_chunk
+/home/anaz/tmp/ccypBwvv.s:33     .text:000000000000000c tuple_alloc
+/home/anaz/tmp/ccypBwvv.s:117    .text:000000000000006c enqueueNewTuple
+                            *COM*:0000000000000002 newStratTuples
+                            *COM*:0000000000000002 newTuples
+/home/anaz/tmp/ccypBwvv.s:190    .text:00000000000000ca enqueue_tap
+/home/anaz/tmp/ccypBwvv.s:1998   .data:0000000000000000 TYPE_TAP
+                            *COM*:0000000000000002 blockId
+/home/anaz/tmp/ccypBwvv.s:253    .text:0000000000000126 enqueue_count
+/home/anaz/tmp/ccypBwvv.s:370    .text:00000000000001de enqueue_face
+/home/anaz/tmp/ccypBwvv.s:625    .text:000000000000039a userRegistration
+/home/anaz/tmp/ccypBwvv.s:1515   .text:0000000000000838 meldMain
+/home/anaz/tmp/ccypBwvv.s:648    .text:00000000000003ae receive_tuple
+                            *COM*:0000000000000018 receivedTuples
+/home/anaz/tmp/ccypBwvv.s:753    .text:0000000000000444 receive_tuple_add
+/home/anaz/tmp/ccypBwvv.s:769    .text:000000000000044c receive_tuple_delete
+/home/anaz/tmp/ccypBwvv.s:793    .text:0000000000000454 vm_init
+/home/anaz/tmp/ccypBwvv.s:903    .text:00000000000004e6 __myassert
+/home/anaz/tmp/ccypBwvv.s:938    .text:0000000000000504 tuple_handle
+/home/anaz/tmp/ccypBwvv.s:1118   .text:00000000000005ea tuple_send
+                            *COM*:0000000000000002 delayedTuples
+/home/anaz/tmp/ccypBwvv.s:1443   .text:00000000000007f0 get_neighbor_ID
+                            *COM*:0000000000000002 tuples
+                            *COM*:0000000000000002 oldTuples
+                            *COM*:0000000000000002 proved
+                            *COM*:0000000000000080 reg
+                            *COM*:0000000000000002 persistent
+
+UNDEFINED SYMBOLS
+thisChunk
+free
+meld_prog
+__iob
+fprintf
+exit
+arguments
+malloc
+p_enqueue
+queue_enqueue
+memcpy
+facts_dump
+registerHandler
+fputs
+init_consts
+tuple_names
+strcmp
+TYPE_INIT
+init_fields
+init_deltas
+set_init_descriptors
+list_init_descriptors
+setColor
+delayMS
+setLED
+__divmodsi4
+tuple_do_handle
+getTime
+up
+down
+west
+east
+north
+south
+sendMessageToPort
+calloc
+getGUID
+getNeighborCount
+queue_is_empty
+queue_dequeue
+p_dequeue
+updateAccel
+__do_copy_data
+__do_clear_bss

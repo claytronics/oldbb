@@ -11,53 +11,53 @@
   11               	.global	initDebugUart
   13               	initDebugUart:
   14               	.LFB1:
-  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c"
-   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #include "../hw-api/hwDebug.h"
-   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #include <avr/io.h>
-   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #ifdef DEBUG
-   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #if DEBUG == 5 // UP
-   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 5
-   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTD1
-  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #elif DEBUG == 1 // NORTH
-  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 1
-  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTC1
-  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #elif DEBUG == 4 //SOUTH
-  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 4
-  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTE0
-  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #elif DEBUG == 2 //EAST
-  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 2
-  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTF0
-  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  26:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #elif DEBUG == 3 //WEST
-  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  28:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 3
-  29:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTC0
-  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  31:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #elif DEBUG == 0 //DOWN
-  32:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  33:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 0
-  34:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTD0
-  35:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  36:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #endif
-  37:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #ifndef DEBUGPORT
-  38:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #error Invalid DEBUG option chosen - use a face enum.
-  39:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #endif
-  40:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  41:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #endif
-  42:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  43:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** FILE debug;
-  44:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** void initDebugUart(USART_t * uart)
-  46:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** {
+  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c"
+   1:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #include "../hw-api/hwDebug.h"
+   2:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #include <avr/io.h>
+   3:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+   4:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #ifdef DEBUG
+   5:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+   6:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #if DEBUG == 5 // UP
+   7:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+   8:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 5
+   9:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTD1
+  10:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  11:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #elif DEBUG == 1 // NORTH
+  12:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  13:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 1
+  14:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTC1
+  15:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  16:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #elif DEBUG == 4 //SOUTH
+  17:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  18:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 4
+  19:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTE0
+  20:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  21:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #elif DEBUG == 2 //EAST
+  22:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  23:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 2
+  24:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTF0
+  25:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  26:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #elif DEBUG == 3 //WEST
+  27:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  28:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 3
+  29:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTC0
+  30:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  31:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #elif DEBUG == 0 //DOWN
+  32:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  33:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGPORT 0
+  34:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #define DEBUGUART USARTD0
+  35:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  36:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #endif
+  37:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #ifndef DEBUGPORT
+  38:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #error Invalid DEBUG option chosen - use a face enum.
+  39:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #endif
+  40:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  41:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #endif
+  42:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  43:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** FILE debug;
+  44:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  45:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** void initDebugUart(USART_t * uart)
+  46:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** {
   16               		.loc 1 46 0
   17               	.LVL0:
   18               	/* prologue: function */
@@ -65,23 +65,23 @@
   20               	/* stack size = 0 */
   21               	.L__stack_usage = 0
   22 0000 FC01      		movw r30,r24
-  47:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	uart->CTRLA = 0;	// disable RX/TX interrupts
+  47:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	uart->CTRLA = 0;	// disable RX/TX interrupts
   23               		.loc 1 47 0
   24 0002 1382      		std Z+3,__zero_reg__
-  48:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	uart->CTRLB = USART_RXEN_bm | USART_TXEN_bm;
+  48:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	uart->CTRLB = USART_RXEN_bm | USART_TXEN_bm;
   25               		.loc 1 48 0
   26 0004 88E1      		ldi r24,lo8(24)
   27               	.LVL1:
   28 0006 8483      		std Z+4,r24
-  49:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	uart->CTRLC = USART_CHSIZE_8BIT_gc;
+  49:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	uart->CTRLC = USART_CHSIZE_8BIT_gc;
   29               		.loc 1 49 0
   30 0008 83E0      		ldi r24,lo8(3)
   31 000a 8583      		std Z+5,r24
-  50:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	uart->BAUDCTRLA = 16;  // 115200  103;	// 19200?!
+  50:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	uart->BAUDCTRLA = 16;  // 115200  103;	// 19200?!
   32               		.loc 1 50 0
   33 000c 80E1      		ldi r24,lo8(16)
   34 000e 8683      		std Z+6,r24
-  51:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	uart->BAUDCTRLB = 0;
+  51:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	uart->BAUDCTRLB = 0;
   35               		.loc 1 51 0
   36 0010 1782      		std Z+7,__zero_reg__
   37 0012 0895      		ret
@@ -89,23 +89,23 @@
   40               	.global	debugPutChar
   42               	debugPutChar:
   43               	.LFB2:
-  52:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** }
-  53:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  54:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** int
-  55:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** debugPutChar(char c, FILE * fb)
-  56:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** {
+  52:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** }
+  53:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  54:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** int
+  55:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** debugPutChar(char c, FILE * fb)
+  56:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** {
   44               		.loc 1 56 0
   45               	.LVL2:
   46               	/* prologue: function */
   47               	/* frame size = 0 */
   48               	/* stack size = 0 */
   49               	.L__stack_usage = 0
-  57:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #ifdef DEBUG
-  58:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c ****     while(!(DEBUGUART.STATUS & USART_DREIF_bm));
-  59:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c ****     DEBUGUART.DATA = c;
-  60:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #endif
-  61:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c ****     return 0;
-  62:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** }
+  57:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #ifdef DEBUG
+  58:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c ****     while(!(DEBUGUART.STATUS & USART_DREIF_bm));
+  59:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c ****     DEBUGUART.DATA = c;
+  60:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #endif
+  61:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c ****     return 0;
+  62:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** }
   50               		.loc 1 62 0
   51 0014 80E0      		ldi r24,0
   52 0016 90E0      		ldi r25,0
@@ -115,34 +115,34 @@
   57               	.global	debugGetChar
   59               	debugGetChar:
   60               	.LFB3:
-  63:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  64:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** int
-  65:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** debugGetChar(FILE * fb)
-  66:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** {
+  63:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  64:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** int
+  65:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** debugGetChar(FILE * fb)
+  66:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** {
   61               		.loc 1 66 0
   62               	.LVL4:
   63               	/* prologue: function */
   64               	/* frame size = 0 */
   65               	/* stack size = 0 */
   66               	.L__stack_usage = 0
-  67:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #ifdef DEBUG
-  68:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	//char c;
-  69:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	// Wait for the receive buffer to be filled
-  70:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c ****     //loop_until_bit_is_set(UCSR0A, RXC0);
-  71:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	if((DEBUGUART.STATUS & USART_RXCIF_bm))
-  72:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	{
-  73:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 		// Read the receive buffer
-  74:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 		//c = uart->DATA;
-  75:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	  return DEBUGUART.DATA;
-  76:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	}
-  77:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	else
-  78:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	{
-  79:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	    return -1;
-  80:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	}
-  81:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #else
-  82:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 	return -1;
-  83:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** #endif
-  84:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** }
+  67:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #ifdef DEBUG
+  68:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	//char c;
+  69:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	// Wait for the receive buffer to be filled
+  70:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c ****     //loop_until_bit_is_set(UCSR0A, RXC0);
+  71:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	if((DEBUGUART.STATUS & USART_RXCIF_bm))
+  72:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	{
+  73:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 		// Read the receive buffer
+  74:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 		//c = uart->DATA;
+  75:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	  return DEBUGUART.DATA;
+  76:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	}
+  77:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	else
+  78:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	{
+  79:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	    return -1;
+  80:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	}
+  81:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #else
+  82:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 	return -1;
+  83:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** #endif
+  84:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** }
   67               		.loc 1 84 0
   68 001a 8FEF      		ldi r24,lo8(-1)
   69 001c 9FEF      		ldi r25,lo8(-1)
@@ -152,10 +152,10 @@
   74               	.global	initHWDebug
   76               	initHWDebug:
   77               	.LFB4:
-  85:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  86:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** 
-  87:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** void initHWDebug() 
-  88:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDebug.c **** {
+  85:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  86:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** 
+  87:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** void initHWDebug() 
+  88:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDebug.c **** {
   78               		.loc 1 88 0
   79               	/* prologue: function */
   80               	/* frame size = 0 */
@@ -170,17 +170,17 @@
  140               		.file 4 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwDebug.c
-     /tmp/cctTNYhV.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cctTNYhV.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cctTNYhV.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cctTNYhV.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cctTNYhV.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cctTNYhV.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cctTNYhV.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cctTNYhV.s:13     .text:0000000000000000 initDebugUart
-     /tmp/cctTNYhV.s:42     .text:0000000000000014 debugPutChar
-     /tmp/cctTNYhV.s:59     .text:000000000000001a debugGetChar
-     /tmp/cctTNYhV.s:76     .text:0000000000000020 initHWDebug
+     /tmp/cc0oH8Rb.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc0oH8Rb.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc0oH8Rb.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc0oH8Rb.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc0oH8Rb.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cc0oH8Rb.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc0oH8Rb.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc0oH8Rb.s:13     .text:0000000000000000 initDebugUart
+     /tmp/cc0oH8Rb.s:42     .text:0000000000000014 debugPutChar
+     /tmp/cc0oH8Rb.s:59     .text:000000000000001a debugGetChar
+     /tmp/cc0oH8Rb.s:76     .text:0000000000000020 initHWDebug
                             *COM*:000000000000000e debug
 
 UNDEFINED SYMBOLS

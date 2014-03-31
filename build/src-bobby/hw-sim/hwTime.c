@@ -4,16 +4,19 @@
 #include "../hw-api/hwTime.h"
 #include <sys/timeb.h>
 
+Time start;
+
 Time getHWTime(void){
 
   struct timeb t;
   ftime(&t);
 
-
-  return (Time)(t.millitm+1000*(t.time % (1<<20)));
+  return (Time)(t.millitm+1000*(t.time % (1<<20))) - start;
 }
-void initHWTime(void){
 
+void initHWTime(void){
+	start = 0;
+	//start = getHWTime();
 }
 
 #endif

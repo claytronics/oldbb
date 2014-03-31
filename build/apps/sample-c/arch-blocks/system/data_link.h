@@ -1,4 +1,4 @@
-# 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/data_link.bbh"
+# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bbh"
 // data_link.h
 //
 // Define all Data Link Layer protocols
@@ -23,6 +23,8 @@
 #define RES_SYS_HANDLER 0x0000
 #define JUMP_BOOTLOADER	0xff
 #define NEIGHBOR_MSG	0x01
+#define LOG_MSG 		0x50
+#define CLOCK_SYNC_MSG	0x60
 
 extern Chunk * thisChunk;
 

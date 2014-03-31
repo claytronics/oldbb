@@ -1,0 +1,35 @@
+#ifndef __CLOCK_H__
+#define __CLOCK_H__
+
+#include <stdint.h>
+#include "serial.bbh"
+#include "hardwaretime.bbh"
+
+void initClock(void);
+
+Time getClock(void);
+
+byte handleClockSyncMessage(void);
+
+byte handleNeighborChange(PRef p);
+
+byte isAClockSyncMessage(Chunk *c);
+
+void insertReceiveTime(Chunk *c);
+
+void insertSendTime(Chunk *c);
+
+byte synchronizeNeighbor(PRef p);
+
+byte synchronizeNeighbors(void);
+
+byte isTimeLeader(void);
+
+byte isSynchronized(void);
+
+void printSlope(void);
+
+//DEBUG
+byte isElecting(void);
+
+#endif

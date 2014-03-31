@@ -11,28 +11,28 @@
   11               	.global	jumpToHWBootSection
   13               	jumpToHWBootSection:
   14               	.LFB0:
-  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwBoot.c"
-   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwBoot.c **** #include <avr/io.h>
-   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwBoot.c **** #include "../hw-api/hwBoot.h"
-   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwBoot.c **** 
-   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwBoot.c **** void jumpToHWBootSection(){
+  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBoot.c"
+   1:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBoot.c **** #include <avr/io.h>
+   2:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBoot.c **** #include "../hw-api/hwBoot.h"
+   3:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBoot.c **** 
+   4:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBoot.c **** void jumpToHWBootSection(){
   16               		.loc 1 4 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
-   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwBoot.c **** 	uint8_t temp = RST.CTRL | RST_SWRST_bm;
+   5:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBoot.c **** 	uint8_t temp = RST.CTRL | RST_SWRST_bm;
   21               		.loc 1 5 0
   22 0000 E8E7      		ldi r30,lo8(120)
   23 0002 F0E0      		ldi r31,0
   24 0004 8181      		ldd r24,Z+1
   25 0006 8160      		ori r24,lo8(1)
   26               	.LVL0:
-   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwBoot.c **** 	CCP = CCP_IOREG_gc; // grab permission to modify the reset reg
+   6:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBoot.c **** 	CCP = CCP_IOREG_gc; // grab permission to modify the reset reg
   27               		.loc 1 6 0
   28 0008 98ED      		ldi r25,lo8(-40)
   29 000a 94BF      		out __CCP__,r25
-   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwBoot.c **** 	RST.CTRL = temp; // set the reset reg to trigger a SW reset
+   7:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBoot.c **** 	RST.CTRL = temp; // set the reset reg to trigger a SW reset
   30               		.loc 1 7 0
   31 000c 8183      		std Z+1,r24
   32 000e 0895      		ret
@@ -42,13 +42,13 @@
   63               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwBoot.c
-     /tmp/cc4vbNv6.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cc4vbNv6.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cc4vbNv6.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cc4vbNv6.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cc4vbNv6.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cc4vbNv6.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cc4vbNv6.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cc4vbNv6.s:13     .text:0000000000000000 jumpToHWBootSection
+     /tmp/ccmD1rDA.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccmD1rDA.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccmD1rDA.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccmD1rDA.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccmD1rDA.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccmD1rDA.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccmD1rDA.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccmD1rDA.s:13     .text:0000000000000000 jumpToHWBootSection
 
 NO UNDEFINED SYMBOLS

@@ -10,6 +10,13 @@
 #include "data_link.bbh"
 #include "led.bbh"
 
+#ifdef LOG_DEBUG
+#include "log.bbh"
+#endif
+#ifdef CLOCK_SYNC
+#include "clock.bbh"
+#endif
+
 
 // global receive queue for packets
 // move to network layer???
@@ -58,6 +65,16 @@ byte reservedSystemHandler(void)
         case NEIGHBOR_MSG:
             handleNeighborMessage();
             break;
+#ifdef LOG_DEBUG
+        case LOG_MSG:
+			handleLogMessage();
+			break;
+#endif
+#ifdef CLOCK_SYNC
+		case CLOCK_SYNC_MSG:
+			handleClockSyncMessage();
+			break;
+#endif
         default:
             break;
     }
@@ -116,6 +133,12 @@ byte removeFromSq(PRef p, byte response)
 // flush a send queue (used when retries fails)
 void flushSendQueue(PRef p)
 {
+#ifdef LOG_DEBUG
+	if (isHostPort(p)) {
+		removeFromSq(p, MSG_RESP_NOREPLY); // ONLY ONE
+		return;
+	}
+#endif
     if(p < NUM_PORTS)
     {
         // flush buffer (call all callbacks as if all messages failed)

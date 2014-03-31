@@ -11,51 +11,55 @@
   11               	.global	crcCalc
   13               	crcCalc:
   14               	.LFB6:
-  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c"
-   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** #ifndef _HW_DATALINK_C_
-   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** #define _HW_DATALINK_C_
-   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
-   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** #include "../hw-api/hwDataLink.h"
-   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** #include "../hw-api/hwSerial.h"
-   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** #include "../system/ensemble.h"
-   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** #include "../system/serial.h"
-   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
-   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** #define CRC_POLY        0xA6
-  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
-  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // store if received an escape char
-  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** byte   wasEscapeStore[NUM_PORTS];
-  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
-  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** extern ReceivePacketQueue globalRq;
-  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** extern Port port[NUM_PORTS];
-  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
-  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // calculates part of crc
-  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** byte crcCalc(byte currCrc, byte newVal)
-  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** {
-  16               		.loc 1 19 0
+  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c"
+   1:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #ifndef _HW_DATALINK_C_
+   2:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #define _HW_DATALINK_C_
+   3:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+   4:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #include "../hw-api/hwDataLink.h"
+   5:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #include "../hw-api/hwSerial.h"
+   6:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #include "../system/ensemble.h"
+   7:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #include "../system/serial.h"
+   8:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+   9:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
+  10:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #include  "../system/clock.bbh"
+  11:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #endif
+  12:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+  13:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #define CRC_POLY        0xA6
+  14:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+  15:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // store if received an escape char
+  16:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** byte   wasEscapeStore[NUM_PORTS];
+  17:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+  18:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** extern ReceivePacketQueue globalRq;
+  19:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** extern Port port[NUM_PORTS];
+  20:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+  21:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // calculates part of crc
+  22:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** byte crcCalc(byte currCrc, byte newVal)
+  23:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** {
+  16               		.loc 1 23 0
   17               	.LVL0:
   18               	/* prologue: function */
   19               	/* frame size = 0 */
   20               	/* stack size = 0 */
   21               	.L__stack_usage = 0
-  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte crc = currCrc;
-  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	int i;
-  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	
-  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	crc ^= newVal;
-  22               		.loc 1 23 0
+  24:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte crc = currCrc;
+  25:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	int i;
+  26:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	
+  27:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	crc ^= newVal;
+  22               		.loc 1 27 0
   23 0000 6827      		eor r22,r24
   24               	.LVL1:
   25 0002 28E0      		ldi r18,lo8(8)
   26 0004 30E0      		ldi r19,0
   27               	.LVL2:
   28               	.L4:
-  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     for (i=0; i<8; i++)
-  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	{
-  26:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if (0x80 & crc) {
-  29               		.loc 1 26 0
+  28:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     for (i=0; i<8; i++)
+  29:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	{
+  30:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if (0x80 & crc) {
+  29               		.loc 1 30 0
   30 0006 67FF      		sbrs r22,7
   31 0008 00C0      		rjmp .L2
-  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             crc = (crc << 1) ^ CRC_POLY;
-  32               		.loc 1 27 0
+  31:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             crc = (crc << 1) ^ CRC_POLY;
+  32               		.loc 1 31 0
   33 000a 862F      		mov r24,r22
   34 000c 90E0      		ldi r25,0
   35 000e 880F      		lsl r24
@@ -67,37 +71,37 @@
   41               	.LVL3:
   42 001a 00C0      		rjmp .L3
   43               	.L2:
-  28:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
-  29:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 		else {
-  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             crc = crc << 1;
-  44               		.loc 1 30 0
+  32:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+  33:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 		else {
+  34:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             crc = crc << 1;
+  44               		.loc 1 34 0
   45 001c 660F      		lsl r22
   46               	.LVL4:
   47               	.L3:
   48 001e 2150      		subi r18,1
   49 0020 3109      		sbc r19,__zero_reg__
-  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     for (i=0; i<8; i++)
-  50               		.loc 1 24 0
+  28:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     for (i=0; i<8; i++)
+  50               		.loc 1 28 0
   51 0022 01F4      		brne .L4
-  31:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
-  32:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
-  33:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	return crc;
-  34:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** } 
-  52               		.loc 1 34 0
+  35:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+  36:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+  37:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	return crc;
+  38:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** } 
+  52               		.loc 1 38 0
   53 0024 862F      		mov r24,r22
   54 0026 0895      		ret
   55               	.LFE6:
   57               	.global	ackHandler
   59               	ackHandler:
   60               	.LFB7:
-  35:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
-  36:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // handles the ack byte and updates the packet queue
-  37:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** //    (parity, timer, CTS)
-  38:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // inputs:  port received on
-  39:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // returns: nothing
-  40:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** void ackHandler(PRef p)
-  41:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** {
-  61               		.loc 1 41 0
+  39:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+  40:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // handles the ack byte and updates the packet queue
+  41:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** //    (parity, timer, CTS)
+  42:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // inputs:  port received on
+  43:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // returns: nothing
+  44:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** void ackHandler(PRef p)
+  45:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** {
+  61               		.loc 1 45 0
   62               	.LVL5:
   63 0028 0F93      		push r16
   64               	.LCFI0:
@@ -111,8 +115,8 @@
   72               	/* frame size = 0 */
   73               	/* stack size = 4 */
   74               	.L__stack_usage = 4
-  42:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte currParity = sendParity(port[p].sq);
-  75               		.loc 1 42 0
+  46:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte currParity = sendParity(port[p].sq);
+  75               		.loc 1 46 0
   76 0030 98E5      		ldi r25,lo8(88)
   77 0032 899F      		mul r24,r25
   78 0034 8001      		movw r16,r0
@@ -122,89 +126,89 @@
   82 003c D040      		sbci r29,hi8(-(port))
   83 003e 3E85      		ldd r19,Y+14
   84               	.LVL6:
-  43:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
-  44:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // check for double acks (shouldn't ever happen)
-  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( !(gotOddAck(port[p].rq) ^ gotEvenAck(port[p].rq)) ) 
-  85               		.loc 1 45 0
+  47:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+  48:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // check for double acks (shouldn't ever happen)
+  49:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( !(gotOddAck(port[p].rq) ^ gotEvenAck(port[p].rq)) ) 
+  85               		.loc 1 49 0
   86 0040 9D89      		ldd r25,Y+21
   87 0042 292F      		mov r18,r25
   88 0044 2695      		lsr r18
   89 0046 422F      		mov r20,r18
   90 0048 4927      		eor r20,r25
   91 004a 9C7F      		andi r25,lo8(-4)
-  46:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
-  47:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         clearReceivedAcks( port[p].rq );
-  92               		.loc 1 47 0
+  50:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+  51:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         clearReceivedAcks( port[p].rq );
+  92               		.loc 1 51 0
   93 004c 9D8B      		std Y+21,r25
-  45:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( !(gotOddAck(port[p].rq) ^ gotEvenAck(port[p].rq)) ) 
-  94               		.loc 1 45 0
+  49:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( !(gotOddAck(port[p].rq) ^ gotEvenAck(port[p].rq)) ) 
+  94               		.loc 1 49 0
   95 004e 40FF      		sbrs r20,0
-  48:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         return;
-  96               		.loc 1 48 0
+  52:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         return;
+  96               		.loc 1 52 0
   97 0050 00C0      		rjmp .L6
   98               	.L7:
   99               	.LVL7:
-  42:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte currParity = sendParity(port[p].sq);
- 100               		.loc 1 42 0
+  46:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte currParity = sendParity(port[p].sq);
+ 100               		.loc 1 46 0
  101 0052 32FB      		bst r19,2
  102 0054 9927      		clr r25
  103 0056 90F9      		bld r25,0
-  49:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
-  50:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte recdParity = gotOddAck(port[p].rq);
- 104               		.loc 1 50 0
+  53:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+  54:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte recdParity = gotOddAck(port[p].rq);
+ 104               		.loc 1 54 0
  105 0058 2170      		andi r18,lo8(1)
  106               	.LVL8:
-  51:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     clearReceivedAcks( port[p].rq );
-  52:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
-  53:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // parity matches
-  54:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if(currParity == recdParity)
- 107               		.loc 1 54 0
+  55:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     clearReceivedAcks( port[p].rq );
+  56:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+  57:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // parity matches
+  58:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if(currParity == recdParity)
+ 107               		.loc 1 58 0
  108 005a 9213      		cpse r25,r18
  109 005c 00C0      		rjmp .L6
-  55:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
-  56:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // remove the Chunk, call callback with successfull response
-  57:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         removeFromSq(p, MSG_RESP_ACK);
- 110               		.loc 1 57 0
+  59:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+  60:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // remove the Chunk, call callback with successfull response
+  61:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         removeFromSq(p, MSG_RESP_ACK);
+ 110               		.loc 1 61 0
  111 005e 68E0      		ldi r22,lo8(8)
  112 0060 0E94 0000 		call removeFromSq
  113               	.LVL9:
-  58:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
-  59:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // reset the flags
-  60:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         port[p].sq.retry    = NUM_RETRIES;
- 114               		.loc 1 60 0
+  62:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+  63:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // reset the flags
+  64:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         port[p].sq.retry    = NUM_RETRIES;
+ 114               		.loc 1 64 0
  115 0064 94E0      		ldi r25,lo8(4)
  116 0066 9D87      		std Y+13,r25
-  61:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         flipParity(port[p].sq);
- 117               		.loc 1 61 0
+  65:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         flipParity(port[p].sq);
+ 117               		.loc 1 65 0
  118 0068 8E85      		ldd r24,Y+14
  119 006a 8927      		eor r24,r25
-  62:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         port[p].sq.flags   |= CLEAR_TO_SEND;
- 120               		.loc 1 62 0
+  66:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         port[p].sq.flags   |= CLEAR_TO_SEND;
+ 120               		.loc 1 66 0
  121 006c 8064      		ori r24,lo8(64)
  122 006e 8E87      		std Y+14,r24
-  63:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
-  64:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // reset the timer
-  65:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         deregisterTimeout(&(port[p].sq.qtout.tout));
- 123               		.loc 1 65 0
+  67:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+  68:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // reset the timer
+  69:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         deregisterTimeout(&(port[p].sq.qtout.tout));
+ 123               		.loc 1 69 0
  124 0070 C801      		movw r24,r16
  125 0072 8050      		subi r24,lo8(-(port+1))
  126 0074 9040      		sbci r25,hi8(-(port+1))
  127               	/* epilogue start */
-  66:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
-  67:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // else, parity error - don't do anything
-  68:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** }
- 128               		.loc 1 68 0
+  70:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+  71:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // else, parity error - don't do anything
+  72:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** }
+ 128               		.loc 1 72 0
  129 0076 DF91      		pop r29
  130 0078 CF91      		pop r28
  131 007a 1F91      		pop r17
  132 007c 0F91      		pop r16
-  65:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         deregisterTimeout(&(port[p].sq.qtout.tout));
- 133               		.loc 1 65 0
+  69:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         deregisterTimeout(&(port[p].sq.qtout.tout));
+ 133               		.loc 1 69 0
  134 007e 0C94 0000 		jmp deregisterTimeout
  135               	.LVL10:
  136               	.L6:
  137               	/* epilogue start */
- 138               		.loc 1 68 0
+ 138               		.loc 1 72 0
  139 0082 DF91      		pop r29
  140 0084 CF91      		pop r28
  141 0086 1F91      		pop r17
@@ -214,65 +218,65 @@
  146               	.global	addToGlobalRq
  148               	addToGlobalRq:
  149               	.LFB8:
-  69:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
-  70:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // adds a Chunk to the global receive queue
-  71:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** void addToGlobalRq(Chunk* c)
-  72:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** {
- 150               		.loc 1 72 0
+  73:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+  74:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // adds a Chunk to the global receive queue
+  75:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** void addToGlobalRq(Chunk* c)
+  76:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** {
+ 150               		.loc 1 76 0
  151               	.LVL11:
  152               	/* prologue: function */
  153               	/* frame size = 0 */
  154               	/* stack size = 0 */
  155               	.L__stack_usage = 0
-  73:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // nothing to add
-  74:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( c == NULL ) 
- 156               		.loc 1 74 0
+  77:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // nothing to add
+  78:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( c == NULL ) 
+ 156               		.loc 1 78 0
  157 008c 0097      		sbiw r24,0
  158 008e 01F0      		breq .L9
-  75:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
-  76:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         return;
-  77:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
-  78:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
-  79:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // isolate Chunk
-  80:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     c->next = NULL;
- 159               		.loc 1 80 0
+  79:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+  80:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         return;
+  81:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+  82:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+  83:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // isolate Chunk
+  84:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     c->next = NULL;
+ 159               		.loc 1 84 0
  160 0090 FC01      		movw r30,r24
  161 0092 128A      		std Z+18,__zero_reg__
  162 0094 138A      		std Z+19,__zero_reg__
-  81:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
-  82:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // update pointers
-  83:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL ) 
- 163               		.loc 1 83 0
+  85:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+  86:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // update pointers
+  87:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL ) 
+ 163               		.loc 1 87 0
  164 0096 2091 0000 		lds r18,globalRq
  165 009a 3091 0000 		lds r19,globalRq+1
  166 009e 232B      		or r18,r19
  167 00a0 01F4      		brne .L11
-  84:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
-  85:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.head = c;
- 168               		.loc 1 85 0
+  88:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+  89:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         globalRq.head = c;
+ 168               		.loc 1 89 0
  169 00a2 8093 0000 		sts globalRq,r24
  170 00a6 9093 0000 		sts globalRq+1,r25
  171 00aa 00C0      		rjmp .L12
  172               	.L11:
-  86:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
-  87:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     else 
-  88:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
-  89:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail->next = c;
- 173               		.loc 1 89 0
+  90:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+  91:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     else 
+  92:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+  93:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail->next = c;
+ 173               		.loc 1 93 0
  174 00ac E091 0000 		lds r30,globalRq+2
  175 00b0 F091 0000 		lds r31,globalRq+2+1
  176 00b4 828B      		std Z+18,r24
  177 00b6 938B      		std Z+19,r25
  178               	.L12:
-  90:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
-  91:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
-  92:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // add/flag it
-  93:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     globalRq.tail  = c;
- 179               		.loc 1 93 0
+  94:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+  95:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+  96:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // add/flag it
+  97:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     globalRq.tail  = c;
+ 179               		.loc 1 97 0
  180 00b8 8093 0000 		sts globalRq+2,r24
  181 00bc 9093 0000 		sts globalRq+2+1,r25
-  94:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     globalRq.flags = PACKET_READY;
- 182               		.loc 1 94 0
+  98:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     globalRq.flags = PACKET_READY;
+ 182               		.loc 1 98 0
  183 00c0 80E8      		ldi r24,lo8(-128)
  184               	.LVL12:
  185 00c2 8093 0000 		sts globalRq+4,r24
@@ -283,40 +287,40 @@
  191               	.global	isSpecial
  193               	isSpecial:
  194               	.LFB9:
-  95:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** }
-  96:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
-  97:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // check to see if character is special
-  98:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** byte isSpecial(byte val)
-  99:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** {
- 195               		.loc 1 99 0
+  99:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** }
+ 100:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 101:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // check to see if character is special
+ 102:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** byte isSpecial(byte val)
+ 103:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** {
+ 195               		.loc 1 103 0
  196               	.LVL14:
  197               	/* prologue: function */
  198               	/* frame size = 0 */
  199               	/* stack size = 0 */
  200               	.L__stack_usage = 0
  201 00c8 282F      		mov r18,r24
- 100:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
- 202               		.loc 1 100 0
+ 104:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
+ 202               		.loc 1 104 0
  203 00ca 982F      		mov r25,r24
  204 00cc 9E7F      		andi r25,lo8(-2)
- 101:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         ((val & FD_MASK)  == FD    ) || (val              == ESCAPE )   )
- 102:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 103:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         return 1;
- 205               		.loc 1 103 0
+ 105:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         ((val & FD_MASK)  == FD    ) || (val              == ESCAPE )   )
+ 106:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 107:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         return 1;
+ 205               		.loc 1 107 0
  206 00ce 81E0      		ldi r24,lo8(1)
  207               	.LVL15:
- 100:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
- 208               		.loc 1 100 0
+ 104:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
+ 208               		.loc 1 104 0
  209 00d0 9830      		cpi r25,lo8(8)
  210 00d2 01F0      		breq .L20
- 100:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
- 211               		.loc 1 100 0 is_stmt 0 discriminator 1
+ 104:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
+ 211               		.loc 1 104 0 is_stmt 0 discriminator 1
  212 00d4 9A30      		cpi r25,lo8(10)
  213 00d6 01F0      		breq .L20
  214 00d8 9231      		cpi r25,lo8(18)
  215 00da 01F0      		breq .L17
- 101:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         ((val & FD_MASK)  == FD    ) || (val              == ESCAPE )   )
- 216               		.loc 1 101 0 is_stmt 1
+ 105:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         ((val & FD_MASK)  == FD    ) || (val              == ESCAPE )   )
+ 216               		.loc 1 105 0 is_stmt 1
  217 00dc 2D37      		cpi r18,lo8(125)
  218 00de 01F0      		breq .L17
  219 00e0 80E0      		ldi r24,0
@@ -324,21 +328,21 @@
  221               	.L20:
  222 00e4 0895      		ret
  223               	.L17:
- 104:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 105:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
- 106:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     return 0;
- 107:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** }
- 224               		.loc 1 107 0
+ 108:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 109:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+ 110:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     return 0;
+ 111:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** }
+ 224               		.loc 1 111 0
  225 00e6 0895      		ret
  226               	.LFE9:
  228               	.global	sendToBuffer
  230               	sendToBuffer:
  231               	.LFB10:
- 108:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 109:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // makes the Chunk into the correct send string
- 110:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** void sendToBuffer(PRef p, Chunk* c, byte parity)
- 111:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** {
- 232               		.loc 1 111 0
+ 112:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 113:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // makes the Chunk into the correct send string
+ 114:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** void sendToBuffer(PRef p, Chunk* c, byte parity)
+ 115:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** {
+ 232               		.loc 1 115 0
  233               	.LVL16:
  234 00e8 9F92      		push r9
  235               	.LCFI4:
@@ -369,24 +373,24 @@
  260 00fe B82E      		mov r11,r24
  261 0100 7B01      		movw r14,r22
  262               	.LVL17:
- 112:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte checksum = 0;
- 113:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte val;
- 114:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte i;
- 115:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte delim;
- 116:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
- 117:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if(c == NULL)
- 263               		.loc 1 117 0
+ 116:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte checksum = 0;
+ 117:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte val;
+ 118:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte i;
+ 119:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte delim;
+ 120:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+ 121:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if(c == NULL)
+ 263               		.loc 1 121 0
  264 0102 6115      		cp r22,__zero_reg__
  265 0104 7105      		cpc r23,__zero_reg__
  266 0106 01F4      		brne .+2
  267 0108 00C0      		rjmp .L25
- 118:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 119:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         return;
- 120:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 121:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	
- 122:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // send FD
- 123:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     delim = (FD | parity);
- 268               		.loc 1 123 0
+ 122:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 123:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         return;
+ 124:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 125:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	
+ 126:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // send FD
+ 127:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     delim = (FD | parity);
+ 268               		.loc 1 127 0
  269 010a 62E1      		ldi r22,lo8(18)
  270 010c C62E      		mov r12,r22
  271               	.LVL18:
@@ -394,27 +398,27 @@
  273               	.LVL19:
  274 0110 00E0      		ldi r16,0
  275 0112 10E0      		ldi r17,0
- 112:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte checksum = 0;
- 276               		.loc 1 112 0
+ 116:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte checksum = 0;
+ 276               		.loc 1 116 0
  277 0114 D12C      		mov r13,__zero_reg__
- 124:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 125:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // send messageHandler
- 126:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<POINTER_SIZE; i++)
- 127:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 128:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         val = c->handler[i];
- 129:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
- 130:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
- 131:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // escape it
- 132:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
- 133:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 134:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
- 135:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
- 136:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 137:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // send regular
- 138:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         else 
- 139:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 140:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(val, &(port[p].tx));
- 278               		.loc 1 140 0
+ 128:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 129:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // send messageHandler
+ 130:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<POINTER_SIZE; i++)
+ 131:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 132:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         val = c->handler[i];
+ 133:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
+ 134:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+ 135:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // escape it
+ 136:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 137:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 138:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 139:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 140:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 141:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // send regular
+ 142:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         else 
+ 143:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 144:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(val, &(port[p].tx));
+ 278               		.loc 1 144 0
  279 0116 88E5      		ldi r24,lo8(88)
  280               	.LVL20:
  281 0118 B89E      		mul r11,r24
@@ -422,164 +426,164 @@
  283 011c 1124      		clr __zero_reg__
  284 011e C050      		subi r28,lo8(-(port+56))
  285 0120 D040      		sbci r29,hi8(-(port+56))
- 135:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
- 286               		.loc 1 135 0
+ 139:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 286               		.loc 1 139 0
  287 0122 70E2      		ldi r23,lo8(32)
  288 0124 972E      		mov r9,r23
  289               	.LVL21:
  290               	.L29:
- 110:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** void sendToBuffer(PRef p, Chunk* c, byte parity)
- 291               		.loc 1 110 0
+ 114:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** void sendToBuffer(PRef p, Chunk* c, byte parity)
+ 291               		.loc 1 114 0
  292 0126 F701      		movw r30,r14
  293 0128 E00F      		add r30,r16
  294 012a F11F      		adc r31,r17
- 128:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         val = c->handler[i];
- 295               		.loc 1 128 0
+ 132:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         val = c->handler[i];
+ 295               		.loc 1 132 0
  296 012c A488      		ldd r10,Z+20
  297               	.LVL22:
- 129:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
- 298               		.loc 1 129 0
+ 133:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
+ 298               		.loc 1 133 0
  299 012e 6A2D      		mov r22,r10
  300 0130 8D2D      		mov r24,r13
  301 0132 0E94 0000 		call crcCalc
  302               	.LVL23:
  303 0136 D82E      		mov r13,r24
  304               	.LVL24:
- 132:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
- 305               		.loc 1 132 0
+ 136:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 305               		.loc 1 136 0
  306 0138 8A2D      		mov r24,r10
  307 013a 0E94 0000 		call isSpecial
  308               	.LVL25:
- 134:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
- 309               		.loc 1 134 0
+ 138:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 309               		.loc 1 138 0
  310 013e BE01      		movw r22,r28
- 132:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
- 311               		.loc 1 132 0
+ 136:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 311               		.loc 1 136 0
  312 0140 8823      		tst r24
  313 0142 01F0      		breq .L27
- 134:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
- 314               		.loc 1 134 0
+ 138:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 314               		.loc 1 138 0
  315 0144 8DE7      		ldi r24,lo8(125)
  316 0146 0E94 0000 		call push
  317               	.LVL26:
- 135:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
- 318               		.loc 1 135 0
+ 139:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 318               		.loc 1 139 0
  319 014a BE01      		movw r22,r28
  320 014c 8A2D      		mov r24,r10
  321 014e 8925      		eor r24,r9
  322 0150 00C0      		rjmp .L37
  323               	.L27:
- 324               		.loc 1 140 0
+ 324               		.loc 1 144 0
  325 0152 8A2D      		mov r24,r10
  326               	.L37:
  327 0154 0E94 0000 		call push
  328               	.LVL27:
  329 0158 0F5F      		subi r16,-1
  330 015a 1F4F      		sbci r17,-1
- 126:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<POINTER_SIZE; i++)
- 331               		.loc 1 126 0
+ 130:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<POINTER_SIZE; i++)
+ 331               		.loc 1 130 0
  332 015c 0230      		cpi r16,2
  333 015e 1105      		cpc r17,__zero_reg__
  334 0160 01F4      		brne .L29
  335 0162 01E1      		ldi r16,lo8(17)
- 141:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 142:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 143:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
- 144:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // send data
- 145:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<DATA_SIZE; i++)
- 146:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 147:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         val = c->data[i];
- 148:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
- 149:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
- 150:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // escape it
- 151:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
- 152:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 153:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
- 154:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 155:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
- 156:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 157:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // send regular
- 158:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         else 
- 159:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 160:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(val, &(port[p].tx));
- 336               		.loc 1 160 0
+ 145:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 146:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 147:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+ 148:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // send data
+ 149:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<DATA_SIZE; i++)
+ 150:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 151:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         val = c->data[i];
+ 152:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
+ 153:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+ 154:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // escape it
+ 155:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 156:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 157:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 158:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 159:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 160:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 161:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // send regular
+ 162:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         else 
+ 163:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 164:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(val, &(port[p].tx));
+ 336               		.loc 1 164 0
  337 0164 E8E5      		ldi r30,lo8(88)
  338 0166 BE9E      		mul r11,r30
  339 0168 E001      		movw r28,r0
  340 016a 1124      		clr __zero_reg__
  341 016c C050      		subi r28,lo8(-(port+56))
  342 016e D040      		sbci r29,hi8(-(port+56))
- 155:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
- 343               		.loc 1 155 0
+ 159:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 343               		.loc 1 159 0
  344 0170 50E2      		ldi r21,lo8(32)
  345 0172 952E      		mov r9,r21
  346               	.LVL28:
  347               	.L32:
- 147:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         val = c->data[i];
- 348               		.loc 1 147 0
+ 151:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         val = c->data[i];
+ 348               		.loc 1 151 0
  349 0174 F701      		movw r30,r14
  350 0176 1191      		ld r17,Z+
  351 0178 7F01      		movw r14,r30
  352               	.LVL29:
- 148:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
- 353               		.loc 1 148 0
+ 152:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
+ 353               		.loc 1 152 0
  354 017a 612F      		mov r22,r17
  355 017c 8D2D      		mov r24,r13
  356 017e 0E94 0000 		call crcCalc
  357               	.LVL30:
  358 0182 D82E      		mov r13,r24
  359               	.LVL31:
- 151:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
- 360               		.loc 1 151 0
+ 155:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 360               		.loc 1 155 0
  361 0184 812F      		mov r24,r17
  362 0186 0E94 0000 		call isSpecial
  363               	.LVL32:
  364 018a A82E      		mov r10,r24
- 153:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
- 365               		.loc 1 153 0
+ 157:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 365               		.loc 1 157 0
  366 018c BE01      		movw r22,r28
- 151:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
- 367               		.loc 1 151 0
+ 155:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 367               		.loc 1 155 0
  368 018e 8823      		tst r24
  369 0190 01F0      		breq .L30
- 153:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
- 370               		.loc 1 153 0
+ 157:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 370               		.loc 1 157 0
  371 0192 8DE7      		ldi r24,lo8(125)
  372 0194 0E94 0000 		call push
  373               	.LVL33:
- 155:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
- 374               		.loc 1 155 0
+ 159:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 374               		.loc 1 159 0
  375 0198 BE01      		movw r22,r28
  376 019a 812F      		mov r24,r17
  377 019c 8925      		eor r24,r9
  378 019e 00C0      		rjmp .L38
  379               	.L30:
- 380               		.loc 1 160 0
+ 380               		.loc 1 164 0
  381 01a0 812F      		mov r24,r17
  382               	.L38:
  383 01a2 0E94 0000 		call push
  384               	.LVL34:
  385 01a6 0150      		subi r16,lo8(-(-1))
- 145:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<DATA_SIZE; i++)
- 386               		.loc 1 145 0
+ 149:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<DATA_SIZE; i++)
+ 386               		.loc 1 149 0
  387 01a8 01F4      		brne .L32
  388 01aa 2B2D      		mov r18,r11
  389 01ac 30E0      		ldi r19,0
- 161:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 162:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 163:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 164:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // send checksum
- 165:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	// escape it
- 166:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( isSpecial(val) ) 
- 167:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 168:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         push(ESCAPE, &(port[p].tx));
- 390               		.loc 1 168 0
+ 165:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 166:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 167:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 168:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // send checksum
+ 169:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	// escape it
+ 170:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( isSpecial(val) ) 
+ 171:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 172:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         push(ESCAPE, &(port[p].tx));
+ 390               		.loc 1 172 0
  391 01ae 88E5      		ldi r24,lo8(88)
- 166:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( isSpecial(val) ) 
- 392               		.loc 1 166 0
+ 170:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( isSpecial(val) ) 
+ 392               		.loc 1 170 0
  393 01b0 AA20      		tst r10
  394 01b2 01F0      		breq .L33
- 395               		.loc 1 168 0
+ 395               		.loc 1 172 0
  396 01b4 829F      		mul r24,r18
  397 01b6 E001      		movw r28,r0
  398 01b8 839F      		mul r24,r19
@@ -591,19 +595,19 @@
  404 01c4 8DE7      		ldi r24,lo8(125)
  405 01c6 0E94 0000 		call push
  406               	.LVL35:
- 169:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         push(checksum^ESCAPE_CHAR, &(port[p].tx));
- 407               		.loc 1 169 0
+ 173:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         push(checksum^ESCAPE_CHAR, &(port[p].tx));
+ 407               		.loc 1 173 0
  408 01ca BE01      		movw r22,r28
  409 01cc 80E2      		ldi r24,lo8(32)
  410 01ce 8D25      		eor r24,r13
  411 01d0 00C0      		rjmp .L39
  412               	.L33:
- 170:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 171:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // send regular
- 172:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     else 
- 173:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 174:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         push(checksum, &(port[p].tx));
- 413               		.loc 1 174 0
+ 174:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 175:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // send regular
+ 176:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     else 
+ 177:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 178:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         push(checksum, &(port[p].tx));
+ 413               		.loc 1 178 0
  414 01d2 829F      		mul r24,r18
  415 01d4 B001      		movw r22,r0
  416 01d6 839F      		mul r24,r19
@@ -615,11 +619,11 @@
  422               	.L39:
  423 01e2 0E94 0000 		call push
  424               	.LVL36:
- 175:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 176:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
- 177:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // start the interrupt by sending a byte (FD)
- 178:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     pPutChar(delim, port[p].pnum);
- 425               		.loc 1 178 0
+ 179:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 180:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+ 181:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // start the interrupt by sending a byte (FD)
+ 182:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     pPutChar(delim, port[p].pnum);
+ 425               		.loc 1 182 0
  426 01e6 88E5      		ldi r24,lo8(88)
  427 01e8 B89E      		mul r11,r24
  428 01ea F001      		movw r30,r0
@@ -629,8 +633,8 @@
  432 01f2 6081      		ld r22,Z
  433 01f4 8C2D      		mov r24,r12
  434               	/* epilogue start */
- 179:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** }
- 435               		.loc 1 179 0
+ 183:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** }
+ 435               		.loc 1 183 0
  436 01f6 DF91      		pop r29
  437 01f8 CF91      		pop r28
  438 01fa 1F91      		pop r17
@@ -645,13 +649,13 @@
  447               	.LVL39:
  448 0208 AF90      		pop r10
  449 020a 9F90      		pop r9
- 178:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     pPutChar(delim, port[p].pnum);
- 450               		.loc 1 178 0
+ 182:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     pPutChar(delim, port[p].pnum);
+ 450               		.loc 1 182 0
  451 020c 0C94 0000 		jmp pPutChar
  452               	.LVL40:
  453               	.L25:
  454               	/* epilogue start */
- 455               		.loc 1 179 0
+ 455               		.loc 1 183 0
  456 0210 DF91      		pop r29
  457 0212 CF91      		pop r28
  458 0214 1F91      		pop r17
@@ -670,13 +674,13 @@
  472               	.global	processBuffer
  474               	processBuffer:
  475               	.LFB11:
- 180:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 181:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 182:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // pulls bytes from the buffer and puts them into Chunks
- 183:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // also handles ACKs appropriately
- 184:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** void processBuffer(PRef p)
- 185:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** {
- 476               		.loc 1 185 0
+ 184:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 185:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 186:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // pulls bytes from the buffer and puts them into Chunks
+ 187:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // also handles ACKs appropriately
+ 188:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** void processBuffer(PRef p)
+ 189:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** {
+ 476               		.loc 1 189 0
  477               	.LVL43:
  478 0228 2F92      		push r2
  479               	.LCFI15:
@@ -720,10 +724,10 @@
  517               	.L__stack_usage = 18
  518 024c 382E      		mov r3,r24
  519               	.LVL44:
- 186:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte   currByte;
- 187:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     Chunk* currChunk = NULL;
- 188:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     byte   wasEscape = wasEscapeStore[p];
- 520               		.loc 1 188 0
+ 190:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte   currByte;
+ 191:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     Chunk* currChunk = NULL;
+ 192:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     byte   wasEscape = wasEscapeStore[p];
+ 520               		.loc 1 192 0
  521 024e E82E      		mov r14,r24
  522 0250 F12C      		mov r15,__zero_reg__
  523 0252 F701      		movw r30,r14
@@ -731,11 +735,11 @@
  525 0256 F040      		sbci r31,hi8(-(wasEscapeStore))
  526 0258 2080      		ld r2,Z
  527               	.LVL45:
- 189:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 190:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 191:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // nothing to process
- 192:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( isEmpty(&(port[p].rx)) )
- 528               		.loc 1 192 0
+ 193:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 194:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 195:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // nothing to process
+ 196:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( isEmpty(&(port[p].rx)) )
+ 528               		.loc 1 196 0
  529 025a 88E5      		ldi r24,lo8(88)
  530               	.LVL46:
  531 025c 8E9D      		mul r24,r14
@@ -754,13 +758,13 @@
  544               	.LVL47:
  545 0278 8111      		cpse r24,__zero_reg__
  546 027a 00C0      		rjmp .L40
- 193:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 194:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         return;
- 195:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 196:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 197:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // continue filling unfinished Chunk
- 198:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( (port[p].rq.curr != NULL) && chunkFilling(port[p].rq.curr) ) 
- 547               		.loc 1 198 0
+ 197:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 198:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         return;
+ 199:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 200:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 201:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // continue filling unfinished Chunk
+ 202:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( (port[p].rq.curr != NULL) && chunkFilling(port[p].rq.curr) ) 
+ 547               		.loc 1 202 0
  548 027c FE01      		movw r30,r28
  549 027e E050      		subi r30,lo8(-(port))
  550 0280 F040      		sbci r31,hi8(-(port))
@@ -769,19 +773,19 @@
  553 0286 4114      		cp r4,__zero_reg__
  554 0288 5104      		cpc r5,__zero_reg__
  555 028a 01F0      		breq .L42
- 556               		.loc 1 198 0 is_stmt 0 discriminator 1
+ 556               		.loc 1 202 0 is_stmt 0 discriminator 1
  557 028c F201      		movw r30,r4
  558 028e 8189      		ldd r24,Z+17
  559 0290 86FD      		sbrc r24,6
- 560 0292 00C0      		rjmp .L66
+ 560 0292 00C0      		rjmp .L67
  561               	.L42:
- 199:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 200:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         currChunk = port[p].rq.curr;
- 201:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 202:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     else
- 203:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 204:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.index    = 0;
- 562               		.loc 1 204 0 is_stmt 1
+ 203:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 204:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         currChunk = port[p].rq.curr;
+ 205:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 206:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     else
+ 207:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 208:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.index    = 0;
+ 562               		.loc 1 208 0 is_stmt 1
  563 0294 88E5      		ldi r24,lo8(88)
  564 0296 8E9D      		mul r24,r14
  565 0298 F001      		movw r30,r0
@@ -791,43 +795,43 @@
  569 02a0 E050      		subi r30,lo8(-(port))
  570 02a2 F040      		sbci r31,hi8(-(port))
  571 02a4 138A      		std Z+19,__zero_reg__
- 205:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = 0;
- 572               		.loc 1 205 0
+ 209:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = 0;
+ 572               		.loc 1 209 0
  573 02a6 148A      		std Z+20,__zero_reg__
  574               	.LVL48:
- 206:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         wasEscape           = 0;
- 575               		.loc 1 206 0
+ 210:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         wasEscape           = 0;
+ 575               		.loc 1 210 0
  576 02a8 212C      		mov r2,__zero_reg__
- 187:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     Chunk* currChunk = NULL;
- 577               		.loc 1 187 0
+ 191:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     Chunk* currChunk = NULL;
+ 577               		.loc 1 191 0
  578 02aa 412C      		mov r4,__zero_reg__
  579 02ac 512C      		mov r5,__zero_reg__
- 580 02ae 00C0      		rjmp .L66
+ 580 02ae 00C0      		rjmp .L67
  581               	.LVL49:
- 582               	.L56:
- 207:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 208:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 
- 209:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     while( !isEmpty(&(port[p].rx)) )
- 210:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 211:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         currByte = (byte)pop(&(port[p].rx));
- 583               		.loc 1 211 0
+ 582               	.L57:
+ 211:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 212:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 
+ 213:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     while( !isEmpty(&(port[p].rx)) )
+ 214:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 215:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         currByte = (byte)pop(&(port[p].rx));
+ 583               		.loc 1 215 0
  584 02b0 C301      		movw r24,r6
  585 02b2 0E94 0000 		call pop
  586               	.LVL50:
- 212:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
- 213:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // is ACK
- 214:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( (currByte & ACK_MASK) == ACK )
- 587               		.loc 1 214 0
+ 216:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+ 217:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // is ACK
+ 218:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( (currByte & ACK_MASK) == ACK )
+ 587               		.loc 1 218 0
  588 02b6 BC01      		movw r22,r24
  589 02b8 6E7F      		andi r22,254
  590 02ba 7727      		clr r23
  591 02bc 6830      		cpi r22,8
  592 02be 7105      		cpc r23,__zero_reg__
  593 02c0 01F4      		brne .L45
- 215:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 216:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             // set ack parity
- 217:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.flags |= (1 << (currByte & 0x01));
- 594               		.loc 1 217 0
+ 219:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 220:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             // set ack parity
+ 221:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.flags |= (1 << (currByte & 0x01));
+ 594               		.loc 1 221 0
  595 02c2 8170      		andi r24,1
  596 02c4 9927      		clr r25
  597               	.LVL51:
@@ -845,39 +849,39 @@
  609 02d8 9081      		ld r25,Z
  610 02da 982B      		or r25,r24
  611 02dc 9083      		st Z,r25
- 218:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
- 219:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             ackHandler(p);
- 612               		.loc 1 219 0
+ 222:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+ 223:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             ackHandler(p);
+ 612               		.loc 1 223 0
  613 02de 832D      		mov r24,r3
  614 02e0 0E94 0000 		call ackHandler
  615               	.LVL52:
- 220:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             continue;
- 616               		.loc 1 220 0
- 617 02e4 00C0      		rjmp .L71
+ 224:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             continue;
+ 616               		.loc 1 224 0
+ 617 02e4 00C0      		rjmp .L72
  618               	.LVL53:
  619               	.L45:
- 221:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 222:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
- 223:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         /// TODO: HANDLE NACKS
- 224:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         /*if( (currByte & ACK_MASK) == NACK ){
- 225:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	        //set ack parity
- 226:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	        //port[p].rq.flags |= (1<<(currByte & 0x01));
- 227:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	        
- 228:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	        nackHandler(p);
- 229:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	        continue;
- 230:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	        }*/
- 231:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
- 232:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // is FRAME_DELIMETER
- 233:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( (currByte & FD_MASK) == FD )
- 620               		.loc 1 233 0
+ 225:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 226:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+ 227:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         /// TODO: HANDLE NACKS
+ 228:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         /*if( (currByte & ACK_MASK) == NACK ){
+ 229:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	        //set ack parity
+ 230:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	        //port[p].rq.flags |= (1<<(currByte & 0x01));
+ 231:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	        
+ 232:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	        nackHandler(p);
+ 233:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	        continue;
+ 234:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	        }*/
+ 235:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+ 236:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // is FRAME_DELIMETER
+ 237:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( (currByte & FD_MASK) == FD )
+ 620               		.loc 1 237 0
  621 02e6 6231      		cpi r22,18
  622 02e8 7105      		cpc r23,__zero_reg__
  623 02ea 01F4      		brne .L47
  624               	.LBB2:
- 234:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 235:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             // determine parity
- 236:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             byte parity = setParityFromByte(currByte);
- 625               		.loc 1 236 0
+ 238:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 239:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             // determine parity
+ 240:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             byte parity = setParityFromByte(currByte);
+ 625               		.loc 1 240 0
  626 02ec 8170      		andi r24,1
  627 02ee 9927      		clr r25
  628               	.LVL54:
@@ -888,22 +892,22 @@
  633 02f6 E0EE      		ldi r30,lo8(-32)
  634 02f8 2E22      		and r2,r30
  635               	.LVL56:
- 237:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
- 238:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             // restart the fill
- 239:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.index    = 0;
- 636               		.loc 1 239 0
+ 241:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+ 242:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             // restart the fill
+ 243:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.index    = 0;
+ 636               		.loc 1 243 0
  637 02fa F601      		movw r30,r12
  638 02fc 1082      		st Z,__zero_reg__
- 240:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.checksum = 0;
- 639               		.loc 1 240 0
+ 244:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.checksum = 0;
+ 639               		.loc 1 244 0
  640 02fe F501      		movw r30,r10
  641 0300 1082      		st Z,__zero_reg__
  642               	.LVL57:
- 241:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
- 242:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 
- 243:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             // unfinished Chunk
- 244:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             if(port[p].rq.curr != NULL)
- 643               		.loc 1 244 0
+ 245:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
+ 246:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 
+ 247:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             // unfinished Chunk
+ 248:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             if(port[p].rq.curr != NULL)
+ 643               		.loc 1 248 0
  644 0302 F401      		movw r30,r8
  645 0304 4080      		ld r4,Z
  646 0306 5180      		ldd r5,Z+1
@@ -911,739 +915,799 @@
  648 0308 4114      		cp r4,__zero_reg__
  649 030a 5104      		cpc r5,__zero_reg__
  650 030c 01F4      		brne .L48
- 245:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             {
- 246:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 currChunk = port[p].rq.curr;
- 247:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             }
- 248:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             // need new Chunk
- 249:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             else
- 250:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             {
- 251:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 currChunk = getSystemRXChunk();
- 651               		.loc 1 251 0
+ 249:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             {
+ 250:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 currChunk = port[p].rq.curr;
+ 251:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             }
+ 252:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             // need new Chunk
+ 253:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             else
+ 254:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             {
+ 255:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 currChunk = getSystemRXChunk();
+ 651               		.loc 1 255 0
  652 030e 0E94 0000 		call getSystemRXChunk
  653               	.LVL59:
  654 0312 2C01      		movw r4,r24
  655               	.LVL60:
- 252:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 
- 253:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 // out of memory, can't fill
- 254:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 if( currChunk == NULL )
- 656               		.loc 1 254 0
+ 256:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
+ 257:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 				/*if (isAClockSyncMessage(currChunk))
+ 258:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 				{		
+ 259:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 					// insert receive time
+ 260:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 					//insertReceiveTime(currChunk);
+ 261:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 				}*/
+ 262:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #endif
+ 263:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 // out of memory, can't fill
+ 264:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 if( currChunk == NULL )
+ 656               		.loc 1 264 0
  657 0314 0097      		sbiw r24,0
  658 0316 01F4      		brne .+2
- 659 0318 00C0      		rjmp .L57
- 255:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 {
- 256:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                     // discard bytes, hopefully will get resent
- 257:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                     continue;
- 258:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 }
- 259:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 
- 260:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 // add to the queue
- 261:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = currChunk;
- 660               		.loc 1 261 0
+ 659 0318 00C0      		rjmp .L58
+ 265:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 {
+ 266:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                     // discard bytes, hopefully will get resent
+ 267:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                     continue;
+ 268:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 }
+ 269:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 
+ 270:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 // add to the queue
+ 271:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = currChunk;
+ 660               		.loc 1 271 0
  661 031a F401      		movw r30,r8
  662 031c 8083      		st Z,r24
  663 031e 9183      		std Z+1,r25
  664               	.LVL61:
  665               	.L48:
- 262:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             }
- 263:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             
- 264:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             // reset the status of the Chunk, just in case
- 265:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             currChunk->status = CHUNK_USED | CHUNK_FILLING | parity | port[p].pnum;
- 666               		.loc 1 265 0
+ 272:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             }
+ 273:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             
+ 274:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             // reset the status of the Chunk, just in case
+ 275:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             currChunk->status = CHUNK_USED | CHUNK_FILLING | parity | port[p].pnum;
+ 666               		.loc 1 275 0
  667 0320 9881      		ld r25,Y
  668 0322 906C      		ori r25,lo8(-64)
  669 0324 9229      		or r25,r2
  670 0326 F201      		movw r30,r4
  671 0328 918B      		std Z+17,r25
- 672 032a 00C0      		rjmp .L57
+ 672 032a 00C0      		rjmp .L58
  673               	.LVL62:
  674               	.L47:
  675               	.LBE2:
- 266:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             
- 267:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             continue;
- 268:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 269:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
- 270:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // no use processing if can't put anywhere
- 271:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if(currChunk == NULL)
- 676               		.loc 1 271 0
+ 276:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             
+ 277:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             continue;
+ 278:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 279:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+ 280:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // no use processing if can't put anywhere
+ 281:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if(currChunk == NULL)
+ 676               		.loc 1 281 0
  677 032c 4114      		cp r4,__zero_reg__
  678 032e 5104      		cpc r5,__zero_reg__
  679 0330 01F4      		brne .+2
- 680 0332 00C0      		rjmp .L71
- 211:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         currByte = (byte)pop(&(port[p].rx));
- 681               		.loc 1 211 0
+ 680 0332 00C0      		rjmp .L72
+ 215:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         currByte = (byte)pop(&(port[p].rx));
+ 681               		.loc 1 215 0
  682 0334 682F      		mov r22,r24
- 272:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 273:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             continue;
- 274:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 275:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         
- 276:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // is an escape char        
- 277:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( currByte == ESCAPE )
- 683               		.loc 1 277 0
+ 282:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 283:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             continue;
+ 284:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 285:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         
+ 286:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // is an escape char        
+ 287:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( currByte == ESCAPE )
+ 683               		.loc 1 287 0
  684 0336 8D37      		cpi r24,lo8(125)
  685 0338 01F4      		brne .+2
- 686 033a 00C0      		rjmp .L58
- 278:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 279:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 1;   
- 280:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             continue;
- 281:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 282:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 283:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // is a regular character
- 284:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // was escaped
- 285:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( wasEscape )
- 687               		.loc 1 285 0
+ 686 033a 00C0      		rjmp .L59
+ 288:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 289:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 1;   
+ 290:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             continue;
+ 291:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 292:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 293:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // is a regular character
+ 294:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // was escaped
+ 295:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( wasEscape )
+ 687               		.loc 1 295 0
  688 033c 2220      		tst r2
  689 033e 01F0      		breq .L49
- 286:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 287:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             currByte ^= ESCAPE_CHAR;
- 690               		.loc 1 287 0
+ 296:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 297:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             currByte ^= ESCAPE_CHAR;
+ 690               		.loc 1 297 0
  691 0340 F0E2      		ldi r31,32
  692 0342 8F27      		eor r24,r31
  693               	.LVL63:
  694 0344 682F      		mov r22,r24
  695               	.LVL64:
  696               	.L49:
- 288:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 0;
- 289:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 290:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 291:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // is transmitted checksum
- 292:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index >= (DATA_SIZE + POINTER_SIZE) )
- 697               		.loc 1 292 0
+ 298:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 0;
+ 299:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 300:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 301:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // is transmitted checksum
+ 302:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index >= (DATA_SIZE + POINTER_SIZE) )
+ 697               		.loc 1 302 0
  698 0346 F601      		movw r30,r12
  699 0348 8081      		ld r24,Z
  700 034a 8331      		cpi r24,lo8(19)
  701 034c 00F0      		brlo .L50
- 293:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 294:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             // checksum matches!
- 295:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             if( currByte == port[p].rq.checksum )
- 702               		.loc 1 295 0
+ 303:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 304:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             // checksum matches!
+ 305:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             if( currByte == port[p].rq.checksum )
+ 702               		.loc 1 305 0
  703 034e F501      		movw r30,r10
  704 0350 8081      		ld r24,Z
  705 0352 6813      		cpse r22,r24
  706 0354 00C0      		rjmp .L51
  707               	.LBB3:
- 296:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             {
- 297:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 currChunk->status &= ~CHUNK_FILLING;
- 708               		.loc 1 297 0
+ 306:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             {
+ 307:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 currChunk->status &= ~CHUNK_FILLING;
+ 708               		.loc 1 307 0
  709 0356 F201      		movw r30,r4
  710 0358 8189      		ldd r24,Z+17
  711 035a 8F7B      		andi r24,lo8(-65)
  712 035c 818B      		std Z+17,r24
- 298:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.flags  |=  CHUNK_READY;
- 713               		.loc 1 298 0
+ 308:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.flags  |=  CHUNK_READY;
+ 713               		.loc 1 308 0
  714 035e F801      		movw r30,r16
  715 0360 8081      		ld r24,Z
  716 0362 8068      		ori r24,lo8(-128)
  717 0364 8083      		st Z,r24
  718               	.LVL65:
- 299:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 				
- 300:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 // check for parity error
- 301:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 byte parity = chunkParity(currChunk);
- 719               		.loc 1 301 0
+ 309:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 				
+ 310:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 // check for parity error
+ 311:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 byte parity = chunkParity(currChunk);
+ 719               		.loc 1 311 0
  720 0366 F201      		movw r30,r4
  721 0368 9189      		ldd r25,Z+17
  722 036a 95FB      		bst r25,5
  723 036c 9927      		clr r25
  724 036e 90F9      		bld r25,0
- 302:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 byte last   = parityLastChunk(port[p].rq);
- 725               		.loc 1 302 0
+ 312:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 byte last   = parityLastChunk(port[p].rq);
+ 725               		.loc 1 312 0
  726 0370 86FB      		bst r24,6
  727 0372 8827      		clr r24
  728 0374 80F9      		bld r24,0
  729               	.LVL66:
- 303:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	      
- 304:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 // not a duplicate packet		
- 305:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 if(parity != last) {
- 730               		.loc 1 305 0
+ 313:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	      
+ 314:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 // not a duplicate packet		
+ 315:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 if(parity != last) {
+ 730               		.loc 1 315 0
  731 0376 9817      		cp r25,r24
  732 0378 01F0      		breq .L52
- 306:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                     // update neighborhood (fix for race condition)
- 307:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                     //updateNeighbor(p, PRESENT);
- 308:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 		
- 309:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                     // add to global receive queue
- 310:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                     addToGlobalRq(currChunk);
- 733               		.loc 1 310 0
+ 316:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                     // update neighborhood (fix for race condition)
+ 317:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                     //updateNeighbor(p, PRESENT);
+ 318:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
+ 319:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 					if (isAClockSyncMessage(currChunk) == 1)
+ 733               		.loc 1 319 0
  734 037a C201      		movw r24,r4
- 735 037c 0E94 0000 		call addToGlobalRq
+ 735 037c 0E94 0000 		call isAClockSyncMessage
  736               	.LVL67:
- 311:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 		
- 312:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                     // flip the parity
- 313:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                     flipParityLast(port[p].rq);
- 737               		.loc 1 313 0
- 738 0380 F801      		movw r30,r16
- 739 0382 8081      		ld r24,Z
- 740 0384 F0E4      		ldi r31,lo8(64)
- 741 0386 8F27      		eor r24,r31
- 742 0388 F801      		movw r30,r16
- 743 038a 8083      		st Z,r24
- 744 038c 00C0      		rjmp .L53
- 745               	.LVL68:
- 746               	.L52:
- 314:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 }
- 315:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 // free the chunk
- 316:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 else 
- 317:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 {
- 318:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                     freeChunk(currChunk);
- 747               		.loc 1 318 0
- 748 038e C201      		movw r24,r4
- 749 0390 0E94 0000 		call freeChunk
- 750               	.LVL69:
- 751               	.L53:
- 319:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 }
- 320:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****               
- 321:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 // remove from the port rq
- 322:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = NULL;
- 752               		.loc 1 322 0
- 753 0394 F401      		movw r30,r8
- 754 0396 1082      		st Z,__zero_reg__
- 755 0398 1182      		std Z+1,__zero_reg__
- 756               	.L51:
- 757               	.LBE3:
- 323:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             }
- 324:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             
- 325:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             // reset the data
- 326:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.index    = 0;
- 758               		.loc 1 326 0
- 759 039a F601      		movw r30,r12
- 760 039c 1082      		st Z,__zero_reg__
- 327:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.checksum = 0;
- 761               		.loc 1 327 0
- 762 039e F501      		movw r30,r10
- 763 03a0 1082      		st Z,__zero_reg__
- 764               	.LVL70:
- 328:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
- 765               		.loc 1 328 0
- 766 03a2 212C      		mov r2,__zero_reg__
- 329:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             currChunk           = NULL;
- 767               		.loc 1 329 0
- 768 03a4 412C      		mov r4,__zero_reg__
- 769 03a6 512C      		mov r5,__zero_reg__
- 330:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 	    
- 331:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             /// TODO: send NACK
- 332:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             continue;
- 770               		.loc 1 332 0
- 771 03a8 00C0      		rjmp .L71
- 772               	.LVL71:
- 773               	.L50:
- 774 03aa E82F      		mov r30,r24
- 775 03ac F0E0      		ldi r31,0
- 333:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 334:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 		
- 335:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // message handler
- 336:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index < POINTER_SIZE )
- 337:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 338:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             currChunk->handler[port[p].rq.index] = currByte;
- 776               		.loc 1 338 0
- 777 03ae E40D      		add r30,r4
- 778 03b0 F51D      		adc r31,r5
- 336:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index < POINTER_SIZE )
- 779               		.loc 1 336 0
- 780 03b2 8230      		cpi r24,lo8(2)
- 781 03b4 00F4      		brsh .L54
- 782               		.loc 1 338 0
- 783 03b6 648B      		std Z+20,r22
- 784 03b8 00C0      		rjmp .L55
- 785               	.L54:
- 339:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 340:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         // regular byte
- 341:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         else
- 342:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 343:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             currChunk->data[port[p].rq.index-POINTER_SIZE] = currByte;
- 786               		.loc 1 343 0
- 787 03ba 3297      		sbiw r30,2
- 788 03bc 6083      		st Z,r22
- 789               	.L55:
- 344:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 345:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 346:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = crcCalc(port[p].rq.checksum, currByte);
- 790               		.loc 1 346 0
- 791 03be F501      		movw r30,r10
- 792 03c0 8081      		ld r24,Z
- 793 03c2 0E94 0000 		call crcCalc
- 794               	.LVL72:
- 795 03c6 F501      		movw r30,r10
- 796 03c8 8083      		st Z,r24
- 347:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.index++;
- 797               		.loc 1 347 0
- 798 03ca F601      		movw r30,r12
- 799 03cc 8081      		ld r24,Z
- 800 03ce 8F5F      		subi r24,lo8(-(1))
- 801 03d0 8083      		st Z,r24
- 802               	.L57:
- 803               	.LBB4:
- 241:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
- 804               		.loc 1 241 0
- 805 03d2 212C      		mov r2,__zero_reg__
- 806 03d4 00C0      		rjmp .L71
- 807               	.LVL73:
- 808               	.L58:
- 809               	.LBE4:
- 279:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 1;   
- 810               		.loc 1 279 0
- 811 03d6 2224      		clr r2
- 812 03d8 2394      		inc r2
- 813               	.LVL74:
- 814 03da 00C0      		rjmp .L71
- 815               	.LVL75:
- 816               	.L66:
- 292:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index >= (DATA_SIZE + POINTER_SIZE) )
- 817               		.loc 1 292 0 discriminator 1
- 818 03dc 88E5      		ldi r24,lo8(88)
- 819 03de 8E9D      		mul r24,r14
- 820 03e0 E001      		movw r28,r0
- 821 03e2 8F9D      		mul r24,r15
- 822 03e4 D00D      		add r29,r0
- 823 03e6 1124      		clr __zero_reg__
- 824 03e8 C050      		subi r28,lo8(-(port))
- 825 03ea D040      		sbci r29,hi8(-(port))
- 826 03ec 6E01      		movw r12,r28
- 827 03ee F3E1      		ldi r31,19
- 828 03f0 CF0E      		add r12,r31
- 829 03f2 D11C      		adc r13,__zero_reg__
- 346:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = crcCalc(port[p].rq.checksum, currByte);
- 830               		.loc 1 346 0 discriminator 1
- 831 03f4 5E01      		movw r10,r28
- 832 03f6 24E1      		ldi r18,20
- 833 03f8 A20E      		add r10,r18
- 834 03fa B11C      		adc r11,__zero_reg__
- 835               	.LBB5:
- 298:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.flags  |=  CHUNK_READY;
- 836               		.loc 1 298 0 discriminator 1
- 837 03fc 8E01      		movw r16,r28
- 838 03fe 0B5E      		subi r16,-21
- 839 0400 1F4F      		sbci r17,-1
- 322:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = NULL;
- 840               		.loc 1 322 0 discriminator 1
- 841 0402 4E01      		movw r8,r28
- 842 0404 36E1      		ldi r19,22
- 843 0406 830E      		add r8,r19
- 844 0408 911C      		adc r9,__zero_reg__
- 845               	.LVL76:
- 846               	.L71:
- 847               	.LBE5:
- 209:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     while( !isEmpty(&(port[p].rx)) )
- 848               		.loc 1 209 0 discriminator 1
- 849 040a C301      		movw r24,r6
- 850 040c 0E94 0000 		call isEmpty
- 851               	.LVL77:
- 852 0410 8823      		tst r24
- 853 0412 01F4      		brne .+2
- 854 0414 00C0      		rjmp .L56
- 348:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 349:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
- 350:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // store wasEscape
- 351:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     wasEscapeStore[p] = wasEscape;
- 855               		.loc 1 351 0
- 856 0416 F701      		movw r30,r14
- 857 0418 E050      		subi r30,lo8(-(wasEscapeStore))
- 858 041a F040      		sbci r31,hi8(-(wasEscapeStore))
- 859 041c 2082      		st Z,r2
- 860               	.LVL78:
- 861               	.L40:
- 862               	/* epilogue start */
- 352:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** }
- 863               		.loc 1 352 0
- 864 041e DF91      		pop r29
- 865 0420 CF91      		pop r28
- 866 0422 1F91      		pop r17
- 867 0424 0F91      		pop r16
- 868 0426 FF90      		pop r15
- 869 0428 EF90      		pop r14
- 870 042a DF90      		pop r13
- 871 042c CF90      		pop r12
- 872 042e BF90      		pop r11
- 873 0430 AF90      		pop r10
- 874 0432 9F90      		pop r9
- 875 0434 8F90      		pop r8
- 876 0436 7F90      		pop r7
- 877 0438 6F90      		pop r6
- 878 043a 5F90      		pop r5
- 879 043c 4F90      		pop r4
- 880 043e 3F90      		pop r3
- 881               	.LVL79:
- 882 0440 2F90      		pop r2
- 883               	.LVL80:
- 884 0442 0895      		ret
- 885               	.LFE11:
- 887               	.global	nextPacket
- 889               	nextPacket:
- 890               	.LFB12:
- 353:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 354:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // gets data from the global receive queue
- 355:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** Chunk* nextPacket(void)
- 356:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** {
- 891               		.loc 1 356 0
- 892               	/* prologue: function */
- 893               	/* frame size = 0 */
- 894               	/* stack size = 0 */
- 895               	.L__stack_usage = 0
- 896               	.LVL81:
- 357:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     Chunk* c = NULL;
- 358:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 359:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // no packets
- 360:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL )
- 897               		.loc 1 360 0
- 898 0444 E091 0000 		lds r30,globalRq
- 899 0448 F091 0000 		lds r31,globalRq+1
- 900 044c 3097      		sbiw r30,0
- 901 044e 01F4      		brne .L73
- 361:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 362:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail = NULL;
- 902               		.loc 1 362 0
- 903 0450 1092 0000 		sts globalRq+2,__zero_reg__
- 904 0454 1092 0000 		sts globalRq+2+1,__zero_reg__
- 363:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.flags &= ~PACKET_READY;
- 905               		.loc 1 363 0
- 906 0458 8091 0000 		lds r24,globalRq+4
- 907 045c 8F77      		andi r24,lo8(127)
- 908 045e 8093 0000 		sts globalRq+4,r24
- 364:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         return NULL;
- 909               		.loc 1 364 0
- 910 0462 00C0      		rjmp .L74
- 911               	.L73:
- 912               	.LVL82:
- 365:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 366:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 367:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // update pointers
- 368:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     c = globalRq.head;
- 369:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
- 370:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     globalRq.head = c->next;
- 913               		.loc 1 370 0
- 914 0464 8289      		ldd r24,Z+18
- 915 0466 9389      		ldd r25,Z+19
- 916 0468 8093 0000 		sts globalRq,r24
- 917 046c 9093 0000 		sts globalRq+1,r25
- 371:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL )
- 918               		.loc 1 371 0
- 919 0470 892B      		or r24,r25
- 920 0472 01F4      		brne .L75
- 372:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 373:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.flags &= ~PACKET_READY;
- 921               		.loc 1 373 0
- 922 0474 8091 0000 		lds r24,globalRq+4
- 923 0478 8F77      		andi r24,lo8(127)
- 924 047a 8093 0000 		sts globalRq+4,r24
- 374:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail = NULL;
- 925               		.loc 1 374 0
- 926 047e 1092 0000 		sts globalRq+2,__zero_reg__
- 927 0482 1092 0000 		sts globalRq+2+1,__zero_reg__
- 928               	.L75:
- 375:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 376:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
- 377:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // isolate and return
- 378:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     c->next = NULL;
- 929               		.loc 1 378 0
- 930 0486 128A      		std Z+18,__zero_reg__
- 931 0488 138A      		std Z+19,__zero_reg__
- 932               	.LVL83:
- 933               	.L74:
- 379:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     return c;
- 380:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** }
- 934               		.loc 1 380 0
- 935 048a CF01      		movw r24,r30
- 936 048c 0895      		ret
- 937               	.LFE12:
- 939               	.global	sendOnSerial
- 941               	sendOnSerial:
- 942               	.LFB13:
- 381:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 382:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // try sending stuff if available and ready
- 383:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** void sendOnSerial(PRef p)
- 384:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** {
- 943               		.loc 1 384 0
- 944               	.LVL84:
- 945 048e DF92      		push r13
- 946               	.LCFI33:
- 947 0490 EF92      		push r14
- 948               	.LCFI34:
- 949 0492 FF92      		push r15
- 950               	.LCFI35:
- 951 0494 0F93      		push r16
- 952               	.LCFI36:
- 953 0496 1F93      		push r17
- 954               	.LCFI37:
- 955 0498 CF93      		push r28
- 956               	.LCFI38:
- 957 049a DF93      		push r29
- 958               	.LCFI39:
- 959               	/* prologue: function */
- 960               	/* frame size = 0 */
- 961               	/* stack size = 7 */
- 962               	.L__stack_usage = 7
- 963 049c D82E      		mov r13,r24
- 385:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // send acks
- 386:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( shouldSendOddAck(port[p].sq) )
- 964               		.loc 1 386 0
- 965 049e E82E      		mov r14,r24
- 966 04a0 F12C      		mov r15,__zero_reg__
- 967 04a2 88E5      		ldi r24,lo8(88)
- 968               	.LVL85:
- 969 04a4 D89E      		mul r13,r24
- 970 04a6 8001      		movw r16,r0
- 971 04a8 1124      		clr __zero_reg__
- 972 04aa E801      		movw r28,r16
- 973 04ac C050      		subi r28,lo8(-(port))
- 974 04ae D040      		sbci r29,hi8(-(port))
- 975 04b0 8E85      		ldd r24,Y+14
- 976 04b2 81FF      		sbrs r24,1
- 977 04b4 00C0      		rjmp .L77
- 387:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 388:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( isEmpty(&(port[p].tx)) ) {
- 978               		.loc 1 388 0
- 979 04b6 0050      		subi r16,lo8(-(port+56))
- 980 04b8 1040      		sbci r17,hi8(-(port+56))
- 981 04ba C801      		movw r24,r16
- 982 04bc 0E94 0000 		call isEmpty
- 983               	.LVL86:
- 984 04c0 8823      		tst r24
- 985 04c2 01F0      		breq .L78
- 389:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             pPutChar(ACK | ODD, port[p].pnum);
- 986               		.loc 1 389 0
- 987 04c4 6881      		ld r22,Y
- 988 04c6 89E0      		ldi r24,lo8(9)
- 989 04c8 0E94 0000 		call pPutChar
- 990               	.LVL87:
- 991 04cc 00C0      		rjmp .L77
- 992               	.L78:
- 390:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 391:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         else {
- 392:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(ACK | ODD, &(port[p].tx));
- 993               		.loc 1 392 0
- 994 04ce B801      		movw r22,r16
- 995 04d0 89E0      		ldi r24,lo8(9)
- 996 04d2 0E94 0000 		call push
- 997               	.LVL88:
- 998               	.L77:
- 393:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 394:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 395:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( shouldSendEvenAck(port[p].sq) )
- 999               		.loc 1 395 0
- 1000 04d6 88E5      		ldi r24,lo8(88)
- 1001 04d8 8E9D      		mul r24,r14
- 1002 04da E001      		movw r28,r0
- 1003 04dc 8F9D      		mul r24,r15
- 1004 04de D00D      		add r29,r0
- 1005 04e0 1124      		clr __zero_reg__
- 1006 04e2 8E01      		movw r16,r28
- 1007 04e4 0050      		subi r16,lo8(-(port))
- 1008 04e6 1040      		sbci r17,hi8(-(port))
- 1009 04e8 F801      		movw r30,r16
- 1010 04ea 8685      		ldd r24,Z+14
- 1011 04ec 80FF      		sbrs r24,0
- 1012 04ee 00C0      		rjmp .L79
- 396:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 397:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( isEmpty(&(port[p].tx)) ) {
- 1013               		.loc 1 397 0
- 1014 04f0 C050      		subi r28,lo8(-(port+56))
- 1015 04f2 D040      		sbci r29,hi8(-(port+56))
- 1016 04f4 CE01      		movw r24,r28
- 1017 04f6 0E94 0000 		call isEmpty
- 1018               	.LVL89:
- 1019 04fa 8823      		tst r24
- 1020 04fc 01F0      		breq .L80
- 398:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             pPutChar(ACK | EVEN, port[p].pnum);
- 1021               		.loc 1 398 0
- 1022 04fe F801      		movw r30,r16
- 1023 0500 6081      		ld r22,Z
- 1024 0502 88E0      		ldi r24,lo8(8)
- 1025 0504 0E94 0000 		call pPutChar
- 1026               	.LVL90:
- 1027 0508 00C0      		rjmp .L79
- 1028               	.L80:
- 399:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 400:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         else {
- 401:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             push(ACK | EVEN, &(port[p].tx));
- 1029               		.loc 1 401 0
- 1030 050a BE01      		movw r22,r28
- 1031 050c 88E0      		ldi r24,lo8(8)
- 1032 050e 0E94 0000 		call push
- 1033               	.LVL91:
- 1034               	.L79:
- 402:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 403:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 404:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     clearSendAcks(port[p].sq);
- 1035               		.loc 1 404 0
- 1036 0512 88E5      		ldi r24,lo8(88)
- 1037 0514 8E9D      		mul r24,r14
- 1038 0516 8001      		movw r16,r0
- 1039 0518 8F9D      		mul r24,r15
- 1040 051a 100D      		add r17,r0
- 1041 051c 1124      		clr __zero_reg__
- 1042 051e E801      		movw r28,r16
- 1043 0520 C050      		subi r28,lo8(-(port))
- 1044 0522 D040      		sbci r29,hi8(-(port))
- 1045 0524 4E85      		ldd r20,Y+14
- 1046 0526 4C7F      		andi r20,lo8(-4)
- 1047 0528 4E87      		std Y+14,r20
- 405:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     
- 406:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     // send Chunk?
- 407:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     if( chunkReady(port[p].sq) )
- 1048               		.loc 1 407 0
- 1049 052a 47FF      		sbrs r20,7
- 1050 052c 00C0      		rjmp .L76
- 408:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     {
- 409:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         if( clearToSend(port[p].sq) )
- 1051               		.loc 1 409 0
- 1052 052e 46FF      		sbrs r20,6
- 1053 0530 00C0      		rjmp .L76
- 410:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         {
- 411:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             // out of retries
- 412:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             if( (port[p].sq.retry <= 0) || (port[p].sq.retry > NUM_RETRIES))
- 1054               		.loc 1 412 0
- 1055 0532 8D85      		ldd r24,Y+13
- 1056 0534 8150      		subi r24,lo8(-(-1))
- 1057 0536 8430      		cpi r24,lo8(4)
- 1058 0538 00F0      		brlo .L82
- 413:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             {
- 414:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 // reset the timer
- 415:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 deregisterTimeout(&(port[p].sq.qtout.tout));
- 1059               		.loc 1 415 0
- 1060 053a C801      		movw r24,r16
- 1061 053c 8050      		subi r24,lo8(-(port+1))
- 1062 053e 9040      		sbci r25,hi8(-(port+1))
- 1063 0540 0E94 0000 		call deregisterTimeout
- 1064               	.LVL92:
- 416:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 417:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 // flush the queue
- 418:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 flushSendQueue(p);
- 1065               		.loc 1 418 0
- 1066 0544 8D2D      		mov r24,r13
- 1067 0546 0E94 0000 		call flushSendQueue
- 1068               	.LVL93:
- 419:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                         
- 420:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 // reset the flags
- 421:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].sq.retry    = NUM_RETRIES;
- 1069               		.loc 1 421 0
- 1070 054a 94E0      		ldi r25,lo8(4)
- 1071 054c 9D87      		std Y+13,r25
- 422:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].sq.flags   |= CLEAR_TO_SEND;
- 1072               		.loc 1 422 0
- 1073 054e 8E85      		ldd r24,Y+14
- 1074 0550 8064      		ori r24,lo8(64)
- 423:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 flipParity(port[p].sq);
- 1075               		.loc 1 423 0
- 1076 0552 8927      		eor r24,r25
- 1077 0554 8E87      		std Y+14,r24
- 424:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 425:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 // ensemble level updates - remove neighbor, restart neighbor scanning
- 426:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 //     These don't belong in data-link in my opinion
- 427:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 //restartScan(p);
- 428:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 429:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****                 return;
- 1078               		.loc 1 429 0
- 1079 0556 00C0      		rjmp .L76
- 1080               	.L82:
- 430:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             }
- 431:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.retry--;
- 1081               		.loc 1 431 0
- 1082 0558 8D87      		std Y+13,r24
- 432:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 433:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             sendToBuffer(p, port[p].sq.head, sendParity(port[p].sq) );
- 1083               		.loc 1 433 0
- 1084 055a 42FB      		bst r20,2
- 1085 055c 4427      		clr r20
- 1086 055e 40F9      		bld r20,0
- 1087 0560 6F85      		ldd r22,Y+15
- 1088 0562 7889      		ldd r23,Y+16
- 1089 0564 8D2D      		mov r24,r13
- 1090 0566 0E94 0000 		call sendToBuffer
- 1091               	.LVL94:
- 434:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.flags &= ~CLEAR_TO_SEND;
- 1092               		.loc 1 434 0
- 1093 056a 8E85      		ldd r24,Y+14
- 1094 056c 8F7B      		andi r24,lo8(-65)
- 1095 056e 8E87      		std Y+14,r24
- 435:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             
- 436:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             // start the timeout
- 437:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.qtout.tout.calltime = getTime() + DEFAULT_TIMEOUT;
- 1096               		.loc 1 437 0
- 1097 0570 0E94 0000 		call getTime
- 1098               	.LVL95:
- 1099 0574 6E5C      		subi r22,-50
- 1100 0576 7F4F      		sbci r23,-1
- 1101 0578 8F4F      		sbci r24,-1
- 1102 057a 9F4F      		sbci r25,-1
- 1103 057c 6B83      		std Y+3,r22
- 1104 057e 7C83      		std Y+4,r23
- 1105 0580 8D83      		std Y+5,r24
- 1106 0582 9E83      		std Y+6,r25
- 438:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             registerTimeout(&(port[p].sq.qtout.tout));
- 1107               		.loc 1 438 0
- 1108 0584 C801      		movw r24,r16
- 1109 0586 8050      		subi r24,lo8(-(port+1))
- 1110 0588 9040      		sbci r25,hi8(-(port+1))
- 1111               	/* epilogue start */
- 439:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****         }
- 440:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****     }
- 441:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** }
- 1112               		.loc 1 441 0
- 1113 058a DF91      		pop r29
- 1114 058c CF91      		pop r28
- 1115 058e 1F91      		pop r17
- 1116 0590 0F91      		pop r16
- 1117 0592 FF90      		pop r15
- 1118 0594 EF90      		pop r14
- 1119 0596 DF90      		pop r13
- 1120               	.LVL96:
- 438:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c ****             registerTimeout(&(port[p].sq.qtout.tout));
- 1121               		.loc 1 438 0
- 1122 0598 0C94 0000 		jmp registerTimeout
- 1123               	.LVL97:
- 1124               	.L76:
- 1125               	/* epilogue start */
- 1126               		.loc 1 441 0
- 1127 059c DF91      		pop r29
- 1128 059e CF91      		pop r28
- 1129 05a0 1F91      		pop r17
- 1130 05a2 0F91      		pop r16
- 1131 05a4 FF90      		pop r15
- 1132 05a6 EF90      		pop r14
- 1133 05a8 DF90      		pop r13
- 1134               	.LVL98:
- 1135 05aa 0895      		ret
- 1136               	.LFE13:
- 1138               	.global	initHWDataLink
- 1140               	initHWDataLink:
- 1141               	.LFB14:
- 442:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** 
- 443:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** // initialize
- 444:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/hwDataLink.c **** void initHWDataLink(){
- 1142               		.loc 1 444 0
- 1143               	/* prologue: function */
- 1144               	/* frame size = 0 */
- 1145               	/* stack size = 0 */
- 1146               	.L__stack_usage = 0
- 1147 05ac 0895      		ret
- 1148               	.LFE14:
- 1150               		.comm	wasEscapeStore,6,1
- 1481               	.Letext0:
- 1482               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
- 1483               		.file 3 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/defs.bbh"
- 1484               		.file 4 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/circ_buffer.bbh"
- 1485               		.file 5 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bbh"
- 1486               		.file 6 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/memory.bbh"
- 1487               		.file 7 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/hardwaretime.bbh"
- 1488               		.file 8 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/queues.bbh"
- 1489               		.file 9 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/serial.bbh"
- 1490               		.file 10 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/../hw-api/hwDataLin
- 1491               		.file 11 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/hw-block/../hw-api/hwSerial.
+ 737 0380 8130      		cpi r24,lo8(1)
+ 738 0382 01F4      		brne .L53
+ 320:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 					{		
+ 321:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 						// insert receive time
+ 322:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 						insertReceiveTime(currChunk);
+ 739               		.loc 1 322 0
+ 740 0384 C201      		movw r24,r4
+ 741 0386 0E94 0000 		call insertReceiveTime
+ 742               	.LVL68:
+ 743               	.L53:
+ 323:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 					}
+ 324:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #endif
+ 325:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                     // add to global receive queue
+ 326:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                     addToGlobalRq(currChunk);
+ 744               		.loc 1 326 0
+ 745 038a C201      		movw r24,r4
+ 746 038c 0E94 0000 		call addToGlobalRq
+ 747               	.LVL69:
+ 327:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 		
+ 328:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                     // flip the parity
+ 329:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                     flipParityLast(port[p].rq);
+ 748               		.loc 1 329 0
+ 749 0390 F801      		movw r30,r16
+ 750 0392 8081      		ld r24,Z
+ 751 0394 F0E4      		ldi r31,lo8(64)
+ 752 0396 8F27      		eor r24,r31
+ 753 0398 F801      		movw r30,r16
+ 754 039a 8083      		st Z,r24
+ 755 039c 00C0      		rjmp .L54
+ 756               	.LVL70:
+ 757               	.L52:
+ 330:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 }
+ 331:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 // free the chunk
+ 332:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 else 
+ 333:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 {
+ 334:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                     freeChunk(currChunk);
+ 758               		.loc 1 334 0
+ 759 039e C201      		movw r24,r4
+ 760 03a0 0E94 0000 		call freeChunk
+ 761               	.LVL71:
+ 762               	.L54:
+ 335:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 }
+ 336:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****               
+ 337:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 // remove from the port rq
+ 338:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = NULL;
+ 763               		.loc 1 338 0
+ 764 03a4 F401      		movw r30,r8
+ 765 03a6 1082      		st Z,__zero_reg__
+ 766 03a8 1182      		std Z+1,__zero_reg__
+ 767               	.L51:
+ 768               	.LBE3:
+ 339:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             }
+ 340:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             
+ 341:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             // reset the data
+ 342:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.index    = 0;
+ 769               		.loc 1 342 0
+ 770 03aa F601      		movw r30,r12
+ 771 03ac 1082      		st Z,__zero_reg__
+ 343:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.checksum = 0;
+ 772               		.loc 1 343 0
+ 773 03ae F501      		movw r30,r10
+ 774 03b0 1082      		st Z,__zero_reg__
+ 775               	.LVL72:
+ 344:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
+ 776               		.loc 1 344 0
+ 777 03b2 212C      		mov r2,__zero_reg__
+ 345:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             currChunk           = NULL;
+ 778               		.loc 1 345 0
+ 779 03b4 412C      		mov r4,__zero_reg__
+ 780 03b6 512C      		mov r5,__zero_reg__
+ 346:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 	    
+ 347:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             /// TODO: send NACK
+ 348:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             continue;
+ 781               		.loc 1 348 0
+ 782 03b8 00C0      		rjmp .L72
+ 783               	.LVL73:
+ 784               	.L50:
+ 785 03ba E82F      		mov r30,r24
+ 786 03bc F0E0      		ldi r31,0
+ 349:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 350:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 		
+ 351:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // message handler
+ 352:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index < POINTER_SIZE )
+ 353:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 354:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             currChunk->handler[port[p].rq.index] = currByte;
+ 787               		.loc 1 354 0
+ 788 03be E40D      		add r30,r4
+ 789 03c0 F51D      		adc r31,r5
+ 352:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index < POINTER_SIZE )
+ 790               		.loc 1 352 0
+ 791 03c2 8230      		cpi r24,lo8(2)
+ 792 03c4 00F4      		brsh .L55
+ 793               		.loc 1 354 0
+ 794 03c6 648B      		std Z+20,r22
+ 795 03c8 00C0      		rjmp .L56
+ 796               	.L55:
+ 355:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 356:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         // regular byte
+ 357:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         else
+ 358:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 359:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             currChunk->data[port[p].rq.index-POINTER_SIZE] = currByte;
+ 797               		.loc 1 359 0
+ 798 03ca 3297      		sbiw r30,2
+ 799 03cc 6083      		st Z,r22
+ 800               	.L56:
+ 360:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 361:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 362:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = crcCalc(port[p].rq.checksum, currByte);
+ 801               		.loc 1 362 0
+ 802 03ce F501      		movw r30,r10
+ 803 03d0 8081      		ld r24,Z
+ 804 03d2 0E94 0000 		call crcCalc
+ 805               	.LVL74:
+ 806 03d6 F501      		movw r30,r10
+ 807 03d8 8083      		st Z,r24
+ 363:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.index++;
+ 808               		.loc 1 363 0
+ 809 03da F601      		movw r30,r12
+ 810 03dc 8081      		ld r24,Z
+ 811 03de 8F5F      		subi r24,lo8(-(1))
+ 812 03e0 8083      		st Z,r24
+ 813               	.L58:
+ 814               	.LBB4:
+ 245:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
+ 815               		.loc 1 245 0
+ 816 03e2 212C      		mov r2,__zero_reg__
+ 817 03e4 00C0      		rjmp .L72
+ 818               	.LVL75:
+ 819               	.L59:
+ 820               	.LBE4:
+ 289:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 1;   
+ 821               		.loc 1 289 0
+ 822 03e6 2224      		clr r2
+ 823 03e8 2394      		inc r2
+ 824               	.LVL76:
+ 825 03ea 00C0      		rjmp .L72
+ 826               	.LVL77:
+ 827               	.L67:
+ 302:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index >= (DATA_SIZE + POINTER_SIZE) )
+ 828               		.loc 1 302 0 discriminator 1
+ 829 03ec 88E5      		ldi r24,lo8(88)
+ 830 03ee 8E9D      		mul r24,r14
+ 831 03f0 E001      		movw r28,r0
+ 832 03f2 8F9D      		mul r24,r15
+ 833 03f4 D00D      		add r29,r0
+ 834 03f6 1124      		clr __zero_reg__
+ 835 03f8 C050      		subi r28,lo8(-(port))
+ 836 03fa D040      		sbci r29,hi8(-(port))
+ 837 03fc 6E01      		movw r12,r28
+ 838 03fe F3E1      		ldi r31,19
+ 839 0400 CF0E      		add r12,r31
+ 840 0402 D11C      		adc r13,__zero_reg__
+ 362:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = crcCalc(port[p].rq.checksum, currByte);
+ 841               		.loc 1 362 0 discriminator 1
+ 842 0404 5E01      		movw r10,r28
+ 843 0406 24E1      		ldi r18,20
+ 844 0408 A20E      		add r10,r18
+ 845 040a B11C      		adc r11,__zero_reg__
+ 846               	.LBB5:
+ 308:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.flags  |=  CHUNK_READY;
+ 847               		.loc 1 308 0 discriminator 1
+ 848 040c 8E01      		movw r16,r28
+ 849 040e 0B5E      		subi r16,-21
+ 850 0410 1F4F      		sbci r17,-1
+ 338:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = NULL;
+ 851               		.loc 1 338 0 discriminator 1
+ 852 0412 4E01      		movw r8,r28
+ 853 0414 36E1      		ldi r19,22
+ 854 0416 830E      		add r8,r19
+ 855 0418 911C      		adc r9,__zero_reg__
+ 856               	.LVL78:
+ 857               	.L72:
+ 858               	.LBE5:
+ 213:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     while( !isEmpty(&(port[p].rx)) )
+ 859               		.loc 1 213 0 discriminator 1
+ 860 041a C301      		movw r24,r6
+ 861 041c 0E94 0000 		call isEmpty
+ 862               	.LVL79:
+ 863 0420 8823      		tst r24
+ 864 0422 01F4      		brne .+2
+ 865 0424 00C0      		rjmp .L57
+ 364:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 365:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+ 366:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // store wasEscape
+ 367:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     wasEscapeStore[p] = wasEscape;
+ 866               		.loc 1 367 0
+ 867 0426 F701      		movw r30,r14
+ 868 0428 E050      		subi r30,lo8(-(wasEscapeStore))
+ 869 042a F040      		sbci r31,hi8(-(wasEscapeStore))
+ 870 042c 2082      		st Z,r2
+ 871               	.LVL80:
+ 872               	.L40:
+ 873               	/* epilogue start */
+ 368:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** }
+ 874               		.loc 1 368 0
+ 875 042e DF91      		pop r29
+ 876 0430 CF91      		pop r28
+ 877 0432 1F91      		pop r17
+ 878 0434 0F91      		pop r16
+ 879 0436 FF90      		pop r15
+ 880 0438 EF90      		pop r14
+ 881 043a DF90      		pop r13
+ 882 043c CF90      		pop r12
+ 883 043e BF90      		pop r11
+ 884 0440 AF90      		pop r10
+ 885 0442 9F90      		pop r9
+ 886 0444 8F90      		pop r8
+ 887 0446 7F90      		pop r7
+ 888 0448 6F90      		pop r6
+ 889 044a 5F90      		pop r5
+ 890 044c 4F90      		pop r4
+ 891 044e 3F90      		pop r3
+ 892               	.LVL81:
+ 893 0450 2F90      		pop r2
+ 894               	.LVL82:
+ 895 0452 0895      		ret
+ 896               	.LFE11:
+ 898               	.global	nextPacket
+ 900               	nextPacket:
+ 901               	.LFB12:
+ 369:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 370:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // gets data from the global receive queue
+ 371:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** Chunk* nextPacket(void)
+ 372:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** {
+ 902               		.loc 1 372 0
+ 903               	/* prologue: function */
+ 904               	/* frame size = 0 */
+ 905               	/* stack size = 0 */
+ 906               	.L__stack_usage = 0
+ 907               	.LVL83:
+ 373:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     Chunk* c = NULL;
+ 374:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 375:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // no packets
+ 376:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL )
+ 908               		.loc 1 376 0
+ 909 0454 E091 0000 		lds r30,globalRq
+ 910 0458 F091 0000 		lds r31,globalRq+1
+ 911 045c 3097      		sbiw r30,0
+ 912 045e 01F4      		brne .L74
+ 377:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 378:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail = NULL;
+ 913               		.loc 1 378 0
+ 914 0460 1092 0000 		sts globalRq+2,__zero_reg__
+ 915 0464 1092 0000 		sts globalRq+2+1,__zero_reg__
+ 379:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         globalRq.flags &= ~PACKET_READY;
+ 916               		.loc 1 379 0
+ 917 0468 8091 0000 		lds r24,globalRq+4
+ 918 046c 8F77      		andi r24,lo8(127)
+ 919 046e 8093 0000 		sts globalRq+4,r24
+ 380:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         return NULL;
+ 920               		.loc 1 380 0
+ 921 0472 00C0      		rjmp .L75
+ 922               	.L74:
+ 923               	.LVL84:
+ 381:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 382:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 383:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // update pointers
+ 384:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     c = globalRq.head;
+ 385:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+ 386:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     globalRq.head = c->next;
+ 924               		.loc 1 386 0
+ 925 0474 8289      		ldd r24,Z+18
+ 926 0476 9389      		ldd r25,Z+19
+ 927 0478 8093 0000 		sts globalRq,r24
+ 928 047c 9093 0000 		sts globalRq+1,r25
+ 387:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL )
+ 929               		.loc 1 387 0
+ 930 0480 892B      		or r24,r25
+ 931 0482 01F4      		brne .L76
+ 388:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 389:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         globalRq.flags &= ~PACKET_READY;
+ 932               		.loc 1 389 0
+ 933 0484 8091 0000 		lds r24,globalRq+4
+ 934 0488 8F77      		andi r24,lo8(127)
+ 935 048a 8093 0000 		sts globalRq+4,r24
+ 390:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail = NULL;
+ 936               		.loc 1 390 0
+ 937 048e 1092 0000 		sts globalRq+2,__zero_reg__
+ 938 0492 1092 0000 		sts globalRq+2+1,__zero_reg__
+ 939               	.L76:
+ 391:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 392:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+ 393:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // isolate and return
+ 394:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     c->next = NULL;
+ 940               		.loc 1 394 0
+ 941 0496 128A      		std Z+18,__zero_reg__
+ 942 0498 138A      		std Z+19,__zero_reg__
+ 943               	.LVL85:
+ 944               	.L75:
+ 395:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     return c;
+ 396:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** }
+ 945               		.loc 1 396 0
+ 946 049a CF01      		movw r24,r30
+ 947 049c 0895      		ret
+ 948               	.LFE12:
+ 950               	.global	sendOnSerial
+ 952               	sendOnSerial:
+ 953               	.LFB13:
+ 397:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 398:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // try sending stuff if available and ready
+ 399:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** void sendOnSerial(PRef p)
+ 400:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** {
+ 954               		.loc 1 400 0
+ 955               	.LVL86:
+ 956 049e DF92      		push r13
+ 957               	.LCFI33:
+ 958 04a0 EF92      		push r14
+ 959               	.LCFI34:
+ 960 04a2 FF92      		push r15
+ 961               	.LCFI35:
+ 962 04a4 0F93      		push r16
+ 963               	.LCFI36:
+ 964 04a6 1F93      		push r17
+ 965               	.LCFI37:
+ 966 04a8 CF93      		push r28
+ 967               	.LCFI38:
+ 968 04aa DF93      		push r29
+ 969               	.LCFI39:
+ 970               	/* prologue: function */
+ 971               	/* frame size = 0 */
+ 972               	/* stack size = 7 */
+ 973               	.L__stack_usage = 7
+ 974 04ac D82E      		mov r13,r24
+ 401:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // send acks
+ 402:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( shouldSendOddAck(port[p].sq) )
+ 975               		.loc 1 402 0
+ 976 04ae 082F      		mov r16,r24
+ 977 04b0 10E0      		ldi r17,0
+ 978 04b2 28E5      		ldi r18,lo8(88)
+ 979 04b4 829F      		mul r24,r18
+ 980 04b6 C001      		movw r24,r0
+ 981 04b8 1124      		clr __zero_reg__
+ 982               	.LVL87:
+ 983 04ba EC01      		movw r28,r24
+ 984 04bc C050      		subi r28,lo8(-(port))
+ 985 04be D040      		sbci r29,hi8(-(port))
+ 986 04c0 2E85      		ldd r18,Y+14
+ 987 04c2 21FF      		sbrs r18,1
+ 988 04c4 00C0      		rjmp .L78
+ 403:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 404:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( isEmpty(&(port[p].tx)) ) {
+ 989               		.loc 1 404 0
+ 990 04c6 B0E0      		ldi r27,lo8(port+56)
+ 991 04c8 EB2E      		mov r14,r27
+ 992 04ca B0E0      		ldi r27,hi8(port+56)
+ 993 04cc FB2E      		mov r15,r27
+ 994 04ce E80E      		add r14,r24
+ 995 04d0 F91E      		adc r15,r25
+ 996 04d2 C701      		movw r24,r14
+ 997 04d4 0E94 0000 		call isEmpty
+ 998               	.LVL88:
+ 999 04d8 8823      		tst r24
+ 1000 04da 01F0      		breq .L79
+ 405:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             pPutChar(ACK | ODD, port[p].pnum);
+ 1001               		.loc 1 405 0
+ 1002 04dc 6881      		ld r22,Y
+ 1003 04de 89E0      		ldi r24,lo8(9)
+ 1004 04e0 0E94 0000 		call pPutChar
+ 1005               	.LVL89:
+ 1006 04e4 00C0      		rjmp .L78
+ 1007               	.L79:
+ 406:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 407:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         else {
+ 408:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(ACK | ODD, &(port[p].tx));
+ 1008               		.loc 1 408 0
+ 1009 04e6 B701      		movw r22,r14
+ 1010 04e8 89E0      		ldi r24,lo8(9)
+ 1011 04ea 0E94 0000 		call push
+ 1012               	.LVL90:
+ 1013               	.L78:
+ 409:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 410:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 411:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( shouldSendEvenAck(port[p].sq) )
+ 1014               		.loc 1 411 0
+ 1015 04ee 88E5      		ldi r24,lo8(88)
+ 1016 04f0 809F      		mul r24,r16
+ 1017 04f2 E001      		movw r28,r0
+ 1018 04f4 819F      		mul r24,r17
+ 1019 04f6 D00D      		add r29,r0
+ 1020 04f8 1124      		clr __zero_reg__
+ 1021 04fa A0E0      		ldi r26,lo8(port)
+ 1022 04fc EA2E      		mov r14,r26
+ 1023 04fe A0E0      		ldi r26,hi8(port)
+ 1024 0500 FA2E      		mov r15,r26
+ 1025 0502 EC0E      		add r14,r28
+ 1026 0504 FD1E      		adc r15,r29
+ 1027 0506 F701      		movw r30,r14
+ 1028 0508 8685      		ldd r24,Z+14
+ 1029 050a 80FF      		sbrs r24,0
+ 1030 050c 00C0      		rjmp .L80
+ 412:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 413:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( isEmpty(&(port[p].tx)) ) {
+ 1031               		.loc 1 413 0
+ 1032 050e C050      		subi r28,lo8(-(port+56))
+ 1033 0510 D040      		sbci r29,hi8(-(port+56))
+ 1034 0512 CE01      		movw r24,r28
+ 1035 0514 0E94 0000 		call isEmpty
+ 1036               	.LVL91:
+ 1037 0518 8823      		tst r24
+ 1038 051a 01F0      		breq .L81
+ 414:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             pPutChar(ACK | EVEN, port[p].pnum);
+ 1039               		.loc 1 414 0
+ 1040 051c F701      		movw r30,r14
+ 1041 051e 6081      		ld r22,Z
+ 1042 0520 88E0      		ldi r24,lo8(8)
+ 1043 0522 0E94 0000 		call pPutChar
+ 1044               	.LVL92:
+ 1045 0526 00C0      		rjmp .L80
+ 1046               	.L81:
+ 415:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 416:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         else {
+ 417:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             push(ACK | EVEN, &(port[p].tx));
+ 1047               		.loc 1 417 0
+ 1048 0528 BE01      		movw r22,r28
+ 1049 052a 88E0      		ldi r24,lo8(8)
+ 1050 052c 0E94 0000 		call push
+ 1051               	.LVL93:
+ 1052               	.L80:
+ 418:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 419:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 420:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     clearSendAcks(port[p].sq);
+ 1053               		.loc 1 420 0
+ 1054 0530 28E5      		ldi r18,lo8(88)
+ 1055 0532 209F      		mul r18,r16
+ 1056 0534 C001      		movw r24,r0
+ 1057 0536 219F      		mul r18,r17
+ 1058 0538 900D      		add r25,r0
+ 1059 053a 1124      		clr __zero_reg__
+ 1060 053c EC01      		movw r28,r24
+ 1061 053e C050      		subi r28,lo8(-(port))
+ 1062 0540 D040      		sbci r29,hi8(-(port))
+ 1063 0542 2E85      		ldd r18,Y+14
+ 1064 0544 2C7F      		andi r18,lo8(-4)
+ 1065 0546 2E87      		std Y+14,r18
+ 421:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     
+ 422:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     // send Chunk?
+ 423:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     if( chunkReady(port[p].sq) )
+ 1066               		.loc 1 423 0
+ 1067 0548 27FF      		sbrs r18,7
+ 1068 054a 00C0      		rjmp .L77
+ 424:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     {
+ 425:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         if( clearToSend(port[p].sq) )
+ 1069               		.loc 1 425 0
+ 1070 054c 26FF      		sbrs r18,6
+ 1071 054e 00C0      		rjmp .L77
+ 426:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         {
+ 427:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             // out of retries
+ 428:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             if( (port[p].sq.retry <= 0) || (port[p].sq.retry > NUM_RETRIES))
+ 1072               		.loc 1 428 0
+ 1073 0550 2D85      		ldd r18,Y+13
+ 1074 0552 2150      		subi r18,lo8(-(-1))
+ 1075 0554 2430      		cpi r18,lo8(4)
+ 1076 0556 00F0      		brlo .L83
+ 429:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             {
+ 430:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 // reset the timer
+ 431:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 deregisterTimeout(&(port[p].sq.qtout.tout));
+ 1077               		.loc 1 431 0
+ 1078 0558 8050      		subi r24,lo8(-(port+1))
+ 1079 055a 9040      		sbci r25,hi8(-(port+1))
+ 1080 055c 0E94 0000 		call deregisterTimeout
+ 1081               	.LVL94:
+ 432:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 433:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 // flush the queue
+ 434:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 flushSendQueue(p);
+ 1082               		.loc 1 434 0
+ 1083 0560 8D2D      		mov r24,r13
+ 1084 0562 0E94 0000 		call flushSendQueue
+ 1085               	.LVL95:
+ 435:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                         
+ 436:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 // reset the flags
+ 437:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 port[p].sq.retry    = NUM_RETRIES;
+ 1086               		.loc 1 437 0
+ 1087 0566 94E0      		ldi r25,lo8(4)
+ 1088 0568 9D87      		std Y+13,r25
+ 438:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 port[p].sq.flags   |= CLEAR_TO_SEND;
+ 1089               		.loc 1 438 0
+ 1090 056a 8E85      		ldd r24,Y+14
+ 1091 056c 8064      		ori r24,lo8(64)
+ 439:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 flipParity(port[p].sq);
+ 1092               		.loc 1 439 0
+ 1093 056e 8927      		eor r24,r25
+ 1094 0570 8E87      		std Y+14,r24
+ 440:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 441:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 // ensemble level updates - remove neighbor, restart neighbor scanning
+ 442:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 //     These don't belong in data-link in my opinion
+ 443:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 //restartScan(p);
+ 444:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 445:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****                 return;
+ 1095               		.loc 1 445 0
+ 1096 0572 00C0      		rjmp .L77
+ 1097               	.L83:
+ 446:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             }
+ 447:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.retry--;
+ 1098               		.loc 1 447 0
+ 1099 0574 2D87      		std Y+13,r18
+ 448:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 449:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
+ 450:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 			if (isAClockSyncMessage(port[p].sq.head) == 1)
+ 1100               		.loc 1 450 0
+ 1101 0576 8F85      		ldd r24,Y+15
+ 1102 0578 9889      		ldd r25,Y+16
+ 1103 057a 0E94 0000 		call isAClockSyncMessage
+ 1104               	.LVL96:
+ 1105 057e 8130      		cpi r24,lo8(1)
+ 1106 0580 01F4      		brne .L84
+ 451:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 			{		
+ 452:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 				// insert send time
+ 453:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 				insertSendTime(port[p].sq.head);
+ 1107               		.loc 1 453 0
+ 1108 0582 8F85      		ldd r24,Y+15
+ 1109 0584 9889      		ldd r25,Y+16
+ 1110 0586 0E94 0000 		call insertSendTime
+ 1111               	.LVL97:
+ 1112               	.L84:
+ 454:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 			}
+ 455:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** #endif
+ 456:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             sendToBuffer(p, port[p].sq.head, sendParity(port[p].sq) );
+ 1113               		.loc 1 456 0
+ 1114 058a 88E5      		ldi r24,lo8(88)
+ 1115 058c 809F      		mul r24,r16
+ 1116 058e 7001      		movw r14,r0
+ 1117 0590 819F      		mul r24,r17
+ 1118 0592 F00C      		add r15,r0
+ 1119 0594 1124      		clr __zero_reg__
+ 1120 0596 E701      		movw r28,r14
+ 1121 0598 C050      		subi r28,lo8(-(port))
+ 1122 059a D040      		sbci r29,hi8(-(port))
+ 1123 059c 4E85      		ldd r20,Y+14
+ 1124 059e 42FB      		bst r20,2
+ 1125 05a0 4427      		clr r20
+ 1126 05a2 40F9      		bld r20,0
+ 1127 05a4 6F85      		ldd r22,Y+15
+ 1128 05a6 7889      		ldd r23,Y+16
+ 1129 05a8 8D2D      		mov r24,r13
+ 1130 05aa 0E94 0000 		call sendToBuffer
+ 1131               	.LVL98:
+ 457:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.flags &= ~CLEAR_TO_SEND;
+ 1132               		.loc 1 457 0
+ 1133 05ae 8E85      		ldd r24,Y+14
+ 1134 05b0 8F7B      		andi r24,lo8(-65)
+ 1135 05b2 8E87      		std Y+14,r24
+ 458:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             
+ 459:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             // start the timeout
+ 460:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.qtout.tout.calltime = getTime() + DEFAULT_TIMEOUT;
+ 1136               		.loc 1 460 0
+ 1137 05b4 0E94 0000 		call getTime
+ 1138               	.LVL99:
+ 1139 05b8 6E5C      		subi r22,-50
+ 1140 05ba 7F4F      		sbci r23,-1
+ 1141 05bc 8F4F      		sbci r24,-1
+ 1142 05be 9F4F      		sbci r25,-1
+ 1143 05c0 6B83      		std Y+3,r22
+ 1144 05c2 7C83      		std Y+4,r23
+ 1145 05c4 8D83      		std Y+5,r24
+ 1146 05c6 9E83      		std Y+6,r25
+ 461:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             registerTimeout(&(port[p].sq.qtout.tout));
+ 1147               		.loc 1 461 0
+ 1148 05c8 C701      		movw r24,r14
+ 1149 05ca 8050      		subi r24,lo8(-(port+1))
+ 1150 05cc 9040      		sbci r25,hi8(-(port+1))
+ 1151               	/* epilogue start */
+ 462:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****         }
+ 463:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****     }
+ 464:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** }
+ 1152               		.loc 1 464 0
+ 1153 05ce DF91      		pop r29
+ 1154 05d0 CF91      		pop r28
+ 1155 05d2 1F91      		pop r17
+ 1156 05d4 0F91      		pop r16
+ 1157 05d6 FF90      		pop r15
+ 1158 05d8 EF90      		pop r14
+ 1159 05da DF90      		pop r13
+ 1160               	.LVL100:
+ 461:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c ****             registerTimeout(&(port[p].sq.qtout.tout));
+ 1161               		.loc 1 461 0
+ 1162 05dc 0C94 0000 		jmp registerTimeout
+ 1163               	.LVL101:
+ 1164               	.L77:
+ 1165               	/* epilogue start */
+ 1166               		.loc 1 464 0
+ 1167 05e0 DF91      		pop r29
+ 1168 05e2 CF91      		pop r28
+ 1169 05e4 1F91      		pop r17
+ 1170 05e6 0F91      		pop r16
+ 1171 05e8 FF90      		pop r15
+ 1172 05ea EF90      		pop r14
+ 1173 05ec DF90      		pop r13
+ 1174               	.LVL102:
+ 1175 05ee 0895      		ret
+ 1176               	.LFE13:
+ 1178               	.global	initHWDataLink
+ 1180               	initHWDataLink:
+ 1181               	.LFB14:
+ 465:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** 
+ 466:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** // initialize
+ 467:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwDataLink.c **** void initHWDataLink(){
+ 1182               		.loc 1 467 0
+ 1183               	/* prologue: function */
+ 1184               	/* frame size = 0 */
+ 1185               	/* stack size = 0 */
+ 1186               	.L__stack_usage = 0
+ 1187 05f0 0895      		ret
+ 1188               	.LFE14:
+ 1190               		.comm	wasEscapeStore,6,1
+ 1521               	.Letext0:
+ 1522               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 1523               		.file 3 "/home/pthalamy/CMU/build-modif/src-bobby/system/defs.bbh"
+ 1524               		.file 4 "/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bbh"
+ 1525               		.file 5 "/home/pthalamy/CMU/build-modif/src-bobby/system/handler.bbh"
+ 1526               		.file 6 "/home/pthalamy/CMU/build-modif/src-bobby/system/memory.bbh"
+ 1527               		.file 7 "/home/pthalamy/CMU/build-modif/src-bobby/system/hardwaretime.bbh"
+ 1528               		.file 8 "/home/pthalamy/CMU/build-modif/src-bobby/system/queues.bbh"
+ 1529               		.file 9 "/home/pthalamy/CMU/build-modif/src-bobby/system/serial.bbh"
+ 1530               		.file 10 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/../hw-api/hwDataLink.h"
+ 1531               		.file 11 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/../hw-api/hwSerial.h"
+ 1532               		.file 12 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/../system/clock.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwDataLink.c
-     /tmp/ccE1Ai19.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccE1Ai19.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccE1Ai19.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccE1Ai19.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccE1Ai19.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccE1Ai19.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccE1Ai19.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccE1Ai19.s:13     .text:0000000000000000 crcCalc
-     /tmp/ccE1Ai19.s:59     .text:0000000000000028 ackHandler
-     /tmp/ccE1Ai19.s:148    .text:000000000000008c addToGlobalRq
-     /tmp/ccE1Ai19.s:193    .text:00000000000000c8 isSpecial
-     /tmp/ccE1Ai19.s:230    .text:00000000000000e8 sendToBuffer
-     /tmp/ccE1Ai19.s:474    .text:0000000000000228 processBuffer
+     /tmp/ccorXlAE.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccorXlAE.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccorXlAE.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccorXlAE.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccorXlAE.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccorXlAE.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccorXlAE.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccorXlAE.s:13     .text:0000000000000000 crcCalc
+     /tmp/ccorXlAE.s:59     .text:0000000000000028 ackHandler
+     /tmp/ccorXlAE.s:148    .text:000000000000008c addToGlobalRq
+     /tmp/ccorXlAE.s:193    .text:00000000000000c8 isSpecial
+     /tmp/ccorXlAE.s:230    .text:00000000000000e8 sendToBuffer
+     /tmp/ccorXlAE.s:474    .text:0000000000000228 processBuffer
                             *COM*:0000000000000006 wasEscapeStore
-     /tmp/ccE1Ai19.s:889    .text:0000000000000444 nextPacket
-     /tmp/ccE1Ai19.s:941    .text:000000000000048e sendOnSerial
-     /tmp/ccE1Ai19.s:1140   .text:00000000000005ac initHWDataLink
+     /tmp/ccorXlAE.s:900    .text:0000000000000454 nextPacket
+     /tmp/ccorXlAE.s:952    .text:000000000000049e sendOnSerial
+     /tmp/ccorXlAE.s:1180   .text:00000000000005f0 initHWDataLink
 
 UNDEFINED SYMBOLS
 port
@@ -1655,8 +1719,11 @@ pPutChar
 isEmpty
 pop
 getSystemRXChunk
+isAClockSyncMessage
+insertReceiveTime
 freeChunk
 flushSendQueue
+insertSendTime
 getTime
 registerTimeout
 __do_clear_bss

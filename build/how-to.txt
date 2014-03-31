@@ -1,0 +1,9 @@
+
+# To flash real blinky blocks
+
+. ./initbb.sh
+export BB=block (BB=sim by default)
+
+chmod 777 /dev/ttyUSB0 
+stty -F /dev/ttyUSB0  38400
+reprogrammer -p /dev/ttyUSB0 -f arch-blocks/rainbow.hex

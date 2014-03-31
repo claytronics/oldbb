@@ -1,0 +1,1118 @@
+   1               		.file	"log.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	freeLogChunk
+  13               	freeLogChunk:
+  14               	.LFB6:
+  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb"
+   1:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #include <stdarg.h>
+   2:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #include <string.h>
+   3:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #include <stdio.h>
+   4:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+   5:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #include "log.bbh"
+   6:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #include "ensemble.bbh"
+   7:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #include "data_link.bbh"
+   8:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #include "serial.bbh"
+   9:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  10:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #define UNDEFINED_HOST 200
+  11:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  12:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #define LOG_I_AM_HOST			0x01
+  13:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #define LOG_PATH_TO_HOST		0x02
+  14:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #define LOG_NEED_PATH_TO_HOST	0x03
+  15:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #define LOG_DATA				0x04
+  16:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  17:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** //#define FORCE_TRANSMISSION
+  18:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  19:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** threadvar byte PCConnection = 0;
+  20:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** threadvar PRef toHost = 200; //= NUM_PORT; // UNDEFINED_HOST (compilation error with SIM)
+  21:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  22:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** byte sendLogChunk(PRef p, byte *d, byte s);
+  23:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  24:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** void freeLogChunk(void)
+  25:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** {
+  16               		.loc 1 25 0
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  26:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #ifdef FORCE_TRANSMISSION
+  27:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	 if(chunkResponseType(thisChunk) == MSG_RESP_ACK) {
+  28:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		free(thisChunk);
+  29:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	} else {
+  30:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		// try again
+  31:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		sendLogChunk(faceNum(thisChunk), thisChunk->data, DATA_SIZE);
+  32:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		free(thisChunk);
+  33:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+  34:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #else
+  35:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	free(thisChunk);
+  21               		.loc 1 35 0
+  22 0000 8091 0000 		lds r24,thisChunk
+  23 0004 9091 0000 		lds r25,thisChunk+1
+  24 0008 0C94 0000 		jmp free
+  25               	.LVL0:
+  26               	.LFE6:
+  28               	.global	isHostPort
+  30               	isHostPort:
+  31               	.LFB7:
+  36:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #endif
+  37:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+  38:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  39:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** byte isHostPort(PRef p)
+  40:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** {
+  32               		.loc 1 40 0
+  33               	.LVL1:
+  34               	/* prologue: function */
+  35               	/* frame size = 0 */
+  36               	/* stack size = 0 */
+  37               	.L__stack_usage = 0
+  41:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	return ((p == toHost) && (PCConnection == 1));
+  38               		.loc 1 41 0
+  39 000c 9091 0000 		lds r25,toHost
+  40 0010 8913      		cpse r24,r25
+  41 0012 00C0      		rjmp .L5
+  42               		.loc 1 41 0 is_stmt 0 discriminator 1
+  43 0014 81E0      		ldi r24,lo8(1)
+  44 0016 90E0      		ldi r25,0
+  45               	.LVL2:
+  46 0018 2091 0000 		lds r18,PCConnection
+  47 001c 2130      		cpi r18,lo8(1)
+  48 001e 01F0      		breq .L3
+  49               	.L5:
+  50               		.loc 1 41 0
+  51 0020 80E0      		ldi r24,0
+  52 0022 90E0      		ldi r25,0
+  53               	.L3:
+  42:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+  54               		.loc 1 42 0 is_stmt 1 discriminator 4
+  55 0024 0895      		ret
+  56               	.LFE7:
+  58               	.global	sendLogChunk
+  60               	sendLogChunk:
+  61               	.LFB8:
+  43:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  44:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** byte sendLogChunk(PRef p, byte *d, byte s)
+  45:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** {
+  62               		.loc 1 45 0
+  63               	.LVL3:
+  64 0026 8F92      		push r8
+  65               	.LCFI0:
+  66 0028 9F92      		push r9
+  67               	.LCFI1:
+  68 002a BF92      		push r11
+  69               	.LCFI2:
+  70 002c CF92      		push r12
+  71               	.LCFI3:
+  72 002e DF92      		push r13
+  73               	.LCFI4:
+  74 0030 EF92      		push r14
+  75               	.LCFI5:
+  76 0032 FF92      		push r15
+  77               	.LCFI6:
+  78 0034 0F93      		push r16
+  79               	.LCFI7:
+  80 0036 1F93      		push r17
+  81               	.LCFI8:
+  82 0038 CF93      		push r28
+  83               	.LCFI9:
+  84 003a DF93      		push r29
+  85               	.LCFI10:
+  86 003c 1F92      		push __zero_reg__
+  87               	.LCFI11:
+  88 003e CDB7      		in r28,__SP_L__
+  89 0040 DEB7      		in r29,__SP_H__
+  90               	.LCFI12:
+  91               	/* prologue: function */
+  92               	/* frame size = 1 */
+  93               	/* stack size = 12 */
+  94               	.L__stack_usage = 12
+  95 0042 B82E      		mov r11,r24
+  96 0044 6B01      		movw r12,r22
+  46:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	Chunk *c=calloc(sizeof(Chunk), 1);
+  97               		.loc 1 46 0
+  98 0046 61E0      		ldi r22,lo8(1)
+  99 0048 70E0      		ldi r23,0
+ 100               	.LVL4:
+ 101 004a 88E1      		ldi r24,lo8(24)
+ 102 004c 90E0      		ldi r25,0
+ 103               	.LVL5:
+ 104 004e 4983      		std Y+1,r20
+ 105 0050 0E94 0000 		call calloc
+ 106               	.LVL6:
+ 107 0054 4C01      		movw r8,r24
+ 108               	.LVL7:
+  47:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #ifdef FORCE_TRANSMISSION
+  48:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	while (c == NULL)
+  49:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{
+  50:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		c=calloc(sizeof(Chunk), 1);
+  51:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+  52:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	while (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk) =
+  53:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	return 1;
+  54:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #else
+  55:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	if (c == NULL)
+ 109               		.loc 1 55 0
+ 110 0056 2981      		ldd r18,Y+1
+ 111 0058 0097      		sbiw r24,0
+ 112 005a 01F0      		breq .L11
+  56:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{
+  57:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		return 0;
+  58:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+  59:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	if (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk) == 0
+ 113               		.loc 1 59 0
+ 114 005c 80E0      		ldi r24,lo8(gs(freeLogChunk))
+ 115 005e E82E      		mov r14,r24
+ 116 0060 80E0      		ldi r24,hi8(gs(freeLogChunk))
+ 117 0062 F82E      		mov r15,r24
+ 118 0064 00E0      		ldi r16,0
+ 119 0066 10E0      		ldi r17,0
+ 120 0068 A601      		movw r20,r12
+ 121 006a 6B2D      		mov r22,r11
+ 122 006c C401      		movw r24,r8
+ 123 006e 0E94 0000 		call sendMessageToPort
+ 124               	.LVL8:
+ 125 0072 8111      		cpse r24,__zero_reg__
+ 126 0074 00C0      		rjmp .L12
+  60:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{
+  61:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		free(c);
+ 127               		.loc 1 61 0
+ 128 0076 C401      		movw r24,r8
+ 129 0078 0E94 0000 		call free
+ 130               	.LVL9:
+ 131               	.L11:
+  57:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		return 0;
+ 132               		.loc 1 57 0
+ 133 007c 80E0      		ldi r24,0
+ 134 007e 00C0      		rjmp .L10
+ 135               	.L12:
+  62:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		return 0;
+  63:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+  64:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	return 1;
+ 136               		.loc 1 64 0
+ 137 0080 81E0      		ldi r24,lo8(1)
+ 138               	.L10:
+ 139               	/* epilogue start */
+  65:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** #endif
+  66:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  67:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+ 140               		.loc 1 67 0
+ 141 0082 0F90      		pop __tmp_reg__
+ 142 0084 DF91      		pop r29
+ 143 0086 CF91      		pop r28
+ 144 0088 1F91      		pop r17
+ 145 008a 0F91      		pop r16
+ 146 008c FF90      		pop r15
+ 147 008e EF90      		pop r14
+ 148 0090 DF90      		pop r13
+ 149 0092 CF90      		pop r12
+ 150               	.LVL10:
+ 151 0094 BF90      		pop r11
+ 152               	.LVL11:
+ 153 0096 9F90      		pop r9
+ 154 0098 8F90      		pop r8
+ 155               	.LVL12:
+ 156 009a 0895      		ret
+ 157               	.LFE8:
+ 159               	.global	sendPathToHost
+ 161               	sendPathToHost:
+ 162               	.LFB9:
+  68:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  69:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  70:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** void sendPathToHost(PRef p)
+  71:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** {
+ 163               		.loc 1 71 0
+ 164               	.LVL13:
+ 165 009c CF93      		push r28
+ 166               	.LCFI13:
+ 167 009e DF93      		push r29
+ 168               	.LCFI14:
+ 169 00a0 1F92      		push __zero_reg__
+ 170 00a2 1F92      		push __zero_reg__
+ 171               	.LCFI15:
+ 172 00a4 CDB7      		in r28,__SP_L__
+ 173 00a6 DEB7      		in r29,__SP_H__
+ 174               	.LCFI16:
+ 175               	/* prologue: function */
+ 176               	/* frame size = 2 */
+ 177               	/* stack size = 4 */
+ 178               	.L__stack_usage = 4
+  72:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte buf[2];
+  73:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+  74:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	buf[0] = LOG_MSG;
+ 179               		.loc 1 74 0
+ 180 00a8 90E5      		ldi r25,lo8(80)
+ 181 00aa 9983      		std Y+1,r25
+  75:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	buf[1] = LOG_PATH_TO_HOST;
+ 182               		.loc 1 75 0
+ 183 00ac 92E0      		ldi r25,lo8(2)
+ 184 00ae 9A83      		std Y+2,r25
+  76:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	sendLogChunk(p, buf, 2);
+ 185               		.loc 1 76 0
+ 186 00b0 42E0      		ldi r20,lo8(2)
+ 187 00b2 BE01      		movw r22,r28
+ 188 00b4 6F5F      		subi r22,-1
+ 189 00b6 7F4F      		sbci r23,-1
+ 190 00b8 0E94 0000 		call sendLogChunk
+ 191               	.LVL14:
+ 192               	/* epilogue start */
+  77:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+  78:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+ 193               		.loc 1 78 0
+ 194 00bc 0F90      		pop __tmp_reg__
+ 195 00be 0F90      		pop __tmp_reg__
+ 196 00c0 DF91      		pop r29
+ 197 00c2 CF91      		pop r28
+ 198 00c4 0895      		ret
+ 199               	.LFE9:
+ 201               	.global	spreadPathToHost
+ 203               	spreadPathToHost:
+ 204               	.LFB10:
+  79:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  80:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** void spreadPathToHost(PRef excluded)
+  81:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** {
+ 205               		.loc 1 81 0
+ 206               	.LVL15:
+ 207 00c6 0F93      		push r16
+ 208               	.LCFI17:
+ 209 00c8 1F93      		push r17
+ 210               	.LCFI18:
+ 211 00ca CF93      		push r28
+ 212               	.LCFI19:
+ 213 00cc DF93      		push r29
+ 214               	.LCFI20:
+ 215               	/* prologue: function */
+ 216               	/* frame size = 0 */
+ 217               	/* stack size = 4 */
+ 218               	.L__stack_usage = 4
+ 219 00ce 082F      		mov r16,r24
+ 220               	.LVL16:
+ 221 00d0 C0E0      		ldi r28,lo8(thisNeighborhood)
+ 222 00d2 D0E0      		ldi r29,hi8(thisNeighborhood)
+  82:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte p;
+  83:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  84:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	for( p = 0; p < NUM_PORTS; p++)
+ 223               		.loc 1 84 0
+ 224 00d4 10E0      		ldi r17,0
+ 225               	.LVL17:
+ 226               	.L16:
+  85:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{
+  86:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		if ((p == excluded) || (thisNeighborhood.n[p] == VACANT))
+ 227               		.loc 1 86 0
+ 228 00d6 1017      		cp r17,r16
+ 229 00d8 01F0      		breq .L15
+ 230               		.loc 1 86 0 is_stmt 0 discriminator 1
+ 231 00da 2881      		ld r18,Y
+ 232 00dc 3981      		ldd r19,Y+1
+ 233 00de 232B      		or r18,r19
+ 234 00e0 01F0      		breq .L15
+  87:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		{
+  88:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			continue;
+  89:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		}
+  90:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		sendPathToHost(p);
+ 235               		.loc 1 90 0 is_stmt 1
+ 236 00e2 812F      		mov r24,r17
+ 237 00e4 0E94 0000 		call sendPathToHost
+ 238               	.LVL18:
+ 239               	.L15:
+  84:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	for( p = 0; p < NUM_PORTS; p++)
+ 240               		.loc 1 84 0
+ 241 00e8 1F5F      		subi r17,lo8(-(1))
+ 242               	.LVL19:
+ 243 00ea 2296      		adiw r28,2
+ 244 00ec 1630      		cpi r17,lo8(6)
+ 245 00ee 01F4      		brne .L16
+ 246               	/* epilogue start */
+  91:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+  92:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+ 247               		.loc 1 92 0
+ 248 00f0 DF91      		pop r29
+ 249 00f2 CF91      		pop r28
+ 250 00f4 1F91      		pop r17
+ 251               	.LVL20:
+ 252 00f6 0F91      		pop r16
+ 253               	.LVL21:
+ 254 00f8 0895      		ret
+ 255               	.LFE10:
+ 257               	.global	forwardToHost
+ 259               	forwardToHost:
+ 260               	.LFB11:
+  93:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+  94:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** void forwardToHost(Chunk *c)
+  95:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** {
+ 261               		.loc 1 95 0
+ 262               	.LVL22:
+ 263               	/* prologue: function */
+ 264               	/* frame size = 0 */
+ 265               	/* stack size = 0 */
+ 266               	.L__stack_usage = 0
+ 267 00fa BC01      		movw r22,r24
+  96:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	if(toHost != UNDEFINED_HOST) {
+ 268               		.loc 1 96 0
+ 269 00fc 8091 0000 		lds r24,toHost
+ 270               	.LVL23:
+ 271 0100 883C      		cpi r24,lo8(-56)
+ 272 0102 01F0      		breq .L21
+  97:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		sendLogChunk(toHost, c->data, DATA_SIZE);
+ 273               		.loc 1 97 0
+ 274 0104 41E1      		ldi r20,lo8(17)
+ 275 0106 0C94 0000 		jmp sendLogChunk
+ 276               	.LVL24:
+ 277               	.L21:
+ 278 010a 0895      		ret
+ 279               	.LFE11:
+ 281               	.global	initLogDebug
+ 283               	initLogDebug:
+ 284               	.LFB12:
+  98:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+  99:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+ 100:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+ 101:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** void initLogDebug(void)
+ 102:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** {
+ 285               		.loc 1 102 0
+ 286 010c FF92      		push r15
+ 287               	.LCFI21:
+ 288 010e 0F93      		push r16
+ 289               	.LCFI22:
+ 290 0110 1F93      		push r17
+ 291               	.LCFI23:
+ 292 0112 CF93      		push r28
+ 293               	.LCFI24:
+ 294 0114 DF93      		push r29
+ 295               	.LCFI25:
+ 296 0116 1F92      		push __zero_reg__
+ 297 0118 1F92      		push __zero_reg__
+ 298               	.LCFI26:
+ 299 011a CDB7      		in r28,__SP_L__
+ 300 011c DEB7      		in r29,__SP_H__
+ 301               	.LCFI27:
+ 302               	/* prologue: function */
+ 303               	/* frame size = 2 */
+ 304               	/* stack size = 7 */
+ 305               	.L__stack_usage = 7
+ 103:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte buf[2];
+ 104:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+ 105:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	toHost = UNDEFINED_HOST;
+ 306               		.loc 1 105 0
+ 307 011e 88EC      		ldi r24,lo8(-56)
+ 308 0120 8093 0000 		sts toHost,r24
+ 106:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	PCConnection = 0;
+ 309               		.loc 1 106 0
+ 310 0124 1092 0000 		sts PCConnection,__zero_reg__
+ 107:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+ 108:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	buf[0] = LOG_MSG;
+ 311               		.loc 1 108 0
+ 312 0128 80E5      		ldi r24,lo8(80)
+ 313 012a 8983      		std Y+1,r24
+ 109:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	buf[1] = LOG_NEED_PATH_TO_HOST;
+ 314               		.loc 1 109 0
+ 315 012c 83E0      		ldi r24,lo8(3)
+ 316 012e 8A83      		std Y+2,r24
+ 110:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte p;
+ 111:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+ 112:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	setColor(ORANGE); // to remember to the user that the block is waiting
+ 317               		.loc 1 112 0
+ 318 0130 81E0      		ldi r24,lo8(1)
+ 319 0132 0E94 0000 		call setColor
+ 320               	.LVL25:
+ 113:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
+ 321               		.loc 1 113 0
+ 322 0136 00C0      		rjmp .L24
+ 323               	.L26:
+ 114:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{
+ 115:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		for( p = 0; p < NUM_PORTS; p++)
+ 116:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		{
+ 117:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			if ((thisNeighborhood.n[p] == VACANT))
+ 324               		.loc 1 117 0
+ 325 0138 F801      		movw r30,r16
+ 326 013a 2191      		ld r18,Z+
+ 327 013c 3191      		ld r19,Z+
+ 328 013e 8F01      		movw r16,r30
+ 329 0140 232B      		or r18,r19
+ 330 0142 01F0      		breq .L25
+ 118:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			{
+ 119:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				continue;
+ 120:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			}
+ 121:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			sendLogChunk(p, buf, 2);
+ 331               		.loc 1 121 0
+ 332 0144 42E0      		ldi r20,lo8(2)
+ 333 0146 BE01      		movw r22,r28
+ 334 0148 6F5F      		subi r22,-1
+ 335 014a 7F4F      		sbci r23,-1
+ 336 014c 8F2D      		mov r24,r15
+ 337 014e 0E94 0000 		call sendLogChunk
+ 338               	.LVL26:
+ 339               	.L25:
+ 115:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		for( p = 0; p < NUM_PORTS; p++)
+ 340               		.loc 1 115 0
+ 341 0152 F394      		inc r15
+ 342               	.LVL27:
+ 343 0154 F6E0      		ldi r31,lo8(6)
+ 344 0156 FF12      		cpse r15,r31
+ 345 0158 00C0      		rjmp .L26
+ 122:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		}
+ 123:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		delayMS(6);
+ 346               		.loc 1 123 0
+ 347 015a 86E0      		ldi r24,lo8(6)
+ 348 015c 90E0      		ldi r25,0
+ 349 015e 0E94 0000 		call delayMS
+ 350               	.LVL28:
+ 351               	.L24:
+ 113:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
+ 352               		.loc 1 113 0 discriminator 1
+ 353 0162 8091 0000 		lds r24,toHost
+ 354 0166 883C      		cpi r24,lo8(-56)
+ 355 0168 01F4      		brne .L23
+ 356 016a 00E0      		ldi r16,lo8(thisNeighborhood)
+ 357 016c 10E0      		ldi r17,hi8(thisNeighborhood)
+ 113:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
+ 358               		.loc 1 113 0 is_stmt 0
+ 359 016e F12C      		mov r15,__zero_reg__
+ 360 0170 00C0      		rjmp .L26
+ 361               	.L23:
+ 362               	/* epilogue start */
+ 124:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+ 125:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+ 363               		.loc 1 125 0 is_stmt 1
+ 364 0172 0F90      		pop __tmp_reg__
+ 365 0174 0F90      		pop __tmp_reg__
+ 366 0176 DF91      		pop r29
+ 367 0178 CF91      		pop r28
+ 368 017a 1F91      		pop r17
+ 369 017c 0F91      		pop r16
+ 370 017e FF90      		pop r15
+ 371 0180 0895      		ret
+ 372               	.LFE12:
+ 374               	.global	handleLogMessage
+ 376               	handleLogMessage:
+ 377               	.LFB13:
+ 126:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+ 127:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** byte handleLogMessage(void)
+ 128:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** {
+ 378               		.loc 1 128 0
+ 379               	/* prologue: function */
+ 380               	/* frame size = 0 */
+ 381               	/* stack size = 0 */
+ 382               	.L__stack_usage = 0
+ 129:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+ 130:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	if( thisChunk == NULL ) 
+ 383               		.loc 1 130 0
+ 384 0182 E091 0000 		lds r30,thisChunk
+ 385 0186 F091 0000 		lds r31,thisChunk+1
+ 386 018a 3097      		sbiw r30,0
+ 387 018c 01F0      		breq .L39
+ 131:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{
+ 132:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		return 0;
+ 133:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+ 134:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	switch(thisChunk->data[1])
+ 388               		.loc 1 134 0
+ 389 018e 9181      		ldd r25,Z+1
+ 390 0190 9230      		cpi r25,lo8(2)
+ 391 0192 01F0      		breq .L35
+ 392 0194 00F4      		brsh .L38
+ 393 0196 9130      		cpi r25,lo8(1)
+ 394 0198 01F4      		brne .L43
+ 395 019a 00C0      		rjmp .L34
+ 396               	.L38:
+ 397 019c 9330      		cpi r25,lo8(3)
+ 398 019e 01F0      		breq .L36
+ 399 01a0 9430      		cpi r25,lo8(4)
+ 400 01a2 01F4      		brne .L43
+ 401 01a4 00C0      		rjmp .L37
+ 402               	.L34:
+ 135:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{
+ 136:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		case LOG_I_AM_HOST:
+ 137:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			toHost = faceNum(thisChunk);			
+ 403               		.loc 1 137 0
+ 404 01a6 8189      		ldd r24,Z+17
+ 405 01a8 8770      		andi r24,lo8(7)
+ 406 01aa 8093 0000 		sts toHost,r24
+ 138:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			PCConnection = 1;
+ 407               		.loc 1 138 0
+ 408 01ae 9093 0000 		sts PCConnection,r25
+ 409 01b2 00C0      		rjmp .L44
+ 410               	.L35:
+ 139:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			spreadPathToHost(faceNum(thisChunk));
+ 140:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		break;
+ 141:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		case LOG_PATH_TO_HOST:
+ 142:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			if (toHost == UNDEFINED_HOST) {
+ 411               		.loc 1 142 0
+ 412 01b4 8091 0000 		lds r24,toHost
+ 413 01b8 883C      		cpi r24,lo8(-56)
+ 414 01ba 01F4      		brne .L43
+ 143:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				toHost = faceNum(thisChunk);
+ 415               		.loc 1 143 0
+ 416 01bc 8189      		ldd r24,Z+17
+ 417 01be 8770      		andi r24,lo8(7)
+ 418 01c0 8093 0000 		sts toHost,r24
+ 144:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				PCConnection = 0;
+ 419               		.loc 1 144 0
+ 420 01c4 1092 0000 		sts PCConnection,__zero_reg__
+ 421               	.L44:
+ 145:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				spreadPathToHost(faceNum(thisChunk));
+ 422               		.loc 1 145 0
+ 423 01c8 0E94 0000 		call spreadPathToHost
+ 424               	.LVL29:
+ 425 01cc 00C0      		rjmp .L43
+ 426               	.L36:
+ 146:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			}
+ 147:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		break;
+ 148:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		case LOG_NEED_PATH_TO_HOST:
+ 149:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			if (toHost != UNDEFINED_HOST) {
+ 427               		.loc 1 149 0
+ 428 01ce 8091 0000 		lds r24,toHost
+ 429 01d2 883C      		cpi r24,lo8(-56)
+ 430 01d4 01F0      		breq .L43
+ 150:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				sendPathToHost(faceNum(thisChunk));
+ 431               		.loc 1 150 0
+ 432 01d6 8189      		ldd r24,Z+17
+ 433 01d8 8770      		andi r24,lo8(7)
+ 434 01da 0E94 0000 		call sendPathToHost
+ 435               	.LVL30:
+ 436 01de 00C0      		rjmp .L43
+ 437               	.L37:
+ 151:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			}
+ 152:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		break;
+ 153:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		case LOG_DATA:
+ 154:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			if(toHost != UNDEFINED_HOST) {
+ 438               		.loc 1 154 0
+ 439 01e0 8091 0000 		lds r24,toHost
+ 440 01e4 883C      		cpi r24,lo8(-56)
+ 441 01e6 01F0      		breq .L43
+ 155:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				forwardToHost(thisChunk);
+ 442               		.loc 1 155 0
+ 443 01e8 CF01      		movw r24,r30
+ 444 01ea 0E94 0000 		call forwardToHost
+ 445               	.LVL31:
+ 446 01ee 00C0      		rjmp .L43
+ 447               	.L39:
+ 132:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		return 0;
+ 448               		.loc 1 132 0
+ 449 01f0 80E0      		ldi r24,0
+ 450 01f2 0895      		ret
+ 451               	.L43:
+ 156:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			}
+ 157:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		break;
+ 158:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+ 159:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+ 160:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	return 1;
+ 452               		.loc 1 160 0
+ 453 01f4 81E0      		ldi r24,lo8(1)
+ 161:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+ 454               		.loc 1 161 0
+ 455 01f6 0895      		ret
+ 456               	.LFE13:
+ 458               	.global	getSize
+ 460               	getSize:
+ 461               	.LFB14:
+ 162:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+ 163:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** byte getSize(char* str) {
+ 462               		.loc 1 163 0
+ 463               	.LVL32:
+ 464               	/* prologue: function */
+ 465               	/* frame size = 0 */
+ 466               	/* stack size = 0 */
+ 467               	.L__stack_usage = 0
+ 164:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte sizeCar = 0;
+ 165:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte sizeChunk = 1;
+ 166:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+ 167:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	if (str == NULL) {
+ 468               		.loc 1 167 0
+ 469 01f8 0097      		sbiw r24,0
+ 470 01fa 01F0      		breq .L48
+ 168:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****         return 0;
+ 169:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****     }
+ 170:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+ 171:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	sizeCar = strlen(str) + 1;
+ 471               		.loc 1 171 0
+ 472 01fc DC01      		movw r26,r24
+ 473               		0:
+ 474 01fe 0D90      		ld __tmp_reg__,X+
+ 475 0200 0020      		tst __tmp_reg__
+ 476 0202 01F4      		brne 0b
+ 477 0204 1197      		sbiw r26,1
+ 478 0206 A81B      		sub r26,r24
+ 479               	.LVL33:
+ 480 0208 8A2F      		mov r24,r26
+ 481               	.LVL34:
+ 482 020a 8F5F      		subi r24,lo8(-(1))
+ 483               	.LVL35:
+ 172:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+ 173:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****     if (sizeCar < 11) {
+ 484               		.loc 1 173 0
+ 485 020c 8B30      		cpi r24,lo8(11)
+ 486 020e 00F0      		brlo .L49
+ 174:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****         return 1;
+ 175:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****     }
+ 176:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****     
+ 177:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****     sizeCar -= 10;
+ 487               		.loc 1 177 0
+ 488 0210 8A50      		subi r24,lo8(-(-10))
+ 489               	.LVL36:
+ 178:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****     sizeChunk += sizeCar / 11;
+ 490               		.loc 1 178 0
+ 491 0212 6BE0      		ldi r22,lo8(11)
+ 492 0214 0E94 0000 		call __udivmodqi4
+ 493               	.LVL37:
+ 179:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	if ((sizeCar % 11) != 0) {
+ 494               		.loc 1 179 0
+ 495 0218 9111      		cpse r25,__zero_reg__
+ 496 021a 00C0      		rjmp .L47
+ 178:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****     sizeChunk += sizeCar / 11;
+ 497               		.loc 1 178 0
+ 498 021c 8F5F      		subi r24,lo8(-(1))
+ 499               	.LVL38:
+ 500 021e 0895      		ret
+ 501               	.LVL39:
+ 502               	.L47:
+ 180:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		sizeChunk++;
+ 503               		.loc 1 180 0
+ 504 0220 8E5F      		subi r24,lo8(-(2))
+ 505               	.LVL40:
+ 506 0222 0895      		ret
+ 507               	.LVL41:
+ 508               	.L48:
+ 168:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****         return 0;
+ 509               		.loc 1 168 0
+ 510 0224 80E0      		ldi r24,0
+ 511               	.LVL42:
+ 512 0226 0895      		ret
+ 513               	.LVL43:
+ 514               	.L49:
+ 174:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb ****         return 1;
+ 515               		.loc 1 174 0
+ 516 0228 81E0      		ldi r24,lo8(1)
+ 517               	.LVL44:
+ 181:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+ 182:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	return sizeChunk;
+ 183:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+ 518               		.loc 1 183 0
+ 519 022a 0895      		ret
+ 520               	.LFE14:
+ 522               	.global	printDebug
+ 524               	printDebug:
+ 525               	.LFB15:
+ 184:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+ 185:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** // format: <LOG_MSG> <LOG_DATA> <block id (2 bytes) > <message # (1 byte)> < fragment # (1 byte)> <
+ 186:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** byte printDebug(char* str) {
+ 526               		.loc 1 186 0
+ 527               	.LVL45:
+ 528 022c 8F92      		push r8
+ 529               	.LCFI28:
+ 530 022e 9F92      		push r9
+ 531               	.LCFI29:
+ 532 0230 AF92      		push r10
+ 533               	.LCFI30:
+ 534 0232 BF92      		push r11
+ 535               	.LCFI31:
+ 536 0234 CF92      		push r12
+ 537               	.LCFI32:
+ 538 0236 DF92      		push r13
+ 539               	.LCFI33:
+ 540 0238 EF92      		push r14
+ 541               	.LCFI34:
+ 542 023a FF92      		push r15
+ 543               	.LCFI35:
+ 544 023c 0F93      		push r16
+ 545               	.LCFI36:
+ 546 023e 1F93      		push r17
+ 547               	.LCFI37:
+ 548 0240 CF93      		push r28
+ 549               	.LCFI38:
+ 550 0242 DF93      		push r29
+ 551               	.LCFI39:
+ 552 0244 CDB7      		in r28,__SP_L__
+ 553 0246 DEB7      		in r29,__SP_H__
+ 554               	.LCFI40:
+ 555 0248 6197      		sbiw r28,17
+ 556               	.LCFI41:
+ 557 024a CDBF      		out __SP_L__,r28
+ 558 024c DEBF      		out __SP_H__,r29
+ 559               	/* prologue: function */
+ 560               	/* frame size = 17 */
+ 561               	/* stack size = 29 */
+ 562               	.L__stack_usage = 29
+ 563 024e 8C01      		movw r16,r24
+ 187:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte size = getSize(str);
+ 564               		.loc 1 187 0
+ 565 0250 0E94 0000 		call getSize
+ 566               	.LVL46:
+ 567 0254 B82E      		mov r11,r24
+ 568               	.LVL47:
+ 188:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	static byte mId = 0;
+ 189:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	uint8_t index = 0;
+ 190:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte buf[DATA_SIZE];
+ 191:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte s = 0;	
+ 192:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte fId = 0;
+ 193:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	byte off = 6;
+ 194:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+ 195:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	if (toHost == UNDEFINED_HOST)
+ 569               		.loc 1 195 0
+ 570 0256 8091 0000 		lds r24,toHost
+ 571 025a 883C      		cpi r24,lo8(-56)
+ 572 025c 01F4      		brne .+2
+ 573 025e 00C0      		rjmp .L57
+ 196:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{
+ 197:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		return 0;
+ 198:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+ 199:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+ 200:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	buf[0] = LOG_MSG;
+ 574               		.loc 1 200 0
+ 575 0260 80E5      		ldi r24,lo8(80)
+ 576 0262 8983      		std Y+1,r24
+ 201:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	buf[1] = LOG_DATA;
+ 577               		.loc 1 201 0
+ 578 0264 84E0      		ldi r24,lo8(4)
+ 579 0266 8A83      		std Y+2,r24
+ 202:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	GUIDIntoChar(getGUID(), &(buf[2]));
+ 580               		.loc 1 202 0
+ 581 0268 0E94 0000 		call getGUID
+ 582               	.LVL48:
+ 583 026c BE01      		movw r22,r28
+ 584 026e 6D5F      		subi r22,-3
+ 585 0270 7F4F      		sbci r23,-1
+ 586 0272 0E94 0000 		call GUIDIntoChar
+ 587               	.LVL49:
+ 203:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	buf[4] = mId;
+ 588               		.loc 1 203 0
+ 589 0276 8091 0000 		lds r24,mId.4037
+ 590 027a 8D83      		std Y+5,r24
+ 204:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	
+ 205:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	if (size == 1) 
+ 591               		.loc 1 205 0
+ 592 027c 81E0      		ldi r24,lo8(1)
+ 593 027e B812      		cpse r11,r24
+ 594 0280 00C0      		rjmp .L58
+ 595               	.LVL50:
+ 206:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{
+ 207:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		off = 7;
+ 208:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		s = strlen(str)+1;
+ 596               		.loc 1 208 0
+ 597 0282 D801      		movw r26,r16
+ 598               		0:
+ 599 0284 0D90      		ld __tmp_reg__,X+
+ 600 0286 0020      		tst __tmp_reg__
+ 601 0288 01F4      		brne 0b
+ 602 028a 1197      		sbiw r26,1
+ 603 028c FA2E      		mov r15,r26
+ 604 028e F01A      		sub r15,r16
+ 605               	.LVL51:
+ 209:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		memcpy(buf+off, str, s);
+ 606               		.loc 1 209 0
+ 607 0290 9E01      		movw r18,r28
+ 608 0292 285F      		subi r18,-8
+ 609 0294 3F4F      		sbci r19,-1
+ 208:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		s = strlen(str)+1;
+ 610               		.loc 1 208 0
+ 611 0296 4F2D      		mov r20,r15
+ 612 0298 4F5F      		subi r20,lo8(-(1))
+ 613               	.LVL52:
+ 614               		.loc 1 209 0
+ 615 029a 50E0      		ldi r21,0
+ 616 029c B801      		movw r22,r16
+ 617 029e C901      		movw r24,r18
+ 618 02a0 0E94 0000 		call memcpy
+ 619               	.LVL53:
+ 210:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		buf[5] = 0;	
+ 620               		.loc 1 210 0
+ 621 02a4 1E82      		std Y+6,__zero_reg__
+ 211:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		buf[6] = size;
+ 622               		.loc 1 211 0
+ 623 02a6 BF82      		std Y+7,r11
+ 212:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		sendLogChunk(toHost, buf, s+off);
+ 624               		.loc 1 212 0
+ 625 02a8 4F2D      		mov r20,r15
+ 626 02aa 485F      		subi r20,lo8(-(8))
+ 627 02ac BE01      		movw r22,r28
+ 628 02ae 6F5F      		subi r22,-1
+ 629 02b0 7F4F      		sbci r23,-1
+ 630 02b2 8091 0000 		lds r24,toHost
+ 631 02b6 0E94 0000 		call sendLogChunk
+ 632               	.LVL54:
+ 633 02ba 00C0      		rjmp .L53
+ 634               	.LVL55:
+ 635               	.L56:
+ 213:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	} 
+ 214:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	else
+ 215:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{	
+ 216:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		for (fId = 0; fId < size; fId++)
+ 217:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		{
+ 218:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			buf[5] = fId;
+ 636               		.loc 1 218 0
+ 637 02bc EE82      		std Y+6,r14
+ 219:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			if (fId == 0)
+ 638               		.loc 1 219 0
+ 639 02be 8111      		cpse r24,__zero_reg__
+ 640 02c0 00C0      		rjmp .L54
+ 220:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			{
+ 221:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				buf[6] = size;
+ 641               		.loc 1 221 0
+ 642 02c2 BF82      		std Y+7,r11
+ 643               	.LVL56:
+ 222:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				off = 7;
+ 644               		.loc 1 222 0
+ 645 02c4 47E0      		ldi r20,lo8(7)
+ 646 02c6 842E      		mov r8,r20
+ 223:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				s = 10;
+ 647               		.loc 1 223 0
+ 648 02c8 5AE0      		ldi r21,lo8(10)
+ 649 02ca A52E      		mov r10,r21
+ 650 02cc 00C0      		rjmp .L55
+ 651               	.LVL57:
+ 652               	.L54:
+ 224:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			}
+ 225:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			else if (fId == (size -1))
+ 653               		.loc 1 225 0
+ 654 02ce EC14      		cp r14,r12
+ 655 02d0 FD04      		cpc r15,r13
+ 656 02d2 01F4      		brne .L59
+ 226:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			{
+ 227:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				s = strlen(str+index)+1 ;
+ 657               		.loc 1 227 0
+ 658 02d4 F801      		movw r30,r16
+ 659 02d6 E90D      		add r30,r9
+ 660 02d8 F11D      		adc r31,__zero_reg__
+ 661 02da DF01      		movw r26,r30
+ 662               		0:
+ 663 02dc 0D90      		ld __tmp_reg__,X+
+ 664 02de 0020      		tst __tmp_reg__
+ 665 02e0 01F4      		brne 0b
+ 666 02e2 AA2E      		mov r10,r26
+ 667 02e4 AE1A      		sub r10,r30
+ 668               	.LVL58:
+ 669 02e6 36E0      		ldi r19,lo8(6)
+ 670 02e8 832E      		mov r8,r19
+ 671 02ea 00C0      		rjmp .L55
+ 672               	.LVL59:
+ 673               	.L59:
+ 225:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			else if (fId == (size -1))
+ 674               		.loc 1 225 0
+ 675 02ec 96E0      		ldi r25,lo8(6)
+ 676 02ee 892E      		mov r8,r25
+ 228:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			} 
+ 229:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			else
+ 230:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			{
+ 231:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 				s = 11;
+ 677               		.loc 1 231 0
+ 678 02f0 2BE0      		ldi r18,lo8(11)
+ 679 02f2 A22E      		mov r10,r18
+ 680               	.LVL60:
+ 681               	.L55:
+ 232:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			}
+ 233:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			memcpy(buf+off, str+index, s);
+ 682               		.loc 1 233 0
+ 683 02f4 21E0      		ldi r18,lo8(1)
+ 684 02f6 30E0      		ldi r19,0
+ 685 02f8 2C0F      		add r18,r28
+ 686 02fa 3D1F      		adc r19,r29
+ 687 02fc 280D      		add r18,r8
+ 688 02fe 311D      		adc r19,__zero_reg__
+ 689 0300 F801      		movw r30,r16
+ 690 0302 E90D      		add r30,r9
+ 691 0304 F11D      		adc r31,__zero_reg__
+ 692 0306 4A2D      		mov r20,r10
+ 693 0308 50E0      		ldi r21,0
+ 694 030a BF01      		movw r22,r30
+ 695 030c C901      		movw r24,r18
+ 696 030e 0E94 0000 		call memcpy
+ 697               	.LVL61:
+ 234:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			index += s;
+ 698               		.loc 1 234 0
+ 699 0312 9A0C      		add r9,r10
+ 700               	.LVL62:
+ 235:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			sendLogChunk(toHost, buf, s+off);
+ 701               		.loc 1 235 0
+ 702 0314 482D      		mov r20,r8
+ 703 0316 4A0D      		add r20,r10
+ 704 0318 BE01      		movw r22,r28
+ 705 031a 6F5F      		subi r22,-1
+ 706 031c 7F4F      		sbci r23,-1
+ 707 031e 8091 0000 		lds r24,toHost
+ 708 0322 0E94 0000 		call sendLogChunk
+ 709               	.LVL63:
+ 710 0326 8FEF      		ldi r24,-1
+ 711 0328 E81A      		sub r14,r24
+ 712 032a F80A      		sbc r15,r24
+ 713 032c 00C0      		rjmp .L52
+ 714               	.LVL64:
+ 715               	.L58:
+ 205:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	if (size == 1) 
+ 716               		.loc 1 205 0
+ 717 032e E12C      		mov r14,__zero_reg__
+ 718 0330 F12C      		mov r15,__zero_reg__
+ 719 0332 912C      		mov r9,__zero_reg__
+ 225:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			else if (fId == (size -1))
+ 720               		.loc 1 225 0
+ 721 0334 CB2C      		mov r12,r11
+ 722 0336 D12C      		mov r13,__zero_reg__
+ 723 0338 81E0      		ldi r24,1
+ 724 033a C81A      		sub r12,r24
+ 725 033c D108      		sbc r13,__zero_reg__
+ 726               	.LVL65:
+ 727               	.L52:
+ 728 033e 8E2D      		mov r24,r14
+ 729               	.LVL66:
+ 216:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		for (fId = 0; fId < size; fId++)
+ 730               		.loc 1 216 0 discriminator 1
+ 731 0340 EB14      		cp r14,r11
+ 732 0342 00F4      		brsh .+2
+ 733 0344 00C0      		rjmp .L56
+ 734               	.LVL67:
+ 735               	.L53:
+ 236:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 			off = 6;
+ 237:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		}
+ 238:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+ 239:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	mId++;
+ 736               		.loc 1 239 0
+ 737 0346 8091 0000 		lds r24,mId.4037
+ 738 034a 8F5F      		subi r24,lo8(-(1))
+ 739 034c 8093 0000 		sts mId.4037,r24
+ 240:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	return 1;
+ 740               		.loc 1 240 0
+ 741 0350 81E0      		ldi r24,lo8(1)
+ 742 0352 00C0      		rjmp .L51
+ 743               	.LVL68:
+ 744               	.L57:
+ 197:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		return 0;
+ 745               		.loc 1 197 0
+ 746 0354 80E0      		ldi r24,0
+ 747               	.LVL69:
+ 748               	.L51:
+ 749               	/* epilogue start */
+ 241:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+ 750               		.loc 1 241 0
+ 751 0356 6196      		adiw r28,17
+ 752 0358 CDBF      		out __SP_L__,r28
+ 753 035a DEBF      		out __SP_H__,r29
+ 754 035c DF91      		pop r29
+ 755 035e CF91      		pop r28
+ 756 0360 1F91      		pop r17
+ 757 0362 0F91      		pop r16
+ 758               	.LVL70:
+ 759 0364 FF90      		pop r15
+ 760 0366 EF90      		pop r14
+ 761 0368 DF90      		pop r13
+ 762 036a CF90      		pop r12
+ 763 036c BF90      		pop r11
+ 764               	.LVL71:
+ 765 036e AF90      		pop r10
+ 766 0370 9F90      		pop r9
+ 767 0372 8F90      		pop r8
+ 768 0374 0895      		ret
+ 769               	.LFE15:
+ 771               	.global	blockingPrintDebug
+ 773               	blockingPrintDebug:
+ 774               	.LFB16:
+ 242:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 
+ 243:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** byte blockingPrintDebug(char *s)
+ 244:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** {
+ 775               		.loc 1 244 0
+ 776               	.LVL72:
+ 777 0376 CF93      		push r28
+ 778               	.LCFI42:
+ 779 0378 DF93      		push r29
+ 780               	.LCFI43:
+ 781               	/* prologue: function */
+ 782               	/* frame size = 0 */
+ 783               	/* stack size = 2 */
+ 784               	.L__stack_usage = 2
+ 785 037a EC01      		movw r28,r24
+ 245:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
+ 786               		.loc 1 245 0
+ 787 037c 00C0      		rjmp .L61
+ 788               	.LVL73:
+ 789               	.L62:
+ 246:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	{
+ 247:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 		delayMS(1);
+ 790               		.loc 1 247 0
+ 791 037e 81E0      		ldi r24,lo8(1)
+ 792 0380 90E0      		ldi r25,0
+ 793 0382 0E94 0000 		call delayMS
+ 794               	.LVL74:
+ 795               	.L61:
+ 245:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
+ 796               		.loc 1 245 0 discriminator 1
+ 797 0386 8091 0000 		lds r24,toHost
+ 798 038a 883C      		cpi r24,lo8(-56)
+ 799 038c 01F0      		breq .L62
+ 248:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	}
+ 249:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	return printDebug(s);
+ 800               		.loc 1 249 0
+ 801 038e CE01      		movw r24,r28
+ 802               	/* epilogue start */
+ 250:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** }
+ 803               		.loc 1 250 0
+ 804 0390 DF91      		pop r29
+ 805 0392 CF91      		pop r28
+ 806               	.LVL75:
+ 249:/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb **** 	return printDebug(s);
+ 807               		.loc 1 249 0
+ 808 0394 0C94 0000 		jmp printDebug
+ 809               	.LVL76:
+ 810               	.LFE16:
+ 812               	.global	toHost
+ 813               		.data
+ 816               	toHost:
+ 817 0000 C8        		.byte	-56
+ 818               	.global	PCConnection
+ 819               		.section .bss
+ 822               	PCConnection:
+ 823 0000 00        		.zero	1
+ 824               		.local	mId.4037
+ 825               		.comm	mId.4037,1,1
+ 1180               	.Letext0:
+ 1181               		.file 2 "/usr/lib/gcc/avr/4.7.2/include/stddef.h"
+ 1182               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 1183               		.file 4 "/home/pthalamy/CMU/build-modif/src-bobby/system/defs.bbh"
+ 1184               		.file 5 "/home/pthalamy/CMU/build-modif/src-bobby/system/handler.bbh"
+ 1185               		.file 6 "/home/pthalamy/CMU/build-modif/src-bobby/system/memory.bbh"
+ 1186               		.file 7 "/home/pthalamy/CMU/build-modif/src-bobby/system/serial.bbh"
+ 1187               		.file 8 "/home/pthalamy/CMU/build-modif/src-bobby/system/ensemble.bbh"
+ 1188               		.file 9 "/home/pthalamy/CMU/build-modif/src-bobby/system/led.bbh"
+ 1189               		.file 10 "/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bbh"
+ 1190               		.file 11 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdlib.h"
+ 1191               		.file 12 "/home/pthalamy/CMU/build-modif/src-bobby/system/message.bbh"
+ 1192               		.file 13 "/home/pthalamy/CMU/build-modif/src-bobby/system/hardwaretime.bbh"
+ 1193               		.file 14 "/home/pthalamy/CMU/build-modif/src-bobby/system/../hw-api/hwMemory.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 log.c
+     /tmp/ccByNw83.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccByNw83.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccByNw83.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccByNw83.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccByNw83.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccByNw83.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccByNw83.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccByNw83.s:13     .text:0000000000000000 freeLogChunk
+     /tmp/ccByNw83.s:30     .text:000000000000000c isHostPort
+     /tmp/ccByNw83.s:816    .data:0000000000000000 toHost
+     /tmp/ccByNw83.s:822    .bss:0000000000000000 PCConnection
+     /tmp/ccByNw83.s:60     .text:0000000000000026 sendLogChunk
+     /tmp/ccByNw83.s:161    .text:000000000000009c sendPathToHost
+     /tmp/ccByNw83.s:203    .text:00000000000000c6 spreadPathToHost
+     /tmp/ccByNw83.s:259    .text:00000000000000fa forwardToHost
+     /tmp/ccByNw83.s:283    .text:000000000000010c initLogDebug
+     /tmp/ccByNw83.s:376    .text:0000000000000182 handleLogMessage
+     /tmp/ccByNw83.s:460    .text:00000000000001f8 getSize
+     /tmp/ccByNw83.s:524    .text:000000000000022c printDebug
+                             .bss:0000000000000001 mId.4037
+     /tmp/ccByNw83.s:773    .text:0000000000000376 blockingPrintDebug
+
+UNDEFINED SYMBOLS
+thisChunk
+free
+calloc
+sendMessageToPort
+thisNeighborhood
+setColor
+delayMS
+__udivmodqi4
+getGUID
+GUIDIntoChar
+memcpy
+__do_copy_data
+__do_clear_bss

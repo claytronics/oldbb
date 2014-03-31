@@ -1,0 +1,54 @@
+   1               		.file	"microphone.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	getMicData
+  13               	getMicData:
+  14               	.LFB5:
+  15               		.file 1 "/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb"
+   1:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** // SYSTEM INCLUDES
+   2:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** #include "microphone.bbh"
+   3:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** 
+   4:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** // HARDWARE INCLUDES
+   5:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** #include "../hw-api/hwMicrophone.h"
+   6:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** 
+   7:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** threadvar MicData _mic;
+   8:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** 
+   9:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** MicData getMicData()
+  10:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** {
+  16               		.loc 1 10 0
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  11:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb ****     return _mic;
+  12:/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bb **** }
+  21               		.loc 1 12 0
+  22 0000 8091 0000 		lds r24,_mic
+  23 0004 9091 0000 		lds r25,_mic+1
+  24 0008 0895      		ret
+  25               	.LFE5:
+  27               		.comm	_mic,2,1
+  54               	.Letext0:
+  55               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+  56               		.file 3 "/home/anaz/blinkyblocks/build/src-bobby/system/microphone.bbh"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 microphone.c
+/home/anaz/tmp/ccNsmOMy.s:2      *ABS*:000000000000003e __SP_H__
+/home/anaz/tmp/ccNsmOMy.s:3      *ABS*:000000000000003d __SP_L__
+/home/anaz/tmp/ccNsmOMy.s:4      *ABS*:000000000000003f __SREG__
+/home/anaz/tmp/ccNsmOMy.s:5      *ABS*:000000000000003b __RAMPZ__
+/home/anaz/tmp/ccNsmOMy.s:6      *ABS*:0000000000000034 __CCP__
+/home/anaz/tmp/ccNsmOMy.s:7      *ABS*:0000000000000000 __tmp_reg__
+/home/anaz/tmp/ccNsmOMy.s:8      *ABS*:0000000000000001 __zero_reg__
+/home/anaz/tmp/ccNsmOMy.s:13     .text:0000000000000000 getMicData
+                            *COM*:0000000000000002 _mic
+
+UNDEFINED SYMBOLS
+__do_clear_bss

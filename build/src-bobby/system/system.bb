@@ -21,7 +21,7 @@ int blockProgram(void)
     while(1)
     {
         // manage low level stuff    
-        // manage handler stuff
+        // manage stuff
 
         // step through triggered handler functions
 	//printf("%d\r\n",count++);

@@ -11,38 +11,38 @@
   11               	.global	jumpToBootSection
   13               	jumpToBootSection:
   14               	.LFB0:
-  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb"
-   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb **** #include "boot.bbh"
-   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb **** 
-   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb **** // HARDWARE INCLUDES
-   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb **** #include "../hw-api/hwBoot.h"
-   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb **** 
-   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb **** // Jumps into the bootloader section.  This function never returns.
-   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb **** // Note that this function only works if the BOOTRST fuse is set to Boot Loader Reset
-   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb **** void jumpToBootSection()
-   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb **** {
+  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb"
+   1:/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb **** #include "boot.bbh"
+   2:/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb **** 
+   3:/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb **** // HARDWARE INCLUDES
+   4:/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb **** #include "../hw-api/hwBoot.h"
+   5:/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb **** 
+   6:/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb **** // Jumps into the bootloader section.  This function never returns.
+   7:/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb **** // Note that this function only works if the BOOTRST fuse is set to Boot Loader Reset
+   8:/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb **** void jumpToBootSection()
+   9:/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb **** {
   16               		.loc 1 9 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
-  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/boot.bb **** 	jumpToHWBootSection();
+  10:/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bb **** 	jumpToHWBootSection();
   21               		.loc 1 10 0
   22 0000 0C94 0000 		jmp jumpToHWBootSection
   23               	.LVL0:
   24               	.LFE0:
   52               	.Letext0:
-  53               		.file 2 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/../hw-api/hwBoot.h"
+  53               		.file 2 "/home/pthalamy/CMU/build-modif/src-bobby/system/../hw-api/hwBoot.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 boot.c
-     /tmp/ccAhzPBD.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccAhzPBD.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccAhzPBD.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccAhzPBD.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccAhzPBD.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccAhzPBD.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccAhzPBD.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccAhzPBD.s:13     .text:0000000000000000 jumpToBootSection
+     /tmp/ccZlPMpk.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccZlPMpk.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccZlPMpk.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccZlPMpk.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccZlPMpk.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccZlPMpk.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccZlPMpk.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccZlPMpk.s:13     .text:0000000000000000 jumpToBootSection
 
 UNDEFINED SYMBOLS
 jumpToHWBootSection

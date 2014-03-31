@@ -22,6 +22,8 @@
 #define RES_SYS_HANDLER 0x0000
 #define JUMP_BOOTLOADER	0xff
 #define NEIGHBOR_MSG	0x01
+#define LOG_MSG 		0x50
+#define CLOCK_SYNC_MSG	0x60
 
 threadextern Chunk * thisChunk;
 

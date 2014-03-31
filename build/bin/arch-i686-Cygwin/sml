@@ -1,0 +1,12 @@
+#!/bin/sh 
+base=`type sml.bat | sed -e 's/^.* is //' -e 's/.sml.bat$//'`
+echo "$base/.run/run.x86-win32.exe $*" > /tmp/$$.script
+echo "exit" >> /tmp/$$.script
+cmd < /tmp/$$.script
+#cat /tmp/$$.script
+r=$?
+/bin/rm /tmp/$$.script
+exit $r
+
+
+

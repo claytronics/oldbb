@@ -1,0 +1,1392 @@
+   1               		.file	"set_runtime.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  12               	compare_int_values:
+  13               	.LFB4:
+  14               		.file 1 "/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c"
+   1:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+   2:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** #include <stdlib.h>
+   3:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** #include <string.h>
+   4:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** #include <stdio.h>
+   5:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** #include "../system/myassert.h"
+   6:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+   7:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** #include "set_runtime.h"
+   8:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+   9:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** static set_descriptor *int_descriptor = NULL;
+  10:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** static set_descriptor *float_descriptor = NULL;
+  11:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  12:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** static inline Set*
+  13:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** set_create(set_descriptor *descriptor)
+  14:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+  15:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	Set* set = (Set*)malloc(sizeof(Set));
+  16:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  17:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	set->start = NULL;
+  18:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	set->nelems = 0;
+  19:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   set->descriptor = descriptor;
+  20:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  21:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	return set;
+  22:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+  23:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  24:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** #define ALLOC_AND_SET(set, data, next, dest)                                        \
+  25:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	dest = malloc(set->descriptor->size_elem + sizeof(void*));                        \
+  26:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	memcpy(dest, data, set->descriptor->size_elem);                                   \
+  27:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   *((void**)((unsigned char *)(dest) + set->descriptor->size_elem)) = next;         \
+  28:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   set->nelems++
+  29:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  30:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** #define ADVANCE_NEXT(set, ptr) *(unsigned char**)(ptr + set->descriptor->size_elem)
+  31:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  32:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** void
+  33:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** set_insert(Set *set, set_data data)
+  34:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+  35:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	unsigned char *before = NULL;
+  36:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	unsigned char *current = set->start;
+  37:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  38:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	while (current) {
+  39:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		set_data elem = current;
+  40:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  41:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		if(set->descriptor->cmp_fn(data, elem)) {
+  42:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			/* insert it here */
+  43:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  44:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			/* is it repeated? */
+  45:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			if(before && set->descriptor->equal_fn(data, before))
+  46:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 				return;
+  47:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  48:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			if (before) {
+  49:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 				void **beforenext = (void**)(before + set->descriptor->size_elem);
+  50:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 				ALLOC_AND_SET(set, data, current, *beforenext);
+  51:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			} else {
+  52:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 				ALLOC_AND_SET(set, data, current, set->start);
+  53:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			}
+  54:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  55:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			return;
+  56:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		}
+  57:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  58:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		/* go to next */
+  59:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		before = current;
+  60:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		current = ADVANCE_NEXT(set, current);
+  61:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	}
+  62:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  63:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	if (before) {
+  64:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		/* repeated? */
+  65:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		if (set->descriptor->equal_fn(data, before))
+  66:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			return;
+  67:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  68:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		void **beforenext = (void**)(before + set->descriptor->size_elem);
+  69:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		ALLOC_AND_SET(set, data, NULL, *beforenext);
+  70:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	} else {
+  71:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		ALLOC_AND_SET(set, data, NULL, set->start);
+  72:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	}
+  73:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+  74:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  75:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** static int
+  76:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** compare_int_values(set_data a1, set_data a2)
+  77:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+  15               		.loc 1 77 0
+  16               	.LVL0:
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  78:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	int i1 = *(int*)a1;
+  79:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	int i2 = *(int*)a2;
+  80:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  81:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	return i1 < i2;
+  21               		.loc 1 81 0
+  22 0000 21E0      		ldi r18,lo8(1)
+  23 0002 30E0      		ldi r19,0
+  24 0004 FC01      		movw r30,r24
+  25 0006 4081      		ld r20,Z
+  26 0008 5181      		ldd r21,Z+1
+  27 000a FB01      		movw r30,r22
+  28 000c 8081      		ld r24,Z
+  29 000e 9181      		ldd r25,Z+1
+  30               	.LVL1:
+  31 0010 4817      		cp r20,r24
+  32 0012 5907      		cpc r21,r25
+  33 0014 04F0      		brlt .L2
+  34 0016 20E0      		ldi r18,0
+  35 0018 30E0      		ldi r19,0
+  36               	.L2:
+  82:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+  37               		.loc 1 82 0
+  38 001a C901      		movw r24,r18
+  39 001c 0895      		ret
+  40               	.LFE4:
+  43               	equal_int_values:
+  44               	.LFB5:
+  83:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  84:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** static int
+  85:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** equal_int_values(set_data a1, set_data a2)
+  86:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+  45               		.loc 1 86 0
+  46               	.LVL2:
+  47               	/* prologue: function */
+  48               	/* frame size = 0 */
+  49               	/* stack size = 0 */
+  50               	.L__stack_usage = 0
+  87:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	int i1 = *(int*)a1;
+  88:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	int i2 = *(int*)a2;
+  89:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  90:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	return i1 == i2;
+  51               		.loc 1 90 0
+  52 001e 21E0      		ldi r18,lo8(1)
+  53 0020 30E0      		ldi r19,0
+  54 0022 FC01      		movw r30,r24
+  55 0024 4081      		ld r20,Z
+  56 0026 5181      		ldd r21,Z+1
+  57 0028 FB01      		movw r30,r22
+  58 002a 8081      		ld r24,Z
+  59 002c 9181      		ldd r25,Z+1
+  60               	.LVL3:
+  61 002e 4817      		cp r20,r24
+  62 0030 5907      		cpc r21,r25
+  63 0032 01F0      		breq .L4
+  64 0034 20E0      		ldi r18,0
+  65 0036 30E0      		ldi r19,0
+  66               	.L4:
+  91:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+  67               		.loc 1 91 0
+  68 0038 C901      		movw r24,r18
+  69 003a 0895      		ret
+  70               	.LFE5:
+  72               	.global	__ltsf2
+  74               	compare_float_values:
+  75               	.LFB8:
+  92:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  93:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** static void
+  94:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** print_int_value(set_data a)
+  95:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+  96:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	printf("%d", *(int*)a);
+  97:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+  98:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+  99:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** Set*
+ 100:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** set_int_create(void)
+ 101:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 102:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   assert(int_descriptor != NULL);
+ 103:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	return set_create(int_descriptor);
+ 104:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 105:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 106:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** static int
+ 107:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** compare_float_values(set_data a1, set_data a2)
+ 108:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+  76               		.loc 1 108 0
+  77               	.LVL4:
+  78 003c CF93      		push r28
+  79               	.LCFI0:
+  80 003e DF93      		push r29
+  81               	.LCFI1:
+  82               	/* prologue: function */
+  83               	/* frame size = 0 */
+  84               	/* stack size = 2 */
+  85               	.L__stack_usage = 2
+  86               	.LVL5:
+ 109:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	float f1 = *(float*)a1;
+ 110:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	float f2 = *(float*)a2;
+ 111:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 112:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	return f1 < f2;
+  87               		.loc 1 112 0
+  88 0040 C1E0      		ldi r28,lo8(1)
+  89 0042 D0E0      		ldi r29,0
+  90 0044 FB01      		movw r30,r22
+  91 0046 2081      		ld r18,Z
+  92 0048 3181      		ldd r19,Z+1
+  93 004a 4281      		ldd r20,Z+2
+  94 004c 5381      		ldd r21,Z+3
+  95 004e FC01      		movw r30,r24
+  96 0050 6081      		ld r22,Z
+  97 0052 7181      		ldd r23,Z+1
+  98 0054 8281      		ldd r24,Z+2
+  99 0056 9381      		ldd r25,Z+3
+ 100               	.LVL6:
+ 101 0058 0E94 0000 		call __ltsf2
+ 102               	.LVL7:
+ 103 005c 87FD      		sbrc r24,7
+ 104 005e 00C0      		rjmp .L6
+ 105 0060 C0E0      		ldi r28,0
+ 106 0062 D0E0      		ldi r29,0
+ 107               	.L6:
+ 113:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 108               		.loc 1 113 0
+ 109 0064 CE01      		movw r24,r28
+ 110               	/* epilogue start */
+ 111 0066 DF91      		pop r29
+ 112 0068 CF91      		pop r28
+ 113 006a 0895      		ret
+ 114               	.LFE8:
+ 116               	.global	__eqsf2
+ 118               	equal_float_values:
+ 119               	.LFB9:
+ 114:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 115:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** static int
+ 116:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** equal_float_values(set_data a1, set_data a2)
+ 117:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 120               		.loc 1 117 0
+ 121               	.LVL8:
+ 122 006c CF93      		push r28
+ 123               	.LCFI2:
+ 124 006e DF93      		push r29
+ 125               	.LCFI3:
+ 126               	/* prologue: function */
+ 127               	/* frame size = 0 */
+ 128               	/* stack size = 2 */
+ 129               	.L__stack_usage = 2
+ 130               	.LVL9:
+ 118:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	float f1 = *(float*)a1;
+ 119:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	float f2 = *(float*)a2;
+ 120:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 121:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	return f1 == f2;
+ 131               		.loc 1 121 0
+ 132 0070 C1E0      		ldi r28,lo8(1)
+ 133 0072 D0E0      		ldi r29,0
+ 134 0074 FB01      		movw r30,r22
+ 135 0076 2081      		ld r18,Z
+ 136 0078 3181      		ldd r19,Z+1
+ 137 007a 4281      		ldd r20,Z+2
+ 138 007c 5381      		ldd r21,Z+3
+ 139 007e FC01      		movw r30,r24
+ 140 0080 6081      		ld r22,Z
+ 141 0082 7181      		ldd r23,Z+1
+ 142 0084 8281      		ldd r24,Z+2
+ 143 0086 9381      		ldd r25,Z+3
+ 144               	.LVL10:
+ 145 0088 0E94 0000 		call __eqsf2
+ 146               	.LVL11:
+ 147 008c 8823      		tst r24
+ 148 008e 01F0      		breq .L8
+ 149 0090 C0E0      		ldi r28,0
+ 150 0092 D0E0      		ldi r29,0
+ 151               	.L8:
+ 122:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 152               		.loc 1 122 0
+ 153 0094 CE01      		movw r24,r28
+ 154               	/* epilogue start */
+ 155 0096 DF91      		pop r29
+ 156 0098 CF91      		pop r28
+ 157 009a 0895      		ret
+ 158               	.LFE9:
+ 160               		.section	.rodata.str1.1,"aMS",@progbits,1
+ 161               	.LC0:
+ 162 0000 2566 00   		.string	"%f"
+ 163               		.text
+ 165               	print_float_value:
+ 166               	.LFB10:
+ 123:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 124:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** static void
+ 125:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** print_float_value(set_data a)
+ 126:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 167               		.loc 1 126 0
+ 168               	.LVL12:
+ 169               	/* prologue: function */
+ 170               	/* frame size = 0 */
+ 171               	/* stack size = 0 */
+ 172               	.L__stack_usage = 0
+ 173 009c FC01      		movw r30,r24
+ 127:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	printf("%f", *(double*)a);
+ 174               		.loc 1 127 0
+ 175 009e 8381      		ldd r24,Z+3
+ 176               	.LVL13:
+ 177 00a0 8F93      		push r24
+ 178               	.LCFI4:
+ 179 00a2 8281      		ldd r24,Z+2
+ 180 00a4 8F93      		push r24
+ 181               	.LCFI5:
+ 182 00a6 8181      		ldd r24,Z+1
+ 183 00a8 8F93      		push r24
+ 184               	.LCFI6:
+ 185 00aa 8081      		ld r24,Z
+ 186 00ac 8F93      		push r24
+ 187               	.LCFI7:
+ 188 00ae 80E0      		ldi r24,lo8(.LC0)
+ 189 00b0 90E0      		ldi r25,hi8(.LC0)
+ 190 00b2 9F93      		push r25
+ 191               	.LCFI8:
+ 192 00b4 8F93      		push r24
+ 193               	.LCFI9:
+ 194 00b6 0E94 0000 		call printf
+ 195               	.LVL14:
+ 196 00ba 0F90      		pop __tmp_reg__
+ 197 00bc 0F90      		pop __tmp_reg__
+ 198 00be 0F90      		pop __tmp_reg__
+ 199 00c0 0F90      		pop __tmp_reg__
+ 200 00c2 0F90      		pop __tmp_reg__
+ 201 00c4 0F90      		pop __tmp_reg__
+ 202               	.LCFI10:
+ 203 00c6 0895      		ret
+ 204               	.LFE10:
+ 206               		.section	.rodata.str1.1
+ 207               	.LC1:
+ 208 0003 2564 00   		.string	"%d"
+ 209               		.text
+ 211               	print_int_value:
+ 212               	.LFB6:
+  95:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 213               		.loc 1 95 0
+ 214               	.LVL15:
+ 215               	/* prologue: function */
+ 216               	/* frame size = 0 */
+ 217               	/* stack size = 0 */
+ 218               	.L__stack_usage = 0
+  96:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	printf("%d", *(int*)a);
+ 219               		.loc 1 96 0
+ 220 00c8 FC01      		movw r30,r24
+ 221 00ca 2181      		ldd r18,Z+1
+ 222 00cc 2F93      		push r18
+ 223               	.LCFI11:
+ 224 00ce 8081      		ld r24,Z
+ 225               	.LVL16:
+ 226 00d0 8F93      		push r24
+ 227               	.LCFI12:
+ 228 00d2 80E0      		ldi r24,lo8(.LC1)
+ 229 00d4 90E0      		ldi r25,hi8(.LC1)
+ 230 00d6 9F93      		push r25
+ 231               	.LCFI13:
+ 232 00d8 8F93      		push r24
+ 233               	.LCFI14:
+ 234 00da 0E94 0000 		call printf
+ 235               	.LVL17:
+ 236 00de 0F90      		pop __tmp_reg__
+ 237 00e0 0F90      		pop __tmp_reg__
+ 238 00e2 0F90      		pop __tmp_reg__
+ 239 00e4 0F90      		pop __tmp_reg__
+ 240               	.LCFI15:
+ 241 00e6 0895      		ret
+ 242               	.LFE6:
+ 244               	.global	set_insert
+ 246               	set_insert:
+ 247               	.LFB3:
+  34:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 248               		.loc 1 34 0
+ 249               	.LVL18:
+ 250 00e8 CF92      		push r12
+ 251               	.LCFI16:
+ 252 00ea DF92      		push r13
+ 253               	.LCFI17:
+ 254 00ec EF92      		push r14
+ 255               	.LCFI18:
+ 256 00ee FF92      		push r15
+ 257               	.LCFI19:
+ 258 00f0 0F93      		push r16
+ 259               	.LCFI20:
+ 260 00f2 1F93      		push r17
+ 261               	.LCFI21:
+ 262 00f4 CF93      		push r28
+ 263               	.LCFI22:
+ 264 00f6 DF93      		push r29
+ 265               	.LCFI23:
+ 266               	/* prologue: function */
+ 267               	/* frame size = 0 */
+ 268               	/* stack size = 8 */
+ 269               	.L__stack_usage = 8
+ 270 00f8 EC01      		movw r28,r24
+ 271 00fa 6B01      		movw r12,r22
+ 272               	.LVL19:
+  36:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	unsigned char *current = set->start;
+ 273               		.loc 1 36 0
+ 274 00fc 0881      		ld r16,Y
+ 275 00fe 1981      		ldd r17,Y+1
+ 276               	.LVL20:
+  35:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	unsigned char *before = NULL;
+ 277               		.loc 1 35 0
+ 278 0100 E12C      		mov r14,__zero_reg__
+ 279 0102 F12C      		mov r15,__zero_reg__
+  38:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	while (current) {
+ 280               		.loc 1 38 0
+ 281 0104 00C0      		rjmp .L15
+ 282               	.LVL21:
+ 283               	.L20:
+ 284               	.LBB2:
+  41:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		if(set->descriptor->cmp_fn(data, elem)) {
+ 285               		.loc 1 41 0
+ 286 0106 0190      		ld __tmp_reg__,Z+
+ 287 0108 F081      		ld r31,Z
+ 288 010a E02D      		mov r30,__tmp_reg__
+ 289 010c B801      		movw r22,r16
+ 290 010e C601      		movw r24,r12
+ 291 0110 1995      		eicall
+ 292               	.LVL22:
+ 293 0112 EC81      		ldd r30,Y+4
+ 294 0114 FD81      		ldd r31,Y+5
+ 295 0116 892B      		or r24,r25
+ 296 0118 01F0      		breq .L16
+  45:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			if(before && set->descriptor->equal_fn(data, before))
+ 297               		.loc 1 45 0
+ 298 011a E114      		cp r14,__zero_reg__
+ 299 011c F104      		cpc r15,__zero_reg__
+ 300 011e 01F4      		brne .+2
+ 301 0120 00C0      		rjmp .L17
+  45:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			if(before && set->descriptor->equal_fn(data, before))
+ 302               		.loc 1 45 0 is_stmt 0 discriminator 1
+ 303 0122 0280      		ldd __tmp_reg__,Z+2
+ 304 0124 F381      		ldd r31,Z+3
+ 305 0126 E02D      		mov r30,__tmp_reg__
+ 306 0128 B701      		movw r22,r14
+ 307 012a C601      		movw r24,r12
+ 308 012c 1995      		eicall
+ 309               	.LVL23:
+ 310 012e 892B      		or r24,r25
+ 311 0130 01F4      		brne .+2
+ 312 0132 00C0      		rjmp .L18
+ 313 0134 00C0      		rjmp .L14
+ 314               	.L16:
+ 315               	.LVL24:
+  60:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		current = ADVANCE_NEXT(set, current);
+ 316               		.loc 1 60 0 is_stmt 1
+ 317 0136 0680      		ldd __tmp_reg__,Z+6
+ 318 0138 F781      		ldd r31,Z+7
+ 319 013a E02D      		mov r30,__tmp_reg__
+ 320 013c E00F      		add r30,r16
+ 321 013e F11F      		adc r31,r17
+ 322               	.LVL25:
+ 323 0140 7801      		movw r14,r16
+ 324 0142 0081      		ld r16,Z
+ 325               	.LVL26:
+ 326 0144 1181      		ldd r17,Z+1
+ 327               	.LVL27:
+ 328               	.L15:
+ 329 0146 EC81      		ldd r30,Y+4
+ 330 0148 FD81      		ldd r31,Y+5
+ 331               	.LBE2:
+  38:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	while (current) {
+ 332               		.loc 1 38 0 discriminator 1
+ 333 014a 0115      		cp r16,__zero_reg__
+ 334 014c 1105      		cpc r17,__zero_reg__
+ 335 014e 01F4      		brne .L20
+  63:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	if (before) {
+ 336               		.loc 1 63 0
+ 337 0150 E114      		cp r14,__zero_reg__
+ 338 0152 F104      		cpc r15,__zero_reg__
+ 339 0154 01F0      		breq .L21
+ 340               	.LBB4:
+  65:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		if (set->descriptor->equal_fn(data, before))
+ 341               		.loc 1 65 0
+ 342 0156 0280      		ldd __tmp_reg__,Z+2
+ 343 0158 F381      		ldd r31,Z+3
+ 344 015a E02D      		mov r30,__tmp_reg__
+ 345 015c B701      		movw r22,r14
+ 346 015e C601      		movw r24,r12
+ 347 0160 1995      		eicall
+ 348               	.LVL28:
+ 349 0162 892B      		or r24,r25
+ 350 0164 01F0      		breq .+2
+ 351 0166 00C0      		rjmp .L14
+  68:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		void **beforenext = (void**)(before + set->descriptor->size_elem);
+ 352               		.loc 1 68 0
+ 353 0168 EC81      		ldd r30,Y+4
+ 354 016a FD81      		ldd r31,Y+5
+ 355 016c 8681      		ldd r24,Z+6
+ 356 016e 9781      		ldd r25,Z+7
+ 357 0170 E80E      		add r14,r24
+ 358 0172 F91E      		adc r15,r25
+ 359               	.LVL29:
+  69:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		ALLOC_AND_SET(set, data, NULL, *beforenext);
+ 360               		.loc 1 69 0
+ 361 0174 0296      		adiw r24,2
+ 362 0176 0E94 0000 		call malloc
+ 363               	.LVL30:
+ 364 017a D701      		movw r26,r14
+ 365 017c 8C93      		st X,r24
+ 366 017e 1196      		adiw r26,1
+ 367 0180 9C93      		st X,r25
+ 368 0182 EC81      		ldd r30,Y+4
+ 369 0184 FD81      		ldd r31,Y+5
+ 370 0186 4681      		ldd r20,Z+6
+ 371 0188 5781      		ldd r21,Z+7
+ 372 018a B601      		movw r22,r12
+ 373 018c 0E94 0000 		call memcpy
+ 374               	.LVL31:
+ 375 0190 8C81      		ldd r24,Y+4
+ 376 0192 9D81      		ldd r25,Y+5
+ 377 0194 D701      		movw r26,r14
+ 378 0196 ED91      		ld r30,X+
+ 379 0198 FC91      		ld r31,X
+ 380 019a DC01      		movw r26,r24
+ 381 019c 00C0      		rjmp .L25
+ 382               	.LVL32:
+ 383               	.L21:
+ 384               	.LBE4:
+  71:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		ALLOC_AND_SET(set, data, NULL, set->start);
+ 385               		.loc 1 71 0
+ 386 019e 0681      		ldd r16,Z+6
+ 387 01a0 1781      		ldd r17,Z+7
+ 388               	.LVL33:
+ 389 01a2 C801      		movw r24,r16
+ 390 01a4 0296      		adiw r24,2
+ 391 01a6 0E94 0000 		call malloc
+ 392               	.LVL34:
+ 393 01aa 8883      		st Y,r24
+ 394 01ac 9983      		std Y+1,r25
+ 395 01ae A801      		movw r20,r16
+ 396 01b0 B601      		movw r22,r12
+ 397 01b2 0E94 0000 		call memcpy
+ 398               	.LVL35:
+ 399 01b6 AC81      		ldd r26,Y+4
+ 400 01b8 BD81      		ldd r27,Y+5
+ 401 01ba E881      		ld r30,Y
+ 402 01bc F981      		ldd r31,Y+1
+ 403               	.LVL36:
+ 404               	.L25:
+ 405 01be 1696      		adiw r26,6
+ 406 01c0 8D91      		ld r24,X+
+ 407 01c2 9C91      		ld r25,X
+ 408 01c4 1797      		sbiw r26,6+1
+ 409 01c6 E80F      		add r30,r24
+ 410 01c8 F91F      		adc r31,r25
+ 411 01ca 1082      		st Z,__zero_reg__
+ 412 01cc 1182      		std Z+1,__zero_reg__
+ 413 01ce 00C0      		rjmp .L23
+ 414               	.LVL37:
+ 415               	.L18:
+ 416               	.LBB5:
+ 417               	.LBB3:
+  49:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 				void **beforenext = (void**)(before + set->descriptor->size_elem);
+ 418               		.loc 1 49 0
+ 419 01d0 EC81      		ldd r30,Y+4
+ 420 01d2 FD81      		ldd r31,Y+5
+ 421 01d4 8681      		ldd r24,Z+6
+ 422 01d6 9781      		ldd r25,Z+7
+ 423 01d8 E80E      		add r14,r24
+ 424 01da F91E      		adc r15,r25
+ 425               	.LVL38:
+  50:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 				ALLOC_AND_SET(set, data, current, *beforenext);
+ 426               		.loc 1 50 0
+ 427 01dc 0296      		adiw r24,2
+ 428 01de 0E94 0000 		call malloc
+ 429               	.LVL39:
+ 430 01e2 F701      		movw r30,r14
+ 431 01e4 8083      		st Z,r24
+ 432 01e6 9183      		std Z+1,r25
+ 433 01e8 EC81      		ldd r30,Y+4
+ 434 01ea FD81      		ldd r31,Y+5
+ 435 01ec 4681      		ldd r20,Z+6
+ 436 01ee 5781      		ldd r21,Z+7
+ 437 01f0 B601      		movw r22,r12
+ 438 01f2 0E94 0000 		call memcpy
+ 439               	.LVL40:
+ 440 01f6 8C81      		ldd r24,Y+4
+ 441 01f8 9D81      		ldd r25,Y+5
+ 442 01fa D701      		movw r26,r14
+ 443 01fc ED91      		ld r30,X+
+ 444 01fe FC91      		ld r31,X
+ 445 0200 DC01      		movw r26,r24
+ 446 0202 00C0      		rjmp .L24
+ 447               	.LVL41:
+ 448               	.L17:
+ 449               	.LBE3:
+  52:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 				ALLOC_AND_SET(set, data, current, set->start);
+ 450               		.loc 1 52 0
+ 451 0204 E680      		ldd r14,Z+6
+ 452 0206 F780      		ldd r15,Z+7
+ 453               	.LVL42:
+ 454 0208 C701      		movw r24,r14
+ 455 020a 0296      		adiw r24,2
+ 456 020c 0E94 0000 		call malloc
+ 457               	.LVL43:
+ 458 0210 8883      		st Y,r24
+ 459 0212 9983      		std Y+1,r25
+ 460 0214 A701      		movw r20,r14
+ 461 0216 B601      		movw r22,r12
+ 462 0218 0E94 0000 		call memcpy
+ 463               	.LVL44:
+ 464 021c AC81      		ldd r26,Y+4
+ 465 021e BD81      		ldd r27,Y+5
+ 466 0220 E881      		ld r30,Y
+ 467 0222 F981      		ldd r31,Y+1
+ 468               	.L24:
+ 469 0224 1696      		adiw r26,6
+ 470 0226 8D91      		ld r24,X+
+ 471 0228 9C91      		ld r25,X
+ 472 022a 1797      		sbiw r26,6+1
+ 473 022c E80F      		add r30,r24
+ 474 022e F91F      		adc r31,r25
+ 475 0230 0083      		st Z,r16
+ 476 0232 1183      		std Z+1,r17
+ 477               	.LVL45:
+ 478               	.L23:
+ 479 0234 8A81      		ldd r24,Y+2
+ 480 0236 9B81      		ldd r25,Y+3
+ 481 0238 0196      		adiw r24,1
+ 482 023a 8A83      		std Y+2,r24
+ 483 023c 9B83      		std Y+3,r25
+ 484               	.L14:
+ 485               	/* epilogue start */
+ 486               	.LBE5:
+  73:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 487               		.loc 1 73 0
+ 488 023e DF91      		pop r29
+ 489 0240 CF91      		pop r28
+ 490               	.LVL46:
+ 491 0242 1F91      		pop r17
+ 492 0244 0F91      		pop r16
+ 493 0246 FF90      		pop r15
+ 494 0248 EF90      		pop r14
+ 495 024a DF90      		pop r13
+ 496 024c CF90      		pop r12
+ 497               	.LVL47:
+ 498 024e 0895      		ret
+ 499               	.LFE3:
+ 501               		.section	.rodata.str1.1
+ 502               	.LC2:
+ 503 0006 696E 745F 		.string	"int_descriptor != NULL"
+ 503      6465 7363 
+ 503      7269 7074 
+ 503      6F72 2021 
+ 503      3D20 4E55 
+ 504               	.LC3:
+ 505 001d 2F68 6F6D 		.string	"/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c"
+ 505      652F 616E 
+ 505      617A 2F62 
+ 505      6C69 6E6B 
+ 505      7962 6C6F 
+ 506               		.text
+ 507               	.global	set_int_create
+ 509               	set_int_create:
+ 510               	.LFB7:
+ 101:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 511               		.loc 1 101 0
+ 512 0250 CF93      		push r28
+ 513               	.LCFI24:
+ 514 0252 DF93      		push r29
+ 515               	.LCFI25:
+ 516               	/* prologue: function */
+ 517               	/* frame size = 0 */
+ 518               	/* stack size = 2 */
+ 519               	.L__stack_usage = 2
+ 102:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   assert(int_descriptor != NULL);
+ 520               		.loc 1 102 0
+ 521 0254 8091 0000 		lds r24,int_descriptor
+ 522 0258 9091 0000 		lds r25,int_descriptor+1
+ 523 025c 892B      		or r24,r25
+ 524 025e 01F4      		brne .L27
+ 102:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   assert(int_descriptor != NULL);
+ 525               		.loc 1 102 0 is_stmt 0 discriminator 1
+ 526 0260 40E0      		ldi r20,lo8(.LC2)
+ 527 0262 50E0      		ldi r21,hi8(.LC2)
+ 528 0264 66E6      		ldi r22,lo8(102)
+ 529 0266 70E0      		ldi r23,0
+ 530 0268 80E0      		ldi r24,lo8(.LC3)
+ 531 026a 90E0      		ldi r25,hi8(.LC3)
+ 532 026c 0E94 0000 		call __myassert
+ 533               	.LVL48:
+ 534               	.L27:
+ 103:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	return set_create(int_descriptor);
+ 535               		.loc 1 103 0 is_stmt 1
+ 536 0270 C091 0000 		lds r28,int_descriptor
+ 537 0274 D091 0000 		lds r29,int_descriptor+1
+ 538               	.LVL49:
+ 539               	.LBB8:
+ 540               	.LBB9:
+  15:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	Set* set = (Set*)malloc(sizeof(Set));
+ 541               		.loc 1 15 0
+ 542 0278 86E0      		ldi r24,lo8(6)
+ 543 027a 90E0      		ldi r25,0
+ 544 027c 0E94 0000 		call malloc
+ 545               	.LVL50:
+ 546 0280 FC01      		movw r30,r24
+ 547               	.LVL51:
+  17:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	set->start = NULL;
+ 548               		.loc 1 17 0
+ 549 0282 1082      		st Z,__zero_reg__
+ 550 0284 1182      		std Z+1,__zero_reg__
+  18:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	set->nelems = 0;
+ 551               		.loc 1 18 0
+ 552 0286 1282      		std Z+2,__zero_reg__
+ 553 0288 1382      		std Z+3,__zero_reg__
+  19:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   set->descriptor = descriptor;
+ 554               		.loc 1 19 0
+ 555 028a C483      		std Z+4,r28
+ 556 028c D583      		std Z+5,r29
+ 557               	/* epilogue start */
+ 558               	.LBE9:
+ 559               	.LBE8:
+ 104:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 560               		.loc 1 104 0
+ 561 028e DF91      		pop r29
+ 562 0290 CF91      		pop r28
+ 563               	.LVL52:
+ 564 0292 0895      		ret
+ 565               	.LFE7:
+ 567               		.section	.rodata.str1.1
+ 568               	.LC4:
+ 569 0066 666C 6F61 		.string	"float_descriptor != NULL"
+ 569      745F 6465 
+ 569      7363 7269 
+ 569      7074 6F72 
+ 569      2021 3D20 
+ 570               		.text
+ 571               	.global	set_float_create
+ 573               	set_float_create:
+ 574               	.LFB11:
+ 128:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 129:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 130:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** Set*
+ 131:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** set_float_create(void)
+ 132:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 575               		.loc 1 132 0
+ 576 0294 CF93      		push r28
+ 577               	.LCFI26:
+ 578 0296 DF93      		push r29
+ 579               	.LCFI27:
+ 580               	/* prologue: function */
+ 581               	/* frame size = 0 */
+ 582               	/* stack size = 2 */
+ 583               	.L__stack_usage = 2
+ 133:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   assert(float_descriptor != NULL);
+ 584               		.loc 1 133 0
+ 585 0298 8091 0000 		lds r24,float_descriptor
+ 586 029c 9091 0000 		lds r25,float_descriptor+1
+ 587 02a0 892B      		or r24,r25
+ 588 02a2 01F4      		brne .L29
+ 589               		.loc 1 133 0 is_stmt 0 discriminator 1
+ 590 02a4 40E0      		ldi r20,lo8(.LC4)
+ 591 02a6 50E0      		ldi r21,hi8(.LC4)
+ 592 02a8 65E8      		ldi r22,lo8(-123)
+ 593 02aa 70E0      		ldi r23,0
+ 594 02ac 80E0      		ldi r24,lo8(.LC3)
+ 595 02ae 90E0      		ldi r25,hi8(.LC3)
+ 596 02b0 0E94 0000 		call __myassert
+ 597               	.LVL53:
+ 598               	.L29:
+ 134:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	return set_create(float_descriptor);
+ 599               		.loc 1 134 0 is_stmt 1
+ 600 02b4 C091 0000 		lds r28,float_descriptor
+ 601 02b8 D091 0000 		lds r29,float_descriptor+1
+ 602               	.LVL54:
+ 603               	.LBB12:
+ 604               	.LBB13:
+  15:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	Set* set = (Set*)malloc(sizeof(Set));
+ 605               		.loc 1 15 0
+ 606 02bc 86E0      		ldi r24,lo8(6)
+ 607 02be 90E0      		ldi r25,0
+ 608 02c0 0E94 0000 		call malloc
+ 609               	.LVL55:
+ 610 02c4 FC01      		movw r30,r24
+ 611               	.LVL56:
+  17:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	set->start = NULL;
+ 612               		.loc 1 17 0
+ 613 02c6 1082      		st Z,__zero_reg__
+ 614 02c8 1182      		std Z+1,__zero_reg__
+  18:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	set->nelems = 0;
+ 615               		.loc 1 18 0
+ 616 02ca 1282      		std Z+2,__zero_reg__
+ 617 02cc 1382      		std Z+3,__zero_reg__
+  19:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   set->descriptor = descriptor;
+ 618               		.loc 1 19 0
+ 619 02ce C483      		std Z+4,r28
+ 620 02d0 D583      		std Z+5,r29
+ 621               	/* epilogue start */
+ 622               	.LBE13:
+ 623               	.LBE12:
+ 135:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 624               		.loc 1 135 0
+ 625 02d2 DF91      		pop r29
+ 626 02d4 CF91      		pop r28
+ 627               	.LVL57:
+ 628 02d6 0895      		ret
+ 629               	.LFE11:
+ 631               	.global	set_int_insert
+ 633               	set_int_insert:
+ 634               	.LFB12:
+ 136:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 137:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** void
+ 138:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** set_int_insert(Set* set, int data)
+ 139:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 635               		.loc 1 139 0
+ 636               	.LVL58:
+ 637 02d8 CF93      		push r28
+ 638               	.LCFI28:
+ 639 02da DF93      		push r29
+ 640               	.LCFI29:
+ 641 02dc 1F92      		push __zero_reg__
+ 642 02de 1F92      		push __zero_reg__
+ 643               	.LCFI30:
+ 644 02e0 CDB7      		in r28,__SP_L__
+ 645 02e2 DEB7      		in r29,__SP_H__
+ 646               	.LCFI31:
+ 647               	/* prologue: function */
+ 648               	/* frame size = 2 */
+ 649               	/* stack size = 4 */
+ 650               	.L__stack_usage = 4
+ 651 02e4 6983      		std Y+1,r22
+ 652 02e6 7A83      		std Y+2,r23
+ 140:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	set_insert(set, (set_data)&data);
+ 653               		.loc 1 140 0
+ 654 02e8 BE01      		movw r22,r28
+ 655               	.LVL59:
+ 656 02ea 6F5F      		subi r22,-1
+ 657 02ec 7F4F      		sbci r23,-1
+ 658 02ee 0E94 0000 		call set_insert
+ 659               	.LVL60:
+ 660               	/* epilogue start */
+ 141:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 661               		.loc 1 141 0
+ 662 02f2 0F90      		pop __tmp_reg__
+ 663 02f4 0F90      		pop __tmp_reg__
+ 664 02f6 DF91      		pop r29
+ 665 02f8 CF91      		pop r28
+ 666 02fa 0895      		ret
+ 667               	.LFE12:
+ 669               	.global	set_float_insert
+ 671               	set_float_insert:
+ 672               	.LFB13:
+ 142:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 143:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** void
+ 144:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** set_float_insert(Set* set, float data)
+ 145:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 673               		.loc 1 145 0
+ 674               	.LVL61:
+ 675 02fc CF93      		push r28
+ 676               	.LCFI32:
+ 677 02fe DF93      		push r29
+ 678               	.LCFI33:
+ 679 0300 00D0      		rcall .
+ 680 0302 1F92      		push __zero_reg__
+ 681               	.LCFI34:
+ 682 0304 CDB7      		in r28,__SP_L__
+ 683 0306 DEB7      		in r29,__SP_H__
+ 684               	.LCFI35:
+ 685               	/* prologue: function */
+ 686               	/* frame size = 4 */
+ 687               	/* stack size = 6 */
+ 688               	.L__stack_usage = 6
+ 689 0308 4983      		std Y+1,r20
+ 690 030a 5A83      		std Y+2,r21
+ 691 030c 6B83      		std Y+3,r22
+ 692 030e 7C83      		std Y+4,r23
+ 146:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	set_insert(set, (set_data)&data);
+ 693               		.loc 1 146 0
+ 694 0310 BE01      		movw r22,r28
+ 695 0312 6F5F      		subi r22,-1
+ 696 0314 7F4F      		sbci r23,-1
+ 697 0316 0E94 0000 		call set_insert
+ 698               	.LVL62:
+ 699               	/* epilogue start */
+ 147:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 700               		.loc 1 147 0
+ 701 031a 2496      		adiw r28,4
+ 702 031c CDBF      		out __SP_L__,r28
+ 703 031e DEBF      		out __SP_H__,r29
+ 704 0320 DF91      		pop r29
+ 705 0322 CF91      		pop r28
+ 706 0324 0895      		ret
+ 707               	.LFE13:
+ 709               		.section	.rodata.str1.1
+ 710               	.LC5:
+ 711 007f 2853 6574 		.string	"(Set-Union with %d elems, %Zu bytes each ["
+ 711      2D55 6E69 
+ 711      6F6E 2077 
+ 711      6974 6820 
+ 711      2564 2065 
+ 712               	.LC6:
+ 713 00aa 2C20 00   		.string	", "
+ 714               	.LC7:
+ 715 00ad 5D29 00   		.string	"])"
+ 716               		.text
+ 717               	.global	set_print
+ 719               	set_print:
+ 720               	.LFB14:
+ 148:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 149:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** void
+ 150:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** set_print(Set *set)
+ 151:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 721               		.loc 1 151 0
+ 722               	.LVL63:
+ 723 0326 EF92      		push r14
+ 724               	.LCFI36:
+ 725 0328 FF92      		push r15
+ 726               	.LCFI37:
+ 727 032a 0F93      		push r16
+ 728               	.LCFI38:
+ 729 032c 1F93      		push r17
+ 730               	.LCFI39:
+ 731 032e CF93      		push r28
+ 732               	.LCFI40:
+ 733 0330 DF93      		push r29
+ 734               	.LCFI41:
+ 735               	/* prologue: function */
+ 736               	/* frame size = 0 */
+ 737               	/* stack size = 6 */
+ 738               	.L__stack_usage = 6
+ 739 0332 EC01      		movw r28,r24
+ 152:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	printf("(Set-Union with %d elems, %Zu bytes each [", set->nelems, set->descriptor->size_elem);
+ 740               		.loc 1 152 0
+ 741 0334 EC81      		ldd r30,Y+4
+ 742 0336 FD81      		ldd r31,Y+5
+ 743 0338 8781      		ldd r24,Z+7
+ 744               	.LVL64:
+ 745 033a 8F93      		push r24
+ 746               	.LCFI42:
+ 747 033c 8681      		ldd r24,Z+6
+ 748 033e 8F93      		push r24
+ 749               	.LCFI43:
+ 750 0340 8B81      		ldd r24,Y+3
+ 751 0342 8F93      		push r24
+ 752               	.LCFI44:
+ 753 0344 8A81      		ldd r24,Y+2
+ 754 0346 8F93      		push r24
+ 755               	.LCFI45:
+ 756 0348 80E0      		ldi r24,lo8(.LC5)
+ 757 034a 90E0      		ldi r25,hi8(.LC5)
+ 758 034c 9F93      		push r25
+ 759               	.LCFI46:
+ 760 034e 8F93      		push r24
+ 761               	.LCFI47:
+ 762 0350 0E94 0000 		call printf
+ 763               	.LVL65:
+ 153:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 154:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	unsigned char* current = set->start;
+ 764               		.loc 1 154 0
+ 765 0354 0881      		ld r16,Y
+ 766 0356 1981      		ldd r17,Y+1
+ 767               	.LVL66:
+ 155:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	int isFirst = 1;
+ 156:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 157:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	while(current) {
+ 768               		.loc 1 157 0
+ 769 0358 0F90      		pop __tmp_reg__
+ 770 035a 0F90      		pop __tmp_reg__
+ 771 035c 0F90      		pop __tmp_reg__
+ 772 035e 0F90      		pop __tmp_reg__
+ 773 0360 0F90      		pop __tmp_reg__
+ 774 0362 0F90      		pop __tmp_reg__
+ 775               	.LCFI48:
+ 155:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	int isFirst = 1;
+ 776               		.loc 1 155 0
+ 777 0364 81E0      		ldi r24,lo8(1)
+ 778 0366 90E0      		ldi r25,0
+ 158:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 159:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		if(isFirst)
+ 160:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			isFirst = 0;
+ 161:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		else
+ 162:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			printf(", ");
+ 779               		.loc 1 162 0
+ 780 0368 20E0      		ldi r18,lo8(.LC6)
+ 781 036a E22E      		mov r14,r18
+ 782 036c 20E0      		ldi r18,hi8(.LC6)
+ 783 036e F22E      		mov r15,r18
+ 157:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	while(current) {
+ 784               		.loc 1 157 0
+ 785 0370 00C0      		rjmp .L33
+ 786               	.LVL67:
+ 787               	.L35:
+ 159:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		if(isFirst)
+ 788               		.loc 1 159 0
+ 789 0372 892B      		or r24,r25
+ 790 0374 01F4      		brne .L34
+ 791               		.loc 1 162 0
+ 792 0376 FF92      		push r15
+ 793               	.LCFI49:
+ 794 0378 EF92      		push r14
+ 795               	.LCFI50:
+ 796 037a 0E94 0000 		call printf
+ 797               	.LVL68:
+ 798 037e 0F90      		pop __tmp_reg__
+ 799 0380 0F90      		pop __tmp_reg__
+ 800               	.LCFI51:
+ 801               	.L34:
+ 802               	.LVL69:
+ 163:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 164:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		set->descriptor->print_fn((set_data)current);
+ 803               		.loc 1 164 0
+ 804 0382 EC81      		ldd r30,Y+4
+ 805 0384 FD81      		ldd r31,Y+5
+ 806 0386 0480      		ldd __tmp_reg__,Z+4
+ 807 0388 F581      		ldd r31,Z+5
+ 808 038a E02D      		mov r30,__tmp_reg__
+ 809 038c C801      		movw r24,r16
+ 810 038e 1995      		eicall
+ 811               	.LVL70:
+ 165:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 166:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		current = ADVANCE_NEXT(set, current);
+ 812               		.loc 1 166 0
+ 813 0390 EC81      		ldd r30,Y+4
+ 814 0392 FD81      		ldd r31,Y+5
+ 815 0394 0680      		ldd __tmp_reg__,Z+6
+ 816 0396 F781      		ldd r31,Z+7
+ 817 0398 E02D      		mov r30,__tmp_reg__
+ 818 039a E00F      		add r30,r16
+ 819 039c F11F      		adc r31,r17
+ 820 039e 0081      		ld r16,Z
+ 821 03a0 1181      		ldd r17,Z+1
+ 822               	.LVL71:
+ 823 03a2 80E0      		ldi r24,0
+ 824 03a4 90E0      		ldi r25,0
+ 825               	.LVL72:
+ 826               	.L33:
+ 157:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	while(current) {
+ 827               		.loc 1 157 0 discriminator 1
+ 828 03a6 0115      		cp r16,__zero_reg__
+ 829 03a8 1105      		cpc r17,__zero_reg__
+ 830 03aa 01F4      		brne .L35
+ 167:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	}
+ 168:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 169:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	printf("])\n");
+ 831               		.loc 1 169 0
+ 832 03ac 80E0      		ldi r24,lo8(.LC7)
+ 833 03ae 90E0      		ldi r25,hi8(.LC7)
+ 834               	.LVL73:
+ 835               	/* epilogue start */
+ 170:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 836               		.loc 1 170 0
+ 837 03b0 DF91      		pop r29
+ 838 03b2 CF91      		pop r28
+ 839               	.LVL74:
+ 840 03b4 1F91      		pop r17
+ 841 03b6 0F91      		pop r16
+ 842               	.LVL75:
+ 843 03b8 FF90      		pop r15
+ 844 03ba EF90      		pop r14
+ 169:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	printf("])\n");
+ 845               		.loc 1 169 0
+ 846 03bc 0C94 0000 		jmp puts
+ 847               	.LVL76:
+ 848               	.LFE14:
+ 850               	.global	set_equal
+ 852               	set_equal:
+ 853               	.LFB15:
+ 171:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 172:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** int set_equal(Set *set1, Set *set2)
+ 173:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 854               		.loc 1 173 0
+ 855               	.LVL77:
+ 856 03c0 EF92      		push r14
+ 857               	.LCFI52:
+ 858 03c2 FF92      		push r15
+ 859               	.LCFI53:
+ 860 03c4 0F93      		push r16
+ 861               	.LCFI54:
+ 862 03c6 1F93      		push r17
+ 863               	.LCFI55:
+ 864 03c8 CF93      		push r28
+ 865               	.LCFI56:
+ 866 03ca DF93      		push r29
+ 867               	.LCFI57:
+ 868               	/* prologue: function */
+ 869               	/* frame size = 0 */
+ 870               	/* stack size = 6 */
+ 871               	.L__stack_usage = 6
+ 872 03cc EC01      		movw r28,r24
+ 873 03ce FB01      		movw r30,r22
+ 174:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	if(set1->nelems != set2->nelems)
+ 874               		.loc 1 174 0
+ 875 03d0 2A81      		ldd r18,Y+2
+ 876 03d2 3B81      		ldd r19,Y+3
+ 877 03d4 8281      		ldd r24,Z+2
+ 878 03d6 9381      		ldd r25,Z+3
+ 879               	.LVL78:
+ 880 03d8 2817      		cp r18,r24
+ 881 03da 3907      		cpc r19,r25
+ 882 03dc 01F0      		breq .L37
+ 883               	.LVL79:
+ 884               	.L39:
+ 175:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		return 0;
+ 885               		.loc 1 175 0
+ 886 03de 20E0      		ldi r18,0
+ 887 03e0 30E0      		ldi r19,0
+ 888 03e2 00C0      		rjmp .L38
+ 889               	.LVL80:
+ 890               	.L37:
+ 176:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 177:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	if(set1->descriptor != set2->descriptor)
+ 891               		.loc 1 177 0
+ 892 03e4 2C81      		ldd r18,Y+4
+ 893 03e6 3D81      		ldd r19,Y+5
+ 894 03e8 8481      		ldd r24,Z+4
+ 895 03ea 9581      		ldd r25,Z+5
+ 896 03ec 2817      		cp r18,r24
+ 897 03ee 3907      		cpc r19,r25
+ 898 03f0 01F4      		brne .L39
+ 178:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		return 0;
+ 179:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 180:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	unsigned char* current1 = set1->start;
+ 899               		.loc 1 180 0
+ 900 03f2 0881      		ld r16,Y
+ 901 03f4 1981      		ldd r17,Y+1
+ 902               	.LVL81:
+ 903 03f6 00C0      		rjmp .L45
+ 904               	.LVL82:
+ 905               	.L41:
+ 906               	.LBB14:
+ 181:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	unsigned char* current2 = set2->start;
+ 182:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 183:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	while (current1) {
+ 184:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		set_data elem1 = (set_data)current1;
+ 185:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		set_data elem2 = (set_data)current2;
+ 186:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 187:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		if(!set1->descriptor->equal_fn(elem1, elem2))
+ 907               		.loc 1 187 0
+ 908 03f8 EC81      		ldd r30,Y+4
+ 909 03fa FD81      		ldd r31,Y+5
+ 910 03fc 0280      		ldd __tmp_reg__,Z+2
+ 911 03fe F381      		ldd r31,Z+3
+ 912 0400 E02D      		mov r30,__tmp_reg__
+ 913 0402 B701      		movw r22,r14
+ 914 0404 C801      		movw r24,r16
+ 915 0406 1995      		eicall
+ 916               	.LVL83:
+ 917 0408 892B      		or r24,r25
+ 918 040a 01F0      		breq .L39
+ 188:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 			return 0;
+ 189:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 190:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		current1 = ADVANCE_NEXT(set1, current1);
+ 919               		.loc 1 190 0
+ 920 040c EC81      		ldd r30,Y+4
+ 921 040e FD81      		ldd r31,Y+5
+ 922 0410 8681      		ldd r24,Z+6
+ 923 0412 9781      		ldd r25,Z+7
+ 924 0414 F801      		movw r30,r16
+ 925 0416 E80F      		add r30,r24
+ 926 0418 F91F      		adc r31,r25
+ 927 041a 0081      		ld r16,Z
+ 928 041c 1181      		ldd r17,Z+1
+ 929               	.LVL84:
+ 191:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		current2 = ADVANCE_NEXT(set1, current2);
+ 930               		.loc 1 191 0
+ 931 041e F701      		movw r30,r14
+ 932 0420 E80F      		add r30,r24
+ 933 0422 F91F      		adc r31,r25
+ 934               	.LVL85:
+ 935               	.L45:
+ 936 0424 E080      		ld r14,Z
+ 937 0426 F180      		ldd r15,Z+1
+ 938               	.LVL86:
+ 939               	.LBE14:
+ 183:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	while (current1) {
+ 940               		.loc 1 183 0
+ 941 0428 0115      		cp r16,__zero_reg__
+ 942 042a 1105      		cpc r17,__zero_reg__
+ 943 042c 01F4      		brne .L41
+ 192:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	}
+ 193:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 194:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	return 1;
+ 944               		.loc 1 194 0
+ 945 042e 21E0      		ldi r18,lo8(1)
+ 946 0430 30E0      		ldi r19,0
+ 947               	.LVL87:
+ 948               	.L38:
+ 195:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 949               		.loc 1 195 0
+ 950 0432 C901      		movw r24,r18
+ 951               	/* epilogue start */
+ 952 0434 DF91      		pop r29
+ 953 0436 CF91      		pop r28
+ 954               	.LVL88:
+ 955 0438 1F91      		pop r17
+ 956 043a 0F91      		pop r16
+ 957 043c FF90      		pop r15
+ 958 043e EF90      		pop r14
+ 959 0440 0895      		ret
+ 960               	.LFE15:
+ 962               	.global	set_delete
+ 964               	set_delete:
+ 965               	.LFB16:
+ 196:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 197:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** void set_delete(Set *set)
+ 198:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 966               		.loc 1 198 0
+ 967               	.LVL89:
+ 968 0442 0F93      		push r16
+ 969               	.LCFI58:
+ 970 0444 1F93      		push r17
+ 971               	.LCFI59:
+ 972 0446 CF93      		push r28
+ 973               	.LCFI60:
+ 974 0448 DF93      		push r29
+ 975               	.LCFI61:
+ 976               	/* prologue: function */
+ 977               	/* frame size = 0 */
+ 978               	/* stack size = 4 */
+ 979               	.L__stack_usage = 4
+ 980 044a EC01      		movw r28,r24
+ 199:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	unsigned char* current = set->start;
+ 981               		.loc 1 199 0
+ 982 044c 8881      		ld r24,Y
+ 983 044e 9981      		ldd r25,Y+1
+ 984               	.LVL90:
+ 200:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	unsigned char* next;
+ 201:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 202:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	while (current) {
+ 985               		.loc 1 202 0
+ 986 0450 00C0      		rjmp .L47
+ 987               	.L48:
+ 203:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		
+ 204:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		next = ADVANCE_NEXT(set, current);
+ 988               		.loc 1 204 0
+ 989 0452 EC81      		ldd r30,Y+4
+ 990 0454 FD81      		ldd r31,Y+5
+ 991 0456 0680      		ldd __tmp_reg__,Z+6
+ 992 0458 F781      		ldd r31,Z+7
+ 993 045a E02D      		mov r30,__tmp_reg__
+ 994 045c E80F      		add r30,r24
+ 995 045e F91F      		adc r31,r25
+ 996 0460 0081      		ld r16,Z
+ 997 0462 1181      		ldd r17,Z+1
+ 998               	.LVL91:
+ 205:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		free(current);
+ 999               		.loc 1 205 0
+ 1000 0464 0E94 0000 		call free
+ 1001               	.LVL92:
+ 206:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 		current = next;
+ 1002               		.loc 1 206 0
+ 1003 0468 C801      		movw r24,r16
+ 1004               	.LVL93:
+ 1005               	.L47:
+ 202:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	while (current) {
+ 1006               		.loc 1 202 0 discriminator 1
+ 1007 046a 0097      		sbiw r24,0
+ 1008 046c 01F4      		brne .L48
+ 207:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	}
+ 208:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 209:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	free(set);
+ 1009               		.loc 1 209 0
+ 1010 046e CE01      		movw r24,r28
+ 1011               	.LVL94:
+ 1012               	/* epilogue start */
+ 210:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** }
+ 1013               		.loc 1 210 0
+ 1014 0470 DF91      		pop r29
+ 1015 0472 CF91      		pop r28
+ 1016               	.LVL95:
+ 1017 0474 1F91      		pop r17
+ 1018 0476 0F91      		pop r16
+ 209:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 	free(set);
+ 1019               		.loc 1 209 0
+ 1020 0478 0C94 0000 		jmp free
+ 1021               	.LVL96:
+ 1022               	.LFE16:
+ 1024               	.global	set_init_descriptors
+ 1026               	set_init_descriptors:
+ 1027               	.LFB17:
+ 211:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** 
+ 212:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** void
+ 213:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** set_init_descriptors(void)
+ 214:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c **** {
+ 1028               		.loc 1 214 0
+ 1029               	/* prologue: function */
+ 1030               	/* frame size = 0 */
+ 1031               	/* stack size = 0 */
+ 1032               	.L__stack_usage = 0
+ 215:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   int_descriptor = malloc(sizeof(set_descriptor));
+ 1033               		.loc 1 215 0
+ 1034 047c 88E0      		ldi r24,lo8(8)
+ 1035 047e 90E0      		ldi r25,0
+ 1036 0480 0E94 0000 		call malloc
+ 1037               	.LVL97:
+ 1038 0484 FC01      		movw r30,r24
+ 1039 0486 8093 0000 		sts int_descriptor,r24
+ 1040 048a 9093 0000 		sts int_descriptor+1,r25
+ 216:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   int_descriptor->size_elem = sizeof(int);
+ 1041               		.loc 1 216 0
+ 1042 048e 82E0      		ldi r24,lo8(2)
+ 1043 0490 90E0      		ldi r25,0
+ 1044 0492 8683      		std Z+6,r24
+ 1045 0494 9783      		std Z+7,r25
+ 217:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   int_descriptor->print_fn = print_int_value;
+ 1046               		.loc 1 217 0
+ 1047 0496 80E0      		ldi r24,lo8(gs(print_int_value))
+ 1048 0498 90E0      		ldi r25,hi8(gs(print_int_value))
+ 1049 049a 8483      		std Z+4,r24
+ 1050 049c 9583      		std Z+5,r25
+ 218:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   int_descriptor->cmp_fn = compare_int_values;
+ 1051               		.loc 1 218 0
+ 1052 049e 80E0      		ldi r24,lo8(gs(compare_int_values))
+ 1053 04a0 90E0      		ldi r25,hi8(gs(compare_int_values))
+ 1054 04a2 8083      		st Z,r24
+ 1055 04a4 9183      		std Z+1,r25
+ 219:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   int_descriptor->equal_fn = equal_int_values;
+ 1056               		.loc 1 219 0
+ 1057 04a6 80E0      		ldi r24,lo8(gs(equal_int_values))
+ 1058 04a8 90E0      		ldi r25,hi8(gs(equal_int_values))
+ 1059 04aa 8283      		std Z+2,r24
+ 1060 04ac 9383      		std Z+3,r25
+ 220:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   
+ 221:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   float_descriptor = malloc(sizeof(set_descriptor));
+ 1061               		.loc 1 221 0
+ 1062 04ae 88E0      		ldi r24,lo8(8)
+ 1063 04b0 90E0      		ldi r25,0
+ 1064 04b2 0E94 0000 		call malloc
+ 1065               	.LVL98:
+ 1066 04b6 FC01      		movw r30,r24
+ 1067 04b8 8093 0000 		sts float_descriptor,r24
+ 1068 04bc 9093 0000 		sts float_descriptor+1,r25
+ 222:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   float_descriptor->size_elem = sizeof(float);
+ 1069               		.loc 1 222 0
+ 1070 04c0 84E0      		ldi r24,lo8(4)
+ 1071 04c2 90E0      		ldi r25,0
+ 1072 04c4 8683      		std Z+6,r24
+ 1073 04c6 9783      		std Z+7,r25
+ 223:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   float_descriptor->print_fn = print_float_value;
+ 1074               		.loc 1 223 0
+ 1075 04c8 80E0      		ldi r24,lo8(gs(print_float_value))
+ 1076 04ca 90E0      		ldi r25,hi8(gs(print_float_value))
+ 1077 04cc 8483      		std Z+4,r24
+ 1078 04ce 9583      		std Z+5,r25
+ 224:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   float_descriptor->cmp_fn = compare_float_values;
+ 1079               		.loc 1 224 0
+ 1080 04d0 80E0      		ldi r24,lo8(gs(compare_float_values))
+ 1081 04d2 90E0      		ldi r25,hi8(gs(compare_float_values))
+ 1082 04d4 8083      		st Z,r24
+ 1083 04d6 9183      		std Z+1,r25
+ 225:/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.c ****   float_descriptor->equal_fn = equal_float_values;
+ 1084               		.loc 1 225 0
+ 1085 04d8 80E0      		ldi r24,lo8(gs(equal_float_values))
+ 1086 04da 90E0      		ldi r25,hi8(gs(equal_float_values))
+ 1087 04dc 8283      		std Z+2,r24
+ 1088 04de 9383      		std Z+3,r25
+ 1089 04e0 0895      		ret
+ 1090               	.LFE17:
+ 1092               		.local	int_descriptor
+ 1093               		.comm	int_descriptor,2,1
+ 1094               		.local	float_descriptor
+ 1095               		.comm	float_descriptor,2,1
+ 1554               	.Letext0:
+ 1555               		.file 2 "/usr/lib/gcc/avr/4.7.2/include/stddef.h"
+ 1556               		.file 3 "/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/set_runtime.h"
+ 1557               		.file 4 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdio.h"
+ 1558               		.file 5 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdlib.h"
+ 1559               		.file 6 "/home/anaz/blinkyblocks/build/src-bobby/meldinterp-runtime/../system/myassert.h"
+ 1560               		.file 7 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 set_runtime.c
+/home/anaz/tmp/ccVDPVlf.s:2      *ABS*:000000000000003e __SP_H__
+/home/anaz/tmp/ccVDPVlf.s:3      *ABS*:000000000000003d __SP_L__
+/home/anaz/tmp/ccVDPVlf.s:4      *ABS*:000000000000003f __SREG__
+/home/anaz/tmp/ccVDPVlf.s:5      *ABS*:000000000000003b __RAMPZ__
+/home/anaz/tmp/ccVDPVlf.s:6      *ABS*:0000000000000034 __CCP__
+/home/anaz/tmp/ccVDPVlf.s:7      *ABS*:0000000000000000 __tmp_reg__
+/home/anaz/tmp/ccVDPVlf.s:8      *ABS*:0000000000000001 __zero_reg__
+/home/anaz/tmp/ccVDPVlf.s:12     .text:0000000000000000 compare_int_values
+/home/anaz/tmp/ccVDPVlf.s:43     .text:000000000000001e equal_int_values
+/home/anaz/tmp/ccVDPVlf.s:74     .text:000000000000003c compare_float_values
+/home/anaz/tmp/ccVDPVlf.s:118    .text:000000000000006c equal_float_values
+/home/anaz/tmp/ccVDPVlf.s:165    .text:000000000000009c print_float_value
+/home/anaz/tmp/ccVDPVlf.s:211    .text:00000000000000c8 print_int_value
+/home/anaz/tmp/ccVDPVlf.s:246    .text:00000000000000e8 set_insert
+/home/anaz/tmp/ccVDPVlf.s:509    .text:0000000000000250 set_int_create
+                             .bss:0000000000000000 int_descriptor
+/home/anaz/tmp/ccVDPVlf.s:573    .text:0000000000000294 set_float_create
+/home/anaz/tmp/ccVDPVlf.s:1093   .bss:0000000000000002 float_descriptor
+/home/anaz/tmp/ccVDPVlf.s:633    .text:00000000000002d8 set_int_insert
+/home/anaz/tmp/ccVDPVlf.s:671    .text:00000000000002fc set_float_insert
+/home/anaz/tmp/ccVDPVlf.s:719    .text:0000000000000326 set_print
+/home/anaz/tmp/ccVDPVlf.s:852    .text:00000000000003c0 set_equal
+/home/anaz/tmp/ccVDPVlf.s:964    .text:0000000000000442 set_delete
+/home/anaz/tmp/ccVDPVlf.s:1026   .text:000000000000047c set_init_descriptors
+
+UNDEFINED SYMBOLS
+__ltsf2
+__eqsf2
+printf
+malloc
+memcpy
+__myassert
+puts
+free
+__do_copy_data
+__do_clear_bss

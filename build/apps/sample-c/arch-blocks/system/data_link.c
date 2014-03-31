@@ -1,4 +1,4 @@
-# 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/data_link.bb"
+# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb"
 // data_link.c
 //
 // Implement Data Link Layer protocols
@@ -10,6 +10,13 @@
 #include "../hw-api/hwSerial.h"
 #include "data_link.h"
 #include "led.h"
+
+#ifdef LOG_DEBUG
+#include "log.h"
+#endif
+#ifdef CLOCK_SYNC
+#include "clock.h"
+#endif
 
 
 // global receive queue for packets
@@ -59,6 +66,16 @@ byte reservedSystemHandler(void)
         case NEIGHBOR_MSG:
             handleNeighborMessage();
             break;
+#ifdef LOG_DEBUG
+        case LOG_MSG:
+			handleLogMessage();
+			break;
+#endif
+#ifdef CLOCK_SYNC
+		case CLOCK_SYNC_MSG:
+			handleClockSyncMessage();
+			break;
+#endif
         default:
             break;
     }
@@ -117,6 +134,12 @@ byte removeFromSq(PRef p, byte response)
 // flush a send queue (used when retries fails)
 void flushSendQueue(PRef p)
 {
+#ifdef LOG_DEBUG
+	if (isHostPort(p)) {
+		removeFromSq(p, MSG_RESP_NOREPLY); // ONLY ONE
+		return;
+	}
+#endif
     if(p < NUM_PORTS)
     {
         // flush buffer (call all callbacks as if all messages failed)

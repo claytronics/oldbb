@@ -1,7 +1,7 @@
 # this makefile will try and build everything in the subdirectories
-# and copy what it should to the various directories.
+# and copy what it should to the various directories.  
 
-SUBDIRS := bbcompiler ldpsyntax meldinterp/compiler-src cmdline-bootloader
+SUBDIRS := bbcompiler ldpsyntax meldinterp/compiler-src cmdline-bootloader logger
 
 ifeq ($(BBASE)x,x)
  $(error "You must define BBASE, probably to the parent of this directory")
@@ -25,4 +25,3 @@ clean:
 
 reallyclean:
 	for i in $(SUBDIRS); do $(MAKE) -C $$i reallyclean; done
-	rm -rf $(BBASE)/bin/arch-*

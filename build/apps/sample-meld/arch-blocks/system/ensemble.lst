@@ -1,0 +1,1688 @@
+   1               		.file	"ensemble.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	neighborKeepalive
+  13               	neighborKeepalive:
+  14               	.LFB19:
+  15               		.file 1 "/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb"
+   1:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #include "ensemble.bbh"
+   2:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #include "message.bbh"
+   3:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #include "data_link.bbh"
+   4:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+   5:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** //     allocated chunks rather than a user allocated chunk
+   6:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+   7:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** threadvar Neighborhood thisNeighborhood;
+   8:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** threadvar Timer ttNeighbor[6];
+   9:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  10:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // converts a UID into a passed in character stream.  Assumes 2-byte GUIDs.
+  11:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** void GUIDIntoChar(Uid id, byte * c)
+  12:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+  13:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+  14:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+  15:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+  16:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  17:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // takes a passed in character array and returns a UID representing the array.  Assumes 2-byte GUID
+  18:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid charToGUID(byte * c)
+  19:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+  20:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     Uid tmp;
+  21:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  22:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+  23:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+  24:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  25:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     return tmp;
+  26:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+  27:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  28:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // returns number of neighbors that are not VACANT.
+  29:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** byte getNeighborCount()
+  30:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+  31:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	uint8_t count, i;
+  32:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	
+  33:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	for(count = 0, i = 0; i < NUM_PORTS; ++i)
+  34:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	{
+  35:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		if(thisNeighborhood.n[i] != VACANT)
+  36:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		{
+  37:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 			count++;
+  38:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		}	
+  39:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	}
+  40:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  41:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** //	if(count>0)
+  42:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** //	  printf("NEIGHBORCOUNT = %d\r\n", count);
+  43:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	return count;
+  44:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+  45:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  46:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // simple functions to access geographic neighbors
+  47:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid down(void) { return thisNeighborhood.n[DOWN]; }
+  48:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid up(void) { return thisNeighborhood.n[UP]; }
+  49:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid north(void) { return thisNeighborhood.n[NORTH]; }
+  50:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid south(void) { return thisNeighborhood.n[SOUTH]; }
+  51:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid east(void) { return thisNeighborhood.n[EAST]; }
+  52:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid west(void) { return thisNeighborhood.n[WEST]; }
+  53:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  54:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // called to set the GUID of a neighbor.
+  55:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // if the neighbor is the same as before, do nothing.
+  56:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // if the neighbor has a different GUID (or VACANT), trigger a neighbor change event.
+  57:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** void	updateNeighbor(PRef p, Uid b)
+  58:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+  59:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #ifdef DEBUG
+  60:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #if DEBUG == 5 // UP
+  61:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  62:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 5
+  63:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTD1
+  64:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  65:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 1 // NORTH
+  66:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  67:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 1
+  68:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTC1
+  69:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  70:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 4 //SOUTH
+  71:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  72:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 4
+  73:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTE0
+  74:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  75:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 2 //EAST
+  76:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  77:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 2
+  78:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTF0
+  79:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  80:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 3 //WEST
+  81:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  82:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 3
+  83:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTC0
+  84:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  85:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 0 //DOWN
+  86:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  87:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 0
+  88:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTD0
+  89:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  90:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #endif
+  91:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #ifndef DEBUGPORT
+  92:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #error Invalid DEBUG option chosen - use a face enum.
+  93:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #endif
+  94:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+  95:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	if(p == DEBUGPORT)
+  96:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	{
+  97:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		return;
+  98:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	}
+  99:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 100:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** #endif
+ 101:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 102:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	if(p < NUM_PORTS)
+ 103:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	{
+ 104:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		// is the state changing?  Trigger handler
+ 105:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    if(thisNeighborhood.n[p] != b)
+ 106:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    {
+ 107:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        thisNeighborhood.n[p] = b;
+ 108:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        triggerHandler(EVENT_NEIGHBOR_CHANGE);
+ 109:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    }
+ 110:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	  
+ 111:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	}
+ 112:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	
+ 113:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	//	printf("Block %d now has %d neighbors \n",getGUID(),getNeighborCount());
+ 114:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 115:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 116:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // called when start handshake message is complete by success or failure
+ 117:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** void neighborScanCB(void)
+ 118:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 119:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // message was received.  wait for handshake to return, but allow for timeout to restart scan
+ 120:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 121:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 122:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD;
+ 123:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 124:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // else failure
+ 125:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   else
+ 126:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 127:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_SCAN_PERIOD;
+ 128:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 129:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 130:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // re-enable timer with potentially new period
+ 131:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 132:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****  
+ 133:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
+ 134:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 135:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 136:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // send a start handshake message to a vacant port
+ 137:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** void neighborScan(void)
+ 138:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 139:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   byte buf[4];
+ 140:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   PRef p = thisTimeout->arg;
+ 141:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 142:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // could check for non-vacant neighbor here?
+ 143:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   #ifdef DEBUGPORT
+ 144:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   if(p == DEBUGPORT) {
+ 145:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       return;
+ 146:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   }
+ 147:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   #endif
+ 148:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 149:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // prepare message
+ 150:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   buf[0] = NEIGHBOR_MSG;
+ 151:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   buf[1] = MSG_NEIGHBOR_START;
+ 152:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(getGUID(), &(buf[2]));
+ 153:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   
+ 154:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // disable timer so no extra time-based calls are executed until sent message callback
+ 155:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[p]);
+ 156:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   if(ttNeighbor[p].t.state != INACTIVE)
+ 157:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 158:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       deregisterTimeout(&(ttNeighbor[p].t));
+ 159:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 160:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 161:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // enqueue message
+ 162:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   sendSystemMessage(p, buf, 4, RES_SYS_HANDLER, (GenericHandler)&neighborScanCB);
+ 163:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 164:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 165:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** void neighborKeepaliveCB(void)
+ 166:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 167:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     // message was received.  re-enable timer and continue as normal
+ 168:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     // note that since we always ACK a received message, this will happen even if the other block 
+ 169:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     // does not understand why the keepalive was sent.  however, the other block will restart a han
+ 170:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 171:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 172:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 173:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 174:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     else // neighbor lost!  begin rescanning
+ 175:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 176:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         restartScan(faceNum(thisChunk));
+ 177:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 178:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 179:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     freeChunk(thisChunk);
+ 180:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 181:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 182:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // this is called periodically to verify neighbor is still there and in the right state
+ 183:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** void neighborKeepalive(void)
+ 184:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+  16               		.loc 1 184 0
+  17 0000 0F93      		push r16
+  18               	.LCFI0:
+  19 0002 1F93      		push r17
+  20               	.LCFI1:
+  21 0004 CF93      		push r28
+  22               	.LCFI2:
+  23 0006 DF93      		push r29
+  24               	.LCFI3:
+  25 0008 00D0      		rcall .
+  26 000a 00D0      		rcall .
+  27               	.LCFI4:
+  28 000c CDB7      		in r28,__SP_L__
+  29 000e DEB7      		in r29,__SP_H__
+  30               	.LCFI5:
+  31               	/* prologue: function */
+  32               	/* frame size = 6 */
+  33               	/* stack size = 10 */
+  34               	.L__stack_usage = 10
+ 185:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // craft and send a keeplive message of the form:
+ 186:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // [header] [myGUID][yourGUID]
+ 187:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   byte buf[6];
+ 188:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   buf[0] = NEIGHBOR_MSG;
+  35               		.loc 1 188 0
+  36 0010 81E0      		ldi r24,lo8(1)
+  37 0012 8983      		std Y+1,r24
+ 189:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   buf[1] = MSG_NEIGHBOR_KEEPALIVE;
+  38               		.loc 1 189 0
+  39 0014 83E0      		ldi r24,lo8(3)
+  40 0016 8A83      		std Y+2,r24
+ 190:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(getGUID(), &(buf[2]));
+  41               		.loc 1 190 0
+  42 0018 0E94 0000 		call getGUID
+  43               	.LVL0:
+  44               	.LBB24:
+  45               	.LBB25:
+  13:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+  46               		.loc 1 13 0
+  47 001c 9B83      		std Y+3,r25
+  14:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+  48               		.loc 1 14 0
+  49 001e 8C83      		std Y+4,r24
+  50               	.LBE25:
+  51               	.LBE24:
+ 191:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(thisNeighborhood.n[thisTimeout->arg], &(buf[4]));
+  52               		.loc 1 191 0
+  53 0020 A091 0000 		lds r26,thisTimeout
+  54 0024 B091 0000 		lds r27,thisTimeout+1
+  55 0028 1996      		adiw r26,9
+  56 002a 8C91      		ld r24,X
+  57 002c 1997      		sbiw r26,9
+  58               	.LVL1:
+  59 002e 90E0      		ldi r25,0
+  60               	.LVL2:
+  61 0030 FC01      		movw r30,r24
+  62 0032 EE0F      		lsl r30
+  63 0034 FF1F      		rol r31
+  64 0036 E050      		subi r30,lo8(-(thisNeighborhood))
+  65 0038 F040      		sbci r31,hi8(-(thisNeighborhood))
+  66 003a 2081      		ld r18,Z
+  67 003c 3181      		ldd r19,Z+1
+  68               	.LVL3:
+  69               	.LBB26:
+  70               	.LBB27:
+  13:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+  71               		.loc 1 13 0
+  72 003e 3D83      		std Y+5,r19
+  14:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+  73               		.loc 1 14 0
+  74 0040 2E83      		std Y+6,r18
+  75               	.LBE27:
+  76               	.LBE26:
+ 192:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 193:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // prevent timer from calling this again, message callback will reenable as necessary
+ 194:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[thisTimeout->arg]);
+  77               		.loc 1 194 0
+  78 0042 21E1      		ldi r18,lo8(17)
+  79               	.LVL4:
+  80 0044 289F      		mul r18,r24
+  81 0046 F001      		movw r30,r0
+  82 0048 299F      		mul r18,r25
+  83 004a F00D      		add r31,r0
+  84 004c 1124      		clr __zero_reg__
+  85               	.LVL5:
+  86 004e E050      		subi r30,lo8(-(ttNeighbor))
+  87 0050 F040      		sbci r31,hi8(-(ttNeighbor))
+  88 0052 108A      		std Z+16,__zero_reg__
+ 195:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 196:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // send message - CB will either re-add timer, or restart scanning for neighbors
+ 197:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   sendSystemMessage(thisTimeout->arg, buf, 6, RES_SYS_HANDLER, (GenericHandler)&neighborKeepaliveCB
+  89               		.loc 1 197 0
+  90 0054 00E0      		ldi r16,lo8(gs(neighborKeepaliveCB))
+  91 0056 10E0      		ldi r17,hi8(gs(neighborKeepaliveCB))
+  92 0058 20E0      		ldi r18,0
+  93 005a 30E0      		ldi r19,0
+  94 005c 46E0      		ldi r20,lo8(6)
+  95 005e BE01      		movw r22,r28
+  96 0060 6F5F      		subi r22,-1
+  97 0062 7F4F      		sbci r23,-1
+  98 0064 1996      		adiw r26,9
+  99 0066 8C91      		ld r24,X
+ 100               	.LVL6:
+ 101 0068 0E94 0000 		call sendSystemMessage
+ 102               	.LVL7:
+ 103               	/* epilogue start */
+ 198:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 104               		.loc 1 198 0
+ 105 006c 2696      		adiw r28,6
+ 106 006e CDBF      		out __SP_L__,r28
+ 107 0070 DEBF      		out __SP_H__,r29
+ 108 0072 DF91      		pop r29
+ 109 0074 CF91      		pop r28
+ 110 0076 1F91      		pop r17
+ 111 0078 0F91      		pop r16
+ 112 007a 0895      		ret
+ 113               	.LFE19:
+ 115               	.global	neighborScan
+ 117               	neighborScan:
+ 118               	.LFB17:
+ 138:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 119               		.loc 1 138 0
+ 120 007c FF92      		push r15
+ 121               	.LCFI6:
+ 122 007e 0F93      		push r16
+ 123               	.LCFI7:
+ 124 0080 1F93      		push r17
+ 125               	.LCFI8:
+ 126 0082 CF93      		push r28
+ 127               	.LCFI9:
+ 128 0084 DF93      		push r29
+ 129               	.LCFI10:
+ 130 0086 00D0      		rcall .
+ 131 0088 1F92      		push __zero_reg__
+ 132               	.LCFI11:
+ 133 008a CDB7      		in r28,__SP_L__
+ 134 008c DEB7      		in r29,__SP_H__
+ 135               	.LCFI12:
+ 136               	/* prologue: function */
+ 137               	/* frame size = 4 */
+ 138               	/* stack size = 9 */
+ 139               	.L__stack_usage = 9
+ 140:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   PRef p = thisTimeout->arg;
+ 140               		.loc 1 140 0
+ 141 008e E091 0000 		lds r30,thisTimeout
+ 142 0092 F091 0000 		lds r31,thisTimeout+1
+ 143 0096 F184      		ldd r15,Z+9
+ 144               	.LVL8:
+ 150:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   buf[0] = NEIGHBOR_MSG;
+ 145               		.loc 1 150 0
+ 146 0098 81E0      		ldi r24,lo8(1)
+ 147 009a 8983      		std Y+1,r24
+ 151:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   buf[1] = MSG_NEIGHBOR_START;
+ 148               		.loc 1 151 0
+ 149 009c 8A83      		std Y+2,r24
+ 152:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(getGUID(), &(buf[2]));
+ 150               		.loc 1 152 0
+ 151 009e 0E94 0000 		call getGUID
+ 152               	.LVL9:
+ 153               	.LBB28:
+ 154               	.LBB29:
+  13:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+ 155               		.loc 1 13 0
+ 156 00a2 9B83      		std Y+3,r25
+  14:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+ 157               		.loc 1 14 0
+ 158 00a4 8C83      		std Y+4,r24
+ 159               	.LBE29:
+ 160               	.LBE28:
+ 155:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[p]);
+ 161               		.loc 1 155 0
+ 162 00a6 81E1      		ldi r24,lo8(17)
+ 163               	.LVL10:
+ 164 00a8 F89E      		mul r15,r24
+ 165 00aa 9001      		movw r18,r0
+ 166 00ac 1124      		clr __zero_reg__
+ 167 00ae F901      		movw r30,r18
+ 168 00b0 E050      		subi r30,lo8(-(ttNeighbor))
+ 169 00b2 F040      		sbci r31,hi8(-(ttNeighbor))
+ 170 00b4 108A      		std Z+16,__zero_reg__
+ 156:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   if(ttNeighbor[p].t.state != INACTIVE)
+ 171               		.loc 1 156 0
+ 172 00b6 8285      		ldd r24,Z+10
+ 173 00b8 8823      		tst r24
+ 174 00ba 01F0      		breq .L3
+ 158:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       deregisterTimeout(&(ttNeighbor[p].t));
+ 175               		.loc 1 158 0
+ 176 00bc C901      		movw r24,r18
+ 177 00be 8050      		subi r24,lo8(-(ttNeighbor+2))
+ 178 00c0 9040      		sbci r25,hi8(-(ttNeighbor+2))
+ 179 00c2 0E94 0000 		call deregisterTimeout
+ 180               	.LVL11:
+ 181               	.L3:
+ 162:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   sendSystemMessage(p, buf, 4, RES_SYS_HANDLER, (GenericHandler)&neighborScanCB);
+ 182               		.loc 1 162 0
+ 183 00c6 00E0      		ldi r16,lo8(gs(neighborScanCB))
+ 184 00c8 10E0      		ldi r17,hi8(gs(neighborScanCB))
+ 185 00ca 20E0      		ldi r18,0
+ 186 00cc 30E0      		ldi r19,0
+ 187 00ce 44E0      		ldi r20,lo8(4)
+ 188 00d0 BE01      		movw r22,r28
+ 189 00d2 6F5F      		subi r22,-1
+ 190 00d4 7F4F      		sbci r23,-1
+ 191 00d6 8F2D      		mov r24,r15
+ 192 00d8 0E94 0000 		call sendSystemMessage
+ 193               	.LVL12:
+ 194               	/* epilogue start */
+ 163:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 195               		.loc 1 163 0
+ 196 00dc 2496      		adiw r28,4
+ 197 00de CDBF      		out __SP_L__,r28
+ 198 00e0 DEBF      		out __SP_H__,r29
+ 199 00e2 DF91      		pop r29
+ 200 00e4 CF91      		pop r28
+ 201 00e6 1F91      		pop r17
+ 202 00e8 0F91      		pop r16
+ 203 00ea FF90      		pop r15
+ 204               	.LVL13:
+ 205 00ec 0895      		ret
+ 206               	.LFE17:
+ 208               	.global	neighborScanCB
+ 210               	neighborScanCB:
+ 211               	.LFB16:
+ 118:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 212               		.loc 1 118 0
+ 213               	/* prologue: function */
+ 214               	/* frame size = 0 */
+ 215               	/* stack size = 0 */
+ 216               	.L__stack_usage = 0
+ 120:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 217               		.loc 1 120 0
+ 218 00ee 8091 0000 		lds r24,thisChunk
+ 219 00f2 9091 0000 		lds r25,thisChunk+1
+ 220 00f6 DC01      		movw r26,r24
+ 221 00f8 5196      		adiw r26,17
+ 222 00fa EC91      		ld r30,X
+ 223 00fc 2E2F      		mov r18,r30
+ 224 00fe 2871      		andi r18,lo8(24)
+ 225 0100 AE2F      		mov r26,r30
+ 226 0102 A770      		andi r26,lo8(7)
+ 227 0104 2830      		cpi r18,lo8(8)
+ 228 0106 01F4      		brne .L8
+ 122:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD;
+ 229               		.loc 1 122 0
+ 230 0108 21E1      		ldi r18,lo8(17)
+ 231 010a A29F      		mul r26,r18
+ 232 010c D001      		movw r26,r0
+ 233 010e 1124      		clr __zero_reg__
+ 234 0110 A050      		subi r26,lo8(-(ttNeighbor))
+ 235 0112 B040      		sbci r27,hi8(-(ttNeighbor))
+ 236 0114 44E6      		ldi r20,lo8(100)
+ 237 0116 50E0      		ldi r21,0
+ 238 0118 60E0      		ldi r22,0
+ 239 011a 70E0      		ldi r23,0
+ 240 011c 00C0      		rjmp .L10
+ 241               	.L8:
+ 127:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_SCAN_PERIOD;
+ 242               		.loc 1 127 0
+ 243 011e 21E1      		ldi r18,lo8(17)
+ 244 0120 A29F      		mul r26,r18
+ 245 0122 D001      		movw r26,r0
+ 246 0124 1124      		clr __zero_reg__
+ 247 0126 A050      		subi r26,lo8(-(ttNeighbor))
+ 248 0128 B040      		sbci r27,hi8(-(ttNeighbor))
+ 249 012a 42E3      		ldi r20,lo8(50)
+ 250 012c 50E0      		ldi r21,0
+ 251 012e 60E0      		ldi r22,0
+ 252 0130 70E0      		ldi r23,0
+ 253               	.L10:
+ 254 0132 1C96      		adiw r26,12
+ 255 0134 4D93      		st X+,r20
+ 256 0136 5D93      		st X+,r21
+ 257 0138 6D93      		st X+,r22
+ 258 013a 7C93      		st X,r23
+ 259 013c 1F97      		sbiw r26,12+3
+ 131:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 260               		.loc 1 131 0
+ 261 013e E770      		andi r30,lo8(7)
+ 262 0140 A1E1      		ldi r26,lo8(17)
+ 263 0142 EA9F      		mul r30,r26
+ 264 0144 F001      		movw r30,r0
+ 265 0146 1124      		clr __zero_reg__
+ 266 0148 E050      		subi r30,lo8(-(ttNeighbor))
+ 267 014a F040      		sbci r31,hi8(-(ttNeighbor))
+ 268 014c 21E0      		ldi r18,lo8(1)
+ 269 014e 208B      		std Z+16,r18
+ 133:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
+ 270               		.loc 1 133 0
+ 271 0150 0C94 0000 		jmp freeChunk
+ 272               	.LVL14:
+ 273               	.LFE16:
+ 275               	.global	GUIDIntoChar
+ 277               	GUIDIntoChar:
+ 278               	.LFB6:
+  12:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 279               		.loc 1 12 0
+ 280               	.LVL15:
+ 281               	/* prologue: function */
+ 282               	/* frame size = 0 */
+ 283               	/* stack size = 0 */
+ 284               	.L__stack_usage = 0
+  13:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+ 285               		.loc 1 13 0
+ 286 0154 FB01      		movw r30,r22
+ 287 0156 9083      		st Z,r25
+  14:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+ 288               		.loc 1 14 0
+ 289 0158 8183      		std Z+1,r24
+ 290 015a 0895      		ret
+ 291               	.LFE6:
+ 293               	.global	charToGUID
+ 295               	charToGUID:
+ 296               	.LFB7:
+  19:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 297               		.loc 1 19 0
+ 298               	.LVL16:
+ 299               	/* prologue: function */
+ 300               	/* frame size = 0 */
+ 301               	/* stack size = 0 */
+ 302               	.L__stack_usage = 0
+  22:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 303               		.loc 1 22 0
+ 304 015c FC01      		movw r30,r24
+ 305 015e 3081      		ld r19,Z
+ 306 0160 20E0      		ldi r18,0
+  23:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 307               		.loc 1 23 0
+ 308 0162 8181      		ldd r24,Z+1
+ 309               	.LVL17:
+ 310 0164 282B      		or r18,r24
+  26:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 311               		.loc 1 26 0
+ 312 0166 C901      		movw r24,r18
+ 313 0168 0895      		ret
+ 314               	.LFE7:
+ 316               	.global	getNeighborCount
+ 318               	getNeighborCount:
+ 319               	.LFB8:
+  30:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 320               		.loc 1 30 0
+ 321               	/* prologue: function */
+ 322               	/* frame size = 0 */
+ 323               	/* stack size = 0 */
+ 324               	.L__stack_usage = 0
+ 325               	.LVL18:
+ 326 016a E0E0      		ldi r30,lo8(thisNeighborhood)
+ 327 016c F0E0      		ldi r31,hi8(thisNeighborhood)
+  33:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	for(count = 0, i = 0; i < NUM_PORTS; ++i)
+ 328               		.loc 1 33 0
+ 329 016e 80E0      		ldi r24,0
+ 330               	.LVL19:
+ 331               	.L15:
+  35:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		if(thisNeighborhood.n[i] != VACANT)
+ 332               		.loc 1 35 0
+ 333 0170 2191      		ld r18,Z+
+ 334 0172 3191      		ld r19,Z+
+ 335 0174 232B      		or r18,r19
+ 336 0176 01F0      		breq .L14
+  37:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 			count++;
+ 337               		.loc 1 37 0
+ 338 0178 8F5F      		subi r24,lo8(-(1))
+ 339               	.LVL20:
+ 340               	.L14:
+  33:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	for(count = 0, i = 0; i < NUM_PORTS; ++i)
+ 341               		.loc 1 33 0
+ 342 017a 90E0      		ldi r25,hi8(thisNeighborhood+12)
+ 343 017c E030      		cpi r30,lo8(thisNeighborhood+12)
+ 344 017e F907      		cpc r31,r25
+ 345 0180 01F4      		brne .L15
+ 346               	/* epilogue start */
+  44:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 347               		.loc 1 44 0
+ 348 0182 0895      		ret
+ 349               	.LFE8:
+ 351               	.global	down
+ 353               	down:
+ 354               	.LFB9:
+  47:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid down(void) { return thisNeighborhood.n[DOWN]; }
+ 355               		.loc 1 47 0
+ 356               	/* prologue: function */
+ 357               	/* frame size = 0 */
+ 358               	/* stack size = 0 */
+ 359               	.L__stack_usage = 0
+  47:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid down(void) { return thisNeighborhood.n[DOWN]; }
+ 360               		.loc 1 47 0
+ 361 0184 E0E0      		ldi r30,lo8(thisNeighborhood)
+ 362 0186 F0E0      		ldi r31,hi8(thisNeighborhood)
+ 363 0188 8081      		ld r24,Z
+ 364 018a 9181      		ldd r25,Z+1
+ 365 018c 0895      		ret
+ 366               	.LFE9:
+ 368               	.global	up
+ 370               	up:
+ 371               	.LFB10:
+  48:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid up(void) { return thisNeighborhood.n[UP]; }
+ 372               		.loc 1 48 0
+ 373               	/* prologue: function */
+ 374               	/* frame size = 0 */
+ 375               	/* stack size = 0 */
+ 376               	.L__stack_usage = 0
+  48:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid up(void) { return thisNeighborhood.n[UP]; }
+ 377               		.loc 1 48 0
+ 378 018e E0E0      		ldi r30,lo8(thisNeighborhood+10)
+ 379 0190 F0E0      		ldi r31,hi8(thisNeighborhood+10)
+ 380 0192 8081      		ld r24,Z
+ 381 0194 9181      		ldd r25,Z+1
+ 382 0196 0895      		ret
+ 383               	.LFE10:
+ 385               	.global	north
+ 387               	north:
+ 388               	.LFB11:
+  49:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid north(void) { return thisNeighborhood.n[NORTH]; }
+ 389               		.loc 1 49 0
+ 390               	/* prologue: function */
+ 391               	/* frame size = 0 */
+ 392               	/* stack size = 0 */
+ 393               	.L__stack_usage = 0
+  49:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid north(void) { return thisNeighborhood.n[NORTH]; }
+ 394               		.loc 1 49 0
+ 395 0198 E0E0      		ldi r30,lo8(thisNeighborhood+2)
+ 396 019a F0E0      		ldi r31,hi8(thisNeighborhood+2)
+ 397 019c 8081      		ld r24,Z
+ 398 019e 9181      		ldd r25,Z+1
+ 399 01a0 0895      		ret
+ 400               	.LFE11:
+ 402               	.global	south
+ 404               	south:
+ 405               	.LFB12:
+  50:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid south(void) { return thisNeighborhood.n[SOUTH]; }
+ 406               		.loc 1 50 0
+ 407               	/* prologue: function */
+ 408               	/* frame size = 0 */
+ 409               	/* stack size = 0 */
+ 410               	.L__stack_usage = 0
+  50:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid south(void) { return thisNeighborhood.n[SOUTH]; }
+ 411               		.loc 1 50 0
+ 412 01a2 E0E0      		ldi r30,lo8(thisNeighborhood+8)
+ 413 01a4 F0E0      		ldi r31,hi8(thisNeighborhood+8)
+ 414 01a6 8081      		ld r24,Z
+ 415 01a8 9181      		ldd r25,Z+1
+ 416 01aa 0895      		ret
+ 417               	.LFE12:
+ 419               	.global	east
+ 421               	east:
+ 422               	.LFB13:
+  51:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid east(void) { return thisNeighborhood.n[EAST]; }
+ 423               		.loc 1 51 0
+ 424               	/* prologue: function */
+ 425               	/* frame size = 0 */
+ 426               	/* stack size = 0 */
+ 427               	.L__stack_usage = 0
+  51:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid east(void) { return thisNeighborhood.n[EAST]; }
+ 428               		.loc 1 51 0
+ 429 01ac E0E0      		ldi r30,lo8(thisNeighborhood+4)
+ 430 01ae F0E0      		ldi r31,hi8(thisNeighborhood+4)
+ 431 01b0 8081      		ld r24,Z
+ 432 01b2 9181      		ldd r25,Z+1
+ 433 01b4 0895      		ret
+ 434               	.LFE13:
+ 436               	.global	west
+ 438               	west:
+ 439               	.LFB14:
+  52:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid west(void) { return thisNeighborhood.n[WEST]; }
+ 440               		.loc 1 52 0
+ 441               	/* prologue: function */
+ 442               	/* frame size = 0 */
+ 443               	/* stack size = 0 */
+ 444               	.L__stack_usage = 0
+  52:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** Uid west(void) { return thisNeighborhood.n[WEST]; }
+ 445               		.loc 1 52 0
+ 446 01b6 E0E0      		ldi r30,lo8(thisNeighborhood+6)
+ 447 01b8 F0E0      		ldi r31,hi8(thisNeighborhood+6)
+ 448 01ba 8081      		ld r24,Z
+ 449 01bc 9181      		ldd r25,Z+1
+ 450 01be 0895      		ret
+ 451               	.LFE14:
+ 453               	.global	updateNeighbor
+ 455               	updateNeighbor:
+ 456               	.LFB15:
+  58:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 457               		.loc 1 58 0
+ 458               	.LVL21:
+ 459               	/* prologue: function */
+ 460               	/* frame size = 0 */
+ 461               	/* stack size = 0 */
+ 462               	.L__stack_usage = 0
+ 102:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	if(p < NUM_PORTS)
+ 463               		.loc 1 102 0
+ 464 01c0 8630      		cpi r24,lo8(6)
+ 465 01c2 00F4      		brsh .L26
+ 466               	.LVL22:
+ 467               	.LBB32:
+ 468               	.LBB33:
+ 105:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    if(thisNeighborhood.n[p] != b)
+ 469               		.loc 1 105 0
+ 470 01c4 E82F      		mov r30,r24
+ 471 01c6 F0E0      		ldi r31,0
+ 472 01c8 EE0F      		lsl r30
+ 473 01ca FF1F      		rol r31
+ 474 01cc E050      		subi r30,lo8(-(thisNeighborhood))
+ 475 01ce F040      		sbci r31,hi8(-(thisNeighborhood))
+ 476 01d0 8081      		ld r24,Z
+ 477 01d2 9181      		ldd r25,Z+1
+ 478               	.LVL23:
+ 479 01d4 8617      		cp r24,r22
+ 480 01d6 9707      		cpc r25,r23
+ 481 01d8 01F0      		breq .L26
+ 107:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        thisNeighborhood.n[p] = b;
+ 482               		.loc 1 107 0
+ 483 01da 6083      		st Z,r22
+ 484 01dc 7183      		std Z+1,r23
+ 108:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        triggerHandler(EVENT_NEIGHBOR_CHANGE);
+ 485               		.loc 1 108 0
+ 486 01de 83E1      		ldi r24,lo8(19)
+ 487 01e0 0C94 0000 		jmp triggerHandler
+ 488               	.LVL24:
+ 489               	.L26:
+ 490 01e4 0895      		ret
+ 491               	.LBE33:
+ 492               	.LBE32:
+ 493               	.LFE15:
+ 495               	.global	restartScan
+ 497               	restartScan:
+ 498               	.LFB22:
+ 199:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 200:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // callback for neighbor_response packet
+ 201:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** void neighborHandshakeCB(void)
+ 202:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 203:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     // message was received.  add neighbor to neighborhood and initiate keepalives
+ 204:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 205:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 206:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       // pull neighbor from packet, same position as how we initially sent it
+ 207:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       Uid neighbor = charToGUID(&(thisChunk->data[4]));
+ 208:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       
+ 209:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       // re-add timer for keepalive purposes
+ 210:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
+ 211:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 212:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	{
+ 213:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 214:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	}
+ 215:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
+ 216:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 217:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       
+ 218:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       // add new neighbor to neighborhood
+ 219:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       updateNeighbor(faceNum(thisChunk), neighbor);
+ 220:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 221:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 222:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     else // no neighbor ACK!  begin rescanning
+ 223:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 224:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       restartScan(faceNum(thisChunk));
+ 225:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 226:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   
+ 227:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
+ 228:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 229:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 230:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // called for all NEIGHBOR_MSG type reserved system handlers
+ 231:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** byte handleNeighborMessage(void)
+ 232:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 233:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     if( thisChunk == NULL ) 
+ 234:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 235:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       return 0;
+ 236:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 237:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   
+ 238:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     switch(thisChunk->data[1])
+ 239:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 240:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       // a neighbor wants to initiate a response with us, craft a response
+ 241:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       case MSG_NEIGHBOR_START:
+ 242:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       {
+ 243:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    // have we already received an ACK to our own NEIGHBOR_MSG?  If not, respond
+ 244:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period != NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
+ 245:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    {
+ 246:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      // build a neighbor handshake packet
+ 247:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      // of the form:
+ 248:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      // [handshake header] [my guid] [your guid]
+ 249:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      byte buf[6];
+ 250:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      buf[0] = NEIGHBOR_MSG;
+ 251:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      buf[1] = MSG_NEIGHBOR_RESPONSE;
+ 252:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      GUIDIntoChar(getGUID(), &(buf[2]));
+ 253:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      buf[4] = thisChunk->data[2];
+ 254:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      buf[5] = thisChunk->data[3];
+ 255:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	
+ 256:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      // if our neighbor is already vacant, nothing happens.
+ 257:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      // if this guid == old guid, they got reset somehow, so drop neighbor so user can re-add gra
+ 258:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      // if this guid != old guid, then we got a new block, so drop neighbor so user can re-add gr
+ 259:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      updateNeighbor(faceNum(thisChunk), VACANT);
+ 260:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    
+ 261:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      // stop any imminent timeouts such as neighborscanning
+ 262:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      disableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 263:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 264:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		{
+ 265:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 266:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		}
+ 267:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 268:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      // callback will add neighbor or restart scanning, as necessary
+ 269:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      sendSystemMessage(faceNum(thisChunk), buf, 6, RES_SYS_HANDLER, (GenericHandler)&neighborHand
+ 270:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    }
+ 271:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    // else we are waiting for handshake, stay in NEIGHBOR_HANDSHAKE and don't send a response mes
+ 272:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    // (they are probably sending one to us right now)
+ 273:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    break;
+ 274:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       }
+ 275:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       // got a response to our request for a neighbor handshake
+ 276:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       case MSG_NEIGHBOR_RESPONSE:
+ 277:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       {
+ 278:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    // are we waiting for a handshake?  well, here it is!
+ 279:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
+ 280:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    {
+ 281:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        Uid me, neighbor;
+ 282:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    
+ 283:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        // pull [your guid][my guid] from the handshake packet - reversed from how it was sent
+ 284:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        neighbor = charToGUID(&(thisChunk->data[2]));
+ 285:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        me = charToGUID(&(thisChunk->data[4]));
+ 286:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    
+ 287:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        // got a sensible response
+ 288:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        if(me == getGUID())
+ 289:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        {
+ 290:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        // stop any imminent rescans
+ 291:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        disableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 292:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 			if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 293:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 			  {
+ 294:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 			    deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 295:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 			  }
+ 296:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		
+ 297:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        // re-add timer, but now for keepalive purposes
+ 298:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
+ 299:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
+ 300:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         		enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 301:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		
+ 302:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        // add new neighbor to neighborhood
+ 303:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         		updateNeighbor(faceNum(thisChunk), neighbor);
+ 304:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 305:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        // a good place to check and store the time, if we wanted to keep track of neighbor uptim
+ 306:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        }
+ 307:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        // else we got a bad handshake;  either it will come or we'll start scanning again on time
+ 308:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    }
+ 309:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    // else we got a bad handshake;  either it will come or we'll start scanning again on timeout
+ 310:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    break;
+ 311:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       }
+ 312:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       case MSG_NEIGHBOR_KEEPALIVE:
+ 313:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       {
+ 314:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    // are we currently looking for keepalives?  if yes, here it is!
+ 315:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_KEEPALIVE_PERIOD)
+ 316:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    {
+ 317:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        Uid me, neighbor;
+ 318:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 319:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        neighbor = charToGUID(&(thisChunk->data[2]));
+ 320:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        me = charToGUID(&(thisChunk->data[4]));
+ 321:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 322:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        // got a bad or unexpected response - clear neighbor and restart scan
+ 323:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        if(me != getGUID() || neighbor != thisNeighborhood.n[faceNum(thisChunk)])
+ 324:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        {
+ 325:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        restartScan(faceNum(thisChunk));
+ 326:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        }
+ 327:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    }
+ 328:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    // else do nothing;  we are already in another state actively trying to acquire a neighbor
+ 329:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         break;
+ 330:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       }
+ 331:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       default: 
+ 332:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         break;  
+ 333:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 334:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     return 1;
+ 335:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 336:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 337:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** // sets neighbor to VACANT, and starts a timer/timeout to send handshake initialization messages
+ 338:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** void restartScan(PRef i)
+ 339:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 499               		.loc 1 339 0
+ 500               	.LVL25:
+ 501 01e6 1F93      		push r17
+ 502               	.LCFI13:
+ 503 01e8 CF93      		push r28
+ 504               	.LCFI14:
+ 505 01ea DF93      		push r29
+ 506               	.LCFI15:
+ 507               	/* prologue: function */
+ 508               	/* frame size = 0 */
+ 509               	/* stack size = 3 */
+ 510               	.L__stack_usage = 3
+ 511 01ec 182F      		mov r17,r24
+ 340:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   updateNeighbor(i, VACANT);
+ 512               		.loc 1 340 0
+ 513 01ee 60E0      		ldi r22,0
+ 514 01f0 70E0      		ldi r23,0
+ 515 01f2 0E94 0000 		call updateNeighbor
+ 516               	.LVL26:
+ 341:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 342:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // deregister timer and deregister timeouts if they are already in the lists
+ 343:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[i]);
+ 517               		.loc 1 343 0
+ 518 01f6 C12F      		mov r28,r17
+ 519 01f8 D0E0      		ldi r29,0
+ 520 01fa 81E1      		ldi r24,lo8(17)
+ 521 01fc 189F      		mul r17,r24
+ 522 01fe 9001      		movw r18,r0
+ 523 0200 1124      		clr __zero_reg__
+ 524 0202 F901      		movw r30,r18
+ 525 0204 E050      		subi r30,lo8(-(ttNeighbor))
+ 526 0206 F040      		sbci r31,hi8(-(ttNeighbor))
+ 527 0208 108A      		std Z+16,__zero_reg__
+ 344:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   if(ttNeighbor[i].t.state != INACTIVE)
+ 528               		.loc 1 344 0
+ 529 020a 8285      		ldd r24,Z+10
+ 530 020c 8823      		tst r24
+ 531 020e 01F0      		breq .L29
+ 345:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 346:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       deregisterTimeout(&(ttNeighbor[i].t));
+ 532               		.loc 1 346 0
+ 533 0210 C901      		movw r24,r18
+ 534 0212 8050      		subi r24,lo8(-(ttNeighbor+2))
+ 535 0214 9040      		sbci r25,hi8(-(ttNeighbor+2))
+ 536 0216 0E94 0000 		call deregisterTimeout
+ 537               	.LVL27:
+ 538               	.L29:
+ 347:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 348:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 349:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   // set up timer to call neighbor scan
+ 350:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   (ttNeighbor[i]).t.arg = i;
+ 539               		.loc 1 350 0
+ 540 021a 81E1      		ldi r24,lo8(17)
+ 541 021c 8C9F      		mul r24,r28
+ 542 021e F001      		movw r30,r0
+ 543 0220 8D9F      		mul r24,r29
+ 544 0222 F00D      		add r31,r0
+ 545 0224 1124      		clr __zero_reg__
+ 546 0226 E050      		subi r30,lo8(-(ttNeighbor))
+ 547 0228 F040      		sbci r31,hi8(-(ttNeighbor))
+ 548 022a 1387      		std Z+11,r17
+ 351:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   (ttNeighbor[i]).t.callback = (GenericHandler)&neighborScan;
+ 549               		.loc 1 351 0
+ 550 022c 80E0      		ldi r24,lo8(gs(neighborScan))
+ 551 022e 90E0      		ldi r25,hi8(gs(neighborScan))
+ 552 0230 8087      		std Z+8,r24
+ 553 0232 9187      		std Z+9,r25
+ 352:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   (ttNeighbor[i]).period = NEIGHBOR_SCAN_PERIOD;
+ 554               		.loc 1 352 0
+ 555 0234 82E3      		ldi r24,lo8(50)
+ 556 0236 90E0      		ldi r25,0
+ 557 0238 A0E0      		ldi r26,0
+ 558 023a B0E0      		ldi r27,0
+ 559 023c 8487      		std Z+12,r24
+ 560 023e 9587      		std Z+13,r25
+ 561 0240 A687      		std Z+14,r26
+ 562 0242 B787      		std Z+15,r27
+ 353:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   enableTimer(ttNeighbor[i]);
+ 563               		.loc 1 353 0
+ 564 0244 81E0      		ldi r24,lo8(1)
+ 565 0246 808B      		std Z+16,r24
+ 566               	/* epilogue start */
+ 354:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 567               		.loc 1 354 0
+ 568 0248 DF91      		pop r29
+ 569 024a CF91      		pop r28
+ 570 024c 1F91      		pop r17
+ 571               	.LVL28:
+ 572 024e 0895      		ret
+ 573               	.LFE22:
+ 575               	.global	handleNeighborMessage
+ 577               	handleNeighborMessage:
+ 578               	.LFB21:
+ 232:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 579               		.loc 1 232 0
+ 580 0250 DF92      		push r13
+ 581               	.LCFI16:
+ 582 0252 EF92      		push r14
+ 583               	.LCFI17:
+ 584 0254 FF92      		push r15
+ 585               	.LCFI18:
+ 586 0256 0F93      		push r16
+ 587               	.LCFI19:
+ 588 0258 1F93      		push r17
+ 589               	.LCFI20:
+ 590 025a CF93      		push r28
+ 591               	.LCFI21:
+ 592 025c DF93      		push r29
+ 593               	.LCFI22:
+ 594 025e 00D0      		rcall .
+ 595 0260 00D0      		rcall .
+ 596               	.LCFI23:
+ 597 0262 CDB7      		in r28,__SP_L__
+ 598 0264 DEB7      		in r29,__SP_H__
+ 599               	.LCFI24:
+ 600               	/* prologue: function */
+ 601               	/* frame size = 6 */
+ 602               	/* stack size = 13 */
+ 603               	.L__stack_usage = 13
+ 233:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     if( thisChunk == NULL ) 
+ 604               		.loc 1 233 0
+ 605 0266 E091 0000 		lds r30,thisChunk
+ 606 026a F091 0000 		lds r31,thisChunk+1
+ 607 026e 3097      		sbiw r30,0
+ 608 0270 01F4      		brne .+2
+ 609 0272 00C0      		rjmp .L43
+ 238:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     switch(thisChunk->data[1])
+ 610               		.loc 1 238 0
+ 611 0274 9181      		ldd r25,Z+1
+ 612 0276 9230      		cpi r25,lo8(2)
+ 613 0278 01F4      		brne .+2
+ 614 027a 00C0      		rjmp .L36
+ 615 027c 9330      		cpi r25,lo8(3)
+ 616 027e 01F4      		brne .+2
+ 617 0280 00C0      		rjmp .L37
+ 618 0282 9130      		cpi r25,lo8(1)
+ 619 0284 01F0      		breq .+2
+ 620 0286 00C0      		rjmp .L51
+ 244:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period != NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
+ 621               		.loc 1 244 0
+ 622 0288 E189      		ldd r30,Z+17
+ 623 028a E770      		andi r30,lo8(7)
+ 624 028c 11E1      		ldi r17,lo8(17)
+ 625 028e 1E9F      		mul r17,r30
+ 626 0290 F001      		movw r30,r0
+ 627 0292 1124      		clr __zero_reg__
+ 628 0294 E050      		subi r30,lo8(-(ttNeighbor))
+ 629 0296 F040      		sbci r31,hi8(-(ttNeighbor))
+ 630 0298 4485      		ldd r20,Z+12
+ 631 029a 5585      		ldd r21,Z+13
+ 632 029c 6685      		ldd r22,Z+14
+ 633 029e 7785      		ldd r23,Z+15
+ 634 02a0 4436      		cpi r20,100
+ 635 02a2 5105      		cpc r21,__zero_reg__
+ 636 02a4 6105      		cpc r22,__zero_reg__
+ 637 02a6 7105      		cpc r23,__zero_reg__
+ 638 02a8 01F4      		brne .L38
+ 639 02aa 00C0      		rjmp .L51
+ 640               	.L38:
+ 641               	.LBB34:
+ 250:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      buf[0] = NEIGHBOR_MSG;
+ 642               		.loc 1 250 0
+ 643 02ac 9983      		std Y+1,r25
+ 251:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      buf[1] = MSG_NEIGHBOR_RESPONSE;
+ 644               		.loc 1 251 0
+ 645 02ae 82E0      		ldi r24,lo8(2)
+ 646 02b0 8A83      		std Y+2,r24
+ 252:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      GUIDIntoChar(getGUID(), &(buf[2]));
+ 647               		.loc 1 252 0
+ 648 02b2 0E94 0000 		call getGUID
+ 649               	.LVL29:
+ 650               	.LBB35:
+ 651               	.LBB36:
+  13:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+ 652               		.loc 1 13 0
+ 653 02b6 9B83      		std Y+3,r25
+  14:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+ 654               		.loc 1 14 0
+ 655 02b8 8C83      		std Y+4,r24
+ 656               	.LBE36:
+ 657               	.LBE35:
+ 253:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      buf[4] = thisChunk->data[2];
+ 658               		.loc 1 253 0
+ 659 02ba E091 0000 		lds r30,thisChunk
+ 660 02be F091 0000 		lds r31,thisChunk+1
+ 661 02c2 8281      		ldd r24,Z+2
+ 662               	.LVL30:
+ 663 02c4 8D83      		std Y+5,r24
+ 254:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      buf[5] = thisChunk->data[3];
+ 664               		.loc 1 254 0
+ 665 02c6 8381      		ldd r24,Z+3
+ 666 02c8 8E83      		std Y+6,r24
+ 259:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      updateNeighbor(faceNum(thisChunk), VACANT);
+ 667               		.loc 1 259 0
+ 668 02ca 8189      		ldd r24,Z+17
+ 669 02cc 60E0      		ldi r22,0
+ 670 02ce 70E0      		ldi r23,0
+ 671 02d0 8770      		andi r24,lo8(7)
+ 672 02d2 0E94 0000 		call updateNeighbor
+ 673               	.LVL31:
+ 262:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      disableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 674               		.loc 1 262 0
+ 675 02d6 A091 0000 		lds r26,thisChunk
+ 676 02da B091 0000 		lds r27,thisChunk+1
+ 677 02de 5196      		adiw r26,17
+ 678 02e0 EC91      		ld r30,X
+ 679 02e2 5197      		sbiw r26,17
+ 680 02e4 E770      		andi r30,lo8(7)
+ 681 02e6 1E9F      		mul r17,r30
+ 682 02e8 F001      		movw r30,r0
+ 683 02ea 1124      		clr __zero_reg__
+ 684 02ec E050      		subi r30,lo8(-(ttNeighbor))
+ 685 02ee F040      		sbci r31,hi8(-(ttNeighbor))
+ 686 02f0 108A      		std Z+16,__zero_reg__
+ 263:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 687               		.loc 1 263 0
+ 688 02f2 5196      		adiw r26,17
+ 689 02f4 8C91      		ld r24,X
+ 690 02f6 8770      		andi r24,lo8(7)
+ 691 02f8 189F      		mul r17,r24
+ 692 02fa C001      		movw r24,r0
+ 693 02fc 1124      		clr __zero_reg__
+ 694 02fe FC01      		movw r30,r24
+ 695 0300 E050      		subi r30,lo8(-(ttNeighbor))
+ 696 0302 F040      		sbci r31,hi8(-(ttNeighbor))
+ 697 0304 2285      		ldd r18,Z+10
+ 698 0306 2223      		tst r18
+ 699 0308 01F0      		breq .L39
+ 265:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 700               		.loc 1 265 0
+ 701 030a 8050      		subi r24,lo8(-(ttNeighbor+2))
+ 702 030c 9040      		sbci r25,hi8(-(ttNeighbor+2))
+ 703 030e 0E94 0000 		call deregisterTimeout
+ 704               	.LVL32:
+ 705               	.L39:
+ 269:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	      sendSystemMessage(faceNum(thisChunk), buf, 6, RES_SYS_HANDLER, (GenericHandler)&neighborHand
+ 706               		.loc 1 269 0
+ 707 0312 E091 0000 		lds r30,thisChunk
+ 708 0316 F091 0000 		lds r31,thisChunk+1
+ 709 031a 8189      		ldd r24,Z+17
+ 710 031c 00E0      		ldi r16,lo8(gs(neighborHandshakeCB))
+ 711 031e 10E0      		ldi r17,hi8(gs(neighborHandshakeCB))
+ 712 0320 20E0      		ldi r18,0
+ 713 0322 30E0      		ldi r19,0
+ 714 0324 46E0      		ldi r20,lo8(6)
+ 715 0326 BE01      		movw r22,r28
+ 716 0328 6F5F      		subi r22,-1
+ 717 032a 7F4F      		sbci r23,-1
+ 718 032c 8770      		andi r24,lo8(7)
+ 719 032e 0E94 0000 		call sendSystemMessage
+ 720               	.LVL33:
+ 721 0332 00C0      		rjmp .L51
+ 722               	.LVL34:
+ 723               	.L36:
+ 724               	.LBE34:
+ 279:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
+ 725               		.loc 1 279 0
+ 726 0334 A189      		ldd r26,Z+17
+ 727 0336 A770      		andi r26,lo8(7)
+ 728 0338 51E1      		ldi r21,lo8(17)
+ 729 033a D52E      		mov r13,r21
+ 730 033c DA9E      		mul r13,r26
+ 731 033e D001      		movw r26,r0
+ 732 0340 1124      		clr __zero_reg__
+ 733 0342 A050      		subi r26,lo8(-(ttNeighbor))
+ 734 0344 B040      		sbci r27,hi8(-(ttNeighbor))
+ 735 0346 1C96      		adiw r26,12
+ 736 0348 4D91      		ld r20,X+
+ 737 034a 5D91      		ld r21,X+
+ 738 034c 6D91      		ld r22,X+
+ 739 034e 7C91      		ld r23,X
+ 740 0350 1F97      		sbiw r26,12+3
+ 741 0352 4436      		cpi r20,100
+ 742 0354 5105      		cpc r21,__zero_reg__
+ 743 0356 6105      		cpc r22,__zero_reg__
+ 744 0358 7105      		cpc r23,__zero_reg__
+ 745 035a 01F0      		breq .+2
+ 746 035c 00C0      		rjmp .L51
+ 747               	.LVL35:
+ 748               	.LBB37:
+ 749               	.LBB38:
+ 750               	.LBB39:
+  22:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 751               		.loc 1 22 0
+ 752 035e 0281      		ldd r16,Z+2
+ 753               	.LVL36:
+  23:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 754               		.loc 1 23 0
+ 755 0360 1381      		ldd r17,Z+3
+ 756               	.LVL37:
+ 757               	.LBE39:
+ 758               	.LBE38:
+ 759               	.LBB41:
+ 760               	.LBB42:
+  22:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 761               		.loc 1 22 0
+ 762 0362 3481      		ldd r19,Z+4
+ 763 0364 20E0      		ldi r18,0
+  23:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 764               		.loc 1 23 0
+ 765 0366 8581      		ldd r24,Z+5
+ 766 0368 7901      		movw r14,r18
+ 767 036a E82A      		or r14,r24
+ 768               	.LVL38:
+ 769               	.LBE42:
+ 770               	.LBE41:
+ 288:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        if(me == getGUID())
+ 771               		.loc 1 288 0
+ 772 036c 0E94 0000 		call getGUID
+ 773               	.LVL39:
+ 774 0370 E816      		cp r14,r24
+ 775 0372 F906      		cpc r15,r25
+ 776 0374 01F0      		breq .+2
+ 777 0376 00C0      		rjmp .L51
+ 291:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        disableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 778               		.loc 1 291 0
+ 779 0378 A091 0000 		lds r26,thisChunk
+ 780 037c B091 0000 		lds r27,thisChunk+1
+ 781 0380 5196      		adiw r26,17
+ 782 0382 EC91      		ld r30,X
+ 783 0384 5197      		sbiw r26,17
+ 784 0386 E770      		andi r30,lo8(7)
+ 785 0388 DE9E      		mul r13,r30
+ 786 038a F001      		movw r30,r0
+ 787 038c 1124      		clr __zero_reg__
+ 788 038e E050      		subi r30,lo8(-(ttNeighbor))
+ 789 0390 F040      		sbci r31,hi8(-(ttNeighbor))
+ 790 0392 108A      		std Z+16,__zero_reg__
+ 292:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 			if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 791               		.loc 1 292 0
+ 792 0394 5196      		adiw r26,17
+ 793 0396 8C91      		ld r24,X
+ 794 0398 8770      		andi r24,lo8(7)
+ 795 039a D89E      		mul r13,r24
+ 796 039c C001      		movw r24,r0
+ 797 039e 1124      		clr __zero_reg__
+ 798 03a0 FC01      		movw r30,r24
+ 799 03a2 E050      		subi r30,lo8(-(ttNeighbor))
+ 800 03a4 F040      		sbci r31,hi8(-(ttNeighbor))
+ 801 03a6 2285      		ldd r18,Z+10
+ 802 03a8 2223      		tst r18
+ 803 03aa 01F0      		breq .L41
+ 294:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 			    deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 804               		.loc 1 294 0
+ 805 03ac 8050      		subi r24,lo8(-(ttNeighbor+2))
+ 806 03ae 9040      		sbci r25,hi8(-(ttNeighbor+2))
+ 807 03b0 0E94 0000 		call deregisterTimeout
+ 808               	.LVL40:
+ 809               	.L41:
+ 298:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
+ 810               		.loc 1 298 0
+ 811 03b4 2091 0000 		lds r18,thisChunk
+ 812 03b8 3091 0000 		lds r19,thisChunk+1
+ 813 03bc D901      		movw r26,r18
+ 814 03be 5196      		adiw r26,17
+ 815 03c0 EC91      		ld r30,X
+ 816 03c2 E770      		andi r30,lo8(7)
+ 817 03c4 B1E1      		ldi r27,lo8(17)
+ 818 03c6 EB9F      		mul r30,r27
+ 819 03c8 F001      		movw r30,r0
+ 820 03ca 1124      		clr __zero_reg__
+ 821 03cc E050      		subi r30,lo8(-(ttNeighbor))
+ 822 03ce F040      		sbci r31,hi8(-(ttNeighbor))
+ 823 03d0 84EF      		ldi r24,lo8(-12)
+ 824 03d2 91E0      		ldi r25,lo8(1)
+ 825 03d4 A0E0      		ldi r26,0
+ 826 03d6 B0E0      		ldi r27,0
+ 827 03d8 8487      		std Z+12,r24
+ 828 03da 9587      		std Z+13,r25
+ 829 03dc A687      		std Z+14,r26
+ 830 03de B787      		std Z+15,r27
+ 299:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
+ 831               		.loc 1 299 0
+ 832 03e0 80E0      		ldi r24,lo8(gs(neighborKeepalive))
+ 833 03e2 90E0      		ldi r25,hi8(gs(neighborKeepalive))
+ 834 03e4 8087      		std Z+8,r24
+ 835 03e6 9187      		std Z+9,r25
+ 300:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         		enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 836               		.loc 1 300 0
+ 837 03e8 81E0      		ldi r24,lo8(1)
+ 838 03ea 808B      		std Z+16,r24
+ 839               	.LBB43:
+ 840               	.LBB40:
+  22:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 841               		.loc 1 22 0
+ 842 03ec 702F      		mov r23,r16
+ 843 03ee 60E0      		ldi r22,0
+  23:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 844               		.loc 1 23 0
+ 845 03f0 612B      		or r22,r17
+ 846               	.LBE40:
+ 847               	.LBE43:
+ 303:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         		updateNeighbor(faceNum(thisChunk), neighbor);
+ 848               		.loc 1 303 0
+ 849 03f2 F901      		movw r30,r18
+ 850 03f4 8189      		ldd r24,Z+17
+ 851 03f6 8770      		andi r24,lo8(7)
+ 852 03f8 0E94 0000 		call updateNeighbor
+ 853               	.LVL41:
+ 854 03fc 00C0      		rjmp .L51
+ 855               	.LVL42:
+ 856               	.L37:
+ 857               	.LBE37:
+ 315:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_KEEPALIVE_PERIOD)
+ 858               		.loc 1 315 0
+ 859 03fe A189      		ldd r26,Z+17
+ 860 0400 A770      		andi r26,lo8(7)
+ 861 0402 21E1      		ldi r18,lo8(17)
+ 862 0404 A29F      		mul r26,r18
+ 863 0406 D001      		movw r26,r0
+ 864 0408 1124      		clr __zero_reg__
+ 865 040a A050      		subi r26,lo8(-(ttNeighbor))
+ 866 040c B040      		sbci r27,hi8(-(ttNeighbor))
+ 867 040e 1C96      		adiw r26,12
+ 868 0410 8D91      		ld r24,X+
+ 869 0412 9D91      		ld r25,X+
+ 870 0414 0D90      		ld __tmp_reg__,X+
+ 871 0416 BC91      		ld r27,X
+ 872 0418 A02D      		mov r26,__tmp_reg__
+ 873 041a 843F      		cpi r24,-12
+ 874 041c 9140      		sbci r25,1
+ 875 041e A105      		cpc r26,__zero_reg__
+ 876 0420 B105      		cpc r27,__zero_reg__
+ 877 0422 01F4      		brne .L51
+ 878               	.LVL43:
+ 879               	.LBB44:
+ 880               	.LBB45:
+ 881               	.LBB46:
+  22:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 882               		.loc 1 22 0
+ 883 0424 E280      		ldd r14,Z+2
+ 884               	.LVL44:
+  23:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 885               		.loc 1 23 0
+ 886 0426 F380      		ldd r15,Z+3
+ 887               	.LVL45:
+ 888               	.LBE46:
+ 889               	.LBE45:
+ 890               	.LBB48:
+ 891               	.LBB49:
+  22:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 892               		.loc 1 22 0
+ 893 0428 9481      		ldd r25,Z+4
+ 894 042a 80E0      		ldi r24,0
+  23:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 895               		.loc 1 23 0
+ 896 042c 2581      		ldd r18,Z+5
+ 897 042e 8C01      		movw r16,r24
+ 898 0430 022B      		or r16,r18
+ 899               	.LVL46:
+ 900               	.LBE49:
+ 901               	.LBE48:
+ 323:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        if(me != getGUID() || neighbor != thisNeighborhood.n[faceNum(thisChunk)])
+ 902               		.loc 1 323 0
+ 903 0432 0E94 0000 		call getGUID
+ 904               	.LVL47:
+ 905 0436 0817      		cp r16,r24
+ 906 0438 1907      		cpc r17,r25
+ 907 043a 01F4      		brne .L42
+ 908               	.LBB50:
+ 909               	.LBB47:
+  22:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 910               		.loc 1 22 0 discriminator 1
+ 911 043c 9E2D      		mov r25,r14
+ 912 043e 80E0      		ldi r24,0
+  23:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 913               		.loc 1 23 0 discriminator 1
+ 914 0440 8F29      		or r24,r15
+ 915               	.LBE47:
+ 916               	.LBE50:
+ 323:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	        if(me != getGUID() || neighbor != thisNeighborhood.n[faceNum(thisChunk)])
+ 917               		.loc 1 323 0 discriminator 1
+ 918 0442 E091 0000 		lds r30,thisChunk
+ 919 0446 F091 0000 		lds r31,thisChunk+1
+ 920 044a E189      		ldd r30,Z+17
+ 921 044c E770      		andi r30,lo8(7)
+ 922 044e F0E0      		ldi r31,0
+ 923 0450 EE0F      		lsl r30
+ 924 0452 FF1F      		rol r31
+ 925 0454 E050      		subi r30,lo8(-(thisNeighborhood))
+ 926 0456 F040      		sbci r31,hi8(-(thisNeighborhood))
+ 927 0458 2081      		ld r18,Z
+ 928 045a 3181      		ldd r19,Z+1
+ 929 045c 8217      		cp r24,r18
+ 930 045e 9307      		cpc r25,r19
+ 931 0460 01F0      		breq .L51
+ 932               	.L42:
+ 325:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 		        restartScan(faceNum(thisChunk));
+ 933               		.loc 1 325 0
+ 934 0462 E091 0000 		lds r30,thisChunk
+ 935 0466 F091 0000 		lds r31,thisChunk+1
+ 936 046a 8189      		ldd r24,Z+17
+ 937 046c 8770      		andi r24,lo8(7)
+ 938 046e 0E94 0000 		call restartScan
+ 939               	.LVL48:
+ 940 0472 00C0      		rjmp .L51
+ 941               	.LVL49:
+ 942               	.L43:
+ 943               	.LBE44:
+ 235:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       return 0;
+ 944               		.loc 1 235 0
+ 945 0474 80E0      		ldi r24,0
+ 946 0476 00C0      		rjmp .L34
+ 947               	.L51:
+ 334:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     return 1;
+ 948               		.loc 1 334 0
+ 949 0478 81E0      		ldi r24,lo8(1)
+ 950               	.L34:
+ 951               	/* epilogue start */
+ 335:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 952               		.loc 1 335 0
+ 953 047a 2696      		adiw r28,6
+ 954 047c CDBF      		out __SP_L__,r28
+ 955 047e DEBF      		out __SP_H__,r29
+ 956 0480 DF91      		pop r29
+ 957 0482 CF91      		pop r28
+ 958 0484 1F91      		pop r17
+ 959 0486 0F91      		pop r16
+ 960 0488 FF90      		pop r15
+ 961 048a EF90      		pop r14
+ 962 048c DF90      		pop r13
+ 963 048e 0895      		ret
+ 964               	.LFE21:
+ 966               	.global	neighborHandshakeCB
+ 968               	neighborHandshakeCB:
+ 969               	.LFB20:
+ 202:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 970               		.loc 1 202 0
+ 971 0490 CF93      		push r28
+ 972               	.LCFI25:
+ 973 0492 DF93      		push r29
+ 974               	.LCFI26:
+ 975               	/* prologue: function */
+ 976               	/* frame size = 0 */
+ 977               	/* stack size = 2 */
+ 978               	.L__stack_usage = 2
+ 204:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 979               		.loc 1 204 0
+ 980 0494 E091 0000 		lds r30,thisChunk
+ 981 0498 F091 0000 		lds r31,thisChunk+1
+ 982 049c 8189      		ldd r24,Z+17
+ 983 049e 982F      		mov r25,r24
+ 984 04a0 9871      		andi r25,lo8(24)
+ 985 04a2 9830      		cpi r25,lo8(8)
+ 986 04a4 01F4      		brne .L53
+ 987               	.LVL50:
+ 988               	.LBB51:
+ 989               	.LBB52:
+ 990               	.LBB53:
+  22:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 991               		.loc 1 22 0
+ 992 04a6 7481      		ldd r23,Z+4
+ 993 04a8 60E0      		ldi r22,0
+  23:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 994               		.loc 1 23 0
+ 995 04aa 9581      		ldd r25,Z+5
+ 996 04ac EB01      		movw r28,r22
+ 997 04ae C92B      		or r28,r25
+ 998               	.LVL51:
+ 999               	.LBE53:
+ 1000               	.LBE52:
+ 210:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
+ 1001               		.loc 1 210 0
+ 1002 04b0 8770      		andi r24,lo8(7)
+ 1003 04b2 21E1      		ldi r18,lo8(17)
+ 1004 04b4 829F      		mul r24,r18
+ 1005 04b6 C001      		movw r24,r0
+ 1006 04b8 1124      		clr __zero_reg__
+ 1007 04ba FC01      		movw r30,r24
+ 1008               	.LVL52:
+ 1009 04bc E050      		subi r30,lo8(-(ttNeighbor))
+ 1010 04be F040      		sbci r31,hi8(-(ttNeighbor))
+ 1011 04c0 44EF      		ldi r20,lo8(-12)
+ 1012 04c2 51E0      		ldi r21,lo8(1)
+ 1013 04c4 60E0      		ldi r22,0
+ 1014 04c6 70E0      		ldi r23,0
+ 1015 04c8 4487      		std Z+12,r20
+ 1016 04ca 5587      		std Z+13,r21
+ 1017 04cc 6687      		std Z+14,r22
+ 1018 04ce 7787      		std Z+15,r23
+ 211:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 1019               		.loc 1 211 0
+ 1020 04d0 2285      		ldd r18,Z+10
+ 1021 04d2 2223      		tst r18
+ 1022 04d4 01F0      		breq .L54
+ 213:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 1023               		.loc 1 213 0
+ 1024 04d6 8050      		subi r24,lo8(-(ttNeighbor+2))
+ 1025 04d8 9040      		sbci r25,hi8(-(ttNeighbor+2))
+ 1026 04da 0E94 0000 		call deregisterTimeout
+ 1027               	.LVL53:
+ 1028               	.L54:
+ 215:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
+ 1029               		.loc 1 215 0
+ 1030 04de A091 0000 		lds r26,thisChunk
+ 1031 04e2 B091 0000 		lds r27,thisChunk+1
+ 1032 04e6 5196      		adiw r26,17
+ 1033 04e8 EC91      		ld r30,X
+ 1034 04ea 5197      		sbiw r26,17
+ 1035 04ec E770      		andi r30,lo8(7)
+ 1036 04ee 81E1      		ldi r24,lo8(17)
+ 1037 04f0 E89F      		mul r30,r24
+ 1038 04f2 F001      		movw r30,r0
+ 1039 04f4 1124      		clr __zero_reg__
+ 1040 04f6 E050      		subi r30,lo8(-(ttNeighbor))
+ 1041 04f8 F040      		sbci r31,hi8(-(ttNeighbor))
+ 1042 04fa 80E0      		ldi r24,lo8(gs(neighborKeepalive))
+ 1043 04fc 90E0      		ldi r25,hi8(gs(neighborKeepalive))
+ 1044 04fe 8087      		std Z+8,r24
+ 1045 0500 9187      		std Z+9,r25
+ 216:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 1046               		.loc 1 216 0
+ 1047 0502 81E0      		ldi r24,lo8(1)
+ 1048 0504 808B      		std Z+16,r24
+ 219:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       updateNeighbor(faceNum(thisChunk), neighbor);
+ 1049               		.loc 1 219 0
+ 1050 0506 5196      		adiw r26,17
+ 1051 0508 8C91      		ld r24,X
+ 1052 050a BE01      		movw r22,r28
+ 1053 050c 8770      		andi r24,lo8(7)
+ 1054 050e 0E94 0000 		call updateNeighbor
+ 1055               	.LVL54:
+ 1056 0512 00C0      		rjmp .L55
+ 1057               	.LVL55:
+ 1058               	.L53:
+ 1059               	.LBE51:
+ 224:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****       restartScan(faceNum(thisChunk));
+ 1060               		.loc 1 224 0
+ 1061 0514 8770      		andi r24,lo8(7)
+ 1062 0516 0E94 0000 		call restartScan
+ 1063               	.LVL56:
+ 1064               	.L55:
+ 227:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
+ 1065               		.loc 1 227 0
+ 1066 051a 8091 0000 		lds r24,thisChunk
+ 1067 051e 9091 0000 		lds r25,thisChunk+1
+ 1068               	/* epilogue start */
+ 228:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 1069               		.loc 1 228 0
+ 1070 0522 DF91      		pop r29
+ 1071 0524 CF91      		pop r28
+ 227:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
+ 1072               		.loc 1 227 0
+ 1073 0526 0C94 0000 		jmp freeChunk
+ 1074               	.LVL57:
+ 1075               	.LFE20:
+ 1077               	.global	neighborKeepaliveCB
+ 1079               	neighborKeepaliveCB:
+ 1080               	.LFB18:
+ 166:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 1081               		.loc 1 166 0
+ 1082               	/* prologue: function */
+ 1083               	/* frame size = 0 */
+ 1084               	/* stack size = 0 */
+ 1085               	.L__stack_usage = 0
+ 170:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 1086               		.loc 1 170 0
+ 1087 052a E091 0000 		lds r30,thisChunk
+ 1088 052e F091 0000 		lds r31,thisChunk+1
+ 1089 0532 8189      		ldd r24,Z+17
+ 1090 0534 982F      		mov r25,r24
+ 1091 0536 9871      		andi r25,lo8(24)
+ 1092 0538 8770      		andi r24,lo8(7)
+ 1093 053a 9830      		cpi r25,lo8(8)
+ 1094 053c 01F4      		brne .L60
+ 172:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 1095               		.loc 1 172 0
+ 1096 053e 91E1      		ldi r25,lo8(17)
+ 1097 0540 899F      		mul r24,r25
+ 1098 0542 F001      		movw r30,r0
+ 1099 0544 1124      		clr __zero_reg__
+ 1100 0546 E050      		subi r30,lo8(-(ttNeighbor))
+ 1101 0548 F040      		sbci r31,hi8(-(ttNeighbor))
+ 1102 054a 81E0      		ldi r24,lo8(1)
+ 1103 054c 808B      		std Z+16,r24
+ 1104 054e 00C0      		rjmp .L61
+ 1105               	.L60:
+ 176:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         restartScan(faceNum(thisChunk));
+ 1106               		.loc 1 176 0
+ 1107 0550 0E94 0000 		call restartScan
+ 1108               	.LVL58:
+ 1109               	.L61:
+ 179:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     freeChunk(thisChunk);
+ 1110               		.loc 1 179 0
+ 1111 0554 8091 0000 		lds r24,thisChunk
+ 1112 0558 9091 0000 		lds r25,thisChunk+1
+ 1113 055c 0C94 0000 		jmp freeChunk
+ 1114               	.LVL59:
+ 1115               	.LFE18:
+ 1117               	.global	initEnsemble
+ 1119               	initEnsemble:
+ 1120               	.LFB23:
+ 355:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 356:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** void initEnsemble(void)
+ 357:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** {
+ 1121               		.loc 1 357 0
+ 1122 0560 FF92      		push r15
+ 1123               	.LCFI27:
+ 1124 0562 0F93      		push r16
+ 1125               	.LCFI28:
+ 1126 0564 1F93      		push r17
+ 1127               	.LCFI29:
+ 1128 0566 CF93      		push r28
+ 1129               	.LCFI30:
+ 1130 0568 DF93      		push r29
+ 1131               	.LCFI31:
+ 1132               	/* prologue: function */
+ 1133               	/* frame size = 0 */
+ 1134               	/* stack size = 5 */
+ 1135               	.L__stack_usage = 5
+ 1136               	.LVL60:
+ 1137 056a 00E0      		ldi r16,lo8(ttNeighbor+16)
+ 1138 056c 10E0      		ldi r17,hi8(ttNeighbor+16)
+ 358:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     int i;
+ 359:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****   
+ 360:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     // restart scanning for neighbors on all ports
+ 361:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     for( i=0; i<NUM_PORTS; ++i)
+ 1139               		.loc 1 361 0
+ 1140 056e C0E0      		ldi r28,0
+ 1141 0570 D0E0      		ldi r29,0
+ 362:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     {
+ 363:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         #ifdef DEBUGPORT
+ 364:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         if(i == DEBUGPORT) {
+ 365:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****             continue;
+ 366:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         }
+ 367:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         #endif
+ 368:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 
+ 369:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	registerTimer(&(ttNeighbor[i]));
+ 1142               		.loc 1 369 0
+ 1143 0572 61E1      		ldi r22,lo8(17)
+ 1144 0574 F62E      		mov r15,r22
+ 1145               	.LVL61:
+ 1146               	.L63:
+ 1147               		.loc 1 369 0 is_stmt 0 discriminator 2
+ 1148 0576 FC9E      		mul r15,r28
+ 1149 0578 C001      		movw r24,r0
+ 1150 057a FD9E      		mul r15,r29
+ 1151 057c 900D      		add r25,r0
+ 1152 057e 1124      		clr __zero_reg__
+ 1153 0580 8050      		subi r24,lo8(-(ttNeighbor))
+ 1154 0582 9040      		sbci r25,hi8(-(ttNeighbor))
+ 1155 0584 0E94 0000 		call registerTimer
+ 1156               	.LVL62:
+ 370:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** 	disableTimer(ttNeighbor[i]);
+ 1157               		.loc 1 370 0 is_stmt 1 discriminator 2
+ 1158 0588 F801      		movw r30,r16
+ 1159 058a 1082      		st Z,__zero_reg__
+ 371:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****         restartScan(i);
+ 1160               		.loc 1 371 0 discriminator 2
+ 1161 058c 8C2F      		mov r24,r28
+ 1162 058e 0E94 0000 		call restartScan
+ 1163               	.LVL63:
+ 361:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     for( i=0; i<NUM_PORTS; ++i)
+ 1164               		.loc 1 361 0 discriminator 2
+ 1165 0592 2196      		adiw r28,1
+ 1166               	.LVL64:
+ 1167 0594 0F5E      		subi r16,-17
+ 1168 0596 1F4F      		sbci r17,-1
+ 1169 0598 C630      		cpi r28,6
+ 1170 059a D105      		cpc r29,__zero_reg__
+ 1171 059c 01F4      		brne .L63
+ 1172               	/* epilogue start */
+ 372:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb ****     }
+ 373:/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bb **** }
+ 1173               		.loc 1 373 0
+ 1174 059e DF91      		pop r29
+ 1175 05a0 CF91      		pop r28
+ 1176               	.LVL65:
+ 1177 05a2 1F91      		pop r17
+ 1178 05a4 0F91      		pop r16
+ 1179 05a6 FF90      		pop r15
+ 1180 05a8 0895      		ret
+ 1181               	.LFE23:
+ 1183               		.comm	ttNeighbor,102,1
+ 1184               		.comm	thisNeighborhood,12,1
+ 1527               	.Letext0:
+ 1528               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 1529               		.file 3 "/home/anaz/blinkyblocks/build/src-bobby/system/defs.bbh"
+ 1530               		.file 4 "/home/anaz/blinkyblocks/build/src-bobby/system/handler.bbh"
+ 1531               		.file 5 "/home/anaz/blinkyblocks/build/src-bobby/system/memory.bbh"
+ 1532               		.file 6 "/home/anaz/blinkyblocks/build/src-bobby/system/hardwaretime.bbh"
+ 1533               		.file 7 "/home/anaz/blinkyblocks/build/src-bobby/system/serial.bbh"
+ 1534               		.file 8 "/home/anaz/blinkyblocks/build/src-bobby/system/ensemble.bbh"
+ 1535               		.file 9 "/home/anaz/blinkyblocks/build/src-bobby/system/data_link.bbh"
+ 1536               		.file 10 "/home/anaz/blinkyblocks/build/src-bobby/system/message.bbh"
+ 1537               		.file 11 "/home/anaz/blinkyblocks/build/src-bobby/system/../hw-api/hwMemory.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 ensemble.c
+/home/anaz/tmp/cc0pAiN6.s:2      *ABS*:000000000000003e __SP_H__
+/home/anaz/tmp/cc0pAiN6.s:3      *ABS*:000000000000003d __SP_L__
+/home/anaz/tmp/cc0pAiN6.s:4      *ABS*:000000000000003f __SREG__
+/home/anaz/tmp/cc0pAiN6.s:5      *ABS*:000000000000003b __RAMPZ__
+/home/anaz/tmp/cc0pAiN6.s:6      *ABS*:0000000000000034 __CCP__
+/home/anaz/tmp/cc0pAiN6.s:7      *ABS*:0000000000000000 __tmp_reg__
+/home/anaz/tmp/cc0pAiN6.s:8      *ABS*:0000000000000001 __zero_reg__
+/home/anaz/tmp/cc0pAiN6.s:13     .text:0000000000000000 neighborKeepalive
+                            *COM*:000000000000000c thisNeighborhood
+                            *COM*:0000000000000066 ttNeighbor
+/home/anaz/tmp/cc0pAiN6.s:1079   .text:000000000000052a neighborKeepaliveCB
+/home/anaz/tmp/cc0pAiN6.s:117    .text:000000000000007c neighborScan
+/home/anaz/tmp/cc0pAiN6.s:210    .text:00000000000000ee neighborScanCB
+/home/anaz/tmp/cc0pAiN6.s:277    .text:0000000000000154 GUIDIntoChar
+/home/anaz/tmp/cc0pAiN6.s:295    .text:000000000000015c charToGUID
+/home/anaz/tmp/cc0pAiN6.s:318    .text:000000000000016a getNeighborCount
+/home/anaz/tmp/cc0pAiN6.s:353    .text:0000000000000184 down
+/home/anaz/tmp/cc0pAiN6.s:370    .text:000000000000018e up
+/home/anaz/tmp/cc0pAiN6.s:387    .text:0000000000000198 north
+/home/anaz/tmp/cc0pAiN6.s:404    .text:00000000000001a2 south
+/home/anaz/tmp/cc0pAiN6.s:421    .text:00000000000001ac east
+/home/anaz/tmp/cc0pAiN6.s:438    .text:00000000000001b6 west
+/home/anaz/tmp/cc0pAiN6.s:455    .text:00000000000001c0 updateNeighbor
+/home/anaz/tmp/cc0pAiN6.s:497    .text:00000000000001e6 restartScan
+/home/anaz/tmp/cc0pAiN6.s:577    .text:0000000000000250 handleNeighborMessage
+/home/anaz/tmp/cc0pAiN6.s:968    .text:0000000000000490 neighborHandshakeCB
+/home/anaz/tmp/cc0pAiN6.s:1119   .text:0000000000000560 initEnsemble
+
+UNDEFINED SYMBOLS
+getGUID
+thisTimeout
+sendSystemMessage
+deregisterTimeout
+thisChunk
+freeChunk
+triggerHandler
+registerTimer
+__do_clear_bss

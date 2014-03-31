@@ -1,5 +1,12 @@
 #include "block.bbh"
 
+#ifdef CLOCK_SYNC
+#include  "clock.bbh"
+#endif
+#ifdef LOG_DEBUG
+#include "log.bbh"
+#endif
+
 threadvar int blockTickRunning = 0;
 
 int accelReady=0;
@@ -67,7 +74,7 @@ void initBlock()
 
 #ifdef DEBUG
 	initDebug();
-    	printf("System Debug Enabled\r\n");
+    	//printf("System Debug Enabled\r\n");
 #endif
 
 	initDataLink();	
@@ -82,6 +89,13 @@ void initBlock()
 
 	initHWAccel();
 	accelReady=1;
+
+#ifdef CLOCK_SYNC
+	initClock();
+#endif
+#ifdef LOG_DEBUG
+	initLogDebug();
+#endif
 
 #ifndef BBSIM
     initHWMic();

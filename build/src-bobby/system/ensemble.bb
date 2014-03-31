@@ -2,6 +2,14 @@
 #include "message.bbh"
 #include "data_link.bbh"
 
+#ifdef CLOCK_SYNC
+#include "clock.bbh"
+#endif
+#ifdef LOG_DEBUG
+#include "log.bbh"
+#endif
+
+
 //     allocated chunks rather than a user allocated chunk
 
 threadvar Neighborhood thisNeighborhood;
@@ -99,6 +107,12 @@ void	updateNeighbor(PRef p, Uid b)
 
 #endif
 
+#ifdef LOG_DEBUG
+  if(isHostPort(p)) {
+      return;
+  }
+#endif
+
 	if(p < NUM_PORTS)
 	{
 		// is the state changing?  Trigger handler
@@ -106,6 +120,9 @@ void	updateNeighbor(PRef p, Uid b)
 	    {
 	        thisNeighborhood.n[p] = b;
 	        triggerHandler(EVENT_NEIGHBOR_CHANGE);
+#ifdef CLOCK_SYNC
+			handleNeighborChange(p);
+#endif
 	    }
 	  
 	}
@@ -116,6 +133,14 @@ void	updateNeighbor(PRef p, Uid b)
 // called when start handshake message is complete by success or failure
 void neighborScanCB(void)
 {
+#ifdef LOG_DEBUG
+  if(isHostPort(faceNum(thisChunk))) {
+	  //disableTimer(ttNeighbor[faceNum(thisChunk)]);
+	  freeChunk(thisChunk);
+      return;
+  }
+#endif
+
   // message was received.  wait for handshake to return, but allow for timeout to restart scan
   if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
     {
@@ -142,6 +167,11 @@ void neighborScan(void)
   // could check for non-vacant neighbor here?
   #ifdef DEBUGPORT
   if(p == DEBUGPORT) {
+      return;
+  }
+  #endif
+  #ifdef LOG_DEBUG
+  if(isHostPort(p)) {
       return;
   }
   #endif

@@ -6,6 +6,10 @@
 #include "../sim/world.h"
 #include "../system/led.bbh"
 
+#ifdef CLOCK_SYNC
+#include  "../system/clock.bbh"
+#endif
+
 // is a HW only function
 void processBuffer(PRef p)
 {
@@ -95,11 +99,23 @@ void sendOnSerial(PRef p)
             outOfRetries(p);
             return;
         }
-
+#ifdef CLOCK_SYNC
+		// insert receive time
+		if (isAClockSyncMessage(send))
+		{
+			insertSendTime(send);
+		}
+#endif
         memcpy(recd, send, sizeof(*send));
         recd->status = CHUNK_USED | CHUNK_FILLED | destPort;
         recd->next = NULL;
-
+#ifdef CLOCK_SYNC
+		if (isAClockSyncMessage(recd))
+		{
+			// insert receive time
+			insertReceiveTime(recd);
+		}
+#endif
         // add to receive queue
         BB_LOCK(&(dest->neighborMutex));
 

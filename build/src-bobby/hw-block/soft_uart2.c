@@ -8,7 +8,7 @@ soft_uart_t soft_uart[NUM_SOFTWARE_UARTS];
 void timer_isr(soft_uart_t * uart)
 {
 	char			start_bit, flag_in;
-
+	
 //	uart->timer1->PER = 93;
 
 // Transmitter Section
@@ -26,14 +26,14 @@ void timer_isr(soft_uart_t * uart)
 				{
 				SET_TX_PIN_LOW(uart);
 				}
-
+				
 			uart->internal_tx_buffer >>= 1;
 			uart->timer_tx_ctr = 3;
 			if ( --(uart->bits_left_in_tx) <= 0 )
 				{
 					uart->flag_tx_ready = FALSE;
-					SET_TX_PIN_HIGH(uart);
-					TriggerHandler(SYSTEM_SOFT_UART_UPDATE);
+					SET_TX_PIN_HIGH(uart);	
+					TriggerHandler(SYSTEM_SOFT_UART_UPDATE);		
 				}
 			}
 		}
@@ -98,21 +98,21 @@ void timer_isr(soft_uart_t * uart)
 void timer_set( uint32_t bps, TC0_t * tx_timer, TC1_t * rx_timer)
 {
 	uint16_t per;
-
+	
 	per = ((uint32_t)F_CPU / (bps));
 
 	tx_timer->INTCTRLA = TC_OVFINTLVL_HI_gc;
 	tx_timer->PER = per;
 	tx_timer->CTRLA = TC_CLKSEL_DIV1_gc;
-
+	
 //	printf("TCE0 set to %x %x %x\r\n",tx_timer->INTCTRLA, tx_timer->PER, tx_timer->CTRLA);
-
-	per = ((uint32_t)F_CPU / (bps*3));
+	
+	per = ((uint32_t)F_CPU / (bps*3));	
 	//per = 31; // bps*9
-
+	
 	rx_timer->INTCTRLA = TC_OVFINTLVL_HI_gc;
 	rx_timer->PER = per;
-	rx_timer->CTRLA = TC_CLKSEL_DIV1_gc;
+	rx_timer->CTRLA = TC_CLKSEL_DIV1_gc;	
 }
 
 void configure_soft_uart(soft_uart_t * uart, CircBuf * ctx, CircBuf * crx)
@@ -128,13 +128,13 @@ void init_soft_uart()
 	PORTD.OUTSET = PIN5_bm | PIN6_bm; // set tx output high (idle)
 	PORTD.DIRSET = PIN5_bm | PIN6_bm; // tx pins as output
 	PORTD.DIRCLR = PIN4_bm | PIN7_bm; // rx pins as input
-
+	
 	PORTD.PIN4CTRL |= PORT_OPC_PULLUP_gc;	// set pullups on rx lines to prevent floating noise
-	PORTD.PIN7CTRL |= PORT_OPC_PULLUP_gc;
+	PORTD.PIN7CTRL |= PORT_OPC_PULLUP_gc;	
 
 	soft_uart[1].rx_state = SU_RX_IDLE;
 
-	timer_set( BAUD_RATE, &TCE0, &TCD1);
+	timer_set( BAUD_RATE, &TCE0, &TCD1);	
 }
 
 int su_getchar(soft_uart_t * uart)
@@ -146,7 +146,7 @@ int su_getchar(soft_uart_t * uart)
 		return -1;
 	}
 	else
-	{
+	{	
 		ch = pop((uart->rx));
 		return( ch );
 	}
@@ -161,9 +161,9 @@ void set_tx_char(int ch, soft_uart_t * uart)
 }
 
 void su_putchar( char ch, soft_uart_t * uart)
-{
+{	
 	while ( uart->internal_tx_buffer != 0 );
-
+	
 	set_tx_char(ch, uart);
 //	uart->user_tx_buffer = ch;
 
@@ -200,15 +200,15 @@ ISR(TCD1_OVF_vect)
 			{
 				soft_uart[0].internal_rx_buffer |= soft_uart[0].rx_mask;
 			}
-
+			
 			soft_uart[0].rx_mask <<= 1;
 
 			if(!soft_uart[0].rx_mask)
 			{
 				soft_uart[0].rx_state = SU_RX_STOP;
 			}
-
-			soft_uart[0].sample_time = 2;
+			
+			soft_uart[0].sample_time = 2;	
 		}
 		else if (soft_uart[0].rx_state == SU_RX_STOP)
 		{
@@ -217,8 +217,8 @@ ISR(TCD1_OVF_vect)
 				push(soft_uart[0].internal_rx_buffer, soft_uart[0].rx);
 				soft_uart[0].internal_rx_buffer = 0;
 			}
-
-			soft_uart[0].rx_state = SU_RX_IDLE;
+			
+			soft_uart[0].rx_state = SU_RX_IDLE;		
 		}
 	}
 	else
@@ -243,15 +243,15 @@ ISR(TCD1_OVF_vect)
 			{
 				soft_uart[1].internal_rx_buffer |= soft_uart[1].rx_mask;
 			}
-
+			
 			soft_uart[1].rx_mask <<= 1;
 
 			if(!soft_uart[1].rx_mask)
 			{
 				soft_uart[1].rx_state = SU_RX_STOP;
 			}
-
-			soft_uart[1].sample_time = 2;
+			
+			soft_uart[1].sample_time = 2;	
 		}
 		else if (soft_uart[1].rx_state == SU_RX_STOP)
 		{
@@ -260,14 +260,14 @@ ISR(TCD1_OVF_vect)
 				push(soft_uart[1].internal_rx_buffer, soft_uart[1].rx);
 				soft_uart[1].internal_rx_buffer = 0;
 			}
-
-			soft_uart[1].rx_state = SU_RX_IDLE;
+			
+			soft_uart[1].rx_state = SU_RX_IDLE;		
 		}
 	}
 	else
 	{
 		soft_uart[1].sample_time--;
-	}
+	}	
 }
 /*
 // tx ISR
@@ -276,8 +276,8 @@ ISR(TCE0_OVF_vect)
 	if(soft_uart[0].internal_tx_buffer & 0x0001)
 	{
 		PORTD.OUTSET = PIN5_bm;
-
-		soft_uart[0].internal_tx_buffer >>= 1;
+		
+		soft_uart[0].internal_tx_buffer >>= 1;		
 	}
 	else
 	{
@@ -288,7 +288,7 @@ ISR(TCE0_OVF_vect)
 			{
 				PORTD.OUTSET = PIN5_bm;
 			}
-		}
+		}	
 		else
 		{
 			PORTD.OUTCLR = PIN5_bm;
@@ -310,14 +310,14 @@ ISR(TCE0_OVF_vect)
 			{
 				PORTD.OUTSET = PIN6_bm;
 			}
-		}
+		}	
 		else
 		{
 			PORTD.OUTCLR = PIN6_bm;
 			soft_uart[1].internal_tx_buffer >>= 1;
 		}
 	}
-
+	
 
 
 }

@@ -11,73 +11,73 @@
   11               	.global	blockProgram
   13               	blockProgram:
   14               	.LFB6:
-  15               		.file 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb"
-   1:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** #include "system.bbh"
-   2:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** //#include "unistd.h"
-   3:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** 
-   4:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** #include "led.bbh"
-   5:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** 
-   6:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** int blockProgram(void)
-   7:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** {
+  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb"
+   1:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** #include "system.bbh"
+   2:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** //#include "unistd.h"
+   3:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** 
+   4:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** #include "led.bbh"
+   5:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** 
+   6:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** int blockProgram(void)
+   7:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** {
   16               		.loc 1 7 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
-   8:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** 
-   9:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     initBlock();
+   8:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** 
+   9:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     initBlock();
   21               		.loc 1 9 0
   22 0000 0E94 0000 		call initBlock
   23               	.LVL0:
-  10:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** 
-  11:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     
-  12:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     // low-level robot initialization routine
-  13:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     
-  14:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     // handler registration / load control structure
-  15:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     userRegistration();
+  10:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** 
+  11:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     
+  12:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     // low-level robot initialization routine
+  13:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     
+  14:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     // handler registration / load control structure
+  15:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     userRegistration();
   24               		.loc 1 15 0
   25 0004 0E94 0000 		call userRegistration
   26               	.LVL1:
-  16:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     
-  17:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     // Call user-based system_init function, if registered
-  18:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     // A good idea to separate from UserRegistration?
-  19:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     callHandler(SYSTEM_INIT);    
+  16:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     
+  17:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     // Call user-based system_init function, if registered
+  18:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     // A good idea to separate from UserRegistration?
+  19:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     callHandler(SYSTEM_INIT);    
   27               		.loc 1 19 0
   28 0008 80E0      		ldi r24,0
   29               	.L3:
   30 000a 0E94 0000 		call callHandler
   31               	.LVL2:
-  20:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     
-  21:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     while(1)
-  22:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****     {
-  23:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****         // manage low level stuff    
-  24:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****         // manage handler stuff
-  25:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** 
-  26:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****         // step through triggered handler functions
-  27:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** 	//printf("%d\r\n",count++);
-  28:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** 	    
-  29:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb ****         // Run user system_main function, if registered
-  30:/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bb **** 	callHandler(SYSTEM_MAIN);
+  20:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     
+  21:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     while(1)
+  22:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****     {
+  23:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****         // manage low level stuff    
+  24:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****         // manage handler stuff
+  25:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** 
+  26:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****         // step through triggered handler functions
+  27:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** 	//printf("%d\r\n",count++);
+  28:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** 	    
+  29:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb ****         // Run user system_main function, if registered
+  30:/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb **** 	callHandler(SYSTEM_MAIN);
   32               		.loc 1 30 0
   33 000e 81E0      		ldi r24,lo8(1)
   34 0010 00C0      		rjmp .L3
   35               	.LFE6:
   63               	.Letext0:
   64               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
-  65               		.file 3 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/defs.bbh"
-  66               		.file 4 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/handler.bbh"
-  67               		.file 5 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/block.bbh"
-  68               		.file 6 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/system.bbh"
+  65               		.file 3 "/home/pthalamy/CMU/build-modif/src-bobby/system/defs.bbh"
+  66               		.file 4 "/home/pthalamy/CMU/build-modif/src-bobby/system/handler.bbh"
+  67               		.file 5 "/home/pthalamy/CMU/build-modif/src-bobby/system/block.bbh"
+  68               		.file 6 "/home/pthalamy/CMU/build-modif/src-bobby/system/system.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 system.c
-     /tmp/ccLTglwo.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccLTglwo.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccLTglwo.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccLTglwo.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccLTglwo.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccLTglwo.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccLTglwo.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccLTglwo.s:13     .text:0000000000000000 blockProgram
+     /tmp/ccFqQivT.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccFqQivT.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccFqQivT.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccFqQivT.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccFqQivT.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccFqQivT.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccFqQivT.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccFqQivT.s:13     .text:0000000000000000 blockProgram
 
 UNDEFINED SYMBOLS
 initBlock

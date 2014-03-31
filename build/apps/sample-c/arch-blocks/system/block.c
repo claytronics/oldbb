@@ -1,5 +1,12 @@
-# 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/block.bb"
+# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/block.bb"
 #include "block.h"
+
+#ifdef CLOCK_SYNC
+#include  "clock.bbh"
+#endif
+#ifdef LOG_DEBUG
+#include "log.h"
+#endif
 
  int blockTickRunning = 0;
 
@@ -68,7 +75,7 @@ void initBlock()
 
 #ifdef DEBUG
 	initDebug();
-    	printf("System Debug Enabled\r\n");
+    	//printf("System Debug Enabled\r\n");
 #endif
 
 	initDataLink();
@@ -83,6 +90,13 @@ void initBlock()
 
 	initHWAccel();
 	accelReady=1;
+
+#ifdef CLOCK_SYNC
+	initClock();
+#endif
+#ifdef LOG_DEBUG
+	initLogDebug();
+#endif
 
 #ifndef BBSIM
     initHWMic();

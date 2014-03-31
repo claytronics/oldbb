@@ -6,7 +6,7 @@
 #endif
 
 Time getHWTime(void);
+Time getHWTimeUS(void);
 void initHWTime(void);
-
 #endif
 

@@ -9,8 +9,8 @@ SOURCE := rainbow.meld
 #ALLCSRC   +=
 #MELDBBSRC  += color.bb
 #MELDCSRC   +=
-#BBINCLUDE +=
+#BBINCLUDE += 
 #ALLO +=
-#MELDO +=
+#MELDO += 
 
 include Makefile.header

@@ -1,0 +1,96 @@
+#include <util/atomic.h>
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include "../hw-api/hwTime.h"
+#include "../system/hardwaretime.h"
+
+#include "../hw-api/hwLED.h"
+
+//#define CLOCK_FREQUENCY 32.768
+// BUG ATMEL LIBRARY:
+#define CLOCK_FREQUENCY (F_CPU/1024)
+#define CLK_RTCSRC_RCOSC32_gc (0x06<<1)
+#define PRECISE_RTC
+
+
+uint32_t cntHi;			// semi-private data, do not modify outside of this file
+
+// Time in ms
+Time getHWTime()
+{
+	return cntHi/1000;
+}
+
+Time getHWTimeUS() {
+	Time tmp;
+	// prevents ISRs from corrupting multibyte write
+	ATOMIC_BLOCK(ATOMIC_FORCEON)
+    {
+		tmp = (((Time)cntHi) << 16) | RTC.CNT;
+	}
+	return (Time) ( (float)tmp * 1.0/CLOCK_FREQUENCY );
+}
+
+void initHWClock(void)
+{
+	OSC.CTRL |= _BV(OSC_RC32MEN_bp);			// turn on 32MHz internal RC oscillator
+	while(!(OSC.STATUS & OSC_RC32MRDY_bm));  	// wait for it to be ready
+
+	CCP=0xD8;							// allow modification of protected register
+	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;	// change from 2MHz to 32MHz
+}
+
+#ifndef PRECISE_RTC
+void initHWRTC(void)
+{
+	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
+	CLK.RTCCTRL = CLK_RTCSRC_ULP_gc | CLK_RTCEN_bm; 
+
+	RTC.INTCTRL = RTC_OVFINTLVL_HI_gc;
+	// initalise the RTC as zero
+	RTC.CNT = 0;
+}
+#else
+void initHWRTC(void) // 31.5 us resolution
+{
+	OSC.CTRL |= OSC_RC32KEN_bm;
+	do {/* Wait for the 32kHz oscillator to stabilize. */} while ( ( OSC.STATUS & OSC_RC32KRDY_bm ) == 0); 
+	// initalise the RTC as zero
+	CLK.RTCCTRL = CLK_RTCSRC_RCOSC32_gc | CLK_RTCEN_bm;
+	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
+	RTC.COMP = 0xffff;
+	RTC.PER = 0xffff;
+	RTC.CNT = 0;
+	//RTC.INTCTRL = RTC_OVFINTLVL_LO_gc;
+	RTC.INTCTRL = RTC_OVFINTLVL_HI_gc;
+}
+#endif
+
+void initHWTC(void) {
+	INTCTRLA = TC_OVFINTLVL_HI_gc;
+	//TCE1->PER = per;
+	TCE1->CTRLA = TC_CLKSEL_DIV1024_gc; //32KHz
+}
+
+void initHWTime()
+{
+	initHWClock();
+	//initHWRTC();
+	initHWTC();
+}
+
+ISR(TCD1_OVF_vect) {
+	cntHi++;
+	setHWLED(0xFF, 0x00, 0x00, 0xFF);
+}
+
+/*
+ISR(RTC_OVF_vect)
+{
+	cntHi++;
+	setHWLED(0xFF, 0x00, 0x00, 0xFF);
+}
+
+ISR(RTC_COMP_vect) {
+	setHWLED(0x00, 0xFF, 0x00, 0xFF);
+}*/

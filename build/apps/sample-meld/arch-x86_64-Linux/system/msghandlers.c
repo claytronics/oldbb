@@ -8,6 +8,4 @@ int last_msg_table_entry = MSG_ILLEGAL;
 char* mt2str(char m) { switch (m) {
 } return "????"; }
 void initThreadVars(void) {
-	this()->blockTickRunning = 0;
-	this()->currentIntensity = INTENSITY_MAX;
 }

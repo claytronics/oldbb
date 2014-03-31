@@ -6,6 +6,10 @@
 #include "../system/ensemble.h"
 #include "../system/serial.h"
 
+#ifdef CLOCK_SYNC
+#include  "../system/clock.bbh"
+#endif
+
 #define CRC_POLY        0xA6
 
 // store if received an escape char
@@ -249,7 +253,13 @@ void processBuffer(PRef p)
             else
             {
                 currChunk = getSystemRXChunk();
-                
+#ifdef CLOCK_SYNC
+				/*if (isAClockSyncMessage(currChunk))
+				{		
+					// insert receive time
+					//insertReceiveTime(currChunk);
+				}*/
+#endif
                 // out of memory, can't fill
                 if( currChunk == NULL )
                 {
@@ -305,7 +315,13 @@ void processBuffer(PRef p)
                 if(parity != last) {
                     // update neighborhood (fix for race condition)
                     //updateNeighbor(p, PRESENT);
-		
+#ifdef CLOCK_SYNC
+					if (isAClockSyncMessage(currChunk) == 1)
+					{		
+						// insert receive time
+						insertReceiveTime(currChunk);
+					}
+#endif
                     // add to global receive queue
                     addToGlobalRq(currChunk);
 		
@@ -430,6 +446,13 @@ void sendOnSerial(PRef p)
             }
             port[p].sq.retry--;
 
+#ifdef CLOCK_SYNC
+			if (isAClockSyncMessage(port[p].sq.head) == 1)
+			{		
+				// insert send time
+				insertSendTime(port[p].sq.head);
+			}
+#endif
             sendToBuffer(p, port[p].sq.head, sendParity(port[p].sq) );
             port[p].sq.flags &= ~CLEAR_TO_SEND;
             

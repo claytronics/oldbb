@@ -27,7 +27,7 @@ ifeq ($(ARCH),i686-CYGWIN_NT-6.1-WOW64)
 else
  LIB_EXT := .a
  OBJ_EXT := .o
- EXE_EXT :=
+ EXE_EXT := 
 endif
 endif
 
@@ -35,7 +35,7 @@ endif
 ifeq ($(BB),SIM)
 TARCH := arch-$(ARCH)
 HARCH := arch-$(ARCH)
-BB2C_FLAGS :=
+BB2C_FLAGS := 
 else
 ifeq ($(BB),block)
 TARCH := arch-blocks
@@ -88,8 +88,8 @@ MCU = atxmega256a3
 
 
 # Processor frequency.
-#     This will define a symbol, F_CPU, in all source code files equal to the
-#     processor frequency. You can then use this symbol in your source code to
+#     This will define a symbol, F_CPU, in all source code files equal to the 
+#     processor frequency. You can then use this symbol in your source code to 
 #     calculate timings. Do NOT tack on a 'UL' at the end, this will be done
 #     automatically to create a 32-bit value in your source code.
 F_CPU = 32000000
@@ -110,10 +110,10 @@ FORMAT = ihex
 #     Even though the DOS/Win* filesystem matches both .s and .S the same,
 #     it will preserve the spelling of the filenames, and gcc itself does
 #     care about how the name is spelled on its command-line.
-ASRC =
+ASRC = 
 
 
-# Optimization level, can be [0, 1, 2, 3, s].
+# Optimization level, can be [0, 1, 2, 3, s]. 
 #     0 = turn off optimization. s = optimize for size.
 #     (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
 OPT = s
@@ -130,7 +130,7 @@ DEBUG = dwarf-2
 #     Each directory must be seperated by a space.
 #     Use forward slashes for directory separators.
 #     For a directory that has spaces, enclose it in quotes.
-EXTRAINCDIRS =
+EXTRAINCDIRS = 
 
 
 # Compiler flag to set the C Standard level.
@@ -162,14 +162,13 @@ CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 #CFLAGS += -Wall -Wstrict-prototypes -Werror
-CFLAGS += -Wall -Werror
+CFLAGS += -Wall
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 #CFLAGS += -I../../../block/rev1c
 #CFLAGS += -DDEBUG=1
 #CFLAGS += -I$(TARCH)
-#CFLAGS += -m32
 
 #---------------- Assembler Options ----------------
 #  -Wa,...:   tell GCC to pass this to the assembler.
@@ -178,7 +177,7 @@ CFLAGS += $(CSTANDARD)
 #             for use in COFF files, additional information about filenames
 #             and function names needs to be present in the assembler source
 #             files -- see avr-libc docs [FIXME: not yet described there]
-ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs
+ASFLAGS = -Wa,-adhlns=$(<:.S=.lst),-gstabs 
 
 
 #---------------- Library Options ----------------
@@ -189,7 +188,7 @@ PRINTF_LIB_MIN = -Wl,-u,vfprintf -lprintf_min
 PRINTF_LIB_FLOAT = -Wl,-u,vfprintf -lprintf_flt
 
 # If this is left blank, then it will use the Standard printf version.
-PRINTF_LIB =
+PRINTF_LIB = 
 #PRINTF_LIB = $(PRINTF_LIB_MIN)
 #PRINTF_LIB = $(PRINTF_LIB_FLOAT)
 
@@ -201,7 +200,7 @@ SCANF_LIB_MIN = -Wl,-u,vfscanf -lscanf_min
 SCANF_LIB_FLOAT = -Wl,-u,vfscanf -lscanf_flt
 
 # If this is left blank, then it will use the Standard scanf version.
-SCANF_LIB =
+SCANF_LIB = 
 #SCANF_LIB = $(SCANF_LIB_MIN)
 #SCANF_LIB = $(SCANF_LIB_FLOAT)
 
@@ -234,7 +233,7 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 #---------------- Programming Options (avrdude) ----------------
 
-# Programming hardware: alf avr910 avrisp bascom bsd
+# Programming hardware: alf avr910 avrisp bascom bsd 
 # dt006 pavr picoweb pony-stk200 sp12 stk200 stk500
 #
 # Type: avrdude -c ?
@@ -262,7 +261,7 @@ AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 #AVRDUDE_NO_VERIFY = -V
 
 # Increase verbosity level.  Please use this when submitting bug
-# reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude>
+# reports about avrdude. See <http://savannah.nongnu.org/projects/avrdude> 
 # to submit bug reports.
 #AVRDUDE_VERBOSE = -v -v
 
@@ -296,7 +295,7 @@ JTAG_DEV = /dev/com1
 DEBUG_PORT = 4242
 
 # Debugging host used to communicate between GDB / avarice / simulavr, normally
-#     just set to localhost unless doing some sort of crazy debugging when
+#     just set to localhost unless doing some sort of crazy debugging when 
 #     avarice is running on a different computer.
 DEBUG_HOST = localhost
 
@@ -323,7 +322,7 @@ WINSHELL = cmd
 MSG_ERRORS_NONE = Errors: none
 MSG_BEGIN = -------- begin --------
 MSG_END = --------  end  --------
-MSG_SIZE_BEFORE = Size before:
+MSG_SIZE_BEFORE = Size before: 
 MSG_SIZE_AFTER = Size after:
 MSG_COFF = Converting to AVR COFF:
 MSG_EXTENDED_COFF = Converting to AVR Extended COFF:
@@ -356,7 +355,7 @@ BLOCKSTUFF += begin gccversion sizebefore build sizeafter end
 
 ############### back to our stuff
 else
-CFLAGS := -g -O1 -Wall -DBBSIM
+CFLAGS := -g -O1 -Wall -DBBSIM -Werror
 ALL_CFLAGS = $(CFLAGS)
 CC     := gcc
 BLOCKSTUFF :=
@@ -386,8 +385,8 @@ MELDO :=
 
 # bb 2 c defines
 BB2C   := $(BBASE)/bin/compile_bb.pl
-BBOUTPUTS :=  localvars.h localtypes.h
-MSGFILE :=
+BBOUTPUTS :=  localvars.h localtypes.h 
+MSGFILE := 
 ifeq ($(BB),SIM)
 BBOUTPUTS +=  msghandlers.c msghandlers.h
 MSGFILE := $(TARCH)/system/msghandlers.c
@@ -408,26 +407,26 @@ $(FULLDIRS):
 -include $(TARCH)/Makefile.externs
 $(TARCH)/Makefile.externs:
 	mkdir -p $(FULLDIRS)
-	create-extern-makefile.sh $(TARCH)/Makefile.externs $(DIRS)
+	create-extern-makefile.sh $(TARCH)/Makefile.externs $(DIRS) 
 
 SIMLIB=-L. -lm -lglut -lGLU -lGL -lpthread
 
-$(TARCH)/system/%.o:	$(BBASE)/src-bobby/system/%.c
+$(TARCH)/system/%.o:	$(BBASE)/src-bobby/system/%.c 
 	$(CC) -c $(ALL_CFLAGS)  -I$(dir $@) -Isim   -I$(TARCH) -I$(dir $<) -o $@ $<
 
-$(TARCH)/sim/%.o:	$(BBASE)/src-bobby/sim/%.c
+$(TARCH)/sim/%.o:	$(BBASE)/src-bobby/sim/%.c 
 	$(CC) -c $(ALL_CFLAGS)  -I$(dir $@) -Isim   -I$(TARCH) -I$(dir $<) -o $@ $<
 
-$(TARCH)/hw-api/%.o:	$(BBASE)/src-bobby/hw-api/%.c
+$(TARCH)/hw-api/%.o:	$(BBASE)/src-bobby/hw-api/%.c 
 	$(CC) -c $(ALL_CFLAGS)  -I$(dir $@) -Isim   -I$(TARCH) -I$(dir $<) -o $@ $<
 
-$(TARCH)/hw-sim/%.o:	$(BBASE)/src-bobby/hw-sim/%.c
+$(TARCH)/hw-sim/%.o:	$(BBASE)/src-bobby/hw-sim/%.c 
 	$(CC) -c $(ALL_CFLAGS)  -I$(dir $@) -Isim   -I$(TARCH) -I$(dir $<) -o $@ $<
 
-$(TARCH)/hw-block/%.o:	$(BBASE)/src-bobby/hw-block/%.c
+$(TARCH)/hw-block/%.o:	$(BBASE)/src-bobby/hw-block/%.c 
 	$(CC) -c $(ALL_CFLAGS)  -I$(dir $@) -Isim   -I$(TARCH) -I$(dir $<) -o $@ $<
 
-$(TARCH)/meldinterp-runtime/%.o:	$(BBASE)/src-bobby/meldinterp-runtime/%.c
+$(TARCH)/meldinterp-runtime/%.o:	$(BBASE)/src-bobby/meldinterp-runtime/%.c 
 	$(CC) -c $(ALL_CFLAGS)  -I$(dir $@) -Isim   -I$(TARCH) -I$(dir $<) -o $@ $<
 
 $(TARCH)/meldinterp-runtime/%.bb : %.meld
@@ -447,7 +446,7 @@ MELDCSRC += $(patsubst %.meld,$(TARCH)/meldinterp-runtime/%.c,$(SOURCE))
 OBJ += $(patsubst %.meld,$(TARCH)/meldinterp-runtime/%.o,$(SOURCE))
 endif
 SRC    := $(SOURCE) $(LDPSRC) $(ALLCSRC) $(ALLBBSRC) $(MELDCSRC) $(MELDBBSRC) $(MSGFILE)
-OBJ    += $(LDPO) $(ALLO) $(MELDO)
+OBJ    += $(LDPO) $(ALLO) $(MELDO) 
 
 $(OUTPUT):	.allbbobj $(OBJ) $(BLOCKSTUFF)
 	$(CC) $(LDFLAGS) -o $(OUTPUT) $(OBJ)  $(SIMLIB)
@@ -478,7 +477,7 @@ clean:
 	/bin/rm -f $(BBOUTPUTS) *.o $(MELDBB) $(TARCH)/*/*.o
 
 wipeout:
-	/bin/rm -f $(BBOUTPUTS) *.o .allbbobj $(MELDBB)
+	/bin/rm -f $(BBOUTPUTS) *.o .allbbobj $(MELDBB) 
 	/bin/rm -rf $(TARCH)
 
 build: elf hex eep lss sym
@@ -486,7 +485,7 @@ build: elf hex eep lss sym
 elf: $(TARCH)/$(TARGET).elf
 hex: $(TARCH)/$(TARGET).hex
 eep: $(TARCH)/$(TARGET).eep
-lss: $(TARCH)/$(TARGET).lss
+lss: $(TARCH)/$(TARGET).lss 
 sym: $(TARCH)/$(TARGET).sym
 
 #blinky blocks apis/system code
@@ -521,20 +520,20 @@ sizeafter:
 
 
 # Display compiler version information.
-gccversion :
+gccversion : 
 	@$(CC) --version
 
 
 
-# Program the device.
+# Program the device.  
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
 
 # Generate avr-gdb config/init file which does the following:
-#     define the reset signal, load the target file, connect to target, and set
+#     define the reset signal, load the target file, connect to target, and set 
 #     a breakpoint at main().
-gdb-config:
+gdb-config: 
 	@$(REMOVE) $(GDBINIT_FILE)
 	@echo define reset >> $(GDBINIT_FILE)
 	@echo SIGNAL SIGHUP >> $(GDBINIT_FILE)
@@ -543,7 +542,7 @@ gdb-config:
 	@echo target remote $(DEBUG_HOST):$(DEBUG_PORT)  >> $(GDBINIT_FILE)
 ifeq ($(DEBUG_BACKEND),simulavr)
 	@echo load  >> $(GDBINIT_FILE)
-endif
+endif	
 	@echo break main >> $(GDBINIT_FILE)
 
 debug: gdb-config $(TARCH)/$(TARGET).elf
@@ -566,7 +565,7 @@ COFFCONVERT=$(OBJCOPY) --debugging \
 --change-section-address .data-0x800000 \
 --change-section-address .bss-0x800000 \
 --change-section-address .noinit-0x800000 \
---change-section-address .eeprom-0x810000
+--change-section-address .eeprom-0x810000 
 
 
 coff: $(TARCH)/$(TARGET).elf

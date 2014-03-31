@@ -1,4 +1,4 @@
-# 1 "/home/dcampbel/Research/blinkyBocksHardware/build/src-bobby/system/hardwaretime.bb"
+# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/hardwaretime.bb"
 #include "hardwaretime.h"
 #include "../hw-api/hwTime.h"
 #include "assert.h"
@@ -76,7 +76,7 @@ int registerTimeout(Timeout * t)
 
 		cur = timeoutList;
 
-		while(cur->calltime < t->calltime && cur->next != NULL)
+		while((cur->calltime < t->calltime) && (cur->next != NULL))
 		{
 			prev = cur;
 			cur = cur->next;
