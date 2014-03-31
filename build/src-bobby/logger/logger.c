@@ -4,13 +4,15 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include <iostream>
+#include <pthread.h>
 
 #include "string.h"
 #include "hostserial.h"
 #include "time.h"
 #include "chunk.h"
 #include "logtable.h"
-
+#define LOG_CMD	0x05	
+#define LOG_MSG 0x50
 // Usage: ./logger -p /dev/ttyUSB0
 
 using namespace std;
@@ -19,6 +21,8 @@ char* portname  = NULL;
 string defaultportname = "/dev/ttyUSB0";
 int baudrate = 38400;
 char* prog = 0;
+int seq = 0;
+enum Color
 
 pthread_mutex_t serialMutex;
 pthread_mutex_t circbuffMutex;
@@ -32,12 +36,13 @@ void usage(void);
 void readParameters(int argc, char** argv);
 void sendIAmHost(void);
 void insertLogChunk(Chunk *c);
+void sendCmd(void);
 
 static int kbhit(void);
 
 int main(int argc, char** argv) {
     
-    //char c = 'o';
+    char c = '0';
     readParameters(argc, argv);
     
     if( !Chunk::initSerial(portname, baudrate)  ) {
@@ -45,9 +50,8 @@ int main(int argc, char** argv) {
     }
     
     sendIAmHost();
-
-	//while(c != 'q') {
-	while(!kbhit()) {
+    while(c != 'q') {
+	/*while(!kbhit()) {
 		Chunk *ch = Chunk::read();
 		if ( ch != NULL) {
 			if (ch->data[0] == LOG_MSG) {			
@@ -59,12 +63,14 @@ int main(int argc, char** argv) {
 		logs.printCompleted();
 		logs.removeCompleted();
 		
-		/*if (kbhit()) {
-			cout << "kbhit" << endl;
-			c = getchar();
-		}*/
-	}
-	
+		//if (kbhit()) {
+		//	cout << "kbhit" << endl;
+			//c = getchar();
+		//}
+	} */
+	c = getchar();
+	sendCmd();
+    }
 	logs.printStats();
     // shutdown everything
     cout << "Close serial comm...";
@@ -99,6 +105,7 @@ void readParameters(int argc, char** argv) {
    }
 }
 
+
 void sendIAmHost(void) {
 	
 	byte data[2];
@@ -121,6 +128,33 @@ void sendIAmHost(void) {
 			logs.printCompleted();
 			logs.removeCompleted();
 		}
+	} while (true);
+}
+void sendCmd(void) {
+	
+	byte data[4];
+	
+	data[0] = LOG_MSG;
+  	data[1] = LOG_CMD;
+	data[2] = seq;
+	data[3]	= 0;
+    Chunk c(data, 4);
+    Chunk *ack = NULL; 
+
+    // Try 2 times (parity)
+    do {
+		printf("Sending setColor(RED)\n");
+		c.send();
+		ack = Chunk::read();
+		if (ack == NULL) {
+			return;
+		} else if (ack->data[0] == LOG_MSG) {
+			insertLogChunk(ack);
+			delete ack;
+			logs.printCompleted();
+			logs.removeCompleted();
+		}
+		seq++;
 	} while (true);
 }
 
