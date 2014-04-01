@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/accelerometer.bbh"
+# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bbh"
 #ifndef __ACCELEROMETER_H__
 #define __ACCELEROMETER_H__
 

@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/log.bb"
+# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb"
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
@@ -12,15 +12,26 @@
 
 #define LOG_I_AM_HOST			0x01
 #define LOG_PATH_TO_HOST		0x02
-#define LOG_NEED_PATH_TO_HOST	0x03
-#define LOG_DATA				0x04
+#define LOG_NEED_PATH_TO_HOST		0x03
+#define LOG_DATA			0x04
+#define LOG_CMD				0x05
 
 //#define FORCE_TRANSMISSION
 
  byte PCConnection = 0;
  PRef toHost = 200;
 
-byte sendLogChunk(PRef p, byte *d, byte s);
+int seq = 0; // sequence number for avoiding loops when broadcasting commands
+
+void myMsgHandler(void);
+void freeMyChunk(void);
+void freeLogChunk(void);
+byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh);
+
+void freeMyChunk(void)
+{
+    free(thisChunk);
+}
 
 void freeLogChunk(void)
 {
@@ -35,6 +46,38 @@ void freeLogChunk(void)
 #else
 	free(thisChunk);
 #endif
+}
+
+byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh)
+{
+    Chunk *c=calloc(sizeof(Chunk), 1);
+    if (c == NULL)
+    {
+        return 0;
+    }
+    if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeMyChunk) == 0)
+    {
+        free(c);
+        return 0;
+    }
+    return 1;
+}
+
+void processCmd(void)
+{
+   int X = 0;
+    if (seq < thisChunk->data[2]) {
+	  seq = thisChunk->data[2];
+	  for (X ; X <= 5 ; X++) {
+	    sendMyChunk(X, thisChunk->data, 4, (MsgHandler)myMsgHandler);
+	  }
+	  triggerHandler(EVENT_COMMAND_RECEIVED);
+    }
+}
+
+void myMsgHandler(void)
+{
+  processCmd();
 }
 
 byte isHostPort(PRef p)
@@ -127,7 +170,6 @@ void initLogDebug(void)
 
 byte handleLogMessage(void)
 {
-
 	if( thisChunk == NULL )
 	{
 		return 0;
@@ -155,6 +197,9 @@ byte handleLogMessage(void)
 			if(toHost != UNDEFINED_HOST) {
 				forwardToHost(thisChunk);
 			}
+		break;
+		case LOG_CMD:
+			processCmd();
 		break;
 	}
 
@@ -281,4 +326,3 @@ byte blockingPrintDebug(char *s)
 	va_end(args);
 	return ret;
 } */
-

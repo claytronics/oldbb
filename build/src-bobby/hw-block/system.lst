@@ -12,33 +12,33 @@
   12               	.global	main
   14               	main:
   15               	.LFB6:
-  16               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/system.c"
-   1:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/system.c **** #include "system/system.h"
-   2:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/system.c **** 
-   3:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/system.c **** int main(void)
-   4:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/system.c **** {
+  16               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/system.c"
+   1:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/system.c **** #include "system/system.h"
+   2:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/system.c **** 
+   3:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/system.c **** int main(void)
+   4:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/system.c **** {
   17               		.loc 1 4 0
   18               	/* prologue: function */
   19               	/* frame size = 0 */
   20               	/* stack size = 0 */
   21               	.L__stack_usage = 0
-   5:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/system.c **** 		return blockProgram();
+   5:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/system.c **** 		return blockProgram();
   22               		.loc 1 5 0
   23 0000 0C94 0000 		jmp blockProgram
   24               	.LVL0:
   25               	.LFE6:
   53               	.Letext0:
-  54               		.file 2 "/home/pthalamy/CMU/build-modif/src-bobby/system/system.bbh"
+  54               		.file 2 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/system.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 system.c
-     /tmp/ccv6abCc.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccv6abCc.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccv6abCc.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccv6abCc.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccv6abCc.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccv6abCc.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccv6abCc.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccv6abCc.s:14     .text.startup:0000000000000000 main
+     /tmp/ccscwbSd.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccscwbSd.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccscwbSd.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccscwbSd.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccscwbSd.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccscwbSd.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccscwbSd.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccscwbSd.s:14     .text.startup:0000000000000000 main
 
 UNDEFINED SYMBOLS
 blockProgram

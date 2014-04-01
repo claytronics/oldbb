@@ -1,0 +1,387 @@
+   1               		.file	"test.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__RAMPZ__ = 0x3b
+   6               	__CCP__ = 0x34
+   7               	__tmp_reg__ = 0
+   8               	__zero_reg__ = 1
+   9               		.text
+  10               	.Ltext0:
+  11               	.global	myMain
+  13               	myMain:
+  14               	.LFB6:
+  15               		.file 1 "arch-blocks/system/test.bb"
+   1:arch-blocks/system/test.bb **** #include "handler.bbh"
+   2:arch-blocks/system/test.bb **** #include "data_link.bbh"
+   3:arch-blocks/system/test.bb **** #include "led.bbh"
+   4:arch-blocks/system/test.bb **** #include "log.bbh"
+   5:arch-blocks/system/test.bb **** #include "handler.bbh"
+   6:arch-blocks/system/test.bb **** #include "block.bbh"
+   7:arch-blocks/system/test.bb **** #include "ensemble.bbh"
+   8:arch-blocks/system/test.bb **** #include "clock.bbh"
+   9:arch-blocks/system/test.bb **** #include "block_config.bbh"
+  10:arch-blocks/system/test.bb **** #include "memory.bbh"
+  11:arch-blocks/system/test.bb ****   
+  12:arch-blocks/system/test.bb **** void getCmdData(void);
+  13:arch-blocks/system/test.bb **** 
+  14:arch-blocks/system/test.bb **** void myMain(void)
+  15:arch-blocks/system/test.bb **** {
+  16               		.loc 1 15 0
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+  16:arch-blocks/system/test.bb **** 
+  17:arch-blocks/system/test.bb ****   setColor(WHITE);
+  21               		.loc 1 17 0
+  22 0000 86E0      		ldi r24,lo8(6)
+  23 0002 0E94 0000 		call setColor
+  24               	.LVL0:
+  25               	.L2:
+  26 0006 00C0      		rjmp .L2
+  27               	.LFE6:
+  29               		.section	.rodata.str1.1,"aMS",@progbits,1
+  30               	.LC0:
+  31 0000 636F 6C6F 		.string	"color change to RED"
+  31      7220 6368 
+  31      616E 6765 
+  31      2074 6F20 
+  31      5245 4400 
+  32               	.LC1:
+  33 0014 636F 6C6F 		.string	"color change to ORANGE"
+  33      7220 6368 
+  33      616E 6765 
+  33      2074 6F20 
+  33      4F52 414E 
+  34               	.LC2:
+  35 002b 636F 6C6F 		.string	"color change to YELLOW"
+  35      7220 6368 
+  35      616E 6765 
+  35      2074 6F20 
+  35      5945 4C4C 
+  36               	.LC3:
+  37 0042 636F 6C6F 		.string	"color change to GREEN"
+  37      7220 6368 
+  37      616E 6765 
+  37      2074 6F20 
+  37      4752 4545 
+  38               	.LC4:
+  39 0058 636F 6C6F 		.string	"color change to AQUA"
+  39      7220 6368 
+  39      616E 6765 
+  39      2074 6F20 
+  39      4151 5541 
+  40               	.LC5:
+  41 006d 636F 6C6F 		.string	"color change to BLUE"
+  41      7220 6368 
+  41      616E 6765 
+  41      2074 6F20 
+  41      424C 5545 
+  42               	.LC6:
+  43 0082 636F 6C6F 		.string	"color change to WHITE"
+  43      7220 6368 
+  43      616E 6765 
+  43      2074 6F20 
+  43      5748 4954 
+  44               	.LC7:
+  45 0098 636F 6C6F 		.string	"color change to PURPLE"
+  45      7220 6368 
+  45      616E 6765 
+  45      2074 6F20 
+  45      5055 5250 
+  46               	.LC8:
+  47 00af 636F 6C6F 		.string	"color change to PINK"
+  47      7220 6368 
+  47      616E 6765 
+  47      2074 6F20 
+  47      5049 4E4B 
+  48               	.LC9:
+  49 00c4 554E 4B4E 		.string	"UNKNOWN COMMAND"
+  49      4F57 4E20 
+  49      434F 4D4D 
+  49      414E 4400 
+  50               		.text
+  51               	.global	getCmdData
+  53               	getCmdData:
+  54               	.LFB7:
+  18:arch-blocks/system/test.bb ****   
+  19:arch-blocks/system/test.bb ****   while(1);
+  20:arch-blocks/system/test.bb **** }
+  21:arch-blocks/system/test.bb **** 
+  22:arch-blocks/system/test.bb **** void getCmdData(void)
+  23:arch-blocks/system/test.bb **** {
+  55               		.loc 1 23 0
+  56 0008 CF93      		push r28
+  57               	.LCFI0:
+  58 000a DF93      		push r29
+  59               	.LCFI1:
+  60 000c CDB7      		in r28,__SP_L__
+  61 000e DEB7      		in r29,__SP_H__
+  62               	.LCFI2:
+  63 0010 C659      		subi r28,-106
+  64 0012 D109      		sbc r29,__zero_reg__
+  65               	.LCFI3:
+  66 0014 CDBF      		out __SP_L__,r28
+  67 0016 DEBF      		out __SP_H__,r29
+  68               	/* prologue: function */
+  69               	/* frame size = 150 */
+  70               	/* stack size = 152 */
+  71               	.L__stack_usage = 152
+  24:arch-blocks/system/test.bb ****   #ifdef LOG_DEBUG
+  25:arch-blocks/system/test.bb ****   char s[150];
+  26:arch-blocks/system/test.bb ****   if(thisChunk->data[3] == 1)
+  72               		.loc 1 26 0
+  73 0018 E091 0000 		lds r30,thisChunk
+  74 001c F091 0000 		lds r31,thisChunk+1
+  75 0020 8381      		ldd r24,Z+3
+  76 0022 8130      		cpi r24,lo8(1)
+  77 0024 01F4      		brne .L4
+  27:arch-blocks/system/test.bb ****     setIntensity(0);
+  78               		.loc 1 27 0
+  79 0026 80E0      		ldi r24,0
+  80 0028 0E94 0000 		call setIntensity
+  81               	.LVL1:
+  82               	.L4:
+  28:arch-blocks/system/test.bb ****   switch (thisChunk->data[3]){ //thisChunk->data[3] always = 3, WHY???
+  83               		.loc 1 28 0
+  84 002c E091 0000 		lds r30,thisChunk
+  85 0030 F091 0000 		lds r31,thisChunk+1
+  86 0034 8381      		ldd r24,Z+3
+  87 0036 8430      		cpi r24,lo8(4)
+  88 0038 01F0      		breq .L10
+  89 003a 00F4      		brsh .L15
+  90 003c 8130      		cpi r24,lo8(1)
+  91 003e 01F0      		breq .L7
+  92 0040 00F0      		brlo .L6
+  93 0042 8230      		cpi r24,lo8(2)
+  94 0044 01F0      		breq .L8
+  95 0046 8330      		cpi r24,lo8(3)
+  96 0048 01F0      		breq .+2
+  97 004a 00C0      		rjmp .L5
+  98 004c 00C0      		rjmp .L9
+  99               	.L15:
+ 100 004e 8630      		cpi r24,lo8(6)
+ 101 0050 01F0      		breq .L12
+ 102 0052 00F0      		brlo .L11
+ 103 0054 8730      		cpi r24,lo8(7)
+ 104 0056 01F0      		breq .L13
+ 105 0058 8830      		cpi r24,lo8(8)
+ 106 005a 01F4      		brne .L5
+ 107 005c 00C0      		rjmp .L14
+ 108               	.L6:
+  29:arch-blocks/system/test.bb ****     case 0:
+  30:arch-blocks/system/test.bb ****       setColor(RED);
+ 109               		.loc 1 30 0
+ 110 005e 80E0      		ldi r24,0
+ 111 0060 0E94 0000 		call setColor
+ 112               	.LVL2:
+  31:arch-blocks/system/test.bb ****       snprintf(s, 150*sizeof(char), "color change to RED");
+ 113               		.loc 1 31 0
+ 114 0064 60E0      		ldi r22,lo8(.LC0)
+ 115 0066 70E0      		ldi r23,hi8(.LC0)
+ 116 0068 00C0      		rjmp .L17
+ 117               	.L7:
+  32:arch-blocks/system/test.bb ****     break;
+  33:arch-blocks/system/test.bb ****     case 1:
+  34:arch-blocks/system/test.bb ****       setColor(ORANGE);
+ 118               		.loc 1 34 0
+ 119 006a 81E0      		ldi r24,lo8(1)
+ 120 006c 0E94 0000 		call setColor
+ 121               	.LVL3:
+  35:arch-blocks/system/test.bb ****       snprintf(s, 150*sizeof(char), "color change to ORANGE");
+ 122               		.loc 1 35 0
+ 123 0070 60E0      		ldi r22,lo8(.LC1)
+ 124 0072 70E0      		ldi r23,hi8(.LC1)
+ 125 0074 00C0      		rjmp .L17
+ 126               	.L8:
+  36:arch-blocks/system/test.bb ****     break;
+  37:arch-blocks/system/test.bb ****     case 2:
+  38:arch-blocks/system/test.bb ****       setColor(YELLOW);
+ 127               		.loc 1 38 0
+ 128 0076 82E0      		ldi r24,lo8(2)
+ 129 0078 0E94 0000 		call setColor
+ 130               	.LVL4:
+  39:arch-blocks/system/test.bb ****       snprintf(s, 150*sizeof(char), "color change to YELLOW");
+ 131               		.loc 1 39 0
+ 132 007c 60E0      		ldi r22,lo8(.LC2)
+ 133 007e 70E0      		ldi r23,hi8(.LC2)
+ 134 0080 00C0      		rjmp .L17
+ 135               	.L9:
+  40:arch-blocks/system/test.bb ****     break;
+  41:arch-blocks/system/test.bb ****     case 3:
+  42:arch-blocks/system/test.bb ****       setColor(GREEN);
+ 136               		.loc 1 42 0
+ 137 0082 83E0      		ldi r24,lo8(3)
+ 138 0084 0E94 0000 		call setColor
+ 139               	.LVL5:
+  43:arch-blocks/system/test.bb ****       snprintf(s, 150*sizeof(char), "color change to GREEN");
+ 140               		.loc 1 43 0
+ 141 0088 60E0      		ldi r22,lo8(.LC3)
+ 142 008a 70E0      		ldi r23,hi8(.LC3)
+ 143 008c 00C0      		rjmp .L17
+ 144               	.L10:
+  44:arch-blocks/system/test.bb ****     break;
+  45:arch-blocks/system/test.bb ****     case 4:
+  46:arch-blocks/system/test.bb ****       setColor(AQUA);
+ 145               		.loc 1 46 0
+ 146 008e 84E0      		ldi r24,lo8(4)
+ 147 0090 0E94 0000 		call setColor
+ 148               	.LVL6:
+  47:arch-blocks/system/test.bb ****       snprintf(s, 150*sizeof(char), "color change to AQUA");
+ 149               		.loc 1 47 0
+ 150 0094 60E0      		ldi r22,lo8(.LC4)
+ 151 0096 70E0      		ldi r23,hi8(.LC4)
+ 152 0098 00C0      		rjmp .L17
+ 153               	.L11:
+  48:arch-blocks/system/test.bb ****     break;
+  49:arch-blocks/system/test.bb ****     case 5:
+  50:arch-blocks/system/test.bb ****       setColor(BLUE);
+ 154               		.loc 1 50 0
+ 155 009a 85E0      		ldi r24,lo8(5)
+ 156 009c 0E94 0000 		call setColor
+ 157               	.LVL7:
+  51:arch-blocks/system/test.bb ****       snprintf(s, 150*sizeof(char), "color change to BLUE");
+ 158               		.loc 1 51 0
+ 159 00a0 60E0      		ldi r22,lo8(.LC5)
+ 160 00a2 70E0      		ldi r23,hi8(.LC5)
+ 161 00a4 00C0      		rjmp .L17
+ 162               	.L12:
+  52:arch-blocks/system/test.bb ****     break;
+  53:arch-blocks/system/test.bb ****     case 6:
+  54:arch-blocks/system/test.bb ****       setColor(WHITE);
+ 163               		.loc 1 54 0
+ 164 00a6 86E0      		ldi r24,lo8(6)
+ 165 00a8 0E94 0000 		call setColor
+ 166               	.LVL8:
+  55:arch-blocks/system/test.bb ****       snprintf(s, 150*sizeof(char), "color change to WHITE");
+ 167               		.loc 1 55 0
+ 168 00ac 60E0      		ldi r22,lo8(.LC6)
+ 169 00ae 70E0      		ldi r23,hi8(.LC6)
+ 170 00b0 00C0      		rjmp .L17
+ 171               	.L13:
+  56:arch-blocks/system/test.bb ****     break;
+  57:arch-blocks/system/test.bb ****     case 7:
+  58:arch-blocks/system/test.bb ****       setColor(PURPLE);
+ 172               		.loc 1 58 0
+ 173 00b2 87E0      		ldi r24,lo8(7)
+ 174 00b4 0E94 0000 		call setColor
+ 175               	.LVL9:
+  59:arch-blocks/system/test.bb ****       snprintf(s, 150*sizeof(char), "color change to PURPLE");
+ 176               		.loc 1 59 0
+ 177 00b8 60E0      		ldi r22,lo8(.LC7)
+ 178 00ba 70E0      		ldi r23,hi8(.LC7)
+ 179 00bc 00C0      		rjmp .L17
+ 180               	.L14:
+  60:arch-blocks/system/test.bb ****     break;
+  61:arch-blocks/system/test.bb ****     case 8:
+  62:arch-blocks/system/test.bb ****       setColor(PINK);
+ 181               		.loc 1 62 0
+ 182 00be 88E0      		ldi r24,lo8(8)
+ 183 00c0 0E94 0000 		call setColor
+ 184               	.LVL10:
+  63:arch-blocks/system/test.bb ****       snprintf(s, 150*sizeof(char), "color change to PINK");
+ 185               		.loc 1 63 0
+ 186 00c4 60E0      		ldi r22,lo8(.LC8)
+ 187 00c6 70E0      		ldi r23,hi8(.LC8)
+ 188 00c8 00C0      		rjmp .L17
+ 189               	.L5:
+  64:arch-blocks/system/test.bb ****     break;
+  65:arch-blocks/system/test.bb ****     default:
+  66:arch-blocks/system/test.bb ****       setIntensity(0);
+ 190               		.loc 1 66 0
+ 191 00ca 80E0      		ldi r24,0
+ 192 00cc 0E94 0000 		call setIntensity
+ 193               	.LVL11:
+  67:arch-blocks/system/test.bb ****       snprintf(s, 150*sizeof(char), "UNKNOWN COMMAND");
+ 194               		.loc 1 67 0
+ 195 00d0 60E0      		ldi r22,lo8(.LC9)
+ 196 00d2 70E0      		ldi r23,hi8(.LC9)
+ 197               	.L17:
+ 198 00d4 CE01      		movw r24,r28
+ 199 00d6 0196      		adiw r24,1
+ 200 00d8 0E94 0000 		call strcpy
+ 201               	.LVL12:
+  68:arch-blocks/system/test.bb ****     break;
+  69:arch-blocks/system/test.bb ****   }      
+  70:arch-blocks/system/test.bb ****   s[149] = '\0';
+ 202               		.loc 1 70 0
+ 203 00dc CA56      		subi r28,lo8(-150)
+ 204 00de DF4F      		sbci r29,hi8(-150)
+ 205 00e0 1882      		st Y,__zero_reg__
+ 206 00e2 C659      		subi r28,lo8(150)
+ 207 00e4 D040      		sbci r29,hi8(150)
+  71:arch-blocks/system/test.bb ****   printDebug(s);
+ 208               		.loc 1 71 0
+ 209 00e6 CE01      		movw r24,r28
+ 210 00e8 0196      		adiw r24,1
+ 211 00ea 0E94 0000 		call printDebug
+ 212               	.LVL13:
+ 213               	/* epilogue start */
+  72:arch-blocks/system/test.bb ****   #endif
+  73:arch-blocks/system/test.bb **** }
+ 214               		.loc 1 73 0
+ 215 00ee CA56      		subi r28,106
+ 216 00f0 DF4F      		sbci r29,-1
+ 217 00f2 CDBF      		out __SP_L__,r28
+ 218 00f4 DEBF      		out __SP_H__,r29
+ 219 00f6 DF91      		pop r29
+ 220 00f8 CF91      		pop r28
+ 221 00fa 0895      		ret
+ 222               	.LFE7:
+ 224               	.global	userRegistration
+ 226               	userRegistration:
+ 227               	.LFB8:
+  74:arch-blocks/system/test.bb **** 
+  75:arch-blocks/system/test.bb **** void userRegistration(void)
+  76:arch-blocks/system/test.bb **** {
+ 228               		.loc 1 76 0
+ 229               	/* prologue: function */
+ 230               	/* frame size = 0 */
+ 231               	/* stack size = 0 */
+ 232               	.L__stack_usage = 0
+  77:arch-blocks/system/test.bb **** 	registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);
+ 233               		.loc 1 77 0
+ 234 00fc 60E0      		ldi r22,lo8(gs(myMain))
+ 235 00fe 70E0      		ldi r23,hi8(gs(myMain))
+ 236 0100 81E0      		ldi r24,lo8(1)
+ 237 0102 0E94 0000 		call registerHandler
+ 238               	.LVL14:
+  78:arch-blocks/system/test.bb **** 	registerHandler(EVENT_COMMAND_RECEIVED, (GenericHandler)&getCmdData);
+ 239               		.loc 1 78 0
+ 240 0106 60E0      		ldi r22,lo8(gs(getCmdData))
+ 241 0108 70E0      		ldi r23,hi8(gs(getCmdData))
+ 242 010a 85E1      		ldi r24,lo8(21)
+ 243 010c 0C94 0000 		jmp registerHandler
+ 244               	.LVL15:
+ 245               	.LFE8:
+ 309               	.Letext0:
+ 310               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 311               		.file 3 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/defs.bbh"
+ 312               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/handler.bbh"
+ 313               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/memory.bbh"
+ 314               		.file 6 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/led.bbh"
+ 315               		.file 7 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bbh"
+ 316               		.file 8 "<built-in>"
+ 317               		.file 9 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bbh"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 test.c
+     /tmp/ccsQViZh.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccsQViZh.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccsQViZh.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccsQViZh.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccsQViZh.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccsQViZh.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccsQViZh.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccsQViZh.s:13     .text:0000000000000000 myMain
+     /tmp/ccsQViZh.s:53     .text:0000000000000008 getCmdData
+     /tmp/ccsQViZh.s:226    .text:00000000000000fc userRegistration
+
+UNDEFINED SYMBOLS
+setColor
+thisChunk
+setIntensity
+strcpy
+printDebug
+registerHandler
+__do_copy_data

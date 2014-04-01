@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/handler.bbh"
+# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/handler.bbh"
 #ifndef	__HANDLER_H__
 #define __HANDLER_H__
 
@@ -57,17 +57,18 @@ EVENT_NEIGHBOR_CHANGE,			// 19	called on any change in neighbor status
 
 EVENT_PACKET_RECEIVED,			// 20	called when a user packet has been received
 
-USER_EVENT_0,					// 21
-USER_EVENT_1,					// 22
-USER_EVENT_2,					// 23
-USER_EVENT_3,					// 24
-USER_EVENT_4,					// 25
-USER_EVENT_5,					// 26
-USER_EVENT_6,					// 27
-USER_EVENT_7,					// 28
-USER_EVENT_8,					// 29
-USER_EVENT_9,					// 30
-USER_EVENT_10,					// 31
+EVENT_COMMAND_RECEIVED,			// 21	called when a log command has been received
+
+USER_EVENT_0,					// 22
+USER_EVENT_1,					// 23
+USER_EVENT_2,					// 24
+USER_EVENT_3,					// 25
+USER_EVENT_4,					// 26
+USER_EVENT_5,					// 27
+USER_EVENT_6,					// 28
+USER_EVENT_7,					// 29
+USER_EVENT_8,					// 30
+USER_EVENT_9,					// 31
 };
 
 

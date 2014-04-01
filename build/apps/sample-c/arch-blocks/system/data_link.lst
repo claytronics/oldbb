@@ -11,47 +11,47 @@
   11               	.global	defaultMsgHandler
   13               	defaultMsgHandler:
   14               	.LFB6:
-  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb"
-   1:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // data_link.c
-   2:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //
-   3:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // Implement Data Link Layer protocols
-   4:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-   5:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #ifndef _DATA_LINK_C_
-   6:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define _DATA_LINK_C_
-   7:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-   8:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #include "../hw-api/hwDataLink.h"
-   9:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #include "../hw-api/hwSerial.h"
-  10:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #include "data_link.bbh"
-  11:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #include "led.bbh"
-  12:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-  13:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #ifdef LOG_DEBUG
-  14:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #include "log.bbh"
-  15:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #endif
-  16:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #ifdef CLOCK_SYNC
-  17:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #include "clock.bbh"
-  18:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #endif
-  19:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-  20:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-  21:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // global receive queue for packets
-  22:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // move to network layer???
-  23:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** threadvar ReceivePacketQueue globalRq;
-  24:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-  25:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** threadextern Port port[NUM_PORTS];
-  26:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-  27:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // used to allow message handler and callbacks access to state
-  28:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** threadvar Chunk* thisChunk;
-  29:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-  30:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** /////////////////// PROTECTED FUNCTIONS ///////////////////
-  31:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // default message handler - does nothing
-  32:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** byte defaultMsgHandler(void)
-  33:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** {
+  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb"
+   1:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // data_link.c
+   2:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //
+   3:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // Implement Data Link Layer protocols
+   4:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+   5:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #ifndef _DATA_LINK_C_
+   6:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define _DATA_LINK_C_
+   7:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+   8:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #include "../hw-api/hwDataLink.h"
+   9:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #include "../hw-api/hwSerial.h"
+  10:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #include "data_link.bbh"
+  11:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #include "led.bbh"
+  12:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+  13:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #ifdef LOG_DEBUG
+  14:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #include "log.bbh"
+  15:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #endif
+  16:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #ifdef CLOCK_SYNC
+  17:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #include "clock.bbh"
+  18:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #endif
+  19:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+  20:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // global receive queue for packets
+  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // move to network layer???
+  23:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** threadvar ReceivePacketQueue globalRq;
+  24:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+  25:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** threadextern Port port[NUM_PORTS];
+  26:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+  27:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // used to allow message handler and callbacks access to state
+  28:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** threadvar Chunk* thisChunk;
+  29:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** /////////////////// PROTECTED FUNCTIONS ///////////////////
+  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // default message handler - does nothing
+  32:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** byte defaultMsgHandler(void)
+  33:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** {
   16               		.loc 1 33 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
-  34:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     return 1;
-  35:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** }
+  34:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     return 1;
+  35:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** }
   21               		.loc 1 35 0
   22 0000 81E0      		ldi r24,lo8(1)
   23 0002 0895      		ret
@@ -59,141 +59,152 @@
   26               	.global	reservedSystemHandler
   28               	reservedSystemHandler:
   29               	.LFB7:
-  36:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-  37:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // handler for reserved system mesages
-  38:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //   using 0x0000 as message handler allows blocks 
-  39:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //   running different programs to communicate at the system level.
-  40:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** byte reservedSystemHandler(void)
-  41:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** {
+  36:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+  37:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // handler for reserved system mesages
+  38:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //   using 0x0000 as message handler allows blocks 
+  39:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //   running different programs to communicate at the system level.
+  40:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** byte reservedSystemHandler(void)
+  41:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** {
   30               		.loc 1 41 0
   31               	/* prologue: function */
   32               	/* frame size = 0 */
   33               	/* stack size = 0 */
   34               	.L__stack_usage = 0
-  42:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // bogus
-  43:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     if(thisChunk == NULL) {
+  42:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // bogus
+  43:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if(thisChunk == NULL) {
   35               		.loc 1 43 0
   36 0004 E091 0000 		lds r30,thisChunk
   37 0008 F091 0000 		lds r31,thisChunk+1
   38 000c 3097      		sbiw r30,0
   39 000e 01F0      		breq .L3
-  44:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 0;
-  45:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
-  46:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****   
-  47:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // find msg type and check
-  48:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     switch( thisChunk->data[0] )
+  44:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 0;
+  45:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+  46:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****   
+  47:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // find msg type and check
+  48:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     switch( thisChunk->data[0] )
   40               		.loc 1 48 0
   41 0010 8081      		ld r24,Z
-  42 0012 8036      		cpi r24,lo8(96)
+  42 0012 8035      		cpi r24,lo8(80)
   43 0014 01F0      		breq .L5
-  44 0016 8F3F      		cpi r24,lo8(-1)
-  45 0018 01F0      		breq .L6
-  46 001a 8130      		cpi r24,lo8(1)
-  47 001c 01F4      		brne .L3
-  48 001e 00C0      		rjmp .L4
-  49               	.L6:
-  50               	.LBB12:
-  49:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
-  50:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         case JUMP_BOOTLOADER: // CRC for this message: 0x2A
-  51:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         {
-  52:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	        int i = 1;
-  53:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	
-  54:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	        // check msg consistency
-  55:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	        while( i < DATA_SIZE ) {
-  56:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	            if( thisChunk->data[i] != (JUMP_BOOTLOADER ^ i) ) {
-  57:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	                // invalid bootloader packet, break and do nothing
-  58:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	                break;
-  59:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	            }
-  60:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	            i++;
-  61:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	        }
-  62:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	        // consistent
-  63:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     	    jumpToBootSection();
-  51               		.loc 1 63 0
-  52 0020 0E94 0000 		call jumpToBootSection
-  53               	.LVL0:
-  54               	.L4:
-  55               	.LBE12:
-  64:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         }
-  65:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         case NEIGHBOR_MSG:
-  66:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****             handleNeighborMessage();
-  56               		.loc 1 66 0
-  57 0024 0E94 0000 		call handleNeighborMessage
-  58               	.LVL1:
-  67:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****             break;
-  59               		.loc 1 67 0
-  60 0028 00C0      		rjmp .L3
-  61               	.L5:
-  68:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #ifdef LOG_DEBUG
-  69:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         case LOG_MSG:
-  70:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 			handleLogMessage();
-  71:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 			break;
-  72:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #endif
-  73:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #ifdef CLOCK_SYNC
-  74:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 		case CLOCK_SYNC_MSG:
-  75:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 			handleClockSyncMessage();
-  62               		.loc 1 75 0
-  63 002a 0E94 0000 		call handleClockSyncMessage
-  64               	.LVL2:
-  65               	.L3:
-  76:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 			break;
-  77:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #endif
-  78:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         default:
-  79:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****             break;
-  80:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
-  81:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****   
-  82:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     return 0;
-  83:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** }
-  66               		.loc 1 83 0
-  67 002e 80E0      		ldi r24,0
-  68 0030 0895      		ret
-  69               	.LFE7:
-  71               	.global	removeFromSq
-  73               	removeFromSq:
-  74               	.LFB8:
-  84:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-  85:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // removes the first packet from the send queue and
-  86:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //    updates pointers
-  87:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //    updates pointers
-  88:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // inputs:  port
-  89:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // output:  1-success, 0-failure
-  90:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** byte removeFromSq(PRef p, byte response)
-  91:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** {
-  75               		.loc 1 91 0
-  76               	.LVL3:
-  77               	/* prologue: function */
-  78               	/* frame size = 0 */
-  79               	/* stack size = 0 */
-  80               	.L__stack_usage = 0
-  92:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // empty or bad
-  93:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     if( (p >= NUM_PORTS) || (port[p].sq.head == NULL) ) 
-  81               		.loc 1 93 0
-  82 0032 8630      		cpi r24,lo8(6)
-  83 0034 00F0      		brlo .+2
-  84 0036 00C0      		rjmp .L20
-  85               		.loc 1 93 0 is_stmt 0 discriminator 1
-  86 0038 98E5      		ldi r25,lo8(88)
-  87 003a 899F      		mul r24,r25
-  88 003c F001      		movw r30,r0
-  89 003e 1124      		clr __zero_reg__
-  90 0040 E050      		subi r30,lo8(-(port))
-  91 0042 F040      		sbci r31,hi8(-(port))
-  92 0044 8785      		ldd r24,Z+15
-  93 0046 9089      		ldd r25,Z+16
-  94               	.LVL4:
-  95 0048 892B      		or r24,r25
-  96 004a 01F0      		breq .L20
-  97               	.LBB13:
-  94:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
-  95:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 0;
-  96:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
-  97:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
-  98:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     BB_LOCK(SQ_LOCK)
-  98               		.loc 1 98 0 is_stmt 1
-  99 004c 2FB7      		in r18,__SREG__
- 100               	.LVL5:
- 101               	.LBB14:
- 102               	.LBB15:
- 103               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h"
+  44 0016 00F4      		brsh .L8
+  45 0018 8130      		cpi r24,lo8(1)
+  46 001a 01F4      		brne .L3
+  47 001c 00C0      		rjmp .L4
+  48               	.L8:
+  49 001e 8036      		cpi r24,lo8(96)
+  50 0020 01F0      		breq .L6
+  51 0022 8F3F      		cpi r24,lo8(-1)
+  52 0024 01F4      		brne .L3
+  53               	.LBB17:
+  49:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+  50:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         case JUMP_BOOTLOADER: // CRC for this message: 0x2A
+  51:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         {
+  52:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	        int i = 1;
+  53:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	
+  54:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	        // check msg consistency
+  55:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	        while( i < DATA_SIZE ) {
+  56:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	            if( thisChunk->data[i] != (JUMP_BOOTLOADER ^ i) ) {
+  57:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	                // invalid bootloader packet, break and do nothing
+  58:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	                break;
+  59:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	            }
+  60:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	            i++;
+  61:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	        }
+  62:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	        // consistent
+  63:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     	    jumpToBootSection();
+  54               		.loc 1 63 0
+  55 0026 0E94 0000 		call jumpToBootSection
+  56               	.LVL0:
+  57               	.L4:
+  58               	.LBE17:
+  64:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         }
+  65:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         case NEIGHBOR_MSG:
+  66:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****             handleNeighborMessage();
+  59               		.loc 1 66 0
+  60 002a 0E94 0000 		call handleNeighborMessage
+  61               	.LVL1:
+  67:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****             break;
+  62               		.loc 1 67 0
+  63 002e 00C0      		rjmp .L3
+  64               	.L5:
+  68:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #ifdef LOG_DEBUG
+  69:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         case LOG_MSG:
+  70:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 			handleLogMessage();
+  65               		.loc 1 70 0
+  66 0030 0E94 0000 		call handleLogMessage
+  67               	.LVL2:
+  71:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 			break;
+  68               		.loc 1 71 0
+  69 0034 00C0      		rjmp .L3
+  70               	.L6:
+  72:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #endif
+  73:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #ifdef CLOCK_SYNC
+  74:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 		case CLOCK_SYNC_MSG:
+  75:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 			handleClockSyncMessage();
+  71               		.loc 1 75 0
+  72 0036 0E94 0000 		call handleClockSyncMessage
+  73               	.LVL3:
+  74               	.L3:
+  76:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 			break;
+  77:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #endif
+  78:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         default:
+  79:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****             break;
+  80:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+  81:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****   
+  82:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     return 0;
+  83:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** }
+  75               		.loc 1 83 0
+  76 003a 80E0      		ldi r24,0
+  77 003c 0895      		ret
+  78               	.LFE7:
+  80               	.global	removeFromSq
+  82               	removeFromSq:
+  83               	.LFB8:
+  84:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+  85:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // removes the first packet from the send queue and
+  86:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //    updates pointers
+  87:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //    updates pointers
+  88:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // inputs:  port
+  89:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // output:  1-success, 0-failure
+  90:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** byte removeFromSq(PRef p, byte response)
+  91:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** {
+  84               		.loc 1 91 0
+  85               	.LVL4:
+  86               	/* prologue: function */
+  87               	/* frame size = 0 */
+  88               	/* stack size = 0 */
+  89               	.L__stack_usage = 0
+  92:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // empty or bad
+  93:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if( (p >= NUM_PORTS) || (port[p].sq.head == NULL) ) 
+  90               		.loc 1 93 0
+  91 003e 8630      		cpi r24,lo8(6)
+  92 0040 00F0      		brlo .+2
+  93 0042 00C0      		rjmp .L22
+  94               	.LVL5:
+  95               	.LBB25:
+  96               	.LBB26:
+  97 0044 98E5      		ldi r25,lo8(88)
+  98 0046 899F      		mul r24,r25
+  99 0048 F001      		movw r30,r0
+ 100 004a 1124      		clr __zero_reg__
+ 101 004c E050      		subi r30,lo8(-(port))
+ 102 004e F040      		sbci r31,hi8(-(port))
+ 103 0050 8785      		ldd r24,Z+15
+ 104 0052 9089      		ldd r25,Z+16
+ 105               	.LVL6:
+ 106 0054 892B      		or r24,r25
+ 107 0056 01F0      		breq .L22
+ 108               	.LBB27:
+  94:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+  95:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 0;
+  96:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+  97:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+  98:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     BB_LOCK(SQ_LOCK)
+ 109               		.loc 1 98 0
+ 110 0058 2FB7      		in r18,__SREG__
+ 111               	.LVL7:
+ 112               	.LBB28:
+ 113               	.LBB29:
+ 114               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h"
    1:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** /* Copyright (c) 2007 Dean Camera
    2:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****    All rights reserved.
    3:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
@@ -244,43 +255,43 @@
   48:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** static __inline__ uint8_t __iCliRetVal(void)
   49:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** {
   50:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     cli();
- 104               		.loc 2 50 0
- 105               	/* #APP */
- 106               	 ;  50 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h" 1
- 107 004e F894      		cli
- 108               	 ;  0 "" 2
- 109               	.LVL6:
- 110               	/* #NOAPP */
- 111               	.LBE15:
- 112               	.LBE14:
-  99:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 100:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // get the first Chunk
- 101:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     thisChunk = port[p].sq.head;
- 113               		.loc 1 101 0
- 114 0050 A785      		ldd r26,Z+15
- 115 0052 B089      		ldd r27,Z+16
- 102:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 103:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // move the head of the queue
- 104:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     port[p].sq.head = thisChunk->next;
- 116               		.loc 1 104 0
- 117 0054 5296      		adiw r26,18
- 118 0056 8D91      		ld r24,X+
- 119 0058 9C91      		ld r25,X
- 120 005a 5397      		sbiw r26,18+1
- 121 005c 8787      		std Z+15,r24
- 122 005e 908B      		std Z+16,r25
- 105:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 106:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // tail was pointing to head, remove tail as well
- 107:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     if( port[p].sq.head == NULL ) 
- 123               		.loc 1 107 0
- 124 0060 892B      		or r24,r25
- 125 0062 01F0      		breq .L15
- 126               	.LVL7:
- 127               	.L21:
- 128 0064 A093 0000 		sts thisChunk,r26
- 129 0068 B093 0000 		sts thisChunk+1,r27
- 130               	.LBB16:
- 131               	.LBB17:
+ 115               		.loc 2 50 0
+ 116               	/* #APP */
+ 117               	 ;  50 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h" 1
+ 118 005a F894      		cli
+ 119               	 ;  0 "" 2
+ 120               	.LVL8:
+ 121               	/* #NOAPP */
+ 122               	.LBE29:
+ 123               	.LBE28:
+  99:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 100:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // get the first Chunk
+ 101:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     thisChunk = port[p].sq.head;
+ 124               		.loc 1 101 0
+ 125 005c A785      		ldd r26,Z+15
+ 126 005e B089      		ldd r27,Z+16
+ 102:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 103:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // move the head of the queue
+ 104:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     port[p].sq.head = thisChunk->next;
+ 127               		.loc 1 104 0
+ 128 0060 5296      		adiw r26,18
+ 129 0062 8D91      		ld r24,X+
+ 130 0064 9C91      		ld r25,X
+ 131 0066 5397      		sbiw r26,18+1
+ 132 0068 8787      		std Z+15,r24
+ 133 006a 908B      		std Z+16,r25
+ 105:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 106:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // tail was pointing to head, remove tail as well
+ 107:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if( port[p].sq.head == NULL ) 
+ 134               		.loc 1 107 0
+ 135 006c 892B      		or r24,r25
+ 136 006e 01F0      		breq .L18
+ 137               	.LVL9:
+ 138               	.L24:
+ 139 0070 A093 0000 		sts thisChunk,r26
+ 140 0074 B093 0000 		sts thisChunk+1,r27
+ 141               	.LBB30:
+ 142               	.LBB31:
   51:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     return 1;
   52:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** }
   53:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** 
@@ -301,659 +312,684 @@
   68:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** static __inline__ void __iRestore(const  uint8_t *__s)
   69:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h **** {
   70:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     SREG = *__s;
- 132               		.loc 2 70 0
- 133 006c 2FBF      		out __SREG__,r18
+ 143               		.loc 2 70 0
+ 144 0078 2FBF      		out __SREG__,r18
   71:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     __asm__ volatile ("" ::: "memory");
- 134               		.loc 2 71 0
- 135               	.LBE17:
- 136               	.LBE16:
- 137               	.LBE13:
- 108:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
- 109:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         port[p].sq.tail   = NULL;
- 110:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         port[p].sq.flags &= ~CHUNK_READY;
- 111:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
- 112:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // otherwise, leave it to what it was pointing to
- 113:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 114:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     BB_UNLOCK(SQ_LOCK)
- 115:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 116:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // remove thisChunk's references to queue
- 117:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     thisChunk->next = NULL;
- 138               		.loc 1 117 0
- 139 006e A091 0000 		lds r26,thisChunk
- 140 0072 B091 0000 		lds r27,thisChunk+1
- 141 0076 5296      		adiw r26,18
- 142 0078 1D92      		st X+,__zero_reg__
- 143 007a 1C92      		st X,__zero_reg__
- 144 007c 5397      		sbiw r26,18+1
- 118:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 119:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     if(thisChunk->callback != NULL)
- 145               		.loc 1 119 0
- 146 007e 5696      		adiw r26,22
- 147 0080 ED91      		ld r30,X+
- 148 0082 FC91      		ld r31,X
- 149 0084 5797      		sbiw r26,22+1
- 150 0086 3097      		sbiw r30,0
- 151 0088 01F4      		brne .L16
- 152 008a 00C0      		rjmp .L17
- 153               	.LVL8:
- 154               	.L15:
- 155               	.LBB18:
- 109:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         port[p].sq.tail   = NULL;
- 156               		.loc 1 109 0
- 157 008c 118A      		std Z+17,__zero_reg__
- 158 008e 128A      		std Z+18,__zero_reg__
- 110:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         port[p].sq.flags &= ~CHUNK_READY;
- 159               		.loc 1 110 0
- 160 0090 8685      		ldd r24,Z+14
- 161 0092 8F77      		andi r24,lo8(127)
- 162 0094 8687      		std Z+14,r24
- 163               	.LVL9:
- 164 0096 00C0      		rjmp .L21
- 165               	.LVL10:
- 166               	.L16:
- 167               	.LBE18:
- 120:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
- 121:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         // set response type for callback
- 122:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         setChunkResponse(thisChunk, response);
- 168               		.loc 1 122 0
- 169 0098 6871      		andi r22,lo8(24)
- 170               	.LVL11:
- 171 009a 5196      		adiw r26,17
- 172 009c 8C91      		ld r24,X
- 173 009e 5197      		sbiw r26,17
- 174 00a0 877E      		andi r24,lo8(-25)
- 175 00a2 682B      		or r22,r24
- 176 00a4 5196      		adiw r26,17
- 177 00a6 6C93      		st X,r22
- 123:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	
- 124:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         // execute callback to clear memory and other user actions
- 125:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         (thisChunk->callback)();
- 178               		.loc 1 125 0
- 179 00a8 1995      		eicall
- 180               	.LVL12:
- 181               	.L17:
- 126:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
- 127:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 128:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // we assume that the callback has freed memory
- 129:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     thisChunk = NULL;
- 182               		.loc 1 129 0
- 183 00aa 1092 0000 		sts thisChunk,__zero_reg__
- 184 00ae 1092 0000 		sts thisChunk+1,__zero_reg__
- 130:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     return 1;
- 185               		.loc 1 130 0
- 186 00b2 81E0      		ldi r24,lo8(1)
- 187 00b4 0895      		ret
- 188               	.LVL13:
- 189               	.L20:
-  95:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 0;
- 190               		.loc 1 95 0
- 191 00b6 80E0      		ldi r24,0
- 131:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** }
- 192               		.loc 1 131 0
- 193 00b8 0895      		ret
- 194               	.LFE8:
- 196               	.global	flushSendQueue
- 198               	flushSendQueue:
- 199               	.LFB9:
- 132:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 133:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // flush a send queue (used when retries fails)
- 134:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** void flushSendQueue(PRef p)
- 135:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** {
- 200               		.loc 1 135 0
- 201               	.LVL14:
- 202 00ba CF93      		push r28
- 203               	.LCFI0:
- 204               	/* prologue: function */
- 205               	/* frame size = 0 */
- 206               	/* stack size = 1 */
- 207               	.L__stack_usage = 1
- 208 00bc C82F      		mov r28,r24
- 136:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #ifdef LOG_DEBUG
- 137:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	if (isHostPort(p)) {
- 138:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 		removeFromSq(p, MSG_RESP_NOREPLY); // ONLY ONE
- 139:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 		return;
- 140:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	}
- 141:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #endif
- 142:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     if(p < NUM_PORTS)
- 209               		.loc 1 142 0
- 210 00be 8630      		cpi r24,lo8(6)
- 211 00c0 00F4      		brsh .L22
- 212               	.LVL15:
- 213               	.L25:
- 143:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
- 144:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         // flush buffer (call all callbacks as if all messages failed)
- 145:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         while( removeFromSq(p, MSG_RESP_NOREPLY) );
- 214               		.loc 1 145 0
- 215 00c2 68E1      		ldi r22,lo8(24)
- 216 00c4 8C2F      		mov r24,r28
- 217 00c6 0E94 0000 		call removeFromSq
- 218               	.LVL16:
- 219 00ca 8111      		cpse r24,__zero_reg__
- 220 00cc 00C0      		rjmp .L25
- 221               	.L22:
- 222               	/* epilogue start */
- 146:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
- 147:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** }
- 223               		.loc 1 147 0
- 224 00ce CF91      		pop r28
- 225               	.LVL17:
- 226 00d0 0895      		ret
- 227               	.LFE9:
- 229               	.global	setupChunk
- 231               	setupChunk:
- 232               	.LFB10:
- 148:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** ///////////////// END PROTECTED FUNCTIONS /////////////////
- 149:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 150:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //////////////////// PUBLIC FUNCTIONS /////////////////////
- 151:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // correctly formats/prepares all components of the chunk for sending
- 152:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // inputs:  c - chunk to format
- 153:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //          port - port to send on (0-NUM_PORTS only)
- 154:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //          msg - data associated with the message
- 155:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //          length - length of the data portion only
- 156:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //          mh - handler for this message
- 157:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //          cb - callback on send failure
- 158:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // outputs: 1 - chunk correctly formatted
- 159:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //          0 - inputs contained error, format failed
- 160:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** byte setupChunk(Chunk* c, PRef p, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
- 161:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** {
- 233               		.loc 1 161 0
- 234               	.LVL18:
- 235 00d2 EF92      		push r14
- 236               	.LCFI1:
- 237 00d4 FF92      		push r15
- 238               	.LCFI2:
- 239 00d6 0F93      		push r16
- 240               	.LCFI3:
- 241 00d8 1F93      		push r17
- 242               	.LCFI4:
- 243 00da CF93      		push r28
- 244               	.LCFI5:
- 245 00dc DF93      		push r29
- 246               	.LCFI6:
- 247               	/* prologue: function */
- 248               	/* frame size = 0 */
- 249               	/* stack size = 6 */
- 250               	.L__stack_usage = 6
- 251 00de EC01      		movw r28,r24
- 252 00e0 CA01      		movw r24,r20
- 253               	.LVL19:
- 162:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // invalid Chunk, invalid port, message too long, or no message
- 163:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     if( (c == NULL) || (p >= NUM_PORTS) || (length > DATA_SIZE) || (msg == NULL) )
- 254               		.loc 1 163 0
- 255 00e2 2097      		sbiw r28,0
- 256 00e4 01F0      		breq .L32
- 257               		.loc 1 163 0 is_stmt 0 discriminator 1
- 258 00e6 6630      		cpi r22,lo8(6)
- 259 00e8 00F4      		brsh .L32
- 260 00ea 2231      		cpi r18,lo8(18)
- 261 00ec 00F4      		brsh .L32
- 262 00ee 0097      		sbiw r24,0
- 263 00f0 01F0      		breq .L32
- 164:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
- 165:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 0;
- 166:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
- 167:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 168:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // set the flags
- 169:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     c->status = CHUNK_USED | CHUNK_FILLED | MSG_RESP_SENDING | port[p].pnum;
- 264               		.loc 1 169 0 is_stmt 1
- 265 00f2 38E5      		ldi r19,lo8(88)
- 266 00f4 639F      		mul r22,r19
- 267 00f6 F001      		movw r30,r0
- 268 00f8 1124      		clr __zero_reg__
- 269 00fa E050      		subi r30,lo8(-(port))
- 270 00fc F040      		sbci r31,hi8(-(port))
- 271 00fe 3081      		ld r19,Z
- 272 0100 3068      		ori r19,lo8(-128)
- 273 0102 398B      		std Y+17,r19
- 170:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     
- 171:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // clear out next pointer
- 172:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     c->next = NULL;
- 274               		.loc 1 172 0
- 275 0104 1A8A      		std Y+18,__zero_reg__
- 276 0106 1B8A      		std Y+19,__zero_reg__
- 173:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 174:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // set message handler
- 175:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     *((MsgHandler*)(c->handler)) = mh;
- 277               		.loc 1 175 0
- 278 0108 0C8B      		std Y+20,r16
- 279 010a 1D8B      		std Y+21,r17
- 176:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 177:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // setup callback
- 178:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     c->callback = cb;
- 280               		.loc 1 178 0
- 281 010c EE8A      		std Y+22,r14
- 282 010e FF8A      		std Y+23,r15
- 179:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 180:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // copy message
- 181:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     memcpy(c->data, msg, length);
- 283               		.loc 1 181 0
- 284 0110 022F      		mov r16,r18
- 285               	.LVL20:
- 286 0112 10E0      		ldi r17,0
- 287 0114 422F      		mov r20,r18
- 288               	.LVL21:
- 289 0116 50E0      		ldi r21,0
- 290 0118 BC01      		movw r22,r24
- 291               	.LVL22:
- 292 011a CE01      		movw r24,r28
- 293               	.LVL23:
- 294 011c 0E94 0000 		call memcpy
- 295               	.LVL24:
- 182:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     
- 183:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // 'zero' out extra bytes (use ff's)
- 184:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     memset((c->data)+length, 0xFF, DATA_SIZE-length);
- 296               		.loc 1 184 0
- 297 0120 C00F      		add r28,r16
- 298 0122 D11F      		adc r29,r17
- 299               	.LVL25:
- 300 0124 41E1      		ldi r20,lo8(17)
- 301 0126 50E0      		ldi r21,0
- 302 0128 401B      		sub r20,r16
- 303 012a 510B      		sbc r21,r17
- 304 012c 6FEF      		ldi r22,lo8(-1)
- 305 012e 70E0      		ldi r23,0
- 306 0130 CE01      		movw r24,r28
- 307 0132 0E94 0000 		call memset
- 308               	.LVL26:
- 185:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     
- 186:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     return 1;
- 309               		.loc 1 186 0
- 310 0136 81E0      		ldi r24,lo8(1)
- 311 0138 00C0      		rjmp .L28
- 312               	.LVL27:
- 313               	.L32:
- 165:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 0;
- 314               		.loc 1 165 0
- 315 013a 80E0      		ldi r24,0
- 316               	.LVL28:
- 317               	.L28:
- 318               	/* epilogue start */
- 187:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** }
- 319               		.loc 1 187 0
- 320 013c DF91      		pop r29
- 321 013e CF91      		pop r28
- 322 0140 1F91      		pop r17
- 323 0142 0F91      		pop r16
- 324 0144 FF90      		pop r15
- 325 0146 EF90      		pop r14
- 326               	.LVL29:
- 327 0148 0895      		ret
- 328               	.LFE10:
- 330               	.global	queueChunk
- 332               	queueChunk:
- 333               	.LFB11:
- 188:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 189:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // queues the chunk for sending
- 190:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // no guarantee chunk will be received - best-effort only
- 191:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // inputs:  c - correctly formatted chunk
- 192:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // outputs: 1 - chunk successfully queued
- 193:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //          0 - error, chunk was not queued
- 194:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** byte queueChunk(Chunk* c)
- 195:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** {
- 334               		.loc 1 195 0
- 335               	.LVL30:
- 336               	/* prologue: function */
- 337               	/* frame size = 0 */
- 338               	/* stack size = 0 */
- 339               	.L__stack_usage = 0
- 196:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // null Chunk
- 197:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     if(c == NULL)
- 340               		.loc 1 197 0
- 341 014a 0097      		sbiw r24,0
- 342 014c 01F0      		breq .L38
- 198:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
- 199:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 0;    
- 200:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
- 201:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     
- 202:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     byte p = faceNum(c);
- 343               		.loc 1 202 0
- 344 014e DC01      		movw r26,r24
- 345 0150 5196      		adiw r26,17
- 346 0152 EC91      		ld r30,X
- 347 0154 E770      		andi r30,lo8(7)
- 348               	.LVL31:
- 203:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     
- 204:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     if(p < NUM_PORTS)
- 349               		.loc 1 204 0
- 350 0156 E630      		cpi r30,lo8(6)
- 351 0158 00F4      		brsh .L35
- 352               	.LBB19:
- 205:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
- 206:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #ifdef DEBUG
- 207:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #if DEBUG == 5 // UP
- 208:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 209:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGPORT 5
- 210:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGUART USARTD1
- 211:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 212:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #elif DEBUG == 1 // NORTH
- 213:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 214:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGPORT 1
- 215:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGUART USARTC1
- 216:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 217:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #elif DEBUG == 4 //SOUTH
- 218:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 219:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGPORT 4
- 220:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGUART USARTE0
- 221:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 222:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #elif DEBUG == 2 //EAST
- 223:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 224:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGPORT 2
- 225:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGUART USARTF0
- 226:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 227:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #elif DEBUG == 3 //WEST
- 228:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 229:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGPORT 3
- 230:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGUART USARTC0
- 231:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 232:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #elif DEBUG == 0 //DOWN
- 233:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 234:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGPORT 0
- 235:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #define DEBUGUART USARTD0
- 236:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 237:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #endif
- 238:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #ifndef DEBUGPORT
- 239:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #error Invalid DEBUG option chosen - use a face enum.
- 240:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #endif
- 241:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 242:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         if(p == DEBUGPORT)
- 243:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         {
- 244:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****             freeChunk(c);
- 245:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****             return 0;
- 246:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         }
- 247:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** #endif    
- 248:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     
- 249:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         BB_LOCK(SQ_LOCK)
- 353               		.loc 1 249 0
- 354 015a 6FB7      		in r22,__SREG__
- 355               	.LVL32:
- 356               	.LBB20:
- 357               	.LBB21:
+ 145               		.loc 2 71 0
+ 146               	.LBE31:
+ 147               	.LBE30:
+ 148               	.LBE27:
+ 108:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+ 109:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         port[p].sq.tail   = NULL;
+ 110:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         port[p].sq.flags &= ~CHUNK_READY;
+ 111:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+ 112:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // otherwise, leave it to what it was pointing to
+ 113:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 114:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     BB_UNLOCK(SQ_LOCK)
+ 115:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 116:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // remove thisChunk's references to queue
+ 117:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     thisChunk->next = NULL;
+ 149               		.loc 1 117 0
+ 150 007a A091 0000 		lds r26,thisChunk
+ 151 007e B091 0000 		lds r27,thisChunk+1
+ 152 0082 5296      		adiw r26,18
+ 153 0084 1D92      		st X+,__zero_reg__
+ 154 0086 1C92      		st X,__zero_reg__
+ 155 0088 5397      		sbiw r26,18+1
+ 118:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 119:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if(thisChunk->callback != NULL)
+ 156               		.loc 1 119 0
+ 157 008a 5696      		adiw r26,22
+ 158 008c ED91      		ld r30,X+
+ 159 008e FC91      		ld r31,X
+ 160 0090 5797      		sbiw r26,22+1
+ 161 0092 3097      		sbiw r30,0
+ 162 0094 01F4      		brne .L19
+ 163 0096 00C0      		rjmp .L20
+ 164               	.LVL10:
+ 165               	.L18:
+ 166               	.LBB32:
+ 109:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         port[p].sq.tail   = NULL;
+ 167               		.loc 1 109 0
+ 168 0098 118A      		std Z+17,__zero_reg__
+ 169 009a 128A      		std Z+18,__zero_reg__
+ 110:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         port[p].sq.flags &= ~CHUNK_READY;
+ 170               		.loc 1 110 0
+ 171 009c 8685      		ldd r24,Z+14
+ 172 009e 8F77      		andi r24,lo8(127)
+ 173 00a0 8687      		std Z+14,r24
+ 174               	.LVL11:
+ 175 00a2 00C0      		rjmp .L24
+ 176               	.LVL12:
+ 177               	.L19:
+ 178               	.LBE32:
+ 179               	.LBE26:
+ 120:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+ 121:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         // set response type for callback
+ 122:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         setChunkResponse(thisChunk, response);
+ 180               		.loc 1 122 0
+ 181 00a4 6871      		andi r22,lo8(24)
+ 182               	.LVL13:
+ 183               	.LBB33:
+ 184 00a6 5196      		adiw r26,17
+ 185 00a8 8C91      		ld r24,X
+ 186 00aa 5197      		sbiw r26,17
+ 187 00ac 877E      		andi r24,lo8(-25)
+ 188 00ae 682B      		or r22,r24
+ 189 00b0 5196      		adiw r26,17
+ 190 00b2 6C93      		st X,r22
+ 123:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	
+ 124:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         // execute callback to clear memory and other user actions
+ 125:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         (thisChunk->callback)();
+ 191               		.loc 1 125 0
+ 192 00b4 1995      		eicall
+ 193               	.LVL14:
+ 194               	.L20:
+ 126:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+ 127:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 128:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // we assume that the callback has freed memory
+ 129:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     thisChunk = NULL;
+ 195               		.loc 1 129 0
+ 196 00b6 1092 0000 		sts thisChunk,__zero_reg__
+ 197 00ba 1092 0000 		sts thisChunk+1,__zero_reg__
+ 130:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     return 1;
+ 198               		.loc 1 130 0
+ 199 00be 81E0      		ldi r24,lo8(1)
+ 200 00c0 0895      		ret
+ 201               	.LVL15:
+ 202               	.L22:
+ 203               	.LBE33:
+ 204               	.LBE25:
+  95:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 0;
+ 205               		.loc 1 95 0
+ 206 00c2 80E0      		ldi r24,0
+ 131:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** }
+ 207               		.loc 1 131 0
+ 208 00c4 0895      		ret
+ 209               	.LFE8:
+ 211               	.global	flushSendQueue
+ 213               	flushSendQueue:
+ 214               	.LFB9:
+ 132:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 133:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // flush a send queue (used when retries fails)
+ 134:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** void flushSendQueue(PRef p)
+ 135:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** {
+ 215               		.loc 1 135 0
+ 216               	.LVL16:
+ 217 00c6 CF93      		push r28
+ 218               	.LCFI0:
+ 219               	/* prologue: function */
+ 220               	/* frame size = 0 */
+ 221               	/* stack size = 1 */
+ 222               	.L__stack_usage = 1
+ 223 00c8 C82F      		mov r28,r24
+ 136:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #ifdef LOG_DEBUG
+ 137:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	if (isHostPort(p)) {
+ 224               		.loc 1 137 0
+ 225 00ca 0E94 0000 		call isHostPort
+ 226               	.LVL17:
+ 227 00ce 8823      		tst r24
+ 228 00d0 01F0      		breq .L26
+ 138:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 		removeFromSq(p, MSG_RESP_NOREPLY); // ONLY ONE
+ 229               		.loc 1 138 0
+ 230 00d2 68E1      		ldi r22,lo8(24)
+ 231 00d4 8C2F      		mov r24,r28
+ 232               	/* epilogue start */
+ 139:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 		return;
+ 140:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	}
+ 141:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #endif
+ 142:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if(p < NUM_PORTS)
+ 143:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+ 144:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         // flush buffer (call all callbacks as if all messages failed)
+ 145:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         while( removeFromSq(p, MSG_RESP_NOREPLY) );
+ 146:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+ 147:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** }
+ 233               		.loc 1 147 0
+ 234 00d6 CF91      		pop r28
+ 235               	.LVL18:
+ 138:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 		removeFromSq(p, MSG_RESP_NOREPLY); // ONLY ONE
+ 236               		.loc 1 138 0
+ 237 00d8 0C94 0000 		jmp removeFromSq
+ 238               	.LVL19:
+ 239               	.L26:
+ 142:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if(p < NUM_PORTS)
+ 240               		.loc 1 142 0
+ 241 00dc C630      		cpi r28,lo8(6)
+ 242 00de 00F4      		brsh .L25
+ 243               	.L30:
+ 145:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         while( removeFromSq(p, MSG_RESP_NOREPLY) );
+ 244               		.loc 1 145 0
+ 245 00e0 68E1      		ldi r22,lo8(24)
+ 246 00e2 8C2F      		mov r24,r28
+ 247 00e4 0E94 0000 		call removeFromSq
+ 248               	.LVL20:
+ 249 00e8 8111      		cpse r24,__zero_reg__
+ 250 00ea 00C0      		rjmp .L30
+ 251               	.L25:
+ 252               	/* epilogue start */
+ 253               		.loc 1 147 0
+ 254 00ec CF91      		pop r28
+ 255               	.LVL21:
+ 256 00ee 0895      		ret
+ 257               	.LFE9:
+ 259               	.global	setupChunk
+ 261               	setupChunk:
+ 262               	.LFB10:
+ 148:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** ///////////////// END PROTECTED FUNCTIONS /////////////////
+ 149:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 150:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //////////////////// PUBLIC FUNCTIONS /////////////////////
+ 151:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // correctly formats/prepares all components of the chunk for sending
+ 152:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // inputs:  c - chunk to format
+ 153:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //          port - port to send on (0-NUM_PORTS only)
+ 154:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //          msg - data associated with the message
+ 155:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //          length - length of the data portion only
+ 156:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //          mh - handler for this message
+ 157:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //          cb - callback on send failure
+ 158:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // outputs: 1 - chunk correctly formatted
+ 159:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //          0 - inputs contained error, format failed
+ 160:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** byte setupChunk(Chunk* c, PRef p, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
+ 161:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** {
+ 263               		.loc 1 161 0
+ 264               	.LVL22:
+ 265 00f0 EF92      		push r14
+ 266               	.LCFI1:
+ 267 00f2 FF92      		push r15
+ 268               	.LCFI2:
+ 269 00f4 0F93      		push r16
+ 270               	.LCFI3:
+ 271 00f6 1F93      		push r17
+ 272               	.LCFI4:
+ 273 00f8 CF93      		push r28
+ 274               	.LCFI5:
+ 275 00fa DF93      		push r29
+ 276               	.LCFI6:
+ 277               	/* prologue: function */
+ 278               	/* frame size = 0 */
+ 279               	/* stack size = 6 */
+ 280               	.L__stack_usage = 6
+ 281 00fc EC01      		movw r28,r24
+ 282 00fe CA01      		movw r24,r20
+ 283               	.LVL23:
+ 162:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // invalid Chunk, invalid port, message too long, or no message
+ 163:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if( (c == NULL) || (p >= NUM_PORTS) || (length > DATA_SIZE) || (msg == NULL) )
+ 284               		.loc 1 163 0
+ 285 0100 2097      		sbiw r28,0
+ 286 0102 01F0      		breq .L37
+ 287               		.loc 1 163 0 is_stmt 0 discriminator 1
+ 288 0104 6630      		cpi r22,lo8(6)
+ 289 0106 00F4      		brsh .L37
+ 290 0108 2231      		cpi r18,lo8(18)
+ 291 010a 00F4      		brsh .L37
+ 292 010c 0097      		sbiw r24,0
+ 293 010e 01F0      		breq .L37
+ 164:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+ 165:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 0;
+ 166:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+ 167:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 168:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // set the flags
+ 169:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     c->status = CHUNK_USED | CHUNK_FILLED | MSG_RESP_SENDING | port[p].pnum;
+ 294               		.loc 1 169 0 is_stmt 1
+ 295 0110 38E5      		ldi r19,lo8(88)
+ 296 0112 639F      		mul r22,r19
+ 297 0114 F001      		movw r30,r0
+ 298 0116 1124      		clr __zero_reg__
+ 299 0118 E050      		subi r30,lo8(-(port))
+ 300 011a F040      		sbci r31,hi8(-(port))
+ 301 011c 3081      		ld r19,Z
+ 302 011e 3068      		ori r19,lo8(-128)
+ 303 0120 398B      		std Y+17,r19
+ 170:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     
+ 171:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // clear out next pointer
+ 172:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     c->next = NULL;
+ 304               		.loc 1 172 0
+ 305 0122 1A8A      		std Y+18,__zero_reg__
+ 306 0124 1B8A      		std Y+19,__zero_reg__
+ 173:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 174:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // set message handler
+ 175:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     *((MsgHandler*)(c->handler)) = mh;
+ 307               		.loc 1 175 0
+ 308 0126 0C8B      		std Y+20,r16
+ 309 0128 1D8B      		std Y+21,r17
+ 176:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 177:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // setup callback
+ 178:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     c->callback = cb;
+ 310               		.loc 1 178 0
+ 311 012a EE8A      		std Y+22,r14
+ 312 012c FF8A      		std Y+23,r15
+ 179:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 180:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // copy message
+ 181:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     memcpy(c->data, msg, length);
+ 313               		.loc 1 181 0
+ 314 012e 022F      		mov r16,r18
+ 315               	.LVL24:
+ 316 0130 10E0      		ldi r17,0
+ 317 0132 422F      		mov r20,r18
+ 318               	.LVL25:
+ 319 0134 50E0      		ldi r21,0
+ 320 0136 BC01      		movw r22,r24
+ 321               	.LVL26:
+ 322 0138 CE01      		movw r24,r28
+ 323               	.LVL27:
+ 324 013a 0E94 0000 		call memcpy
+ 325               	.LVL28:
+ 182:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     
+ 183:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // 'zero' out extra bytes (use ff's)
+ 184:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     memset((c->data)+length, 0xFF, DATA_SIZE-length);
+ 326               		.loc 1 184 0
+ 327 013e C00F      		add r28,r16
+ 328 0140 D11F      		adc r29,r17
+ 329               	.LVL29:
+ 330 0142 41E1      		ldi r20,lo8(17)
+ 331 0144 50E0      		ldi r21,0
+ 332 0146 401B      		sub r20,r16
+ 333 0148 510B      		sbc r21,r17
+ 334 014a 6FEF      		ldi r22,lo8(-1)
+ 335 014c 70E0      		ldi r23,0
+ 336 014e CE01      		movw r24,r28
+ 337 0150 0E94 0000 		call memset
+ 338               	.LVL30:
+ 185:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     
+ 186:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     return 1;
+ 339               		.loc 1 186 0
+ 340 0154 81E0      		ldi r24,lo8(1)
+ 341 0156 00C0      		rjmp .L33
+ 342               	.LVL31:
+ 343               	.L37:
+ 165:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 0;
+ 344               		.loc 1 165 0
+ 345 0158 80E0      		ldi r24,0
+ 346               	.LVL32:
+ 347               	.L33:
+ 348               	/* epilogue start */
+ 187:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** }
+ 349               		.loc 1 187 0
+ 350 015a DF91      		pop r29
+ 351 015c CF91      		pop r28
+ 352 015e 1F91      		pop r17
+ 353 0160 0F91      		pop r16
+ 354 0162 FF90      		pop r15
+ 355 0164 EF90      		pop r14
+ 356               	.LVL33:
+ 357 0166 0895      		ret
+ 358               	.LFE10:
+ 360               	.global	queueChunk
+ 362               	queueChunk:
+ 363               	.LFB11:
+ 188:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 189:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // queues the chunk for sending
+ 190:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // no guarantee chunk will be received - best-effort only
+ 191:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // inputs:  c - correctly formatted chunk
+ 192:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // outputs: 1 - chunk successfully queued
+ 193:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //          0 - error, chunk was not queued
+ 194:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** byte queueChunk(Chunk* c)
+ 195:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** {
+ 364               		.loc 1 195 0
+ 365               	.LVL34:
+ 366               	/* prologue: function */
+ 367               	/* frame size = 0 */
+ 368               	/* stack size = 0 */
+ 369               	.L__stack_usage = 0
+ 196:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // null Chunk
+ 197:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if(c == NULL)
+ 370               		.loc 1 197 0
+ 371 0168 0097      		sbiw r24,0
+ 372 016a 01F0      		breq .L43
+ 198:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+ 199:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 0;    
+ 200:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+ 201:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     
+ 202:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     byte p = faceNum(c);
+ 373               		.loc 1 202 0
+ 374 016c DC01      		movw r26,r24
+ 375 016e 5196      		adiw r26,17
+ 376 0170 EC91      		ld r30,X
+ 377 0172 E770      		andi r30,lo8(7)
+ 378               	.LVL35:
+ 203:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     
+ 204:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if(p < NUM_PORTS)
+ 379               		.loc 1 204 0
+ 380 0174 E630      		cpi r30,lo8(6)
+ 381 0176 00F4      		brsh .L40
+ 382               	.LBB34:
+ 205:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+ 206:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #ifdef DEBUG
+ 207:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #if DEBUG == 5 // UP
+ 208:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 209:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGPORT 5
+ 210:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGUART USARTD1
+ 211:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 212:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #elif DEBUG == 1 // NORTH
+ 213:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 214:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGPORT 1
+ 215:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGUART USARTC1
+ 216:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 217:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #elif DEBUG == 4 //SOUTH
+ 218:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 219:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGPORT 4
+ 220:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGUART USARTE0
+ 221:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 222:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #elif DEBUG == 2 //EAST
+ 223:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 224:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGPORT 2
+ 225:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGUART USARTF0
+ 226:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 227:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #elif DEBUG == 3 //WEST
+ 228:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 229:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGPORT 3
+ 230:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGUART USARTC0
+ 231:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 232:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #elif DEBUG == 0 //DOWN
+ 233:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 234:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGPORT 0
+ 235:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #define DEBUGUART USARTD0
+ 236:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 237:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #endif
+ 238:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #ifndef DEBUGPORT
+ 239:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #error Invalid DEBUG option chosen - use a face enum.
+ 240:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #endif
+ 241:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 242:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         if(p == DEBUGPORT)
+ 243:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         {
+ 244:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****             freeChunk(c);
+ 245:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****             return 0;
+ 246:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         }
+ 247:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** #endif    
+ 248:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     
+ 249:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         BB_LOCK(SQ_LOCK)
+ 383               		.loc 1 249 0
+ 384 0178 6FB7      		in r22,__SREG__
+ 385               	.LVL36:
+ 386               	.LBB35:
+ 387               	.LBB36:
   50:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     cli();
- 358               		.loc 2 50 0
- 359               	/* #APP */
- 360               	 ;  50 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h" 1
- 361 015c F894      		cli
- 362               	 ;  0 "" 2
- 363               	.LVL33:
- 364               	/* #NOAPP */
- 365               	.LBE21:
- 366               	.LBE20:
- 250:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 251:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         // add to queue - queue empty
- 252:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         if( port[p].sq.head == NULL ) 
- 367               		.loc 1 252 0
- 368 015e 2E2F      		mov r18,r30
- 369 0160 30E0      		ldi r19,0
- 370 0162 B8E5      		ldi r27,lo8(88)
- 371 0164 EB9F      		mul r30,r27
- 372 0166 F001      		movw r30,r0
- 373 0168 1124      		clr __zero_reg__
- 374               	.LVL34:
- 375 016a E050      		subi r30,lo8(-(port))
- 376 016c F040      		sbci r31,hi8(-(port))
- 377 016e 4785      		ldd r20,Z+15
- 378 0170 5089      		ldd r21,Z+16
- 379 0172 452B      		or r20,r21
- 380 0174 01F4      		brne .L36
- 253:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         {
- 254:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****             port[p].sq.head = c;
- 381               		.loc 1 254 0
- 382 0176 8787      		std Z+15,r24
- 383 0178 908B      		std Z+16,r25
- 384 017a 00C0      		rjmp .L37
- 385               	.L36:
- 255:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         }
- 256:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         // queue has stuff
- 257:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         else 
- 258:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         {
- 259:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****             port[p].sq.tail->next = c;
- 386               		.loc 1 259 0
- 387 017c 0188      		ldd __tmp_reg__,Z+17
- 388 017e F289      		ldd r31,Z+18
- 389 0180 E02D      		mov r30,__tmp_reg__
- 390 0182 828B      		std Z+18,r24
- 391 0184 938B      		std Z+19,r25
- 392               	.L37:
- 260:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         }
- 261:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         // add to tail and update flags
- 262:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         port[p].sq.tail   = c;
- 393               		.loc 1 262 0
- 394 0186 48E5      		ldi r20,lo8(88)
- 395 0188 429F      		mul r20,r18
- 396 018a F001      		movw r30,r0
- 397 018c 439F      		mul r20,r19
- 398 018e F00D      		add r31,r0
- 399 0190 1124      		clr __zero_reg__
- 400 0192 E050      		subi r30,lo8(-(port))
- 401 0194 F040      		sbci r31,hi8(-(port))
- 402 0196 818B      		std Z+17,r24
- 403 0198 928B      		std Z+18,r25
- 263:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         port[p].sq.flags |= CHUNK_READY;
- 404               		.loc 1 263 0
- 405 019a 8685      		ldd r24,Z+14
- 406               	.LVL35:
- 407 019c 8068      		ori r24,lo8(-128)
- 408 019e 8687      		std Z+14,r24
- 409               	.LVL36:
- 410               	.LBB22:
- 411               	.LBB23:
+ 388               		.loc 2 50 0
+ 389               	/* #APP */
+ 390               	 ;  50 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h" 1
+ 391 017a F894      		cli
+ 392               	 ;  0 "" 2
+ 393               	.LVL37:
+ 394               	/* #NOAPP */
+ 395               	.LBE36:
+ 396               	.LBE35:
+ 250:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 251:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         // add to queue - queue empty
+ 252:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         if( port[p].sq.head == NULL ) 
+ 397               		.loc 1 252 0
+ 398 017c 2E2F      		mov r18,r30
+ 399 017e 30E0      		ldi r19,0
+ 400 0180 B8E5      		ldi r27,lo8(88)
+ 401 0182 EB9F      		mul r30,r27
+ 402 0184 F001      		movw r30,r0
+ 403 0186 1124      		clr __zero_reg__
+ 404               	.LVL38:
+ 405 0188 E050      		subi r30,lo8(-(port))
+ 406 018a F040      		sbci r31,hi8(-(port))
+ 407 018c 4785      		ldd r20,Z+15
+ 408 018e 5089      		ldd r21,Z+16
+ 409 0190 452B      		or r20,r21
+ 410 0192 01F4      		brne .L41
+ 253:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         {
+ 254:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****             port[p].sq.head = c;
+ 411               		.loc 1 254 0
+ 412 0194 8787      		std Z+15,r24
+ 413 0196 908B      		std Z+16,r25
+ 414 0198 00C0      		rjmp .L42
+ 415               	.L41:
+ 255:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         }
+ 256:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         // queue has stuff
+ 257:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         else 
+ 258:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         {
+ 259:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****             port[p].sq.tail->next = c;
+ 416               		.loc 1 259 0
+ 417 019a 0188      		ldd __tmp_reg__,Z+17
+ 418 019c F289      		ldd r31,Z+18
+ 419 019e E02D      		mov r30,__tmp_reg__
+ 420 01a0 828B      		std Z+18,r24
+ 421 01a2 938B      		std Z+19,r25
+ 422               	.L42:
+ 260:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         }
+ 261:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         // add to tail and update flags
+ 262:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         port[p].sq.tail   = c;
+ 423               		.loc 1 262 0
+ 424 01a4 48E5      		ldi r20,lo8(88)
+ 425 01a6 429F      		mul r20,r18
+ 426 01a8 F001      		movw r30,r0
+ 427 01aa 439F      		mul r20,r19
+ 428 01ac F00D      		add r31,r0
+ 429 01ae 1124      		clr __zero_reg__
+ 430 01b0 E050      		subi r30,lo8(-(port))
+ 431 01b2 F040      		sbci r31,hi8(-(port))
+ 432 01b4 818B      		std Z+17,r24
+ 433 01b6 928B      		std Z+18,r25
+ 263:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         port[p].sq.flags |= CHUNK_READY;
+ 434               		.loc 1 263 0
+ 435 01b8 8685      		ldd r24,Z+14
+ 436               	.LVL39:
+ 437 01ba 8068      		ori r24,lo8(-128)
+ 438 01bc 8687      		std Z+14,r24
+ 439               	.LVL40:
+ 440               	.LBB37:
+ 441               	.LBB38:
   70:/usr/lib/gcc/avr/4.7.2/../../../avr/include/util/atomic.h ****     SREG = *__s;
- 412               		.loc 2 70 0
- 413 01a0 6FBF      		out __SREG__,r22
- 414               		.loc 2 71 0
- 415               	.LBE23:
- 416               	.LBE22:
- 417               	.LBE19:
- 264:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 265:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         BB_UNLOCK(SQ_LOCK)
- 266:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 267:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 1;
- 418               		.loc 1 267 0
- 419 01a2 81E0      		ldi r24,lo8(1)
- 420 01a4 0895      		ret
- 421               	.LVL37:
- 422               	.L35:
- 268:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
- 269:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     else
- 270:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
- 271:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         freeChunk(c);
- 423               		.loc 1 271 0
- 424 01a6 0E94 0000 		call freeChunk
- 425               	.LVL38:
- 426               	.L38:
- 199:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 0;    
- 427               		.loc 1 199 0
- 428 01aa 80E0      		ldi r24,0
- 272:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 0;
- 273:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
- 274:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** }
- 429               		.loc 1 274 0
- 430 01ac 0895      		ret
- 431               	.LFE11:
- 433               	.global	handleOneMessage
- 435               	handleOneMessage:
- 436               	.LFB12:
- 275:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 276:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // call active message handler and send ack
- 277:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // returns: 1 - message processed
- 278:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** //          0 - no new messages
- 279:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** byte handleOneMessage()
- 280:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** {
- 437               		.loc 1 280 0
- 438               	/* prologue: function */
- 439               	/* frame size = 0 */
- 440               	/* stack size = 0 */
- 441               	.L__stack_usage = 0
- 281:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // set the global chunk that needs to be processed by the handler
- 282:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     thisChunk = nextPacket();
- 442               		.loc 1 282 0
- 443 01ae 0E94 0000 		call nextPacket
- 444               	.LVL39:
- 445 01b2 8093 0000 		sts thisChunk,r24
- 446 01b6 9093 0000 		sts thisChunk+1,r25
- 283:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 284:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // no packet, no action
- 285:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     if( thisChunk == NULL )
- 447               		.loc 1 285 0
- 448 01ba 0097      		sbiw r24,0
- 449 01bc 01F0      		breq .L43
- 286:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
- 287:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 0;
- 288:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
- 289:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 290:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // call handler
- 291:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     if( *((MsgHandler*)thisChunk->handler) == RES_SYS_HANDLER ) 
- 450               		.loc 1 291 0
- 451 01be DC01      		movw r26,r24
- 452 01c0 5496      		adiw r26,20
- 453 01c2 ED91      		ld r30,X+
- 454 01c4 FC91      		ld r31,X
- 455 01c6 5597      		sbiw r26,20+1
- 456 01c8 3097      		sbiw r30,0
- 457 01ca 01F4      		brne .L41
- 292:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
- 293:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	    reservedSystemHandler();
- 458               		.loc 1 293 0
- 459 01cc 0E94 0000 		call reservedSystemHandler
- 460               	.LVL40:
- 461 01d0 00C0      		rjmp .L42
- 462               	.L41:
- 294:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
- 295:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     else 
- 296:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     {
- 297:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 	    (*((MsgHandler*)(thisChunk->handler)))();
- 463               		.loc 1 297 0
- 464 01d2 1995      		eicall
- 465               	.LVL41:
- 466               	.L42:
- 298:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     }
- 299:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 300:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // set flag to send ACK
- 301:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     port[faceNum(thisChunk)].sq.flags |= setAck(thisChunk);
- 467               		.loc 1 301 0
- 468 01d4 8091 0000 		lds r24,thisChunk
- 469 01d8 9091 0000 		lds r25,thisChunk+1
- 470 01dc FC01      		movw r30,r24
- 471 01de 2189      		ldd r18,Z+17
- 472 01e0 E22F      		mov r30,r18
- 473 01e2 E770      		andi r30,lo8(7)
- 474 01e4 38E5      		ldi r19,lo8(88)
- 475 01e6 E39F      		mul r30,r19
- 476 01e8 F001      		movw r30,r0
- 477 01ea 1124      		clr __zero_reg__
- 478 01ec E050      		subi r30,lo8(-(port))
- 479 01ee F040      		sbci r31,hi8(-(port))
- 480 01f0 25FB      		bst r18,5
- 481 01f2 4427      		clr r20
- 482 01f4 40F9      		bld r20,0
- 483 01f6 21E0      		ldi r18,lo8(1)
- 484 01f8 30E0      		ldi r19,0
- 485 01fa 00C0      		rjmp 2f
- 486               		1:
- 487 01fc 220F      		lsl r18
- 488               		2:
- 489 01fe 4A95      		dec r20
- 490 0200 02F4      		brpl 1b
- 491 0202 3685      		ldd r19,Z+14
- 492 0204 322B      		or r19,r18
- 493 0206 3687      		std Z+14,r19
- 302:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 303:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // free the rx chunk
- 304:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     freeChunk(thisChunk);
- 494               		.loc 1 304 0
- 495 0208 0E94 0000 		call freeChunk
- 496               	.LVL42:
- 305:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 306:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     // reset the global chunk since memory is no longer valid
- 307:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     thisChunk = NULL;
- 497               		.loc 1 307 0
- 498 020c 1092 0000 		sts thisChunk,__zero_reg__
- 499 0210 1092 0000 		sts thisChunk+1,__zero_reg__
- 308:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 309:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     return 1;
- 500               		.loc 1 309 0
- 501 0214 81E0      		ldi r24,lo8(1)
- 502 0216 0895      		ret
- 503               	.L43:
- 287:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****         return 0;
- 504               		.loc 1 287 0
- 505 0218 80E0      		ldi r24,0
- 310:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** }
- 506               		.loc 1 310 0
- 507 021a 0895      		ret
- 508               	.LFE12:
- 510               	.global	initDataLink
- 512               	initDataLink:
- 513               	.LFB13:
- 311:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 312:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** // initialization
- 313:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** void initDataLink()
- 314:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** {
- 514               		.loc 1 314 0
- 515               	/* prologue: function */
- 516               	/* frame size = 0 */
- 517               	/* stack size = 0 */
- 518               	.L__stack_usage = 0
- 315:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     initHWDataLink();
- 519               		.loc 1 315 0
- 520 021c 0E94 0000 		call initHWDataLink
- 521               	.LVL43:
- 316:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb **** 
- 317:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     globalRq.head  = NULL;
- 522               		.loc 1 317 0
- 523 0220 1092 0000 		sts globalRq,__zero_reg__
- 524 0224 1092 0000 		sts globalRq+1,__zero_reg__
- 318:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     globalRq.tail  = NULL;
- 525               		.loc 1 318 0
- 526 0228 1092 0000 		sts globalRq+2,__zero_reg__
- 527 022c 1092 0000 		sts globalRq+2+1,__zero_reg__
- 319:/home/pthalamy/CMU/build-modif/src-bobby/system/data_link.bb ****     globalRq.flags = 0;
- 528               		.loc 1 319 0
- 529 0230 1092 0000 		sts globalRq+4,__zero_reg__
- 530 0234 0895      		ret
- 531               	.LFE13:
- 533               		.comm	thisChunk,2,1
- 534               		.comm	globalRq,5,1
- 659               	.Letext0:
- 660               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
- 661               		.file 4 "/home/pthalamy/CMU/build-modif/src-bobby/system/defs.bbh"
- 662               		.file 5 "/usr/lib/gcc/avr/4.7.2/include/stddef.h"
- 663               		.file 6 "/home/pthalamy/CMU/build-modif/src-bobby/system/circ_buffer.bbh"
- 664               		.file 7 "/home/pthalamy/CMU/build-modif/src-bobby/system/handler.bbh"
- 665               		.file 8 "/home/pthalamy/CMU/build-modif/src-bobby/system/memory.bbh"
- 666               		.file 9 "/home/pthalamy/CMU/build-modif/src-bobby/system/hardwaretime.bbh"
- 667               		.file 10 "/home/pthalamy/CMU/build-modif/src-bobby/system/queues.bbh"
- 668               		.file 11 "/home/pthalamy/CMU/build-modif/src-bobby/system/serial.bbh"
- 669               		.file 12 "/home/pthalamy/CMU/build-modif/src-bobby/system/ensemble.bbh"
- 670               		.file 13 "/home/pthalamy/CMU/build-modif/src-bobby/system/clock.bbh"
- 671               		.file 14 "/home/pthalamy/CMU/build-modif/src-bobby/system/../hw-api/hwDataLink.h"
- 672               		.file 15 "/home/pthalamy/CMU/build-modif/src-bobby/system/boot.bbh"
- 673               		.file 16 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/string.h"
+ 442               		.loc 2 70 0
+ 443 01be 6FBF      		out __SREG__,r22
+ 444               		.loc 2 71 0
+ 445               	.LBE38:
+ 446               	.LBE37:
+ 447               	.LBE34:
+ 264:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 265:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         BB_UNLOCK(SQ_LOCK)
+ 266:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 267:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 1;
+ 448               		.loc 1 267 0
+ 449 01c0 81E0      		ldi r24,lo8(1)
+ 450 01c2 0895      		ret
+ 451               	.LVL41:
+ 452               	.L40:
+ 268:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+ 269:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     else
+ 270:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+ 271:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         freeChunk(c);
+ 453               		.loc 1 271 0
+ 454 01c4 0E94 0000 		call freeChunk
+ 455               	.LVL42:
+ 456               	.L43:
+ 199:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 0;    
+ 457               		.loc 1 199 0
+ 458 01c8 80E0      		ldi r24,0
+ 272:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 0;
+ 273:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+ 274:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** }
+ 459               		.loc 1 274 0
+ 460 01ca 0895      		ret
+ 461               	.LFE11:
+ 463               	.global	handleOneMessage
+ 465               	handleOneMessage:
+ 466               	.LFB12:
+ 275:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 276:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // call active message handler and send ack
+ 277:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // returns: 1 - message processed
+ 278:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** //          0 - no new messages
+ 279:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** byte handleOneMessage()
+ 280:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** {
+ 467               		.loc 1 280 0
+ 468               	/* prologue: function */
+ 469               	/* frame size = 0 */
+ 470               	/* stack size = 0 */
+ 471               	.L__stack_usage = 0
+ 281:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // set the global chunk that needs to be processed by the handler
+ 282:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     thisChunk = nextPacket();
+ 472               		.loc 1 282 0
+ 473 01cc 0E94 0000 		call nextPacket
+ 474               	.LVL43:
+ 475 01d0 8093 0000 		sts thisChunk,r24
+ 476 01d4 9093 0000 		sts thisChunk+1,r25
+ 283:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 284:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // no packet, no action
+ 285:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if( thisChunk == NULL )
+ 477               		.loc 1 285 0
+ 478 01d8 0097      		sbiw r24,0
+ 479 01da 01F0      		breq .L48
+ 286:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+ 287:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 0;
+ 288:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+ 289:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 290:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // call handler
+ 291:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     if( *((MsgHandler*)thisChunk->handler) == RES_SYS_HANDLER ) 
+ 480               		.loc 1 291 0
+ 481 01dc DC01      		movw r26,r24
+ 482 01de 5496      		adiw r26,20
+ 483 01e0 ED91      		ld r30,X+
+ 484 01e2 FC91      		ld r31,X
+ 485 01e4 5597      		sbiw r26,20+1
+ 486 01e6 3097      		sbiw r30,0
+ 487 01e8 01F4      		brne .L46
+ 292:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+ 293:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	    reservedSystemHandler();
+ 488               		.loc 1 293 0
+ 489 01ea 0E94 0000 		call reservedSystemHandler
+ 490               	.LVL44:
+ 491 01ee 00C0      		rjmp .L47
+ 492               	.L46:
+ 294:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+ 295:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     else 
+ 296:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     {
+ 297:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 	    (*((MsgHandler*)(thisChunk->handler)))();
+ 493               		.loc 1 297 0
+ 494 01f0 1995      		eicall
+ 495               	.LVL45:
+ 496               	.L47:
+ 298:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     }
+ 299:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 300:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // set flag to send ACK
+ 301:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     port[faceNum(thisChunk)].sq.flags |= setAck(thisChunk);
+ 497               		.loc 1 301 0
+ 498 01f2 8091 0000 		lds r24,thisChunk
+ 499 01f6 9091 0000 		lds r25,thisChunk+1
+ 500 01fa FC01      		movw r30,r24
+ 501 01fc 2189      		ldd r18,Z+17
+ 502 01fe E22F      		mov r30,r18
+ 503 0200 E770      		andi r30,lo8(7)
+ 504 0202 38E5      		ldi r19,lo8(88)
+ 505 0204 E39F      		mul r30,r19
+ 506 0206 F001      		movw r30,r0
+ 507 0208 1124      		clr __zero_reg__
+ 508 020a E050      		subi r30,lo8(-(port))
+ 509 020c F040      		sbci r31,hi8(-(port))
+ 510 020e 25FB      		bst r18,5
+ 511 0210 4427      		clr r20
+ 512 0212 40F9      		bld r20,0
+ 513 0214 21E0      		ldi r18,lo8(1)
+ 514 0216 30E0      		ldi r19,0
+ 515 0218 00C0      		rjmp 2f
+ 516               		1:
+ 517 021a 220F      		lsl r18
+ 518               		2:
+ 519 021c 4A95      		dec r20
+ 520 021e 02F4      		brpl 1b
+ 521 0220 3685      		ldd r19,Z+14
+ 522 0222 322B      		or r19,r18
+ 523 0224 3687      		std Z+14,r19
+ 302:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 303:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // free the rx chunk
+ 304:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     freeChunk(thisChunk);
+ 524               		.loc 1 304 0
+ 525 0226 0E94 0000 		call freeChunk
+ 526               	.LVL46:
+ 305:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 306:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     // reset the global chunk since memory is no longer valid
+ 307:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     thisChunk = NULL;
+ 527               		.loc 1 307 0
+ 528 022a 1092 0000 		sts thisChunk,__zero_reg__
+ 529 022e 1092 0000 		sts thisChunk+1,__zero_reg__
+ 308:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 309:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     return 1;
+ 530               		.loc 1 309 0
+ 531 0232 81E0      		ldi r24,lo8(1)
+ 532 0234 0895      		ret
+ 533               	.L48:
+ 287:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****         return 0;
+ 534               		.loc 1 287 0
+ 535 0236 80E0      		ldi r24,0
+ 310:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** }
+ 536               		.loc 1 310 0
+ 537 0238 0895      		ret
+ 538               	.LFE12:
+ 540               	.global	initDataLink
+ 542               	initDataLink:
+ 543               	.LFB13:
+ 311:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 312:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** // initialization
+ 313:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** void initDataLink()
+ 314:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** {
+ 544               		.loc 1 314 0
+ 545               	/* prologue: function */
+ 546               	/* frame size = 0 */
+ 547               	/* stack size = 0 */
+ 548               	.L__stack_usage = 0
+ 315:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     initHWDataLink();
+ 549               		.loc 1 315 0
+ 550 023a 0E94 0000 		call initHWDataLink
+ 551               	.LVL47:
+ 316:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb **** 
+ 317:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     globalRq.head  = NULL;
+ 552               		.loc 1 317 0
+ 553 023e 1092 0000 		sts globalRq,__zero_reg__
+ 554 0242 1092 0000 		sts globalRq+1,__zero_reg__
+ 318:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     globalRq.tail  = NULL;
+ 555               		.loc 1 318 0
+ 556 0246 1092 0000 		sts globalRq+2,__zero_reg__
+ 557 024a 1092 0000 		sts globalRq+2+1,__zero_reg__
+ 319:/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bb ****     globalRq.flags = 0;
+ 558               		.loc 1 319 0
+ 559 024e 1092 0000 		sts globalRq+4,__zero_reg__
+ 560 0252 0895      		ret
+ 561               	.LFE13:
+ 563               		.comm	thisChunk,2,1
+ 564               		.comm	globalRq,5,1
+ 689               	.Letext0:
+ 690               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 691               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/defs.bbh"
+ 692               		.file 5 "/usr/lib/gcc/avr/4.7.2/include/stddef.h"
+ 693               		.file 6 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/circ_buffer.bbh"
+ 694               		.file 7 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/handler.bbh"
+ 695               		.file 8 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/memory.bbh"
+ 696               		.file 9 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/hardwaretime.bbh"
+ 697               		.file 10 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/queues.bbh"
+ 698               		.file 11 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/serial.bbh"
+ 699               		.file 12 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bbh"
+ 700               		.file 13 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bbh"
+ 701               		.file 14 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/clock.bbh"
+ 702               		.file 15 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/string.h"
+ 703               		.file 16 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/../hw-api/hwDataLink.h"
+ 704               		.file 17 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/boot.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 data_link.c
-     /tmp/ccaLw5fn.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccaLw5fn.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccaLw5fn.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccaLw5fn.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccaLw5fn.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccaLw5fn.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccaLw5fn.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccaLw5fn.s:13     .text:0000000000000000 defaultMsgHandler
-     /tmp/ccaLw5fn.s:28     .text:0000000000000004 reservedSystemHandler
+     /tmp/ccg9ZsJz.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccg9ZsJz.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccg9ZsJz.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccg9ZsJz.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccg9ZsJz.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccg9ZsJz.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccg9ZsJz.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccg9ZsJz.s:13     .text:0000000000000000 defaultMsgHandler
+     /tmp/ccg9ZsJz.s:28     .text:0000000000000004 reservedSystemHandler
                             *COM*:0000000000000002 thisChunk
-     /tmp/ccaLw5fn.s:73     .text:0000000000000032 removeFromSq
-     /tmp/ccaLw5fn.s:198    .text:00000000000000ba flushSendQueue
-     /tmp/ccaLw5fn.s:231    .text:00000000000000d2 setupChunk
-     /tmp/ccaLw5fn.s:332    .text:000000000000014a queueChunk
-     /tmp/ccaLw5fn.s:435    .text:00000000000001ae handleOneMessage
-     /tmp/ccaLw5fn.s:512    .text:000000000000021c initDataLink
+     /tmp/ccg9ZsJz.s:82     .text:000000000000003e removeFromSq
+     /tmp/ccg9ZsJz.s:213    .text:00000000000000c6 flushSendQueue
+     /tmp/ccg9ZsJz.s:261    .text:00000000000000f0 setupChunk
+     /tmp/ccg9ZsJz.s:362    .text:0000000000000168 queueChunk
+     /tmp/ccg9ZsJz.s:465    .text:00000000000001cc handleOneMessage
+     /tmp/ccg9ZsJz.s:542    .text:000000000000023a initDataLink
                             *COM*:0000000000000005 globalRq
 
 UNDEFINED SYMBOLS
 jumpToBootSection
 handleNeighborMessage
+handleLogMessage
 handleClockSyncMessage
 port
+isHostPort
 memcpy
 memset
 freeChunk

@@ -2,7 +2,7 @@
 # below here should be in an include file
 ##################################################
 
-SOURCE := color_change_v2.bb
+SOURCE := test.bb
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
@@ -14,6 +14,6 @@ SOURCE := color_change_v2.bb
 #MELDO +=
 
 CFLAGS_OPTIONS = -DCLOCK_SYNC
-#CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
+CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
 
 include Makefile.header

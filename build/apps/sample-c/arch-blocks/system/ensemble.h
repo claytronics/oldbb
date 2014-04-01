@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/ensemble.bbh"
+# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bbh"
 #ifndef __ENSEMBLE_H__
 #define __ENSEMBLE_H__
 

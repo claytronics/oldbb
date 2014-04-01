@@ -11,20 +11,20 @@
   11               	.global	getHWTime
   13               	getHWTime:
   14               	.LFB5:
-  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c"
-   1:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** #include <util/atomic.h>
-   2:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** #include <avr/io.h>
-   3:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** #include <avr/interrupt.h>
-   4:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** #include "../hw-api/hwTime.h"
-   5:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** #include "../system/hardwaretime.h"
-   6:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-   7:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** #define PRECISE_RTC
-   8:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-   9:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** uint16_t timeHi;			// semi-private data, do not modify outside of this file
-  10:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  11:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** // Time in ms
-  12:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** Time getHWTime()
-  13:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** {
+  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c"
+   1:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** #include <util/atomic.h>
+   2:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** #include <avr/io.h>
+   3:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** #include <avr/interrupt.h>
+   4:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** #include "../hw-api/hwTime.h"
+   5:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** #include "../system/hardwaretime.h"
+   6:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+   7:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** #define PRECISE_RTC
+   8:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+   9:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** uint16_t timeHi;			// semi-private data, do not modify outside of this file
+  10:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  11:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** // Time in ms
+  12:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** Time getHWTime()
+  13:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** {
   16               		.loc 1 13 0
   17 0000 0F93      		push r16
   18               	.LCFI0:
@@ -98,11 +98,11 @@
   36               	/* #NOAPP */
   37               	.LBE9:
   38               	.LBE8:
-  14:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	Time tmp;
-  15:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	// prevents ISRs from corrupting multibyte write
-  16:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	ATOMIC_BLOCK(ATOMIC_FORCEON)
-  17:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c ****     {
-  18:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 		tmp = (((Time)timeHi) << 16) | RTC.CNT;
+  14:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	Time tmp;
+  15:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	// prevents ISRs from corrupting multibyte write
+  16:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	ATOMIC_BLOCK(ATOMIC_FORCEON)
+  17:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c ****     {
+  18:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 		tmp = (((Time)timeHi) << 16) | RTC.CNT;
   39               		.loc 1 18 0
   40 0006 E0E0      		ldi r30,0
   41 0008 F4E0      		ldi r31,lo8(4)
@@ -141,10 +141,10 @@
   67               	.LBE11:
   68               	.LBE10:
   69               	.LBE7:
-  19:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	}
-  20:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	
-  21:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	return tmp;
-  22:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** }
+  19:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	}
+  20:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	
+  21:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	return tmp;
+  22:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** }
   70               		.loc 1 22 0
   71 002e B801      		movw r22,r16
   72 0030 C901      		movw r24,r18
@@ -157,31 +157,31 @@
   80               	.global	initHWClock
   82               	initHWClock:
   83               	.LFB6:
-  23:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  24:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** void initHWClock(void)
-  25:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** {
+  23:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  24:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** void initHWClock(void)
+  25:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** {
   84               		.loc 1 25 0
   85               	/* prologue: function */
   86               	/* frame size = 0 */
   87               	/* stack size = 0 */
   88               	.L__stack_usage = 0
-  26:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	OSC.CTRL |= _BV(OSC_RC32MEN_bp);			// turn on 32MHz internal RC oscillator
+  26:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	OSC.CTRL |= _BV(OSC_RC32MEN_bp);			// turn on 32MHz internal RC oscillator
   89               		.loc 1 26 0
   90 0038 8091 5000 		lds r24,80
   91 003c 8260      		ori r24,lo8(2)
   92 003e 8093 5000 		sts 80,r24
   93               	.L3:
-  27:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	while(!(OSC.STATUS & OSC_RC32MRDY_bm));  	// wait for it to be ready
+  27:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	while(!(OSC.STATUS & OSC_RC32MRDY_bm));  	// wait for it to be ready
   94               		.loc 1 27 0 discriminator 1
   95 0042 8091 5100 		lds r24,81
   96 0046 81FF      		sbrs r24,1
   97 0048 00C0      		rjmp .L3
-  28:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  29:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CCP=0xD8;							// allow modification of protected register
+  28:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  29:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CCP=0xD8;							// allow modification of protected register
   98               		.loc 1 29 0
   99 004a 88ED      		ldi r24,lo8(-40)
  100 004c 84BF      		out __CCP__,r24
-  30:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;	// change from 2MHz to 32MHz
+  30:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CLK.CTRL = CLK_SCLKSEL_RC32M_gc;	// change from 2MHz to 32MHz
  101               		.loc 1 30 0
  102 004e 81E0      		ldi r24,lo8(1)
  103 0050 8093 4000 		sts 64,r24
@@ -190,53 +190,53 @@
  107               	.global	initHWRTC
  109               	initHWRTC:
  110               	.LFB7:
-  31:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** }
-  32:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  33:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** #ifndef PRECISE_RTC
-  34:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** void initHWRTC(void)
-  35:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** {
-  36:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
-  37:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL = CLK_RTCSRC_ULP_gc | CLK_RTCEN_bm; 
-  38:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  39:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.INTCTRL = RTC_OVFINTLVL_HI_gc;
-  40:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	// initalise the RTC as zero
-  41:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.CNT = 0;
-  42:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** }
-  43:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** #else
-  44:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** void initHWRTC(void)
-  45:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** {
+  31:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** }
+  32:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  33:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** #ifndef PRECISE_RTC
+  34:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** void initHWRTC(void)
+  35:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** {
+  36:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
+  37:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL = CLK_RTCSRC_ULP_gc | CLK_RTCEN_bm; 
+  38:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  39:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.INTCTRL = RTC_OVFINTLVL_HI_gc;
+  40:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	// initalise the RTC as zero
+  41:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.CNT = 0;
+  42:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** }
+  43:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** #else
+  44:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** void initHWRTC(void)
+  45:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** {
  111               		.loc 1 45 0
  112               	/* prologue: function */
  113               	/* frame size = 0 */
  114               	/* stack size = 0 */
  115               	.L__stack_usage = 0
-  46:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	//OSC_RC32KCAL = 80;
-  47:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	OSC.CTRL |= OSC_RC32KEN_bm;
+  46:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	//OSC_RC32KCAL = 80;
+  47:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	OSC.CTRL |= OSC_RC32KEN_bm;
  116               		.loc 1 47 0
  117 0056 8091 5000 		lds r24,80
  118 005a 8460      		ori r24,lo8(4)
  119 005c 8093 5000 		sts 80,r24
  120               	.L9:
-  48:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	do {/* Wait for the 32kHz oscillator to stabilize. */} while ( ( OSC.STATUS & OSC_RC32KRDY_bm ) ==
+  48:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	do {/* Wait for the 32kHz oscillator to stabilize. */} while ( ( OSC.STATUS & OSC_RC32KRDY_bm ) ==
  121               		.loc 1 48 0 discriminator 1
  122 0060 8091 5100 		lds r24,81
  123 0064 82FF      		sbrs r24,2
  124 0066 00C0      		rjmp .L9
-  49:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
+  49:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
  125               		.loc 1 49 0
  126 0068 81E0      		ldi r24,lo8(1)
  127 006a 8093 0004 		sts 1024,r24
-  50:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL = CLK_RTCSRC_RCOSC_gc | CLK_RTCEN_bm;
+  50:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL = CLK_RTCSRC_RCOSC_gc | CLK_RTCEN_bm;
  128               		.loc 1 50 0
  129 006e 85E0      		ldi r24,lo8(5)
  130 0070 8093 4300 		sts 67,r24
-  51:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	//RTC.INTCTRL = RTC_OVFINTLVL_LO_gc;
-  52:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.INTCTRL = RTC_OVFINTLVL_HI_gc;
+  51:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	//RTC.INTCTRL = RTC_OVFINTLVL_LO_gc;
+  52:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.INTCTRL = RTC_OVFINTLVL_HI_gc;
  131               		.loc 1 52 0
  132 0074 83E0      		ldi r24,lo8(3)
  133 0076 8093 0204 		sts 1026,r24
-  53:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	// initalise the RTC as zero
-  54:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.CNT = 0;
+  53:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	// initalise the RTC as zero
+  54:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.CNT = 0;
  134               		.loc 1 54 0
  135 007a 1092 0804 		sts 1032,__zero_reg__
  136 007e 1092 0904 		sts 1032+1,__zero_reg__
@@ -245,72 +245,72 @@
  140               	.global	initHWTime
  142               	initHWTime:
  143               	.LFB8:
-  55:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** }
-  56:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** #endif
-  57:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  58:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** /*
-  59:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** void initClock(void)
-  60:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** {
-  61:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	OSC.CTRL |= _BV(OSC_RC32KEN_bp);			// turn on 32MHz internal RC oscillator
-  62:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	while(!(OSC.STATUS & OSC_RC32KRDY_bm));  	// wait for it to be ready
-  63:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  64:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CCP=0xD8;							// allow modification of protected register
-  65:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CLK.CTRL = CLK_SCLKSEL_RC32K_gc;	// change from 2MHz to 32MHz
-  66:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** }
-  67:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  68:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  69:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** void initRTC(void)
-  70:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** {
-  71:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
-  72:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	//CLK.RTCCTRL = CLK_RTCSRC_ULP_gc | CLK_RTCEN_bm; 
-  73:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL = CLK_RTCSRC_RCOSC_gc | CLK_RTCEN_bm;
-  74:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	
-  75:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.INTCTRL = RTC_OVFINTLVL_HI_gc;
-  76:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** }
-  77:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** */
-  78:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  79:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** /* src: http://hardware-ntp.googlecode.com/svn-../branches/xmega-test/pcb-1/rtc.c */
-  80:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** /*
-  81:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** void initClock(void)
-  82:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** {
-  83:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	OSC.CTRL |= OSC_RC32KEN_bm;			// turn on 32MHz internal RC oscillator
-  84:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	while(!(OSC.STATUS & OSC_RC32KRDY_bm));  	// wait for it to be ready
-  85:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  86:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CCP=0xD8;							// allow modification of protected register
-  87:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CLK.CTRL = CLK_SCLKSEL_RC32K_gc;	// change from 2MHz to 32MHz
-  88:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** }
-  89:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  90:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
-  91:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** void initRTC(void)
-  92:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** {
-  93:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL = (CLK.RTCCTRL & ~(CLK_RTCSRC_gm)) | CLK_RTCSRC_RCOSC_gc;
-  94:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL |= CLK_RTCEN_bm;
-  95:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	while (RTC.STATUS & RTC_SYNCBUSY_bm);
-  96:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	// initalise the RTC as zero
-  97:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.CNT = 0;
-  98:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	while (RTC.STATUS & RTC_SYNCBUSY_bm);
-  99:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	// set period to 1023, since internal 32kHz RC osc is divided down to 1024Hz
- 100:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.PER = 1023;
- 101:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	// start clock running, 1:1 prescaler
- 102:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
- 103:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	
- 104:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	// select low-level interrupt for overflows. It's only the 1Hz tick for the main loop, so low prio
- 105:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	RTC.INTCTRL = (RTC.INTCTRL & ~(RTC_OVFINTLVL_gm)) | RTC_OVFINTLVL_LO_gc;
- 106:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** } */
- 107:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
- 108:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
- 109:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** void initHWTime()
- 110:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** {
+  55:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** }
+  56:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** #endif
+  57:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  58:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** /*
+  59:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** void initClock(void)
+  60:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** {
+  61:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	OSC.CTRL |= _BV(OSC_RC32KEN_bp);			// turn on 32MHz internal RC oscillator
+  62:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	while(!(OSC.STATUS & OSC_RC32KRDY_bm));  	// wait for it to be ready
+  63:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  64:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CCP=0xD8;							// allow modification of protected register
+  65:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CLK.CTRL = CLK_SCLKSEL_RC32K_gc;	// change from 2MHz to 32MHz
+  66:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** }
+  67:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  68:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  69:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** void initRTC(void)
+  70:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** {
+  71:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
+  72:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	//CLK.RTCCTRL = CLK_RTCSRC_ULP_gc | CLK_RTCEN_bm; 
+  73:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL = CLK_RTCSRC_RCOSC_gc | CLK_RTCEN_bm;
+  74:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	
+  75:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.INTCTRL = RTC_OVFINTLVL_HI_gc;
+  76:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** }
+  77:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** */
+  78:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  79:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** /* src: http://hardware-ntp.googlecode.com/svn-../branches/xmega-test/pcb-1/rtc.c */
+  80:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** /*
+  81:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** void initClock(void)
+  82:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** {
+  83:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	OSC.CTRL |= OSC_RC32KEN_bm;			// turn on 32MHz internal RC oscillator
+  84:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	while(!(OSC.STATUS & OSC_RC32KRDY_bm));  	// wait for it to be ready
+  85:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  86:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CCP=0xD8;							// allow modification of protected register
+  87:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CLK.CTRL = CLK_SCLKSEL_RC32K_gc;	// change from 2MHz to 32MHz
+  88:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** }
+  89:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  90:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** void initRTC(void)
+  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** {
+  93:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL = (CLK.RTCCTRL & ~(CLK_RTCSRC_gm)) | CLK_RTCSRC_RCOSC_gc;
+  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	CLK.RTCCTRL |= CLK_RTCEN_bm;
+  95:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	while (RTC.STATUS & RTC_SYNCBUSY_bm);
+  96:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	// initalise the RTC as zero
+  97:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.CNT = 0;
+  98:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	while (RTC.STATUS & RTC_SYNCBUSY_bm);
+  99:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	// set period to 1023, since internal 32kHz RC osc is divided down to 1024Hz
+ 100:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.PER = 1023;
+ 101:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	// start clock running, 1:1 prescaler
+ 102:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.CTRL = RTC_PRESCALER_DIV1_gc;
+ 103:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	
+ 104:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	// select low-level interrupt for overflows. It's only the 1Hz tick for the main loop, so low prio
+ 105:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	RTC.INTCTRL = (RTC.INTCTRL & ~(RTC_OVFINTLVL_gm)) | RTC_OVFINTLVL_LO_gc;
+ 106:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** } */
+ 107:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+ 108:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+ 109:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** void initHWTime()
+ 110:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** {
  144               		.loc 1 110 0
  145               	/* prologue: function */
  146               	/* frame size = 0 */
  147               	/* stack size = 0 */
  148               	.L__stack_usage = 0
- 111:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	initHWClock();
+ 111:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	initHWClock();
  149               		.loc 1 111 0
  150 0084 0E94 0000 		call initHWClock
  151               	.LVL4:
- 112:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	initHWRTC();
+ 112:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	initHWRTC();
  152               		.loc 1 112 0
  153 0088 0C94 0000 		jmp initHWRTC
  154               	.LVL5:
@@ -318,10 +318,10 @@
  157               	.global	__vector_10
  159               	__vector_10:
  160               	.LFB9:
- 113:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** }
- 114:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 
- 115:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** ISR(RTC_OVF_vect)
- 116:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** {
+ 113:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** }
+ 114:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 
+ 115:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** ISR(RTC_OVF_vect)
+ 116:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** {
  161               		.loc 1 116 0
  162 008c 1F92      		push r1
  163               	.LCFI2:
@@ -338,7 +338,7 @@
  174               	/* frame size = 0 */
  175               	/* stack size = 5 */
  176               	.L__stack_usage = 5
- 117:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** 	timeHi++;
+ 117:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** 	timeHi++;
  177               		.loc 1 117 0
  178 009a 8091 0000 		lds r24,timeHi
  179 009e 9091 0000 		lds r25,timeHi+1
@@ -346,7 +346,7 @@
  181 00a4 8093 0000 		sts timeHi,r24
  182 00a8 9093 0000 		sts timeHi+1,r25
  183               	/* epilogue start */
- 118:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwTime.c **** }
+ 118:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwTime.c **** }
  184               		.loc 1 118 0
  185 00ac 9F91      		pop r25
  186 00ae 8F91      		pop r24
@@ -360,22 +360,22 @@
  289               	.Letext0:
  290               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
  291               		.file 4 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
- 292               		.file 5 "/home/pthalamy/CMU/build-modif/src-bobby/system/hardwaretime.bbh"
+ 292               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/hardwaretime.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwTime.c
-     /tmp/ccoqY1O0.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccoqY1O0.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccoqY1O0.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccoqY1O0.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccoqY1O0.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccoqY1O0.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccoqY1O0.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccoqY1O0.s:13     .text:0000000000000000 getHWTime
+     /tmp/cceE35P1.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cceE35P1.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cceE35P1.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cceE35P1.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cceE35P1.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cceE35P1.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cceE35P1.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cceE35P1.s:13     .text:0000000000000000 getHWTime
                             *COM*:0000000000000002 timeHi
-     /tmp/ccoqY1O0.s:82     .text:0000000000000038 initHWClock
-     /tmp/ccoqY1O0.s:109    .text:0000000000000056 initHWRTC
-     /tmp/ccoqY1O0.s:142    .text:0000000000000084 initHWTime
-     /tmp/ccoqY1O0.s:159    .text:000000000000008c __vector_10
+     /tmp/cceE35P1.s:82     .text:0000000000000038 initHWClock
+     /tmp/cceE35P1.s:109    .text:0000000000000056 initHWRTC
+     /tmp/cceE35P1.s:142    .text:0000000000000084 initHWTime
+     /tmp/cceE35P1.s:159    .text:000000000000008c __vector_10
 
 UNDEFINED SYMBOLS
 __do_clear_bss

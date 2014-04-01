@@ -23,7 +23,9 @@ void getCmdData(void)
 {
   #ifdef LOG_DEBUG
   char s[150];
-  switch (thisChunk->data[3]){ //thisChunk->data[3] always = 0, can't figure out WHY???
+  if(thisChunk->data[3] == 1)
+    setIntensity(0);
+  switch (thisChunk->data[3]){ //thisChunk->data[3] always = 3, WHY???
     case 0:
       setColor(RED);
       snprintf(s, 150*sizeof(char), "color change to RED");

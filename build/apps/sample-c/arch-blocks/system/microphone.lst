@@ -11,24 +11,24 @@
   11               	.global	getMicData
   13               	getMicData:
   14               	.LFB5:
-  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb"
-   1:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** // SYSTEM INCLUDES
-   2:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** #include "microphone.bbh"
-   3:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** 
-   4:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** // HARDWARE INCLUDES
-   5:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** #include "../hw-api/hwMicrophone.h"
-   6:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** 
-   7:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** threadvar MicData _mic;
-   8:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** 
-   9:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** MicData getMicData()
-  10:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** {
+  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb"
+   1:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** // SYSTEM INCLUDES
+   2:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** #include "microphone.bbh"
+   3:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** 
+   4:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** // HARDWARE INCLUDES
+   5:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** #include "../hw-api/hwMicrophone.h"
+   6:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** 
+   7:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** threadvar MicData _mic;
+   8:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** 
+   9:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** MicData getMicData()
+  10:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** {
   16               		.loc 1 10 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
-  11:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb ****     return _mic;
-  12:/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bb **** }
+  11:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb ****     return _mic;
+  12:/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bb **** }
   21               		.loc 1 12 0
   22 0000 8091 0000 		lds r24,_mic
   23 0004 9091 0000 		lds r25,_mic+1
@@ -37,17 +37,17 @@
   27               		.comm	_mic,2,1
   54               	.Letext0:
   55               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
-  56               		.file 3 "/home/pthalamy/CMU/build-modif/src-bobby/system/microphone.bbh"
+  56               		.file 3 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 microphone.c
-     /tmp/cctDq1x1.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cctDq1x1.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cctDq1x1.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cctDq1x1.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cctDq1x1.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cctDq1x1.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cctDq1x1.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cctDq1x1.s:13     .text:0000000000000000 getMicData
+     /tmp/cchWCkia.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cchWCkia.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cchWCkia.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cchWCkia.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cchWCkia.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cchWCkia.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cchWCkia.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cchWCkia.s:13     .text:0000000000000000 getMicData
                             *COM*:0000000000000002 _mic
 
 UNDEFINED SYMBOLS

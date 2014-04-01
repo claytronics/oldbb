@@ -20,4 +20,6 @@ void initLogDebug(void);
 
 byte isHostPort(PRef p);
 
+void processCmd(void);
+
 #endif

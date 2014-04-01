@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/system.bb"
+# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/system.bb"
 #include "system.h"
 //#include "unistd.h"
 
@@ -22,7 +22,7 @@ int blockProgram(void)
     while(1)
     {
         // manage low level stuff
-        // manage handler stuff
+        // manage stuff
 
         // step through triggered handler functions
 	//printf("%d\r\n",count++);

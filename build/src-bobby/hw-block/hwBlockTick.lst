@@ -11,37 +11,37 @@
   11               	.global	scaryBlockTickHack
   13               	scaryBlockTickHack:
   14               	.LFB6:
-  15               		.file 1 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c"
-   1:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** #include <avr/io.h>
-   2:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** #include <avr/interrupt.h>
-   3:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** #include "../system/defs.h"
-   4:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** #include "../system/block.h"
-   5:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** #include <avr/wdt.h>
-   6:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** #include "../hw-api/hwBlockTick.h"
-   7:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 
-   8:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** extern int blockTickRunning;
-   9:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 
-  10:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** void scaryBlockTickHack(void)
-  11:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** {
+  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c"
+   1:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** #include <avr/io.h>
+   2:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** #include <avr/interrupt.h>
+   3:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** #include "../system/defs.h"
+   4:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** #include "../system/block.h"
+   5:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** #include <avr/wdt.h>
+   6:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** #include "../hw-api/hwBlockTick.h"
+   7:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 
+   8:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** extern int blockTickRunning;
+   9:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 
+  10:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** void scaryBlockTickHack(void)
+  11:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** {
   16               		.loc 1 11 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
-  12:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	TCF0.CTRLA = TC_CLKSEL_DIV1_gc;
+  12:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	TCF0.CTRLA = TC_CLKSEL_DIV1_gc;
   21               		.loc 1 12 0
   22 0000 E0E0      		ldi r30,0
   23 0002 FBE0      		ldi r31,lo8(11)
   24 0004 81E0      		ldi r24,lo8(1)
   25 0006 8083      		st Z,r24
-  13:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	
-  14:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	TCF0.PER = 16000;  // 2000hz blocktick
+  13:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	
+  14:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	TCF0.PER = 16000;  // 2000hz blocktick
   26               		.loc 1 14 0
   27 0008 80E8      		ldi r24,lo8(-128)
   28 000a 9EE3      		ldi r25,lo8(62)
   29 000c 86A3      		std Z+38,r24
   30 000e 97A3      		std Z+39,r25
-  15:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	TCF0.INTCTRLA = TC_OVFINTLVL_MED_gc;
+  15:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	TCF0.INTCTRLA = TC_OVFINTLVL_MED_gc;
   31               		.loc 1 15 0
   32 0010 82E0      		ldi r24,lo8(2)
   33 0012 8683      		std Z+6,r24
@@ -50,39 +50,39 @@
   37               	.global	initBlockTick
   39               	initBlockTick:
   40               	.LFB7:
-  16:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** }
-  17:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 
-  18:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 
-  19:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** void initBlockTick()
-  20:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** {
+  16:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** }
+  17:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 
+  18:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 
+  19:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** void initBlockTick()
+  20:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** {
   41               		.loc 1 20 0
   42               	/* prologue: function */
   43               	/* frame size = 0 */
   44               	/* stack size = 0 */
   45               	.L__stack_usage = 0
-  21:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 
-  22:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	blockTickRunning=0;
+  21:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 
+  22:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	blockTickRunning=0;
   46               		.loc 1 22 0
   47 0016 1092 0000 		sts blockTickRunning,__zero_reg__
   48 001a 1092 0000 		sts blockTickRunning+1,__zero_reg__
-  23:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c ****      
-  24:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	scaryBlockTickHack();
+  23:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c ****      
+  24:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	scaryBlockTickHack();
   49               		.loc 1 24 0
   50 001e 0E94 0000 		call scaryBlockTickHack
   51               	.LVL0:
-  25:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 
-  26:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	/* Enable interrupt levels. */
-  27:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	PMIC.CTRL |= PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
+  25:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 
+  26:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	/* Enable interrupt levels. */
+  27:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	PMIC.CTRL |= PMIC_HILVLEN_bm | PMIC_MEDLVLEN_bm | PMIC_LOLVLEN_bm;
   52               		.loc 1 27 0
   53 0022 E0EA      		ldi r30,lo8(-96)
   54 0024 F0E0      		ldi r31,0
   55 0026 8281      		ldd r24,Z+2
   56 0028 8760      		ori r24,lo8(7)
   57 002a 8283      		std Z+2,r24
-  28:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	sei();
+  28:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	sei();
   58               		.loc 1 28 0
   59               	/* #APP */
-  60               	 ;  28 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c" 1
+  60               	 ;  28 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c" 1
   61 002c 7894      		sei
   62               	 ;  0 "" 2
   63               	/* #NOAPP */
@@ -91,13 +91,13 @@
   67               	.global	__vector_108
   69               	__vector_108:
   70               	.LFB8:
-  29:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	
-  30:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** }
-  31:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 
-  32:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** // part of scary blocktick hack
-  33:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** // called every 38400 khz or so
-  34:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** ISR(TCF0_OVF_vect)
-  35:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** {
+  29:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	
+  30:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** }
+  31:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 
+  32:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** // part of scary blocktick hack
+  33:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** // called every 38400 khz or so
+  34:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** ISR(TCF0_OVF_vect)
+  35:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** {
   71               		.loc 1 35 0
   72 0030 1F92      		push r1
   73               	.LCFI0:
@@ -136,28 +136,28 @@
  106               	/* frame size = 0 */
  107               	/* stack size = 16 */
  108               	.L__stack_usage = 16
-  36:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	if (!blockTickRunning)
+  36:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	if (!blockTickRunning)
  109               		.loc 1 36 0
  110 0056 8091 0000 		lds r24,blockTickRunning
  111 005a 9091 0000 		lds r25,blockTickRunning+1
  112 005e 892B      		or r24,r25
  113 0060 01F4      		brne .L3
-  37:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	  {
-  38:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	    wdt_reset();
+  37:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	  {
+  38:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	    wdt_reset();
  114               		.loc 1 38 0
  115               	/* #APP */
- 116               	 ;  38 "/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c" 1
+ 116               	 ;  38 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c" 1
  117 0062 A895      		wdr
  118               	 ;  0 "" 2
-  39:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	    blockTick();
+  39:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	    blockTick();
  119               		.loc 1 39 0
  120               	/* #NOAPP */
  121 0064 0E94 0000 		call blockTick
  122               	.LVL1:
  123               	.L3:
  124               	/* epilogue start */
-  40:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** 	  }
-  41:/home/pthalamy/CMU/build-modif/src-bobby/hw-block/hwBlockTick.c **** }
+  40:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** 	  }
+  41:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwBlockTick.c **** }
  125               		.loc 1 41 0
  126 0068 FF91      		pop r31
  127 006a EF91      		pop r30
@@ -182,19 +182,19 @@
  273               	.Letext0:
  274               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
  275               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
- 276               		.file 4 "/home/pthalamy/CMU/build-modif/src-bobby/system/block.bbh"
+ 276               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/block.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwBlockTick.c
-     /tmp/cc4Nr4mx.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cc4Nr4mx.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cc4Nr4mx.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cc4Nr4mx.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cc4Nr4mx.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cc4Nr4mx.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cc4Nr4mx.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cc4Nr4mx.s:13     .text:0000000000000000 scaryBlockTickHack
-     /tmp/cc4Nr4mx.s:39     .text:0000000000000016 initBlockTick
-     /tmp/cc4Nr4mx.s:69     .text:0000000000000030 __vector_108
+     /tmp/cct6hJpJ.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cct6hJpJ.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cct6hJpJ.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cct6hJpJ.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cct6hJpJ.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cct6hJpJ.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cct6hJpJ.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cct6hJpJ.s:13     .text:0000000000000000 scaryBlockTickHack
+     /tmp/cct6hJpJ.s:39     .text:0000000000000016 initBlockTick
+     /tmp/cct6hJpJ.s:69     .text:0000000000000030 __vector_108
 
 UNDEFINED SYMBOLS
 blockTickRunning

@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/log.bbh"
+# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bbh"
 #ifndef __LOG_H__
 #define __LOG_H__
 
@@ -20,5 +20,7 @@ byte blockingPrintDebug(char *s);
 void initLogDebug(void);
 
 byte isHostPort(PRef p);
+
+void processCmd(void);
 
 #endif

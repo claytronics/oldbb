@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/build-modif/src-bobby/system/accelerometer.bb"
+# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb"
 // SYSTEM INCLUDES
 #include "accelerometer.h"
 #include "handler.h"
