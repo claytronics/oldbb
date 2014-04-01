@@ -723,20 +723,20 @@
  904               		.file 7 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwAccelerometer.c
-     /tmp/ccyaKEav.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccyaKEav.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccyaKEav.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccyaKEav.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccyaKEav.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccyaKEav.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccyaKEav.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccyaKEav.s:13     .text:0000000000000000 newHWAccelData
+     /tmp/cciXnYAH.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cciXnYAH.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cciXnYAH.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cciXnYAH.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cciXnYAH.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cciXnYAH.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cciXnYAH.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cciXnYAH.s:13     .text:0000000000000000 newHWAccelData
                             *COM*:0000000000000011 twiMaster
-     /tmp/ccyaKEav.s:43     .text:000000000000001c updateHWAccel
-     /tmp/ccyaKEav.s:153    .text:00000000000000c2 initHWAccel
-     /tmp/ccyaKEav.s:356    .text:00000000000001fa __vector_34
-     /tmp/ccyaKEav.s:457    .text:0000000000000278 __vector_46
-     /tmp/ccyaKEav.s:527    .text:00000000000002cc setAccelRegister
+     /tmp/cciXnYAH.s:43     .text:000000000000001c updateHWAccel
+     /tmp/cciXnYAH.s:153    .text:00000000000000c2 initHWAccel
+     /tmp/cciXnYAH.s:356    .text:00000000000001fa __vector_34
+     /tmp/cciXnYAH.s:457    .text:0000000000000278 __vector_46
+     /tmp/cciXnYAH.s:527    .text:00000000000002cc setAccelRegister
 
 UNDEFINED SYMBOLS
 _acc

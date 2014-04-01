@@ -222,15 +222,15 @@
  197               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/led.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwLED.c
-     /tmp/cc2dRTnH.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cc2dRTnH.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cc2dRTnH.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cc2dRTnH.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cc2dRTnH.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cc2dRTnH.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cc2dRTnH.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cc2dRTnH.s:13     .text:0000000000000000 setHWLED
-     /tmp/cc2dRTnH.s:84     .text:0000000000000050 initHWLED
+     /tmp/ccYnX9rZ.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccYnX9rZ.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccYnX9rZ.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccYnX9rZ.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccYnX9rZ.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccYnX9rZ.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccYnX9rZ.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccYnX9rZ.s:13     .text:0000000000000000 setHWLED
+     /tmp/ccYnX9rZ.s:84     .text:0000000000000050 initHWLED
 
 UNDEFINED SYMBOLS
 currentRGB

@@ -351,17 +351,17 @@
  364               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwMicrophone.c
-     /tmp/ccp6YqLW.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccp6YqLW.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccp6YqLW.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccp6YqLW.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccp6YqLW.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccp6YqLW.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccp6YqLW.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccp6YqLW.s:13     .text:0000000000000000 updateHWMic
-     /tmp/ccp6YqLW.s:65     .text:0000000000000022 initHWMic
-     /tmp/ccp6YqLW.s:105    .text:000000000000004a rejuvenateHWMic
-     /tmp/ccp6YqLW.s:133    .text:0000000000000060 __vector_71
+     /tmp/ccyhkDtk.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccyhkDtk.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccyhkDtk.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccyhkDtk.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccyhkDtk.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccyhkDtk.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccyhkDtk.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccyhkDtk.s:13     .text:0000000000000000 updateHWMic
+     /tmp/ccyhkDtk.s:65     .text:0000000000000022 initHWMic
+     /tmp/ccyhkDtk.s:105    .text:000000000000004a rejuvenateHWMic
+     /tmp/ccyhkDtk.s:133    .text:0000000000000060 __vector_71
 
 UNDEFINED SYMBOLS
 _mic

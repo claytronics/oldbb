@@ -291,16 +291,16 @@
  356               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwMemory.c
-     /tmp/cc97xrCI.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cc97xrCI.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cc97xrCI.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cc97xrCI.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cc97xrCI.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cc97xrCI.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cc97xrCI.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cc97xrCI.s:13     .text:0000000000000000 store
-     /tmp/cc97xrCI.s:117    .text:000000000000006e restore
-     /tmp/cc97xrCI.s:190    .text:00000000000000b8 getGUID
+     /tmp/ccKJoqG5.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccKJoqG5.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccKJoqG5.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccKJoqG5.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccKJoqG5.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccKJoqG5.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccKJoqG5.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccKJoqG5.s:13     .text:0000000000000000 store
+     /tmp/ccKJoqG5.s:117    .text:000000000000006e restore
+     /tmp/ccKJoqG5.s:190    .text:00000000000000b8 getGUID
 
 UNDEFINED SYMBOLS
 EEPROM_LoadPartialPage

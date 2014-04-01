@@ -43,7 +43,7 @@ static int kbhit(void);
 int main(int argc, char** argv) {
     
     char c = '0';
-    int i;
+    //int i;
     readParameters(argc, argv);
     
     if( !Chunk::initSerial(portname, baudrate)  ) {
@@ -52,8 +52,26 @@ int main(int argc, char** argv) {
     
     sendIAmHost();
     while(c != 'q') {
+      /*cout << "Press enter to send next color..." << endl;
       for(i = 0 ; i < NUM_COLORS ; i++){
-	cout << "Press enter to send next color..." << endl;
+	getchar();
+	sendCmd(i);
+	while(!kbhit()) {
+		Chunk *ch = Chunk::read();
+		if ( ch != NULL) {
+			if (ch->data[0] == LOG_MSG) {			
+				insertLogChunk(ch);
+			}
+			delete ch;
+		}
+		//logs.printAll();
+		logs.printCompleted();
+		logs.removeCompleted();
+	}
+      }*/
+      cout << "Press enter to proceed to next test" << endl;
+      getchar();
+      cout << "Testing accelerometer: Tap Blinky Block" << endl;
 	while(!kbhit()) {
 		Chunk *ch = Chunk::read();
 		if ( ch != NULL) {
@@ -66,18 +84,32 @@ int main(int argc, char** argv) {
 		logs.printCompleted();
 		logs.removeCompleted();
 	} 
-	  getchar();
-	  sendCmd(i);
-	}
-      cout << "Type 'q' to quit or any other key to start again...";
-      c = getchar();
+	cout << "Press enter to proceed to next test" << endl;
+	getchar();
+	cout << "Testing accelerometer (2): Shake Blinky Block" << endl;
+	while(!kbhit()) {
+		Chunk *ch = Chunk::read();
+		if ( ch != NULL) {
+			if (ch->data[0] == LOG_MSG) {			
+				insertLogChunk(ch);
+			}
+			delete ch;
+		}
+		//logs.printAll();
+		logs.printCompleted();
+		logs.removeCompleted();
+	} 
+	cout << "Press enter to proceed to next test" << endl;
+	getchar();
+	cout << "Type 'q' to quit or any other key to start again..." << endl;
+	c = getchar();
     }
 	logs.printStats();
-    // shutdown everything
-    cout << "Closing serial comm...";
-    cout.flush();
-    
-    Chunk::closeSerial();
+	// shutdown everything
+	cout << "Closing serial comm...";
+	cout.flush();
+	
+	Chunk::closeSerial();
 	cout << " ok!" << endl;
     return 0;
 }
