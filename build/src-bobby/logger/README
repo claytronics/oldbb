@@ -1,6 +1,32 @@
 4/1/14
 
-Use the following command to compile:
+Use the following command to compile BBLogger:
 
-g++ logger.c hostserial.c logtable.c chunk.c circ_buffer.c -o bblogger -lpthread
+make
 
+To use the log system:
+
+- On the Blinky Blocks side: 
+	- Add the following lines in your application:
+		#ifdef LOG_DEBUG
+		#include "log.bbh"   
+		#endif
+
+		#ifdef LOG_DEBUG
+				char s[10];
+				snprintf(s, 20*sizeof(char), "example %u", 5);
+				s[10] = '\0';
+				printDebug(s);
+		#endif
+	- Compile your application with the correct flags (see apps/sample-c/Makefile):
+		CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
+
+		- LOG_DEBUG enables the log system
+		- -Wl,-u,vfprintf -lprintf_flt -lm are used to correctly print the float/double
+
+- On the host side:
+	- Starts BBLogger: ./bblogger -p [port].By default the port /dev/ttyUSB0 is used (./bblogger).
+	
+Notes:
+	- The blocks remain orange till BBLogger hasn't been started (actually till they do not know the path to the host).
+	- In the current version, some log messages can be lost when all the blocks send simultaneously several messages to the host.
