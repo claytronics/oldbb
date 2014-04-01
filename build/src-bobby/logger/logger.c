@@ -22,6 +22,7 @@ char* portname  = NULL;
 string defaultportname = "/dev/ttyUSB0";
 int baudrate = 38400;
 char* prog = 0;
+byte testMode = 0;
 int seq = 1;
 
 pthread_mutex_t serialMutex;
@@ -53,23 +54,25 @@ int main(int argc, char** argv) {
     
     sendIAmHost();
     
+    if(testMode) {
     /***** TEST ****/
     
-    while(c != 'q') {
-      cout << "Press enter to send next color..." << endl;
-      for(i = 0 ; i < NUM_COLORS ; i++){
-	getchar();
-	sendCmd(i);
-	receiveLogs();
+      while(c != 'q') {
+	cout << "Press enter to send next color..." << endl;
+	for(i = 0 ; i < NUM_COLORS ; i++){
+	  getchar();
+	  sendCmd(i);
+	  receiveLogs();
+	}
+	  cout << "Press enter to proceed to next test" << endl;
+	  getchar();
+	  cout << "Testing accelerometer: Tap Blinky Block and change its orientation" << endl;
+	  receiveLogs();
+	  cout << "Press enter to proceed to next test" << endl;
+	  getchar();
+	  cout << "Type 'q' to quit or any other key to start again..." << endl;
+	  c = getchar();
       }
-	cout << "Press enter to proceed to next test" << endl;
-	getchar();
-	cout << "Testing accelerometer: Tap Blinky Block and change its orientation" << endl;
-	receiveLogs();
-	cout << "Press enter to proceed to next test" << endl;
-	getchar();
-	cout << "Type 'q' to quit or any other key to start again..." << endl;
-	c = getchar();
     }
     
 	receiveLogs();
@@ -101,7 +104,7 @@ void receiveLogs(void)
 }
 
 void usage(void) {
-    printf("%s: [-p portname]\n-l: log\n-s [period in ms]: time synchronization\ndefault port: /dev/ttyUSB0\nBaudrate: 38400\n", prog);
+    printf("%s: [-p portname]\n-l: log\n -t : test mode \n-s [period in ms]: time synchronization\ndefault port: /dev/ttyUSB0\nBaudrate: 38400\n", prog);
     exit(1);
 }
 
@@ -109,7 +112,7 @@ void readParameters(int argc, char** argv) {
 	
 	prog = argv[0];
 	portname = (char*) defaultportname.c_str();
-    
+	
     // find switches
     for(int i = 1; i < argc; i++) {
         // defined port
@@ -121,6 +124,11 @@ void readParameters(int argc, char** argv) {
                 portname = argv[++i];
             }
         }
+	else { 
+	  if( strcmp(argv[i], "-t") == 0 ) {
+	    testMode = 1;
+	  }
+	}   
    }
 }
 
