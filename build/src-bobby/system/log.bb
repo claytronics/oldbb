@@ -65,10 +65,10 @@ byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh)
 
 void processCmd(void) 
 {
-   int X = 0;
+   int X;
     if (seq < thisChunk->data[2]) {
 	  seq = thisChunk->data[2];
-	  for (X ; X <= 5 ; X++) {
+	  for (X = 0 ; X <= 5 ; X++) {
 	    sendMyChunk(X, thisChunk->data, 4, (MsgHandler)myMsgHandler);
 	  }
 	  callHandler(EVENT_COMMAND_RECEIVED);

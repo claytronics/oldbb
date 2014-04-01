@@ -52,8 +52,7 @@ int main(int argc, char** argv) {
     
     sendIAmHost();
     while(c != 'q') {
-      i = 0;
-      for(i ; i < NUM_COLORS ; i++){
+      for(i = 0 ; i < NUM_COLORS ; i++){
 	cout << "Press enter to send next color..." << endl;
 	while(!kbhit()) {
 		Chunk *ch = Chunk::read();

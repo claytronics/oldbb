@@ -23,46 +23,46 @@ void getCmdData(void)
 {
   #ifdef LOG_DEBUG
   char s[150];
-  switch (thisChunk->data[3]){ //thisChunk->data[3] always = 0, can't figure out WHY???
+  switch (thisChunk->data[3]){
     case 0:
       setColor(RED);
-      snprintf(s, 150*sizeof(char), "color change to RED");
+      snprintf(s, 150*sizeof(char), "RED");
     break;
     case 1:
       setColor(ORANGE);
-      snprintf(s, 150*sizeof(char), "color change to ORANGE");
+      snprintf(s, 150*sizeof(char), "ORANGE");
     break;
     case 2:
       setColor(YELLOW);
-      snprintf(s, 150*sizeof(char), "color change to YELLOW");
+      snprintf(s, 150*sizeof(char), "YELLOW");
     break;
     case 3:
       setColor(GREEN);
-      snprintf(s, 150*sizeof(char), "color change to GREEN");
+      snprintf(s, 150*sizeof(char), "GREEN");
     break;
     case 4:
       setColor(AQUA);
-      snprintf(s, 150*sizeof(char), "color change to AQUA");
+      snprintf(s, 150*sizeof(char), "AQUA");
     break;
     case 5:
       setColor(BLUE);
-      snprintf(s, 150*sizeof(char), "color change to BLUE");
+      snprintf(s, 150*sizeof(char), "BLUE");
     break;
     case 6:
       setColor(WHITE);
-      snprintf(s, 150*sizeof(char), "color change to WHITE");
+      snprintf(s, 150*sizeof(char), "WHITE");
     break;
     case 7:
       setColor(PURPLE);
-      snprintf(s, 150*sizeof(char), "color change to PURPLE");
+      snprintf(s, 150*sizeof(char), "PURPLE");
     break;
     case 8:
       setColor(PINK);
-      snprintf(s, 150*sizeof(char), "color change to PINK");
+      snprintf(s, 150*sizeof(char), "PINK");
     break;
     default:
       setIntensity(0);
-      snprintf(s, 150*sizeof(char), "UNKNOWN COMMAND");
+      snprintf(s, 150*sizeof(char), "UNKNOWN");
     break;
   }      
   s[149] = '\0';

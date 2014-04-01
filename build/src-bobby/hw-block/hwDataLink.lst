@@ -11,40 +11,40 @@
   11               	.global	crcCalc
   13               	crcCalc:
   14               	.LFB6:
-  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c"
-   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #ifndef _HW_DATALINK_C_
-   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #define _HW_DATALINK_C_
-   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
-   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #include "../hw-api/hwDataLink.h"
-   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #include "../hw-api/hwSerial.h"
-   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #include "../system/ensemble.h"
-   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #include "../system/serial.h"
-   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
-   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
-  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #include  "../system/clock.bbh"
-  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #endif
-  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
-  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #define CRC_POLY        0xA6
-  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
-  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // store if received an escape char
-  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** byte   wasEscapeStore[NUM_PORTS];
-  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
-  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** extern ReceivePacketQueue globalRq;
-  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** extern Port port[NUM_PORTS];
-  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
-  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // calculates part of crc
-  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** byte crcCalc(byte currCrc, byte newVal)
-  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** {
+  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c"
+   1:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #ifndef _HW_DATALINK_C_
+   2:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #define _HW_DATALINK_C_
+   3:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+   4:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #include "../hw-api/hwDataLink.h"
+   5:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #include "../hw-api/hwSerial.h"
+   6:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #include "../system/ensemble.h"
+   7:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #include "../system/serial.h"
+   8:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+   9:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
+  10:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #include  "../system/clock.bbh"
+  11:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #endif
+  12:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+  13:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #define CRC_POLY        0xA6
+  14:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+  15:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // store if received an escape char
+  16:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** byte   wasEscapeStore[NUM_PORTS];
+  17:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+  18:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** extern ReceivePacketQueue globalRq;
+  19:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** extern Port port[NUM_PORTS];
+  20:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+  21:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // calculates part of crc
+  22:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** byte crcCalc(byte currCrc, byte newVal)
+  23:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** {
   16               		.loc 1 23 0
   17               	.LVL0:
   18               	/* prologue: function */
   19               	/* frame size = 0 */
   20               	/* stack size = 0 */
   21               	.L__stack_usage = 0
-  24:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte crc = currCrc;
-  25:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	int i;
-  26:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	
-  27:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	crc ^= newVal;
+  24:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte crc = currCrc;
+  25:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	int i;
+  26:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	
+  27:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	crc ^= newVal;
   22               		.loc 1 27 0
   23 0000 6827      		eor r22,r24
   24               	.LVL1:
@@ -52,13 +52,13 @@
   26 0004 30E0      		ldi r19,0
   27               	.LVL2:
   28               	.L4:
-  28:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     for (i=0; i<8; i++)
-  29:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	{
-  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if (0x80 & crc) {
+  28:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     for (i=0; i<8; i++)
+  29:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	{
+  30:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if (0x80 & crc) {
   29               		.loc 1 30 0
   30 0006 67FF      		sbrs r22,7
   31 0008 00C0      		rjmp .L2
-  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             crc = (crc << 1) ^ CRC_POLY;
+  31:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             crc = (crc << 1) ^ CRC_POLY;
   32               		.loc 1 31 0
   33 000a 862F      		mov r24,r22
   34 000c 90E0      		ldi r25,0
@@ -71,22 +71,22 @@
   41               	.LVL3:
   42 001a 00C0      		rjmp .L3
   43               	.L2:
-  32:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
-  33:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 		else {
-  34:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             crc = crc << 1;
+  32:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+  33:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 		else {
+  34:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             crc = crc << 1;
   44               		.loc 1 34 0
   45 001c 660F      		lsl r22
   46               	.LVL4:
   47               	.L3:
   48 001e 2150      		subi r18,1
   49 0020 3109      		sbc r19,__zero_reg__
-  28:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     for (i=0; i<8; i++)
+  28:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     for (i=0; i<8; i++)
   50               		.loc 1 28 0
   51 0022 01F4      		brne .L4
-  35:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
-  36:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
-  37:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	return crc;
-  38:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** } 
+  35:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+  36:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+  37:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	return crc;
+  38:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** } 
   52               		.loc 1 38 0
   53 0024 862F      		mov r24,r22
   54 0026 0895      		ret
@@ -94,13 +94,13 @@
   57               	.global	ackHandler
   59               	ackHandler:
   60               	.LFB7:
-  39:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
-  40:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // handles the ack byte and updates the packet queue
-  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** //    (parity, timer, CTS)
-  42:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // inputs:  port received on
-  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // returns: nothing
-  44:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** void ackHandler(PRef p)
-  45:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** {
+  39:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+  40:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // handles the ack byte and updates the packet queue
+  41:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** //    (parity, timer, CTS)
+  42:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // inputs:  port received on
+  43:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // returns: nothing
+  44:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** void ackHandler(PRef p)
+  45:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** {
   61               		.loc 1 45 0
   62               	.LVL5:
   63 0028 0F93      		push r16
@@ -115,7 +115,7 @@
   72               	/* frame size = 0 */
   73               	/* stack size = 4 */
   74               	.L__stack_usage = 4
-  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte currParity = sendParity(port[p].sq);
+  46:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte currParity = sendParity(port[p].sq);
   75               		.loc 1 46 0
   76 0030 98E5      		ldi r25,lo8(88)
   77 0032 899F      		mul r24,r25
@@ -126,9 +126,9 @@
   82 003c D040      		sbci r29,hi8(-(port))
   83 003e 3E85      		ldd r19,Y+14
   84               	.LVL6:
-  47:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
-  48:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // check for double acks (shouldn't ever happen)
-  49:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( !(gotOddAck(port[p].rq) ^ gotEvenAck(port[p].rq)) ) 
+  47:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+  48:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // check for double acks (shouldn't ever happen)
+  49:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( !(gotOddAck(port[p].rq) ^ gotEvenAck(port[p].rq)) ) 
   85               		.loc 1 49 0
   86 0040 9D89      		ldd r25,Y+21
   87 0042 292F      		mov r18,r25
@@ -136,73 +136,73 @@
   89 0046 422F      		mov r20,r18
   90 0048 4927      		eor r20,r25
   91 004a 9C7F      		andi r25,lo8(-4)
-  50:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
-  51:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         clearReceivedAcks( port[p].rq );
+  50:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+  51:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         clearReceivedAcks( port[p].rq );
   92               		.loc 1 51 0
   93 004c 9D8B      		std Y+21,r25
-  49:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( !(gotOddAck(port[p].rq) ^ gotEvenAck(port[p].rq)) ) 
+  49:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( !(gotOddAck(port[p].rq) ^ gotEvenAck(port[p].rq)) ) 
   94               		.loc 1 49 0
   95 004e 40FF      		sbrs r20,0
-  52:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         return;
+  52:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         return;
   96               		.loc 1 52 0
   97 0050 00C0      		rjmp .L6
   98               	.L7:
   99               	.LVL7:
-  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte currParity = sendParity(port[p].sq);
+  46:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte currParity = sendParity(port[p].sq);
  100               		.loc 1 46 0
  101 0052 32FB      		bst r19,2
  102 0054 9927      		clr r25
  103 0056 90F9      		bld r25,0
-  53:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
-  54:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte recdParity = gotOddAck(port[p].rq);
+  53:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+  54:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte recdParity = gotOddAck(port[p].rq);
  104               		.loc 1 54 0
  105 0058 2170      		andi r18,lo8(1)
  106               	.LVL8:
-  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     clearReceivedAcks( port[p].rq );
-  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
-  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // parity matches
-  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if(currParity == recdParity)
+  55:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     clearReceivedAcks( port[p].rq );
+  56:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+  57:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // parity matches
+  58:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if(currParity == recdParity)
  107               		.loc 1 58 0
  108 005a 9213      		cpse r25,r18
  109 005c 00C0      		rjmp .L6
-  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
-  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // remove the Chunk, call callback with successfull response
-  61:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         removeFromSq(p, MSG_RESP_ACK);
+  59:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+  60:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // remove the Chunk, call callback with successfull response
+  61:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         removeFromSq(p, MSG_RESP_ACK);
  110               		.loc 1 61 0
  111 005e 68E0      		ldi r22,lo8(8)
  112 0060 0E94 0000 		call removeFromSq
  113               	.LVL9:
-  62:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
-  63:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // reset the flags
-  64:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         port[p].sq.retry    = NUM_RETRIES;
+  62:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+  63:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // reset the flags
+  64:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         port[p].sq.retry    = NUM_RETRIES;
  114               		.loc 1 64 0
  115 0064 94E0      		ldi r25,lo8(4)
  116 0066 9D87      		std Y+13,r25
-  65:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         flipParity(port[p].sq);
+  65:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         flipParity(port[p].sq);
  117               		.loc 1 65 0
  118 0068 8E85      		ldd r24,Y+14
  119 006a 8927      		eor r24,r25
-  66:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         port[p].sq.flags   |= CLEAR_TO_SEND;
+  66:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         port[p].sq.flags   |= CLEAR_TO_SEND;
  120               		.loc 1 66 0
  121 006c 8064      		ori r24,lo8(64)
  122 006e 8E87      		std Y+14,r24
-  67:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
-  68:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // reset the timer
-  69:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         deregisterTimeout(&(port[p].sq.qtout.tout));
+  67:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+  68:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // reset the timer
+  69:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         deregisterTimeout(&(port[p].sq.qtout.tout));
  123               		.loc 1 69 0
  124 0070 C801      		movw r24,r16
  125 0072 8050      		subi r24,lo8(-(port+1))
  126 0074 9040      		sbci r25,hi8(-(port+1))
  127               	/* epilogue start */
-  70:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
-  71:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // else, parity error - don't do anything
-  72:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** }
+  70:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+  71:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // else, parity error - don't do anything
+  72:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** }
  128               		.loc 1 72 0
  129 0076 DF91      		pop r29
  130 0078 CF91      		pop r28
  131 007a 1F91      		pop r17
  132 007c 0F91      		pop r16
-  69:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         deregisterTimeout(&(port[p].sq.qtout.tout));
+  69:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         deregisterTimeout(&(port[p].sq.qtout.tout));
  133               		.loc 1 69 0
  134 007e 0C94 0000 		jmp deregisterTimeout
  135               	.LVL10:
@@ -218,64 +218,64 @@
  146               	.global	addToGlobalRq
  148               	addToGlobalRq:
  149               	.LFB8:
-  73:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
-  74:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // adds a Chunk to the global receive queue
-  75:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** void addToGlobalRq(Chunk* c)
-  76:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** {
+  73:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+  74:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // adds a Chunk to the global receive queue
+  75:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** void addToGlobalRq(Chunk* c)
+  76:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** {
  150               		.loc 1 76 0
  151               	.LVL11:
  152               	/* prologue: function */
  153               	/* frame size = 0 */
  154               	/* stack size = 0 */
  155               	.L__stack_usage = 0
-  77:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // nothing to add
-  78:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( c == NULL ) 
+  77:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // nothing to add
+  78:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( c == NULL ) 
  156               		.loc 1 78 0
  157 008c 0097      		sbiw r24,0
  158 008e 01F0      		breq .L9
-  79:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
-  80:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         return;
-  81:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
-  82:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
-  83:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // isolate Chunk
-  84:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     c->next = NULL;
+  79:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+  80:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         return;
+  81:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+  82:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+  83:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // isolate Chunk
+  84:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     c->next = NULL;
  159               		.loc 1 84 0
  160 0090 FC01      		movw r30,r24
  161 0092 128A      		std Z+18,__zero_reg__
  162 0094 138A      		std Z+19,__zero_reg__
-  85:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
-  86:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // update pointers
-  87:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL ) 
+  85:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+  86:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // update pointers
+  87:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL ) 
  163               		.loc 1 87 0
  164 0096 2091 0000 		lds r18,globalRq
  165 009a 3091 0000 		lds r19,globalRq+1
  166 009e 232B      		or r18,r19
  167 00a0 01F4      		brne .L11
-  88:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
-  89:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.head = c;
+  88:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+  89:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.head = c;
  168               		.loc 1 89 0
  169 00a2 8093 0000 		sts globalRq,r24
  170 00a6 9093 0000 		sts globalRq+1,r25
  171 00aa 00C0      		rjmp .L12
  172               	.L11:
-  90:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
-  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     else 
-  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
-  93:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail->next = c;
+  90:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     else 
+  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+  93:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail->next = c;
  173               		.loc 1 93 0
  174 00ac E091 0000 		lds r30,globalRq+2
  175 00b0 F091 0000 		lds r31,globalRq+2+1
  176 00b4 828B      		std Z+18,r24
  177 00b6 938B      		std Z+19,r25
  178               	.L12:
-  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
-  95:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
-  96:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // add/flag it
-  97:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     globalRq.tail  = c;
+  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+  95:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+  96:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // add/flag it
+  97:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     globalRq.tail  = c;
  179               		.loc 1 97 0
  180 00b8 8093 0000 		sts globalRq+2,r24
  181 00bc 9093 0000 		sts globalRq+2+1,r25
-  98:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     globalRq.flags = PACKET_READY;
+  98:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     globalRq.flags = PACKET_READY;
  182               		.loc 1 98 0
  183 00c0 80E8      		ldi r24,lo8(-128)
  184               	.LVL12:
@@ -287,11 +287,11 @@
  191               	.global	isSpecial
  193               	isSpecial:
  194               	.LFB9:
-  99:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** }
- 100:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 101:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // check to see if character is special
- 102:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** byte isSpecial(byte val)
- 103:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** {
+  99:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** }
+ 100:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 101:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // check to see if character is special
+ 102:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** byte isSpecial(byte val)
+ 103:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** {
  195               		.loc 1 103 0
  196               	.LVL14:
  197               	/* prologue: function */
@@ -299,27 +299,27 @@
  199               	/* stack size = 0 */
  200               	.L__stack_usage = 0
  201 00c8 282F      		mov r18,r24
- 104:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
+ 104:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
  202               		.loc 1 104 0
  203 00ca 982F      		mov r25,r24
  204 00cc 9E7F      		andi r25,lo8(-2)
- 105:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         ((val & FD_MASK)  == FD    ) || (val              == ESCAPE )   )
- 106:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 107:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         return 1;
+ 105:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         ((val & FD_MASK)  == FD    ) || (val              == ESCAPE )   )
+ 106:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 107:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         return 1;
  205               		.loc 1 107 0
  206 00ce 81E0      		ldi r24,lo8(1)
  207               	.LVL15:
- 104:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
+ 104:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
  208               		.loc 1 104 0
  209 00d0 9830      		cpi r25,lo8(8)
  210 00d2 01F0      		breq .L20
- 104:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
+ 104:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( ((val & ACK_MASK) == ACK   ) || ((val & ACK_MASK) == NACK  ) ||
  211               		.loc 1 104 0 is_stmt 0 discriminator 1
  212 00d4 9A30      		cpi r25,lo8(10)
  213 00d6 01F0      		breq .L20
  214 00d8 9231      		cpi r25,lo8(18)
  215 00da 01F0      		breq .L17
- 105:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         ((val & FD_MASK)  == FD    ) || (val              == ESCAPE )   )
+ 105:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         ((val & FD_MASK)  == FD    ) || (val              == ESCAPE )   )
  216               		.loc 1 105 0 is_stmt 1
  217 00dc 2D37      		cpi r18,lo8(125)
  218 00de 01F0      		breq .L17
@@ -328,20 +328,20 @@
  221               	.L20:
  222 00e4 0895      		ret
  223               	.L17:
- 108:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 109:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
- 110:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     return 0;
- 111:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** }
+ 108:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 109:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+ 110:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     return 0;
+ 111:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** }
  224               		.loc 1 111 0
  225 00e6 0895      		ret
  226               	.LFE9:
  228               	.global	sendToBuffer
  230               	sendToBuffer:
  231               	.LFB10:
- 112:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 113:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // makes the Chunk into the correct send string
- 114:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** void sendToBuffer(PRef p, Chunk* c, byte parity)
- 115:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** {
+ 112:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 113:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // makes the Chunk into the correct send string
+ 114:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** void sendToBuffer(PRef p, Chunk* c, byte parity)
+ 115:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** {
  232               		.loc 1 115 0
  233               	.LVL16:
  234 00e8 9F92      		push r9
@@ -373,23 +373,23 @@
  260 00fe B82E      		mov r11,r24
  261 0100 7B01      		movw r14,r22
  262               	.LVL17:
- 116:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte checksum = 0;
- 117:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte val;
- 118:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte i;
- 119:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte delim;
- 120:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
- 121:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if(c == NULL)
+ 116:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte checksum = 0;
+ 117:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte val;
+ 118:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte i;
+ 119:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte delim;
+ 120:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+ 121:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if(c == NULL)
  263               		.loc 1 121 0
  264 0102 6115      		cp r22,__zero_reg__
  265 0104 7105      		cpc r23,__zero_reg__
  266 0106 01F4      		brne .+2
  267 0108 00C0      		rjmp .L25
- 122:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 123:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         return;
- 124:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 125:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	
- 126:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // send FD
- 127:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     delim = (FD | parity);
+ 122:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 123:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         return;
+ 124:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 125:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	
+ 126:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // send FD
+ 127:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     delim = (FD | parity);
  268               		.loc 1 127 0
  269 010a 62E1      		ldi r22,lo8(18)
  270 010c C62E      		mov r12,r22
@@ -398,26 +398,26 @@
  273               	.LVL19:
  274 0110 00E0      		ldi r16,0
  275 0112 10E0      		ldi r17,0
- 116:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte checksum = 0;
+ 116:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte checksum = 0;
  276               		.loc 1 116 0
  277 0114 D12C      		mov r13,__zero_reg__
- 128:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 129:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // send messageHandler
- 130:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<POINTER_SIZE; i++)
- 131:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 132:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         val = c->handler[i];
- 133:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
- 134:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
- 135:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // escape it
- 136:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
- 137:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 138:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
- 139:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
- 140:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 141:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // send regular
- 142:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         else 
- 143:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 144:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(val, &(port[p].tx));
+ 128:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 129:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // send messageHandler
+ 130:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<POINTER_SIZE; i++)
+ 131:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 132:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         val = c->handler[i];
+ 133:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
+ 134:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+ 135:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // escape it
+ 136:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 137:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 138:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 139:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 140:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 141:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // send regular
+ 142:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         else 
+ 143:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 144:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(val, &(port[p].tx));
  278               		.loc 1 144 0
  279 0116 88E5      		ldi r24,lo8(88)
  280               	.LVL20:
@@ -426,22 +426,22 @@
  283 011c 1124      		clr __zero_reg__
  284 011e C050      		subi r28,lo8(-(port+56))
  285 0120 D040      		sbci r29,hi8(-(port+56))
- 139:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 139:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
  286               		.loc 1 139 0
  287 0122 70E2      		ldi r23,lo8(32)
  288 0124 972E      		mov r9,r23
  289               	.LVL21:
  290               	.L29:
- 114:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** void sendToBuffer(PRef p, Chunk* c, byte parity)
+ 114:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** void sendToBuffer(PRef p, Chunk* c, byte parity)
  291               		.loc 1 114 0
  292 0126 F701      		movw r30,r14
  293 0128 E00F      		add r30,r16
  294 012a F11F      		adc r31,r17
- 132:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         val = c->handler[i];
+ 132:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         val = c->handler[i];
  295               		.loc 1 132 0
  296 012c A488      		ldd r10,Z+20
  297               	.LVL22:
- 133:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
+ 133:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
  298               		.loc 1 133 0
  299 012e 6A2D      		mov r22,r10
  300 0130 8D2D      		mov r24,r13
@@ -449,24 +449,24 @@
  302               	.LVL23:
  303 0136 D82E      		mov r13,r24
  304               	.LVL24:
- 136:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 136:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
  305               		.loc 1 136 0
  306 0138 8A2D      		mov r24,r10
  307 013a 0E94 0000 		call isSpecial
  308               	.LVL25:
- 138:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 138:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
  309               		.loc 1 138 0
  310 013e BE01      		movw r22,r28
- 136:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 136:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
  311               		.loc 1 136 0
  312 0140 8823      		tst r24
  313 0142 01F0      		breq .L27
- 138:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 138:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
  314               		.loc 1 138 0
  315 0144 8DE7      		ldi r24,lo8(125)
  316 0146 0E94 0000 		call push
  317               	.LVL26:
- 139:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 139:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
  318               		.loc 1 139 0
  319 014a BE01      		movw r22,r28
  320 014c 8A2D      		mov r24,r10
@@ -480,32 +480,32 @@
  328               	.LVL27:
  329 0158 0F5F      		subi r16,-1
  330 015a 1F4F      		sbci r17,-1
- 130:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<POINTER_SIZE; i++)
+ 130:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<POINTER_SIZE; i++)
  331               		.loc 1 130 0
  332 015c 0230      		cpi r16,2
  333 015e 1105      		cpc r17,__zero_reg__
  334 0160 01F4      		brne .L29
  335 0162 01E1      		ldi r16,lo8(17)
- 145:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 146:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 147:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
- 148:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // send data
- 149:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<DATA_SIZE; i++)
- 150:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 151:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         val = c->data[i];
- 152:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
- 153:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
- 154:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // escape it
- 155:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
- 156:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 157:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
- 158:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 159:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
- 160:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 161:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // send regular
- 162:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         else 
- 163:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 164:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(val, &(port[p].tx));
+ 145:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 146:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 147:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+ 148:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // send data
+ 149:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<DATA_SIZE; i++)
+ 150:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 151:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         val = c->data[i];
+ 152:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
+ 153:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+ 154:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // escape it
+ 155:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 156:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 157:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 158:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 159:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 160:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 161:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // send regular
+ 162:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         else 
+ 163:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 164:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(val, &(port[p].tx));
  336               		.loc 1 164 0
  337 0164 E8E5      		ldi r30,lo8(88)
  338 0166 BE9E      		mul r11,r30
@@ -513,19 +513,19 @@
  340 016a 1124      		clr __zero_reg__
  341 016c C050      		subi r28,lo8(-(port+56))
  342 016e D040      		sbci r29,hi8(-(port+56))
- 159:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 159:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
  343               		.loc 1 159 0
  344 0170 50E2      		ldi r21,lo8(32)
  345 0172 952E      		mov r9,r21
  346               	.LVL28:
  347               	.L32:
- 151:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         val = c->data[i];
+ 151:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         val = c->data[i];
  348               		.loc 1 151 0
  349 0174 F701      		movw r30,r14
  350 0176 1191      		ld r17,Z+
  351 0178 7F01      		movw r14,r30
  352               	.LVL29:
- 152:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
+ 152:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         checksum = crcCalc(checksum, val);
  353               		.loc 1 152 0
  354 017a 612F      		mov r22,r17
  355 017c 8D2D      		mov r24,r13
@@ -533,25 +533,25 @@
  357               	.LVL30:
  358 0182 D82E      		mov r13,r24
  359               	.LVL31:
- 155:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 155:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
  360               		.loc 1 155 0
  361 0184 812F      		mov r24,r17
  362 0186 0E94 0000 		call isSpecial
  363               	.LVL32:
  364 018a A82E      		mov r10,r24
- 157:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 157:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
  365               		.loc 1 157 0
  366 018c BE01      		movw r22,r28
- 155:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
+ 155:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( isSpecial(val) ) 
  367               		.loc 1 155 0
  368 018e 8823      		tst r24
  369 0190 01F0      		breq .L30
- 157:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
+ 157:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(ESCAPE, &(port[p].tx));
  370               		.loc 1 157 0
  371 0192 8DE7      		ldi r24,lo8(125)
  372 0194 0E94 0000 		call push
  373               	.LVL33:
- 159:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
+ 159:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(val^ESCAPE_CHAR, &(port[p].tx));
  374               		.loc 1 159 0
  375 0198 BE01      		movw r22,r28
  376 019a 812F      		mov r24,r17
@@ -564,22 +564,22 @@
  383 01a2 0E94 0000 		call push
  384               	.LVL34:
  385 01a6 0150      		subi r16,lo8(-(-1))
- 149:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<DATA_SIZE; i++)
+ 149:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     for(i=0; i<DATA_SIZE; i++)
  386               		.loc 1 149 0
  387 01a8 01F4      		brne .L32
  388 01aa 2B2D      		mov r18,r11
  389 01ac 30E0      		ldi r19,0
- 165:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 166:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 167:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 168:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // send checksum
- 169:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	// escape it
- 170:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( isSpecial(val) ) 
- 171:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 172:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         push(ESCAPE, &(port[p].tx));
+ 165:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 166:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 167:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 168:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // send checksum
+ 169:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	// escape it
+ 170:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( isSpecial(val) ) 
+ 171:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 172:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         push(ESCAPE, &(port[p].tx));
  390               		.loc 1 172 0
  391 01ae 88E5      		ldi r24,lo8(88)
- 170:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( isSpecial(val) ) 
+ 170:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( isSpecial(val) ) 
  392               		.loc 1 170 0
  393 01b0 AA20      		tst r10
  394 01b2 01F0      		breq .L33
@@ -595,18 +595,18 @@
  404 01c4 8DE7      		ldi r24,lo8(125)
  405 01c6 0E94 0000 		call push
  406               	.LVL35:
- 173:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         push(checksum^ESCAPE_CHAR, &(port[p].tx));
+ 173:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         push(checksum^ESCAPE_CHAR, &(port[p].tx));
  407               		.loc 1 173 0
  408 01ca BE01      		movw r22,r28
  409 01cc 80E2      		ldi r24,lo8(32)
  410 01ce 8D25      		eor r24,r13
  411 01d0 00C0      		rjmp .L39
  412               	.L33:
- 174:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 175:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // send regular
- 176:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     else 
- 177:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 178:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         push(checksum, &(port[p].tx));
+ 174:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 175:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // send regular
+ 176:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     else 
+ 177:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 178:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         push(checksum, &(port[p].tx));
  413               		.loc 1 178 0
  414 01d2 829F      		mul r24,r18
  415 01d4 B001      		movw r22,r0
@@ -619,10 +619,10 @@
  422               	.L39:
  423 01e2 0E94 0000 		call push
  424               	.LVL36:
- 179:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 180:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
- 181:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // start the interrupt by sending a byte (FD)
- 182:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     pPutChar(delim, port[p].pnum);
+ 179:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 180:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+ 181:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // start the interrupt by sending a byte (FD)
+ 182:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     pPutChar(delim, port[p].pnum);
  425               		.loc 1 182 0
  426 01e6 88E5      		ldi r24,lo8(88)
  427 01e8 B89E      		mul r11,r24
@@ -633,7 +633,7 @@
  432 01f2 6081      		ld r22,Z
  433 01f4 8C2D      		mov r24,r12
  434               	/* epilogue start */
- 183:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** }
+ 183:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** }
  435               		.loc 1 183 0
  436 01f6 DF91      		pop r29
  437 01f8 CF91      		pop r28
@@ -649,7 +649,7 @@
  447               	.LVL39:
  448 0208 AF90      		pop r10
  449 020a 9F90      		pop r9
- 182:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     pPutChar(delim, port[p].pnum);
+ 182:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     pPutChar(delim, port[p].pnum);
  450               		.loc 1 182 0
  451 020c 0C94 0000 		jmp pPutChar
  452               	.LVL40:
@@ -674,12 +674,12 @@
  472               	.global	processBuffer
  474               	processBuffer:
  475               	.LFB11:
- 184:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 185:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 186:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // pulls bytes from the buffer and puts them into Chunks
- 187:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // also handles ACKs appropriately
- 188:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** void processBuffer(PRef p)
- 189:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** {
+ 184:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 185:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 186:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // pulls bytes from the buffer and puts them into Chunks
+ 187:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // also handles ACKs appropriately
+ 188:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** void processBuffer(PRef p)
+ 189:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** {
  476               		.loc 1 189 0
  477               	.LVL43:
  478 0228 2F92      		push r2
@@ -724,9 +724,9 @@
  517               	.L__stack_usage = 18
  518 024c 382E      		mov r3,r24
  519               	.LVL44:
- 190:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte   currByte;
- 191:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     Chunk* currChunk = NULL;
- 192:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     byte   wasEscape = wasEscapeStore[p];
+ 190:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte   currByte;
+ 191:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     Chunk* currChunk = NULL;
+ 192:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     byte   wasEscape = wasEscapeStore[p];
  520               		.loc 1 192 0
  521 024e E82E      		mov r14,r24
  522 0250 F12C      		mov r15,__zero_reg__
@@ -735,10 +735,10 @@
  525 0256 F040      		sbci r31,hi8(-(wasEscapeStore))
  526 0258 2080      		ld r2,Z
  527               	.LVL45:
- 193:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 194:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 195:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // nothing to process
- 196:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( isEmpty(&(port[p].rx)) )
+ 193:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 194:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 195:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // nothing to process
+ 196:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( isEmpty(&(port[p].rx)) )
  528               		.loc 1 196 0
  529 025a 88E5      		ldi r24,lo8(88)
  530               	.LVL46:
@@ -758,12 +758,12 @@
  544               	.LVL47:
  545 0278 8111      		cpse r24,__zero_reg__
  546 027a 00C0      		rjmp .L40
- 197:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 198:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         return;
- 199:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 200:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 201:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // continue filling unfinished Chunk
- 202:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( (port[p].rq.curr != NULL) && chunkFilling(port[p].rq.curr) ) 
+ 197:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 198:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         return;
+ 199:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 200:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 201:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // continue filling unfinished Chunk
+ 202:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( (port[p].rq.curr != NULL) && chunkFilling(port[p].rq.curr) ) 
  547               		.loc 1 202 0
  548 027c FE01      		movw r30,r28
  549 027e E050      		subi r30,lo8(-(port))
@@ -779,12 +779,12 @@
  559 0290 86FD      		sbrc r24,6
  560 0292 00C0      		rjmp .L66
  561               	.L42:
- 203:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 204:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         currChunk = port[p].rq.curr;
- 205:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 206:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     else
- 207:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 208:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.index    = 0;
+ 203:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 204:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         currChunk = port[p].rq.curr;
+ 205:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 206:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     else
+ 207:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 208:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.index    = 0;
  562               		.loc 1 208 0 is_stmt 1
  563 0294 88E5      		ldi r24,lo8(88)
  564 0296 8E9D      		mul r24,r14
@@ -795,32 +795,32 @@
  569 02a0 E050      		subi r30,lo8(-(port))
  570 02a2 F040      		sbci r31,hi8(-(port))
  571 02a4 138A      		std Z+19,__zero_reg__
- 209:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = 0;
+ 209:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = 0;
  572               		.loc 1 209 0
  573 02a6 148A      		std Z+20,__zero_reg__
  574               	.LVL48:
- 210:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         wasEscape           = 0;
+ 210:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         wasEscape           = 0;
  575               		.loc 1 210 0
  576 02a8 212C      		mov r2,__zero_reg__
- 191:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     Chunk* currChunk = NULL;
+ 191:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     Chunk* currChunk = NULL;
  577               		.loc 1 191 0
  578 02aa 412C      		mov r4,__zero_reg__
  579 02ac 512C      		mov r5,__zero_reg__
  580 02ae 00C0      		rjmp .L66
  581               	.LVL49:
  582               	.L56:
- 211:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 212:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 
- 213:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     while( !isEmpty(&(port[p].rx)) )
- 214:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 215:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         currByte = (byte)pop(&(port[p].rx));
+ 211:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 212:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 
+ 213:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     while( !isEmpty(&(port[p].rx)) )
+ 214:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 215:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         currByte = (byte)pop(&(port[p].rx));
  583               		.loc 1 215 0
  584 02b0 C301      		movw r24,r6
  585 02b2 0E94 0000 		call pop
  586               	.LVL50:
- 216:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
- 217:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // is ACK
- 218:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( (currByte & ACK_MASK) == ACK )
+ 216:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+ 217:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // is ACK
+ 218:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( (currByte & ACK_MASK) == ACK )
  587               		.loc 1 218 0
  588 02b6 BC01      		movw r22,r24
  589 02b8 6E7F      		andi r22,254
@@ -828,9 +828,9 @@
  591 02bc 6830      		cpi r22,8
  592 02be 7105      		cpc r23,__zero_reg__
  593 02c0 01F4      		brne .L45
- 219:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 220:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             // set ack parity
- 221:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.flags |= (1 << (currByte & 0x01));
+ 219:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 220:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             // set ack parity
+ 221:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.flags |= (1 << (currByte & 0x01));
  594               		.loc 1 221 0
  595 02c2 8170      		andi r24,1
  596 02c4 9927      		clr r25
@@ -849,38 +849,38 @@
  609 02d8 9081      		ld r25,Z
  610 02da 982B      		or r25,r24
  611 02dc 9083      		st Z,r25
- 222:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
- 223:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             ackHandler(p);
+ 222:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+ 223:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             ackHandler(p);
  612               		.loc 1 223 0
  613 02de 832D      		mov r24,r3
  614 02e0 0E94 0000 		call ackHandler
  615               	.LVL52:
- 224:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             continue;
+ 224:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             continue;
  616               		.loc 1 224 0
  617 02e4 00C0      		rjmp .L71
  618               	.LVL53:
  619               	.L45:
- 225:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 226:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
- 227:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         /// TODO: HANDLE NACKS
- 228:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         /*if( (currByte & ACK_MASK) == NACK ){
- 229:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	        //set ack parity
- 230:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	        //port[p].rq.flags |= (1<<(currByte & 0x01));
- 231:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	        
- 232:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	        nackHandler(p);
- 233:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	        continue;
- 234:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	        }*/
- 235:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
- 236:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // is FRAME_DELIMETER
- 237:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( (currByte & FD_MASK) == FD )
+ 225:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 226:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+ 227:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         /// TODO: HANDLE NACKS
+ 228:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         /*if( (currByte & ACK_MASK) == NACK ){
+ 229:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	        //set ack parity
+ 230:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	        //port[p].rq.flags |= (1<<(currByte & 0x01));
+ 231:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	        
+ 232:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	        nackHandler(p);
+ 233:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	        continue;
+ 234:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	        }*/
+ 235:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+ 236:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // is FRAME_DELIMETER
+ 237:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( (currByte & FD_MASK) == FD )
  620               		.loc 1 237 0
  621 02e6 6231      		cpi r22,18
  622 02e8 7105      		cpc r23,__zero_reg__
  623 02ea 01F4      		brne .L47
  624               	.LBB2:
- 238:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 239:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             // determine parity
- 240:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             byte parity = setParityFromByte(currByte);
+ 238:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 239:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             // determine parity
+ 240:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             byte parity = setParityFromByte(currByte);
  625               		.loc 1 240 0
  626 02ec 8170      		andi r24,1
  627 02ee 9927      		clr r25
@@ -892,21 +892,21 @@
  633 02f6 E0EE      		ldi r30,lo8(-32)
  634 02f8 2E22      		and r2,r30
  635               	.LVL56:
- 241:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
- 242:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             // restart the fill
- 243:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.index    = 0;
+ 241:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+ 242:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             // restart the fill
+ 243:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.index    = 0;
  636               		.loc 1 243 0
  637 02fa F601      		movw r30,r12
  638 02fc 1082      		st Z,__zero_reg__
- 244:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.checksum = 0;
+ 244:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.checksum = 0;
  639               		.loc 1 244 0
  640 02fe F501      		movw r30,r10
  641 0300 1082      		st Z,__zero_reg__
  642               	.LVL57:
- 245:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
- 246:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 
- 247:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             // unfinished Chunk
- 248:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             if(port[p].rq.curr != NULL)
+ 245:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
+ 246:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 
+ 247:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             // unfinished Chunk
+ 248:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             if(port[p].rq.curr != NULL)
  643               		.loc 1 248 0
  644 0302 F401      		movw r30,r8
  645 0304 4080      		ld r4,Z
@@ -915,48 +915,48 @@
  648 0308 4114      		cp r4,__zero_reg__
  649 030a 5104      		cpc r5,__zero_reg__
  650 030c 01F4      		brne .L48
- 249:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             {
- 250:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 currChunk = port[p].rq.curr;
- 251:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             }
- 252:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             // need new Chunk
- 253:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             else
- 254:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             {
- 255:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 currChunk = getSystemRXChunk();
+ 249:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             {
+ 250:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 currChunk = port[p].rq.curr;
+ 251:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             }
+ 252:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             // need new Chunk
+ 253:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             else
+ 254:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             {
+ 255:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 currChunk = getSystemRXChunk();
  651               		.loc 1 255 0
  652 030e 0E94 0000 		call getSystemRXChunk
  653               	.LVL59:
  654 0312 2C01      		movw r4,r24
  655               	.LVL60:
- 256:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
- 257:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 				/*if (isAClockSyncMessage(currChunk))
- 258:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 				{		
- 259:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 					// insert receive time
- 260:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 					//insertReceiveTime(currChunk);
- 261:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 				}*/
- 262:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #endif
- 263:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 // out of memory, can't fill
- 264:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 if( currChunk == NULL )
+ 256:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
+ 257:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 				/*if (isAClockSyncMessage(currChunk))
+ 258:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 				{		
+ 259:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 					// insert receive time
+ 260:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 					//insertReceiveTime(currChunk);
+ 261:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 				}*/
+ 262:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #endif
+ 263:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 // out of memory, can't fill
+ 264:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 if( currChunk == NULL )
  656               		.loc 1 264 0
  657 0314 0097      		sbiw r24,0
  658 0316 01F4      		brne .+2
  659 0318 00C0      		rjmp .L57
- 265:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 {
- 266:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                     // discard bytes, hopefully will get resent
- 267:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                     continue;
- 268:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 }
- 269:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 
- 270:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 // add to the queue
- 271:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = currChunk;
+ 265:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 {
+ 266:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                     // discard bytes, hopefully will get resent
+ 267:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                     continue;
+ 268:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 }
+ 269:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 
+ 270:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 // add to the queue
+ 271:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = currChunk;
  660               		.loc 1 271 0
  661 031a F401      		movw r30,r8
  662 031c 8083      		st Z,r24
  663 031e 9183      		std Z+1,r25
  664               	.LVL61:
  665               	.L48:
- 272:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             }
- 273:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             
- 274:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             // reset the status of the Chunk, just in case
- 275:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             currChunk->status = CHUNK_USED | CHUNK_FILLING | parity | port[p].pnum;
+ 272:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             }
+ 273:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             
+ 274:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             // reset the status of the Chunk, just in case
+ 275:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             currChunk->status = CHUNK_USED | CHUNK_FILLING | parity | port[p].pnum;
  666               		.loc 1 275 0
  667 0320 9881      		ld r25,Y
  668 0322 906C      		ori r25,lo8(-64)
@@ -967,43 +967,43 @@
  673               	.LVL62:
  674               	.L47:
  675               	.LBE2:
- 276:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             
- 277:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             continue;
- 278:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 279:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
- 280:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // no use processing if can't put anywhere
- 281:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if(currChunk == NULL)
+ 276:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             
+ 277:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             continue;
+ 278:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 279:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+ 280:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // no use processing if can't put anywhere
+ 281:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if(currChunk == NULL)
  676               		.loc 1 281 0
  677 032c 4114      		cp r4,__zero_reg__
  678 032e 5104      		cpc r5,__zero_reg__
  679 0330 01F4      		brne .+2
  680 0332 00C0      		rjmp .L71
- 215:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         currByte = (byte)pop(&(port[p].rx));
+ 215:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         currByte = (byte)pop(&(port[p].rx));
  681               		.loc 1 215 0
  682 0334 682F      		mov r22,r24
- 282:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 283:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             continue;
- 284:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 285:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         
- 286:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // is an escape char        
- 287:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( currByte == ESCAPE )
+ 282:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 283:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             continue;
+ 284:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 285:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         
+ 286:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // is an escape char        
+ 287:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( currByte == ESCAPE )
  683               		.loc 1 287 0
  684 0336 8D37      		cpi r24,lo8(125)
  685 0338 01F4      		brne .+2
  686 033a 00C0      		rjmp .L58
- 288:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 289:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 1;   
- 290:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             continue;
- 291:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 292:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 293:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // is a regular character
- 294:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // was escaped
- 295:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( wasEscape )
+ 288:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 289:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 1;   
+ 290:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             continue;
+ 291:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 292:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 293:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // is a regular character
+ 294:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // was escaped
+ 295:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( wasEscape )
  687               		.loc 1 295 0
  688 033c 2220      		tst r2
  689 033e 01F0      		breq .L49
- 296:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 297:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             currByte ^= ESCAPE_CHAR;
+ 296:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 297:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             currByte ^= ESCAPE_CHAR;
  690               		.loc 1 297 0
  691 0340 F0E2      		ldi r31,32
  692 0342 8F27      		eor r24,r31
@@ -1011,78 +1011,78 @@
  694 0344 682F      		mov r22,r24
  695               	.LVL64:
  696               	.L49:
- 298:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 0;
- 299:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 300:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 301:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // is transmitted checksum
- 302:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index >= (DATA_SIZE + POINTER_SIZE) )
+ 298:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 0;
+ 299:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 300:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 301:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // is transmitted checksum
+ 302:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index >= (DATA_SIZE + POINTER_SIZE) )
  697               		.loc 1 302 0
  698 0346 F601      		movw r30,r12
  699 0348 8081      		ld r24,Z
  700 034a 8331      		cpi r24,lo8(19)
  701 034c 00F0      		brlo .L50
- 303:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 304:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             // checksum matches!
- 305:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             if( currByte == port[p].rq.checksum )
+ 303:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 304:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             // checksum matches!
+ 305:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             if( currByte == port[p].rq.checksum )
  702               		.loc 1 305 0
  703 034e F501      		movw r30,r10
  704 0350 8081      		ld r24,Z
  705 0352 6813      		cpse r22,r24
  706 0354 00C0      		rjmp .L51
  707               	.LBB3:
- 306:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             {
- 307:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 currChunk->status &= ~CHUNK_FILLING;
+ 306:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             {
+ 307:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 currChunk->status &= ~CHUNK_FILLING;
  708               		.loc 1 307 0
  709 0356 F201      		movw r30,r4
  710 0358 8189      		ldd r24,Z+17
  711 035a 8F7B      		andi r24,lo8(-65)
  712 035c 818B      		std Z+17,r24
- 308:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.flags  |=  CHUNK_READY;
+ 308:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.flags  |=  CHUNK_READY;
  713               		.loc 1 308 0
  714 035e F801      		movw r30,r16
  715 0360 8081      		ld r24,Z
  716 0362 8068      		ori r24,lo8(-128)
  717 0364 8083      		st Z,r24
  718               	.LVL65:
- 309:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 				
- 310:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 // check for parity error
- 311:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 byte parity = chunkParity(currChunk);
+ 309:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 				
+ 310:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 // check for parity error
+ 311:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 byte parity = chunkParity(currChunk);
  719               		.loc 1 311 0
  720 0366 F201      		movw r30,r4
  721 0368 9189      		ldd r25,Z+17
  722 036a 95FB      		bst r25,5
  723 036c 9927      		clr r25
  724 036e 90F9      		bld r25,0
- 312:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 byte last   = parityLastChunk(port[p].rq);
+ 312:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 byte last   = parityLastChunk(port[p].rq);
  725               		.loc 1 312 0
  726 0370 86FB      		bst r24,6
  727 0372 8827      		clr r24
  728 0374 80F9      		bld r24,0
  729               	.LVL66:
- 313:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	      
- 314:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 // not a duplicate packet		
- 315:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 if(parity != last) {
+ 313:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	      
+ 314:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 // not a duplicate packet		
+ 315:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 if(parity != last) {
  730               		.loc 1 315 0
  731 0376 9817      		cp r25,r24
  732 0378 01F0      		breq .L52
- 316:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                     // update neighborhood (fix for race condition)
- 317:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                     //updateNeighbor(p, PRESENT);
- 318:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
- 319:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 					if (isAClockSyncMessage(currChunk) == 1)
- 320:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 					{		
- 321:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 						// insert receive time
- 322:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 						insertReceiveTime(currChunk);
- 323:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 					}
- 324:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #endif
- 325:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                     // add to global receive queue
- 326:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                     addToGlobalRq(currChunk);
+ 316:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                     // update neighborhood (fix for race condition)
+ 317:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                     //updateNeighbor(p, PRESENT);
+ 318:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
+ 319:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 					if (isAClockSyncMessage(currChunk) == 1)
+ 320:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 					{		
+ 321:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 						// insert receive time
+ 322:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 						insertReceiveTime(currChunk);
+ 323:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 					}
+ 324:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #endif
+ 325:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                     // add to global receive queue
+ 326:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                     addToGlobalRq(currChunk);
  733               		.loc 1 326 0
  734 037a C201      		movw r24,r4
  735 037c 0E94 0000 		call addToGlobalRq
  736               	.LVL67:
- 327:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 		
- 328:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                     // flip the parity
- 329:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                     flipParityLast(port[p].rq);
+ 327:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 		
+ 328:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                     // flip the parity
+ 329:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                     flipParityLast(port[p].rq);
  737               		.loc 1 329 0
  738 0380 F801      		movw r30,r16
  739 0382 8081      		ld r24,Z
@@ -1093,64 +1093,64 @@
  744 038c 00C0      		rjmp .L53
  745               	.LVL68:
  746               	.L52:
- 330:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 }
- 331:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 // free the chunk
- 332:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 else 
- 333:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 {
- 334:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                     freeChunk(currChunk);
+ 330:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 }
+ 331:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 // free the chunk
+ 332:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 else 
+ 333:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 {
+ 334:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                     freeChunk(currChunk);
  747               		.loc 1 334 0
  748 038e C201      		movw r24,r4
  749 0390 0E94 0000 		call freeChunk
  750               	.LVL69:
  751               	.L53:
- 335:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 }
- 336:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****               
- 337:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 // remove from the port rq
- 338:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = NULL;
+ 335:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 }
+ 336:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****               
+ 337:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 // remove from the port rq
+ 338:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = NULL;
  752               		.loc 1 338 0
  753 0394 F401      		movw r30,r8
  754 0396 1082      		st Z,__zero_reg__
  755 0398 1182      		std Z+1,__zero_reg__
  756               	.L51:
  757               	.LBE3:
- 339:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             }
- 340:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             
- 341:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             // reset the data
- 342:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.index    = 0;
+ 339:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             }
+ 340:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             
+ 341:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             // reset the data
+ 342:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.index    = 0;
  758               		.loc 1 342 0
  759 039a F601      		movw r30,r12
  760 039c 1082      		st Z,__zero_reg__
- 343:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.checksum = 0;
+ 343:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             port[p].rq.checksum = 0;
  761               		.loc 1 343 0
  762 039e F501      		movw r30,r10
  763 03a0 1082      		st Z,__zero_reg__
  764               	.LVL70:
- 344:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
+ 344:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
  765               		.loc 1 344 0
  766 03a2 212C      		mov r2,__zero_reg__
- 345:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             currChunk           = NULL;
+ 345:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             currChunk           = NULL;
  767               		.loc 1 345 0
  768 03a4 412C      		mov r4,__zero_reg__
  769 03a6 512C      		mov r5,__zero_reg__
- 346:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 	    
- 347:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             /// TODO: send NACK
- 348:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             continue;
+ 346:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 	    
+ 347:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             /// TODO: send NACK
+ 348:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             continue;
  770               		.loc 1 348 0
  771 03a8 00C0      		rjmp .L71
  772               	.LVL71:
  773               	.L50:
  774 03aa E82F      		mov r30,r24
  775 03ac F0E0      		ldi r31,0
- 349:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 350:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 		
- 351:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // message handler
- 352:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index < POINTER_SIZE )
- 353:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 354:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             currChunk->handler[port[p].rq.index] = currByte;
+ 349:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 350:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 		
+ 351:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // message handler
+ 352:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index < POINTER_SIZE )
+ 353:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 354:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             currChunk->handler[port[p].rq.index] = currByte;
  776               		.loc 1 354 0
  777 03ae E40D      		add r30,r4
  778 03b0 F51D      		adc r31,r5
- 352:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index < POINTER_SIZE )
+ 352:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index < POINTER_SIZE )
  779               		.loc 1 352 0
  780 03b2 8230      		cpi r24,lo8(2)
  781 03b4 00F4      		brsh .L54
@@ -1158,18 +1158,18 @@
  783 03b6 648B      		std Z+20,r22
  784 03b8 00C0      		rjmp .L55
  785               	.L54:
- 355:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 356:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         // regular byte
- 357:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         else
- 358:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 359:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             currChunk->data[port[p].rq.index-POINTER_SIZE] = currByte;
+ 355:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 356:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         // regular byte
+ 357:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         else
+ 358:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 359:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             currChunk->data[port[p].rq.index-POINTER_SIZE] = currByte;
  786               		.loc 1 359 0
  787 03ba 3297      		sbiw r30,2
  788 03bc 6083      		st Z,r22
  789               	.L55:
- 360:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 361:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 362:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = crcCalc(port[p].rq.checksum, currByte);
+ 360:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 361:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 362:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = crcCalc(port[p].rq.checksum, currByte);
  790               		.loc 1 362 0
  791 03be F501      		movw r30,r10
  792 03c0 8081      		ld r24,Z
@@ -1177,7 +1177,7 @@
  794               	.LVL72:
  795 03c6 F501      		movw r30,r10
  796 03c8 8083      		st Z,r24
- 363:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.index++;
+ 363:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.index++;
  797               		.loc 1 363 0
  798 03ca F601      		movw r30,r12
  799 03cc 8081      		ld r24,Z
@@ -1185,14 +1185,14 @@
  801 03d0 8083      		st Z,r24
  802               	.L57:
  803               	.LBB4:
- 245:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
+ 245:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape           = 0;
  804               		.loc 1 245 0
  805 03d2 212C      		mov r2,__zero_reg__
  806 03d4 00C0      		rjmp .L71
  807               	.LVL73:
  808               	.L58:
  809               	.LBE4:
- 289:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 1;   
+ 289:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             wasEscape = 1;   
  810               		.loc 1 289 0
  811 03d6 2224      		clr r2
  812 03d8 2394      		inc r2
@@ -1200,7 +1200,7 @@
  814 03da 00C0      		rjmp .L71
  815               	.LVL75:
  816               	.L66:
- 302:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index >= (DATA_SIZE + POINTER_SIZE) )
+ 302:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( port[p].rq.index >= (DATA_SIZE + POINTER_SIZE) )
  817               		.loc 1 302 0 discriminator 1
  818 03dc 88E5      		ldi r24,lo8(88)
  819 03de 8E9D      		mul r24,r14
@@ -1214,19 +1214,19 @@
  827 03ee F3E1      		ldi r31,19
  828 03f0 CF0E      		add r12,r31
  829 03f2 D11C      		adc r13,__zero_reg__
- 362:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = crcCalc(port[p].rq.checksum, currByte);
+ 362:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         port[p].rq.checksum = crcCalc(port[p].rq.checksum, currByte);
  830               		.loc 1 362 0 discriminator 1
  831 03f4 5E01      		movw r10,r28
  832 03f6 24E1      		ldi r18,20
  833 03f8 A20E      		add r10,r18
  834 03fa B11C      		adc r11,__zero_reg__
  835               	.LBB5:
- 308:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.flags  |=  CHUNK_READY;
+ 308:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.flags  |=  CHUNK_READY;
  836               		.loc 1 308 0 discriminator 1
  837 03fc 8E01      		movw r16,r28
  838 03fe 0B5E      		subi r16,-21
  839 0400 1F4F      		sbci r17,-1
- 338:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = NULL;
+ 338:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].rq.curr = NULL;
  840               		.loc 1 338 0 discriminator 1
  841 0402 4E01      		movw r8,r28
  842 0404 36E1      		ldi r19,22
@@ -1235,7 +1235,7 @@
  845               	.LVL76:
  846               	.L71:
  847               	.LBE5:
- 213:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     while( !isEmpty(&(port[p].rx)) )
+ 213:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     while( !isEmpty(&(port[p].rx)) )
  848               		.loc 1 213 0 discriminator 1
  849 040a C301      		movw r24,r6
  850 040c 0E94 0000 		call isEmpty
@@ -1243,10 +1243,10 @@
  852 0410 8823      		tst r24
  853 0412 01F4      		brne .+2
  854 0414 00C0      		rjmp .L56
- 364:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 365:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
- 366:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // store wasEscape
- 367:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     wasEscapeStore[p] = wasEscape;
+ 364:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 365:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+ 366:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // store wasEscape
+ 367:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     wasEscapeStore[p] = wasEscape;
  855               		.loc 1 367 0
  856 0416 F701      		movw r30,r14
  857 0418 E050      		subi r30,lo8(-(wasEscapeStore))
@@ -1255,7 +1255,7 @@
  860               	.LVL78:
  861               	.L40:
  862               	/* epilogue start */
- 368:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** }
+ 368:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** }
  863               		.loc 1 368 0
  864 041e DF91      		pop r29
  865 0420 CF91      		pop r28
@@ -1282,77 +1282,77 @@
  887               	.global	nextPacket
  889               	nextPacket:
  890               	.LFB12:
- 369:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 370:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // gets data from the global receive queue
- 371:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** Chunk* nextPacket(void)
- 372:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** {
+ 369:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 370:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // gets data from the global receive queue
+ 371:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** Chunk* nextPacket(void)
+ 372:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** {
  891               		.loc 1 372 0
  892               	/* prologue: function */
  893               	/* frame size = 0 */
  894               	/* stack size = 0 */
  895               	.L__stack_usage = 0
  896               	.LVL81:
- 373:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     Chunk* c = NULL;
- 374:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 375:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // no packets
- 376:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL )
+ 373:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     Chunk* c = NULL;
+ 374:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 375:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // no packets
+ 376:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL )
  897               		.loc 1 376 0
  898 0444 E091 0000 		lds r30,globalRq
  899 0448 F091 0000 		lds r31,globalRq+1
  900 044c 3097      		sbiw r30,0
  901 044e 01F4      		brne .L73
- 377:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 378:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail = NULL;
+ 377:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 378:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail = NULL;
  902               		.loc 1 378 0
  903 0450 1092 0000 		sts globalRq+2,__zero_reg__
  904 0454 1092 0000 		sts globalRq+2+1,__zero_reg__
- 379:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.flags &= ~PACKET_READY;
+ 379:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.flags &= ~PACKET_READY;
  905               		.loc 1 379 0
  906 0458 8091 0000 		lds r24,globalRq+4
  907 045c 8F77      		andi r24,lo8(127)
  908 045e 8093 0000 		sts globalRq+4,r24
- 380:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         return NULL;
+ 380:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         return NULL;
  909               		.loc 1 380 0
  910 0462 00C0      		rjmp .L74
  911               	.L73:
  912               	.LVL82:
- 381:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 382:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 383:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // update pointers
- 384:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     c = globalRq.head;
- 385:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
- 386:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     globalRq.head = c->next;
+ 381:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 382:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 383:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // update pointers
+ 384:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     c = globalRq.head;
+ 385:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+ 386:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     globalRq.head = c->next;
  913               		.loc 1 386 0
  914 0464 8289      		ldd r24,Z+18
  915 0466 9389      		ldd r25,Z+19
  916 0468 8093 0000 		sts globalRq,r24
  917 046c 9093 0000 		sts globalRq+1,r25
- 387:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL )
+ 387:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( globalRq.head == NULL )
  918               		.loc 1 387 0
  919 0470 892B      		or r24,r25
  920 0472 01F4      		brne .L75
- 388:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 389:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.flags &= ~PACKET_READY;
+ 388:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 389:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.flags &= ~PACKET_READY;
  921               		.loc 1 389 0
  922 0474 8091 0000 		lds r24,globalRq+4
  923 0478 8F77      		andi r24,lo8(127)
  924 047a 8093 0000 		sts globalRq+4,r24
- 390:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail = NULL;
+ 390:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         globalRq.tail = NULL;
  925               		.loc 1 390 0
  926 047e 1092 0000 		sts globalRq+2,__zero_reg__
  927 0482 1092 0000 		sts globalRq+2+1,__zero_reg__
  928               	.L75:
- 391:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 392:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
- 393:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // isolate and return
- 394:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     c->next = NULL;
+ 391:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 392:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+ 393:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // isolate and return
+ 394:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     c->next = NULL;
  929               		.loc 1 394 0
  930 0486 128A      		std Z+18,__zero_reg__
  931 0488 138A      		std Z+19,__zero_reg__
  932               	.LVL83:
  933               	.L74:
- 395:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     return c;
- 396:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** }
+ 395:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     return c;
+ 396:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** }
  934               		.loc 1 396 0
  935 048a CF01      		movw r24,r30
  936 048c 0895      		ret
@@ -1360,10 +1360,10 @@
  939               	.global	sendOnSerial
  941               	sendOnSerial:
  942               	.LFB13:
- 397:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 398:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // try sending stuff if available and ready
- 399:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** void sendOnSerial(PRef p)
- 400:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** {
+ 397:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 398:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // try sending stuff if available and ready
+ 399:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** void sendOnSerial(PRef p)
+ 400:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** {
  943               		.loc 1 400 0
  944               	.LVL84:
  945 048e DF92      		push r13
@@ -1385,8 +1385,8 @@
  961               	/* stack size = 7 */
  962               	.L__stack_usage = 7
  963 049c D82E      		mov r13,r24
- 401:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // send acks
- 402:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( shouldSendOddAck(port[p].sq) )
+ 401:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // send acks
+ 402:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( shouldSendOddAck(port[p].sq) )
  964               		.loc 1 402 0
  965 049e E82E      		mov r14,r24
  966 04a0 F12C      		mov r15,__zero_reg__
@@ -1401,8 +1401,8 @@
  975 04b0 8E85      		ldd r24,Y+14
  976 04b2 81FF      		sbrs r24,1
  977 04b4 00C0      		rjmp .L77
- 403:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 404:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( isEmpty(&(port[p].tx)) ) {
+ 403:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 404:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( isEmpty(&(port[p].tx)) ) {
  978               		.loc 1 404 0
  979 04b6 0050      		subi r16,lo8(-(port+56))
  980 04b8 1040      		sbci r17,hi8(-(port+56))
@@ -1411,7 +1411,7 @@
  983               	.LVL86:
  984 04c0 8823      		tst r24
  985 04c2 01F0      		breq .L78
- 405:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             pPutChar(ACK | ODD, port[p].pnum);
+ 405:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             pPutChar(ACK | ODD, port[p].pnum);
  986               		.loc 1 405 0
  987 04c4 6881      		ld r22,Y
  988 04c6 89E0      		ldi r24,lo8(9)
@@ -1419,18 +1419,18 @@
  990               	.LVL87:
  991 04cc 00C0      		rjmp .L77
  992               	.L78:
- 406:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 407:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         else {
- 408:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(ACK | ODD, &(port[p].tx));
+ 406:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 407:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         else {
+ 408:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(ACK | ODD, &(port[p].tx));
  993               		.loc 1 408 0
  994 04ce B801      		movw r22,r16
  995 04d0 89E0      		ldi r24,lo8(9)
  996 04d2 0E94 0000 		call push
  997               	.LVL88:
  998               	.L77:
- 409:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 410:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 411:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( shouldSendEvenAck(port[p].sq) )
+ 409:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 410:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 411:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( shouldSendEvenAck(port[p].sq) )
  999               		.loc 1 411 0
  1000 04d6 88E5      		ldi r24,lo8(88)
  1001 04d8 8E9D      		mul r24,r14
@@ -1445,8 +1445,8 @@
  1010 04ea 8685      		ldd r24,Z+14
  1011 04ec 80FF      		sbrs r24,0
  1012 04ee 00C0      		rjmp .L79
- 412:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 413:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( isEmpty(&(port[p].tx)) ) {
+ 412:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 413:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( isEmpty(&(port[p].tx)) ) {
  1013               		.loc 1 413 0
  1014 04f0 C050      		subi r28,lo8(-(port+56))
  1015 04f2 D040      		sbci r29,hi8(-(port+56))
@@ -1455,7 +1455,7 @@
  1018               	.LVL89:
  1019 04fa 8823      		tst r24
  1020 04fc 01F0      		breq .L80
- 414:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             pPutChar(ACK | EVEN, port[p].pnum);
+ 414:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             pPutChar(ACK | EVEN, port[p].pnum);
  1021               		.loc 1 414 0
  1022 04fe F801      		movw r30,r16
  1023 0500 6081      		ld r22,Z
@@ -1464,18 +1464,18 @@
  1026               	.LVL90:
  1027 0508 00C0      		rjmp .L79
  1028               	.L80:
- 415:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 416:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         else {
- 417:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             push(ACK | EVEN, &(port[p].tx));
+ 415:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 416:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         else {
+ 417:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             push(ACK | EVEN, &(port[p].tx));
  1029               		.loc 1 417 0
  1030 050a BE01      		movw r22,r28
  1031 050c 88E0      		ldi r24,lo8(8)
  1032 050e 0E94 0000 		call push
  1033               	.LVL91:
  1034               	.L79:
- 418:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 419:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 420:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     clearSendAcks(port[p].sq);
+ 418:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 419:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 420:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     clearSendAcks(port[p].sq);
  1035               		.loc 1 420 0
  1036 0512 88E5      		ldi r24,lo8(88)
  1037 0514 8E9D      		mul r24,r14
@@ -1489,77 +1489,77 @@
  1045 0524 4E85      		ldd r20,Y+14
  1046 0526 4C7F      		andi r20,lo8(-4)
  1047 0528 4E87      		std Y+14,r20
- 421:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     
- 422:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     // send Chunk?
- 423:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     if( chunkReady(port[p].sq) )
+ 421:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     
+ 422:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     // send Chunk?
+ 423:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     if( chunkReady(port[p].sq) )
  1048               		.loc 1 423 0
  1049 052a 47FF      		sbrs r20,7
  1050 052c 00C0      		rjmp .L76
- 424:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     {
- 425:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         if( clearToSend(port[p].sq) )
+ 424:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     {
+ 425:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         if( clearToSend(port[p].sq) )
  1051               		.loc 1 425 0
  1052 052e 46FF      		sbrs r20,6
  1053 0530 00C0      		rjmp .L76
- 426:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         {
- 427:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             // out of retries
- 428:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             if( (port[p].sq.retry <= 0) || (port[p].sq.retry > NUM_RETRIES))
+ 426:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         {
+ 427:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             // out of retries
+ 428:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             if( (port[p].sq.retry <= 0) || (port[p].sq.retry > NUM_RETRIES))
  1054               		.loc 1 428 0
  1055 0532 8D85      		ldd r24,Y+13
  1056 0534 8150      		subi r24,lo8(-(-1))
  1057 0536 8430      		cpi r24,lo8(4)
  1058 0538 00F0      		brlo .L82
- 429:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             {
- 430:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 // reset the timer
- 431:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 deregisterTimeout(&(port[p].sq.qtout.tout));
+ 429:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             {
+ 430:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 // reset the timer
+ 431:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 deregisterTimeout(&(port[p].sq.qtout.tout));
  1059               		.loc 1 431 0
  1060 053a C801      		movw r24,r16
  1061 053c 8050      		subi r24,lo8(-(port+1))
  1062 053e 9040      		sbci r25,hi8(-(port+1))
  1063 0540 0E94 0000 		call deregisterTimeout
  1064               	.LVL92:
- 432:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 433:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 // flush the queue
- 434:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 flushSendQueue(p);
+ 432:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 433:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 // flush the queue
+ 434:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 flushSendQueue(p);
  1065               		.loc 1 434 0
  1066 0544 8D2D      		mov r24,r13
  1067 0546 0E94 0000 		call flushSendQueue
  1068               	.LVL93:
- 435:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                         
- 436:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 // reset the flags
- 437:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].sq.retry    = NUM_RETRIES;
+ 435:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                         
+ 436:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 // reset the flags
+ 437:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].sq.retry    = NUM_RETRIES;
  1069               		.loc 1 437 0
  1070 054a 94E0      		ldi r25,lo8(4)
  1071 054c 9D87      		std Y+13,r25
- 438:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].sq.flags   |= CLEAR_TO_SEND;
+ 438:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 port[p].sq.flags   |= CLEAR_TO_SEND;
  1072               		.loc 1 438 0
  1073 054e 8E85      		ldd r24,Y+14
  1074 0550 8064      		ori r24,lo8(64)
- 439:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 flipParity(port[p].sq);
+ 439:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 flipParity(port[p].sq);
  1075               		.loc 1 439 0
  1076 0552 8927      		eor r24,r25
  1077 0554 8E87      		std Y+14,r24
- 440:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 441:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 // ensemble level updates - remove neighbor, restart neighbor scanning
- 442:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 //     These don't belong in data-link in my opinion
- 443:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 //restartScan(p);
- 444:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 445:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****                 return;
+ 440:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 441:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 // ensemble level updates - remove neighbor, restart neighbor scanning
+ 442:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 //     These don't belong in data-link in my opinion
+ 443:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 //restartScan(p);
+ 444:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 445:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****                 return;
  1078               		.loc 1 445 0
  1079 0556 00C0      		rjmp .L76
  1080               	.L82:
- 446:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             }
- 447:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.retry--;
+ 446:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             }
+ 447:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.retry--;
  1081               		.loc 1 447 0
  1082 0558 8D87      		std Y+13,r24
- 448:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 449:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
- 450:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 			if (isAClockSyncMessage(port[p].sq.head) == 1)
- 451:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 			{		
- 452:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 				// insert send time
- 453:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 				insertSendTime(port[p].sq.head);
- 454:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 			}
- 455:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** #endif
- 456:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             sendToBuffer(p, port[p].sq.head, sendParity(port[p].sq) );
+ 448:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 449:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #ifdef CLOCK_SYNC
+ 450:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 			if (isAClockSyncMessage(port[p].sq.head) == 1)
+ 451:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 			{		
+ 452:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 				// insert send time
+ 453:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 				insertSendTime(port[p].sq.head);
+ 454:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 			}
+ 455:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** #endif
+ 456:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             sendToBuffer(p, port[p].sq.head, sendParity(port[p].sq) );
  1083               		.loc 1 456 0
  1084 055a 42FB      		bst r20,2
  1085 055c 4427      		clr r20
@@ -1569,14 +1569,14 @@
  1089 0564 8D2D      		mov r24,r13
  1090 0566 0E94 0000 		call sendToBuffer
  1091               	.LVL94:
- 457:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.flags &= ~CLEAR_TO_SEND;
+ 457:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.flags &= ~CLEAR_TO_SEND;
  1092               		.loc 1 457 0
  1093 056a 8E85      		ldd r24,Y+14
  1094 056c 8F7B      		andi r24,lo8(-65)
  1095 056e 8E87      		std Y+14,r24
- 458:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             
- 459:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             // start the timeout
- 460:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.qtout.tout.calltime = getTime() + DEFAULT_TIMEOUT;
+ 458:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             
+ 459:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             // start the timeout
+ 460:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             port[p].sq.qtout.tout.calltime = getTime() + DEFAULT_TIMEOUT;
  1096               		.loc 1 460 0
  1097 0570 0E94 0000 		call getTime
  1098               	.LVL95:
@@ -1588,15 +1588,15 @@
  1104 057e 7C83      		std Y+4,r23
  1105 0580 8D83      		std Y+5,r24
  1106 0582 9E83      		std Y+6,r25
- 461:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             registerTimeout(&(port[p].sq.qtout.tout));
+ 461:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             registerTimeout(&(port[p].sq.qtout.tout));
  1107               		.loc 1 461 0
  1108 0584 C801      		movw r24,r16
  1109 0586 8050      		subi r24,lo8(-(port+1))
  1110 0588 9040      		sbci r25,hi8(-(port+1))
  1111               	/* epilogue start */
- 462:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****         }
- 463:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****     }
- 464:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** }
+ 462:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****         }
+ 463:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****     }
+ 464:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** }
  1112               		.loc 1 464 0
  1113 058a DF91      		pop r29
  1114 058c CF91      		pop r28
@@ -1606,7 +1606,7 @@
  1118 0594 EF90      		pop r14
  1119 0596 DF90      		pop r13
  1120               	.LVL96:
- 461:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c ****             registerTimeout(&(port[p].sq.qtout.tout));
+ 461:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c ****             registerTimeout(&(port[p].sq.qtout.tout));
  1121               		.loc 1 461 0
  1122 0598 0C94 0000 		jmp registerTimeout
  1123               	.LVL97:
@@ -1626,9 +1626,9 @@
  1138               	.global	initHWDataLink
  1140               	initHWDataLink:
  1141               	.LFB14:
- 465:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** 
- 466:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** // initialize
- 467:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwDataLink.c **** void initHWDataLink(){
+ 465:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** 
+ 466:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** // initialize
+ 467:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwDataLink.c **** void initHWDataLink(){
  1142               		.loc 1 467 0
  1143               	/* prologue: function */
  1144               	/* frame size = 0 */
@@ -1639,34 +1639,34 @@
  1150               		.comm	wasEscapeStore,6,1
  1481               	.Letext0:
  1482               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
- 1483               		.file 3 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/defs.bbh"
- 1484               		.file 4 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/circ_buffer.bbh"
- 1485               		.file 5 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/handler.bbh"
- 1486               		.file 6 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/memory.bbh"
- 1487               		.file 7 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/hardwaretime.bbh"
- 1488               		.file 8 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/queues.bbh"
- 1489               		.file 9 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/serial.bbh"
- 1490               		.file 10 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/../hw-api/hwDataLink.h"
- 1491               		.file 11 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/../hw-api/hwSerial.h"
+ 1483               		.file 3 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/defs.bbh"
+ 1484               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/circ_buffer.bbh"
+ 1485               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/handler.bbh"
+ 1486               		.file 6 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/memory.bbh"
+ 1487               		.file 7 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/hardwaretime.bbh"
+ 1488               		.file 8 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/queues.bbh"
+ 1489               		.file 9 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/serial.bbh"
+ 1490               		.file 10 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/../hw-api/hwDataLink.h"
+ 1491               		.file 11 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/../hw-api/hwSerial.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwDataLink.c
-     /tmp/cc2aKfq1.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cc2aKfq1.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cc2aKfq1.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cc2aKfq1.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cc2aKfq1.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cc2aKfq1.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cc2aKfq1.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cc2aKfq1.s:13     .text:0000000000000000 crcCalc
-     /tmp/cc2aKfq1.s:59     .text:0000000000000028 ackHandler
-     /tmp/cc2aKfq1.s:148    .text:000000000000008c addToGlobalRq
-     /tmp/cc2aKfq1.s:193    .text:00000000000000c8 isSpecial
-     /tmp/cc2aKfq1.s:230    .text:00000000000000e8 sendToBuffer
-     /tmp/cc2aKfq1.s:474    .text:0000000000000228 processBuffer
+     /tmp/ccLRacJz.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccLRacJz.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccLRacJz.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccLRacJz.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccLRacJz.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccLRacJz.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccLRacJz.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccLRacJz.s:13     .text:0000000000000000 crcCalc
+     /tmp/ccLRacJz.s:59     .text:0000000000000028 ackHandler
+     /tmp/ccLRacJz.s:148    .text:000000000000008c addToGlobalRq
+     /tmp/ccLRacJz.s:193    .text:00000000000000c8 isSpecial
+     /tmp/ccLRacJz.s:230    .text:00000000000000e8 sendToBuffer
+     /tmp/ccLRacJz.s:474    .text:0000000000000228 processBuffer
                             *COM*:0000000000000006 wasEscapeStore
-     /tmp/cc2aKfq1.s:889    .text:0000000000000444 nextPacket
-     /tmp/cc2aKfq1.s:941    .text:000000000000048e sendOnSerial
-     /tmp/cc2aKfq1.s:1140   .text:00000000000005ac initHWDataLink
+     /tmp/ccLRacJz.s:889    .text:0000000000000444 nextPacket
+     /tmp/ccLRacJz.s:941    .text:000000000000048e sendOnSerial
+     /tmp/ccLRacJz.s:1140   .text:00000000000005ac initHWDataLink
 
 UNDEFINED SYMBOLS
 port
