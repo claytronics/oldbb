@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "log.bbh"
 #include "ensemble.bbh"
@@ -70,8 +71,9 @@ void processCmd(void)
 	  for (X ; X <= 5 ; X++) {
 	    sendMyChunk(X, thisChunk->data, 4, (MsgHandler)myMsgHandler);
 	  }
-	  triggerHandler(EVENT_COMMAND_RECEIVED);
-    } 
+	  callHandler(EVENT_COMMAND_RECEIVED);
+	  //triggerHandler(EVENT_COMMAND_RECEIVED);
+    }
 }
 
 void myMsgHandler(void)
@@ -163,8 +165,9 @@ void initLogDebug(void)
 			}
 			sendLogChunk(p, buf, 2);
 		}
-		delayMS(6);
+		delayMS(200);
 	}
+	srand(getGUID());
 }
 
 byte handleLogMessage(void)
@@ -173,6 +176,8 @@ byte handleLogMessage(void)
 	{
 		return 0;
 	}
+	
+
 	switch(thisChunk->data[1])
 	{
 		case LOG_I_AM_HOST:
@@ -236,7 +241,7 @@ byte printDebug(char* str) {
 	byte s = 0;	
 	byte fId = 0;
 	byte off = 6;
-	
+	byte random =  rand() % 45 + 1; 
 	if (toHost == UNDEFINED_HOST)
 	{
 		return 0;
@@ -277,6 +282,7 @@ byte printDebug(char* str) {
 			}
 			memcpy(buf+off, str+index, s);
 			index += s;
+			delayMS(random);
 			sendLogChunk(toHost, buf, s+off);
 			off = 6;
 		}

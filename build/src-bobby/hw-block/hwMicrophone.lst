@@ -11,26 +11,26 @@
   11               	.global	updateHWMic
   13               	updateHWMic:
   14               	.LFB5:
-  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c"
-   1:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** #include <avr/io.h>
-   2:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** #include <avr/interrupt.h>
-   3:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** #include "../system/defs.h"
-   4:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** #include "../system/microphone.h"
-   5:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** #include "../hw-api/hwMicrophone.h"
-   6:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-   7:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-   8:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** extern MicData _mic;
-   9:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  11:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** void updateHWMic()
-  12:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** {
+  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c"
+   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** #include <avr/io.h>
+   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** #include <avr/interrupt.h>
+   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** #include "../system/defs.h"
+   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** #include "../system/microphone.h"
+   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** #include "../hw-api/hwMicrophone.h"
+   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** extern MicData _mic;
+   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** void updateHWMic()
+  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** {
   16               		.loc 1 12 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
   21               	.LBB7:
-  13:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     BB_LOCK(ATOMIC_RESTORESTATE)
+  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     BB_LOCK(ATOMIC_RESTORESTATE)
   22               		.loc 1 13 0
   23 0000 2FB7      		in r18,__SREG__
   24               	.LVL0:
@@ -96,16 +96,16 @@
   34               	/* #NOAPP */
   35               	.LBE9:
   36               	.LBE8:
-  14:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // read low, then high byte
-  15:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     _mic = ADCA.CH0.RES;
+  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // read low, then high byte
+  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     _mic = ADCA.CH0.RES;
   37               		.loc 1 15 0
   38 0004 E0E0      		ldi r30,0
   39 0006 F2E0      		ldi r31,lo8(2)
   40 0008 84A1      		ldd r24,Z+36
   41 000a 95A1      		ldd r25,Z+37
-  16:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  17:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // sign extend to full 16 bits
-  18:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     _mic = _mic >> 4;
+  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // sign extend to full 16 bits
+  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     _mic = _mic >> 4;
   42               		.loc 1 18 0
   43 000c 34E0      		ldi r19,4
   44               		1:
@@ -150,59 +150,59 @@
   63               	.global	initHWMic
   65               	initHWMic:
   66               	.LFB6:
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     BB_UNLOCK(NULL)
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // register event
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     //triggerHandler(EVENT_MIC_DATA);
-  23:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** }
-  24:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  25:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** void initHWMic(void)
-  26:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** {
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     BB_UNLOCK(NULL)
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // register event
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     //triggerHandler(EVENT_MIC_DATA);
+  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** }
+  24:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  25:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** void initHWMic(void)
+  26:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** {
   67               		.loc 1 26 0
   68               	/* prologue: function */
   69               	/* frame size = 0 */
   70               	/* stack size = 0 */
   71               	.L__stack_usage = 0
-  27:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // set-up basic function
-  28:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CTRLA = ADC_ENABLE_bm;                                 // disable combined DMA but enable 
+  27:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // set-up basic function
+  28:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CTRLA = ADC_ENABLE_bm;                                 // disable combined DMA but enable 
   72               		.loc 1 28 0
   73 0022 E0E0      		ldi r30,0
   74 0024 F2E0      		ldi r31,lo8(2)
   75 0026 81E0      		ldi r24,lo8(1)
   76 0028 8083      		st Z,r24
-  29:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CTRLB = ADC_CONMODE_bm | ADC_RESOLUTION_LEFT12BIT_gc;  // use signed 12 bit left adjusted 
+  29:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CTRLB = ADC_CONMODE_bm | ADC_RESOLUTION_LEFT12BIT_gc;  // use signed 12 bit left adjusted 
   77               		.loc 1 29 0
   78 002a 96E1      		ldi r25,lo8(22)
   79 002c 9183      		std Z+1,r25
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.REFCTRL = ADC_REFSEL_VCC_gc | ADC_BANDGAP_bm;          // disable combined DMA but enable 
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.REFCTRL = ADC_REFSEL_VCC_gc | ADC_BANDGAP_bm;          // disable combined DMA but enable 
   80               		.loc 1 30 0
   81 002e 92E1      		ldi r25,lo8(18)
   82 0030 9283      		std Z+2,r25
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.PRESCALER = ADC_PRESCALER_DIV512_gc;                   // DIV512 prescaler
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.PRESCALER = ADC_PRESCALER_DIV512_gc;                   // DIV512 prescaler
   83               		.loc 1 31 0
   84 0032 97E0      		ldi r25,lo8(7)
   85 0034 9483      		std Z+4,r25
-  32:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  33:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // set-up inputs (NOTE: define for ADC_CH_MUXNEG_PIN5_gv is incorrect)
-  34:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN0_gc | ADC_CH_MUXNEG_PIN1_gc;   // take inputs from microph
+  32:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  33:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // set-up inputs (NOTE: define for ADC_CH_MUXNEG_PIN5_gv is incorrect)
+  34:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.MUXCTRL = ADC_CH_MUXPOS_PIN0_gc | ADC_CH_MUXNEG_PIN1_gc;   // take inputs from microph
   86               		.loc 1 34 0
   87 0036 81A3      		std Z+33,r24
-  35:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;  // use differential gain (x
+  35:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.CTRL = ADC_CH_GAIN_1X_gc | ADC_CH_INPUTMODE_DIFFWGAIN_gc;  // use differential gain (x
   88               		.loc 1 35 0
   89 0038 93E0      		ldi r25,lo8(3)
   90 003a 90A3      		std Z+32,r25
-  36:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  37:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // set-up interrupts
-  38:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.INTCTRL = ADC_CH_INTLVL1_bm;    // interrupts on conversion completion with MED priori
+  36:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  37:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // set-up interrupts
+  38:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.INTCTRL = ADC_CH_INTLVL1_bm;    // interrupts on conversion completion with MED priori
   91               		.loc 1 38 0
   92 003c 92E0      		ldi r25,lo8(2)
   93 003e 92A3      		std Z+34,r25
-  39:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  40:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // start conversion/clear interrupts
-  41:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.INTFLAGS = ADC_CH_CHIF_bm;
+  39:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  40:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // start conversion/clear interrupts
+  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.INTFLAGS = ADC_CH_CHIF_bm;
   94               		.loc 1 41 0
   95 0040 83A3      		std Z+35,r24
-  42:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.CTRL |= ADC_CH_START_bm;
+  42:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.CTRL |= ADC_CH_START_bm;
   96               		.loc 1 42 0
   97 0042 80A1      		ldd r24,Z+32
   98 0044 8068      		ori r24,lo8(-128)
@@ -212,40 +212,40 @@
  103               	.global	rejuvenateHWMic
  105               	rejuvenateHWMic:
  106               	.LFB7:
-  43:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** }
-  44:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  45:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** void rejuvenateHWMic(void)
-  46:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** {
+  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** }
+  44:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  45:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** void rejuvenateHWMic(void)
+  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** {
  107               		.loc 1 46 0
  108               	/* prologue: function */
  109               	/* frame size = 0 */
  110               	/* stack size = 0 */
  111               	.L__stack_usage = 0
-  47:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // set as outputs
-  48:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.DIRSET = PIN0_bm;
+  47:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // set as outputs
+  48:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.DIRSET = PIN0_bm;
  112               		.loc 1 48 0
  113 004a E0E0      		ldi r30,0
  114 004c F6E0      		ldi r31,lo8(6)
  115 004e 91E0      		ldi r25,lo8(1)
  116 0050 9183      		std Z+1,r25
-  49:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.DIRSET = PIN5_bm;
+  49:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.DIRSET = PIN5_bm;
  117               		.loc 1 49 0
  118 0052 80E2      		ldi r24,lo8(32)
  119 0054 8183      		std Z+1,r24
-  50:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  51:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // drive both back to zero
-  52:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.OUTCLR = PIN0_bm;
+  50:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  51:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // drive both back to zero
+  52:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.OUTCLR = PIN0_bm;
  120               		.loc 1 52 0
  121 0056 9683      		std Z+6,r25
-  53:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.OUTCLR = PIN5_bm;
+  53:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.OUTCLR = PIN5_bm;
  122               		.loc 1 53 0
  123 0058 8683      		std Z+6,r24
-  54:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // reset as inputs
-  56:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.DIRCLR = PIN0_bm;
+  54:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // reset as inputs
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.DIRCLR = PIN0_bm;
  124               		.loc 1 56 0
  125 005a 9283      		std Z+2,r25
-  57:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.DIRCLR = PIN5_bm;
+  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     PORTA.DIRCLR = PIN5_bm;
  126               		.loc 1 57 0
  127 005c 8283      		std Z+2,r24
  128 005e 0895      		ret
@@ -253,11 +253,11 @@
  131               	.global	__vector_71
  133               	__vector_71:
  134               	.LFB8:
-  58:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  59:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** }
-  60:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  61:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** ISR(ADCA_CH0_vect)
-  62:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** {
+  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** }
+  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  61:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** ISR(ADCA_CH0_vect)
+  62:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** {
  135               		.loc 1 62 0
  136 0060 1F92      		push r1
  137               	.LCFI0:
@@ -300,28 +300,28 @@
  174               	/* frame size = 0 */
  175               	/* stack size = 18 */
  176               	.L__stack_usage = 18
-  63:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.INTFLAGS |= ADC_CH_CHIF_bm;
+  63:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.INTFLAGS |= ADC_CH_CHIF_bm;
  177               		.loc 1 63 0
  178 008a C0E0      		ldi r28,0
  179 008c D2E0      		ldi r29,lo8(2)
  180 008e 8BA1      		ldd r24,Y+35
  181 0090 8160      		ori r24,lo8(1)
  182 0092 8BA3      		std Y+35,r24
-  64:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     
-  65:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // update the data
-  66:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     updateHWMic();
+  64:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     
+  65:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // update the data
+  66:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     updateHWMic();
  183               		.loc 1 66 0
  184 0094 0E94 0000 		call updateHWMic
  185               	.LVL3:
-  67:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** 
-  68:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     // restart the conversion
-  69:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.CTRL |= ADC_CH_START_bm;
+  67:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** 
+  68:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     // restart the conversion
+  69:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c ****     ADCA.CH0.CTRL |= ADC_CH_START_bm;
  186               		.loc 1 69 0
  187 0098 88A1      		ldd r24,Y+32
  188 009a 8068      		ori r24,lo8(-128)
  189 009c 88A3      		std Y+32,r24
  190               	/* epilogue start */
-  70:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMicrophone.c **** }
+  70:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMicrophone.c **** }
  191               		.loc 1 70 0
  192 009e FF91      		pop r31
  193 00a0 EF91      		pop r30
@@ -348,20 +348,20 @@
  361               	.Letext0:
  362               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
  363               		.file 4 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
- 364               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bbh"
+ 364               		.file 5 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/microphone.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwMicrophone.c
-     /tmp/ccOpPvg7.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccOpPvg7.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccOpPvg7.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccOpPvg7.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccOpPvg7.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccOpPvg7.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccOpPvg7.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccOpPvg7.s:13     .text:0000000000000000 updateHWMic
-     /tmp/ccOpPvg7.s:65     .text:0000000000000022 initHWMic
-     /tmp/ccOpPvg7.s:105    .text:000000000000004a rejuvenateHWMic
-     /tmp/ccOpPvg7.s:133    .text:0000000000000060 __vector_71
+     /tmp/cc8ZPKvm.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc8ZPKvm.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc8ZPKvm.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc8ZPKvm.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc8ZPKvm.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cc8ZPKvm.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc8ZPKvm.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc8ZPKvm.s:13     .text:0000000000000000 updateHWMic
+     /tmp/cc8ZPKvm.s:65     .text:0000000000000022 initHWMic
+     /tmp/cc8ZPKvm.s:105    .text:000000000000004a rejuvenateHWMic
+     /tmp/cc8ZPKvm.s:133    .text:0000000000000060 __vector_71
 
 UNDEFINED SYMBOLS
 _mic

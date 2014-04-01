@@ -11,14 +11,14 @@
   11               	.global	sendMessageToUid
   13               	sendMessageToUid:
   14               	.LFB6:
-  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb"
-   1:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** #include "message.bbh"
-   2:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** #include "led.bbh"
-   3:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
-   4:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
-   5:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
-   6:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** byte sendMessageToUid(Chunk* c, Uid dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb
-   7:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** {
+  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb"
+   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** #include "message.bbh"
+   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** #include "led.bbh"
+   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** byte sendMessageToUid(Chunk* c, Uid dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb
+   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** {
   16               		.loc 1 7 0
   17               	.LVL0:
   18 0000 EF92      		push r14
@@ -42,23 +42,23 @@
   36               	.LVL1:
   37 0010 E0E0      		ldi r30,lo8(thisNeighborhood)
   38 0012 F0E0      		ldi r31,hi8(thisNeighborhood)
-   8:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     byte i;
-   9:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     for(i = 0; i < NUM_PORTS; ++i)
+   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     byte i;
+   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     for(i = 0; i < NUM_PORTS; ++i)
   39               		.loc 1 10 0
   40 0014 60E0      		ldi r22,0
   41               	.LVL2:
   42               	.L5:
-  11:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     {
-  12:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         if(thisNeighborhood.n[i] == dest)
+  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     {
+  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         if(thisNeighborhood.n[i] == dest)
   43               		.loc 1 12 0
   44 0016 A191      		ld r26,Z+
   45 0018 B191      		ld r27,Z+
   46 001a A817      		cp r26,r24
   47 001c B907      		cpc r27,r25
   48 001e 01F4      		brne .L2
-  13:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         {
-  14:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             if(setupChunk(c,i, msg, length, mh, cb) == 0)
+  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         {
+  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             if(setupChunk(c,i, msg, length, mh, cb) == 0)
   49               		.loc 1 14 0
   50 0020 CE01      		movw r24,r28
   51               	.LVL3:
@@ -67,25 +67,25 @@
   54 0026 8111      		cpse r24,__zero_reg__
   55 0028 00C0      		rjmp .L3
   56               	.L6:
-  15:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             {
-  16:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****                 return 0;
+  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             {
+  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****                 return 0;
   57               		.loc 1 16 0
   58 002a 80E0      		ldi r24,0
   59 002c 00C0      		rjmp .L4
   60               	.L3:
-  17:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             }
-  18:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             queueChunk(c);
+  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             }
+  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             queueChunk(c);
   61               		.loc 1 18 0
   62 002e CE01      		movw r24,r28
   63 0030 0E94 0000 		call queueChunk
   64               	.LVL5:
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             return 1;
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             return 1;
   65               		.loc 1 19 0
   66 0034 81E0      		ldi r24,lo8(1)
   67 0036 00C0      		rjmp .L4
   68               	.LVL6:
   69               	.L2:
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     for(i = 0; i < NUM_PORTS; ++i)
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     for(i = 0; i < NUM_PORTS; ++i)
   70               		.loc 1 10 0
   71 0038 6F5F      		subi r22,lo8(-(1))
   72               	.LVL7:
@@ -95,11 +95,11 @@
   76               	.LVL8:
   77               	.L4:
   78               	/* epilogue start */
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         }
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     }
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
-  23:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     return 0;
-  24:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** }
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         }
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     }
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     return 0;
+  24:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** }
   79               		.loc 1 24 0
   80 0040 DF91      		pop r29
   81 0042 CF91      		pop r28
@@ -115,9 +115,9 @@
   92               	.global	sendMessageToPort
   94               	sendMessageToPort:
   95               	.LFB7:
-  25:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
-  26:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** byte sendMessageToPort(Chunk* c, PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler 
-  27:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** {
+  25:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+  26:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** byte sendMessageToPort(Chunk* c, PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler 
+  27:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** {
   96               		.loc 1 27 0
   97               	.LVL12:
   98 004e EF92      		push r14
@@ -137,52 +137,52 @@
  112               	/* stack size = 6 */
  113               	.L__stack_usage = 6
  114 005a EC01      		movw r28,r24
-  28:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     // NOTE: Can no longer support BROADCAST since requires 6 memory chunks passed in
-  29:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     if(dest == BROADCAST)
+  28:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     // NOTE: Can no longer support BROADCAST since requires 6 memory chunks passed in
+  29:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     if(dest == BROADCAST)
  115               		.loc 1 29 0
  116 005c 6F3F      		cpi r22,lo8(-1)
  117 005e 01F4      		brne .L9
  118               	.LVL13:
  119               	.L11:
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     {
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         return 0;
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     {
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         return 0;
  120               		.loc 1 31 0
  121 0060 80E0      		ldi r24,0
  122 0062 00C0      		rjmp .L10
  123               	.LVL14:
  124               	.L9:
-  32:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     }
-  33:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     else
-  34:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     {
-  35:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         if(dest < NUM_PORTS)
+  32:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     }
+  33:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     else
+  34:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     {
+  35:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         if(dest < NUM_PORTS)
  125               		.loc 1 35 0
  126 0064 6630      		cpi r22,lo8(6)
  127 0066 00F4      		brsh .L11
-  36:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         {
-  37:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             if(setupChunk(c,dest, msg, length, mh, cb) == 0)
+  36:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         {
+  37:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             if(setupChunk(c,dest, msg, length, mh, cb) == 0)
  128               		.loc 1 37 0
  129 0068 0E94 0000 		call setupChunk
  130               	.LVL15:
  131 006c 8823      		tst r24
  132 006e 01F0      		breq .L11
-  38:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             {
-  39:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****                 return 0;
-  40:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             }
-  41:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             queueChunk(c);
+  38:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             {
+  39:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****                 return 0;
+  40:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             }
+  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             queueChunk(c);
  133               		.loc 1 41 0
  134 0070 CE01      		movw r24,r28
  135 0072 0E94 0000 		call queueChunk
  136               	.LVL16:
-  42:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             return 1;
+  42:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             return 1;
  137               		.loc 1 42 0
  138 0076 81E0      		ldi r24,lo8(1)
  139               	.L10:
  140               	/* epilogue start */
-  43:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         }
-  44:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     }
-  45:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     
-  46:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     return 0;
-  47:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** }
+  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         }
+  44:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     }
+  45:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     
+  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     return 0;
+  47:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** }
  141               		.loc 1 47 0
  142 0078 DF91      		pop r29
  143 007a CF91      		pop r28
@@ -198,13 +198,13 @@
  154               	.global	sendSystemMessage
  156               	sendSystemMessage:
  157               	.LFB8:
-  48:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
-  49:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
-  50:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** // ----------- SEND SYSTEM MESSAGE to PORT
-  51:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** //
-  52:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** // Probably shouldn't be used by a user, but needed by various sytem routines.
-  53:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** byte sendSystemMessage(PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
-  54:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** {
+  48:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+  49:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+  50:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** // ----------- SEND SYSTEM MESSAGE to PORT
+  51:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** //
+  52:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** // Probably shouldn't be used by a user, but needed by various sytem routines.
+  53:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** byte sendSystemMessage(PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
+  54:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** {
  158               		.loc 1 54 0
  159               	.LVL20:
  160 0086 6F92      		push r6
@@ -244,9 +244,9 @@
  194 00a6 642E      		mov r6,r20
  195 00a8 5901      		movw r10,r18
  196 00aa 4801      		movw r8,r16
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     Chunk* c;
-  56:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
-  57:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     if(dest == BROADCAST)
+  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     Chunk* c;
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     if(dest == BROADCAST)
  197               		.loc 1 57 0
  198 00ac 8FEF      		ldi r24,lo8(-1)
  199               	.LVL21:
@@ -256,29 +256,29 @@
  203               	.LVL22:
  204               	.L19:
  205               	.LBB2:
-  58:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     {
-  59:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         byte i;
-  60:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         
-  61:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         for(i = 0; i < NUM_PORTS; ++i)
-  62:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         {
-  63:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             // set it to appropriate chunk
-  64:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             c = getSystemTXChunk();
+  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     {
+  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         byte i;
+  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         
+  61:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         for(i = 0; i < NUM_PORTS; ++i)
+  62:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         {
+  63:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             // set it to appropriate chunk
+  64:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             c = getSystemTXChunk();
  206               		.loc 1 64 0
  207 00b4 0E94 0000 		call getSystemTXChunk
  208               	.LVL23:
  209 00b8 EC01      		movw r28,r24
  210               	.LVL24:
-  65:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             
-  66:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             // in use - can't send
-  67:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             if( c == NULL ) 
+  65:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             
+  66:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             // in use - can't send
+  67:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             if( c == NULL ) 
  211               		.loc 1 67 0
  212 00ba 0097      		sbiw r24,0
  213 00bc 01F0      		breq .L17
-  68:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             {
-  69:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****                 continue;
-  70:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             }
-  71:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             
-  72:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             if(setupChunk(c,i, msg, length, mh, cb) == 0)
+  68:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             {
+  69:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****                 continue;
+  70:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             }
+  71:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             
+  72:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             if(setupChunk(c,i, msg, length, mh, cb) == 0)
  214               		.loc 1 72 0
  215 00be 7401      		movw r14,r8
  216 00c0 8501      		movw r16,r10
@@ -289,24 +289,24 @@
  221               	.LVL25:
  222 00cc 8111      		cpse r24,__zero_reg__
  223 00ce 00C0      		rjmp .L18
-  73:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             {
-  74:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****                 freeChunk(c);
+  73:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             {
+  74:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****                 freeChunk(c);
  224               		.loc 1 74 0
  225 00d0 CE01      		movw r24,r28
  226 00d2 0E94 0000 		call freeChunk
  227               	.LVL26:
-  75:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****                 continue;
+  75:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****                 continue;
  228               		.loc 1 75 0
  229 00d6 00C0      		rjmp .L17
  230               	.L18:
-  76:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             }
-  77:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             queueChunk(c);
+  76:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             }
+  77:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             queueChunk(c);
  231               		.loc 1 77 0
  232 00d8 CE01      		movw r24,r28
  233 00da 0E94 0000 		call queueChunk
  234               	.LVL27:
  235               	.L17:
-  61:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         for(i = 0; i < NUM_PORTS; ++i)
+  61:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         for(i = 0; i < NUM_PORTS; ++i)
  236               		.loc 1 61 0
  237 00de 7394      		inc r7
  238               	.LVL28:
@@ -317,38 +317,38 @@
  243               	.LVL29:
  244               	.L16:
  245               	.LBE2:
-  78:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         }    
-  79:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         
-  80:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         return i;
-  81:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     }
-  82:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     else
-  83:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     {
-  84:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         if(dest < NUM_PORTS)
+  78:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         }    
+  79:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         
+  80:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         return i;
+  81:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     }
+  82:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     else
+  83:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     {
+  84:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         if(dest < NUM_PORTS)
  246               		.loc 1 84 0
  247 00e8 85E0      		ldi r24,lo8(5)
  248 00ea 8715      		cp r24,r7
  249 00ec 00F4      		brsh .L21
  250 00ee 00C0      		rjmp .L31
  251               	.L21:
-  85:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         {
-  86:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             // set it to appropriate chunk
-  87:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             c = getSystemTXChunk();
+  85:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         {
+  86:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             // set it to appropriate chunk
+  87:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             c = getSystemTXChunk();
  252               		.loc 1 87 0
  253 00f0 0E94 0000 		call getSystemTXChunk
  254               	.LVL30:
  255 00f4 EC01      		movw r28,r24
  256               	.LVL31:
-  88:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             
-  89:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             // in use - can't send
-  90:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             if( c == NULL ) 
+  88:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             
+  89:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             // in use - can't send
+  90:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             if( c == NULL ) 
  257               		.loc 1 90 0
  258 00f6 0097      		sbiw r24,0
  259 00f8 01F0      		breq .L31
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             {
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****                 return 0;
-  93:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             }
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             
-  95:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             if(setupChunk(c,dest, msg, length, mh, cb) == 0)
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             {
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****                 return 0;
+  93:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             }
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             
+  95:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             if(setupChunk(c,dest, msg, length, mh, cb) == 0)
  260               		.loc 1 95 0
  261 00fa 7801      		movw r14,r16
  262 00fc 8501      		movw r16,r10
@@ -359,37 +359,37 @@
  267               	.LVL32:
  268 0108 8111      		cpse r24,__zero_reg__
  269 010a 00C0      		rjmp .L23
-  96:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             {
-  97:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****                 freeChunk(c);
+  96:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             {
+  97:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****                 freeChunk(c);
  270               		.loc 1 97 0
  271 010c CE01      		movw r24,r28
  272 010e 0E94 0000 		call freeChunk
  273               	.LVL33:
  274               	.L31:
-  98:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****                 return 0;
+  98:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****                 return 0;
  275               		.loc 1 98 0
  276 0112 712C      		mov r7,__zero_reg__
  277               	.LVL34:
  278 0114 00C0      		rjmp .L20
  279               	.LVL35:
  280               	.L23:
-  99:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             }
- 100:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             queueChunk(c);
+  99:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             }
+ 100:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             queueChunk(c);
  281               		.loc 1 100 0
  282 0116 CE01      		movw r24,r28
  283 0118 0E94 0000 		call queueChunk
  284               	.LVL36:
- 101:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****             return 1;
+ 101:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****             return 1;
  285               		.loc 1 101 0
  286 011c 7724      		clr r7
  287 011e 7394      		inc r7
  288               	.LVL37:
  289               	.L20:
- 102:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****         }
- 103:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     }
- 104:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     
- 105:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb ****     return 0;
- 106:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** }
+ 102:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****         }
+ 103:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     }
+ 104:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     
+ 105:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb ****     return 0;
+ 106:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** }
  290               		.loc 1 106 0
  291 0120 872D      		mov r24,r7
  292               	/* epilogue start */
@@ -416,10 +416,10 @@
  314               	.global	initSystemMessage
  316               	initSystemMessage:
  317               	.LFB9:
- 107:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
- 108:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** 
- 109:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** void initSystemMessage()
- 110:/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bb **** {
+ 107:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+ 108:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** 
+ 109:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** void initSystemMessage()
+ 110:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bb **** {
  318               		.loc 1 110 0
  319               	/* prologue: function */
  320               	/* frame size = 0 */
@@ -429,25 +429,25 @@
  324               	.LFE9:
  532               	.Letext0:
  533               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
- 534               		.file 3 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/defs.bbh"
- 535               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/handler.bbh"
- 536               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/memory.bbh"
- 537               		.file 6 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/serial.bbh"
- 538               		.file 7 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bbh"
- 539               		.file 8 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bbh"
+ 534               		.file 3 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/defs.bbh"
+ 535               		.file 4 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/handler.bbh"
+ 536               		.file 5 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/memory.bbh"
+ 537               		.file 6 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/serial.bbh"
+ 538               		.file 7 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bbh"
+ 539               		.file 8 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/data_link.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 message.c
-     /tmp/ccvSz9cS.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccvSz9cS.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccvSz9cS.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccvSz9cS.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccvSz9cS.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccvSz9cS.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccvSz9cS.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccvSz9cS.s:13     .text:0000000000000000 sendMessageToUid
-     /tmp/ccvSz9cS.s:94     .text:000000000000004e sendMessageToPort
-     /tmp/ccvSz9cS.s:156    .text:0000000000000086 sendSystemMessage
-     /tmp/ccvSz9cS.s:316    .text:0000000000000140 initSystemMessage
+     /tmp/ccabs8Rp.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccabs8Rp.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccabs8Rp.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccabs8Rp.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccabs8Rp.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccabs8Rp.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccabs8Rp.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccabs8Rp.s:13     .text:0000000000000000 sendMessageToUid
+     /tmp/ccabs8Rp.s:94     .text:000000000000004e sendMessageToPort
+     /tmp/ccabs8Rp.s:156    .text:0000000000000086 sendSystemMessage
+     /tmp/ccabs8Rp.s:316    .text:0000000000000140 initSystemMessage
 
 UNDEFINED SYMBOLS
 thisNeighborhood

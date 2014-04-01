@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/boot.bb"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/boot.bb"
 #include "boot.h"
 
 // HARDWARE INCLUDES

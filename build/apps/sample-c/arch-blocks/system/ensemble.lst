@@ -11,221 +11,221 @@
   11               	.global	neighborKeepalive
   13               	neighborKeepalive:
   14               	.LFB19:
-  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb"
-   1:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #include "ensemble.bbh"
-   2:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #include "message.bbh"
-   3:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #include "data_link.bbh"
-   4:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-   5:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #ifdef CLOCK_SYNC
-   6:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #include "clock.bbh"
-   7:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #endif
-   8:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #ifdef LOG_DEBUG
-   9:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #include "log.bbh"
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #endif
-  11:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  12:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  13:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** //     allocated chunks rather than a user allocated chunk
-  14:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  15:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** threadvar Neighborhood thisNeighborhood;
-  16:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** threadvar Timer ttNeighbor[6];
-  17:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  18:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // converts a UID into a passed in character stream.  Assumes 2-byte GUIDs.
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** void GUIDIntoChar(Uid id, byte * c)
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
-  23:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
-  24:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  25:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // takes a passed in character array and returns a UID representing the array.  Assumes 2-byte GUID
-  26:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid charToGUID(byte * c)
-  27:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
-  28:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     Uid tmp;
-  29:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
-  32:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  33:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     return tmp;
-  34:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
-  35:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  36:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // returns number of neighbors that are not VACANT.
-  37:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** byte getNeighborCount()
-  38:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
-  39:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	uint8_t count, i;
-  40:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	
-  41:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	for(count = 0, i = 0; i < NUM_PORTS; ++i)
-  42:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	{
-  43:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		if(thisNeighborhood.n[i] != VACANT)
-  44:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		{
-  45:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			count++;
-  46:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		}	
-  47:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	}
-  48:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  49:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** //	if(count>0)
-  50:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** //	  printf("NEIGHBORCOUNT = %d\r\n", count);
-  51:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	return count;
-  52:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
-  53:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  54:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // simple functions to access geographic neighbors
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid down(void) { return thisNeighborhood.n[DOWN]; }
-  56:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid up(void) { return thisNeighborhood.n[UP]; }
-  57:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid north(void) { return thisNeighborhood.n[NORTH]; }
-  58:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid south(void) { return thisNeighborhood.n[SOUTH]; }
-  59:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid east(void) { return thisNeighborhood.n[EAST]; }
-  60:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid west(void) { return thisNeighborhood.n[WEST]; }
-  61:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  62:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // called to set the GUID of a neighbor.
-  63:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // if the neighbor is the same as before, do nothing.
-  64:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // if the neighbor has a different GUID (or VACANT), trigger a neighbor change event.
-  65:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** void	updateNeighbor(PRef p, Uid b)
-  66:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
-  67:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #ifdef DEBUG
-  68:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #if DEBUG == 5 // UP
-  69:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  70:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 5
-  71:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTD1
-  72:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  73:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 1 // NORTH
-  74:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  75:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 1
-  76:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTC1
-  77:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  78:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 4 //SOUTH
-  79:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  80:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 4
-  81:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTE0
-  82:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  83:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 2 //EAST
-  84:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  85:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 2
-  86:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTF0
-  87:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  88:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 3 //WEST
-  89:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  90:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 3
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTC0
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  93:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 0 //DOWN
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  95:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 0
-  96:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTD0
-  97:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
-  98:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #endif
-  99:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #ifndef DEBUGPORT
- 100:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #error Invalid DEBUG option chosen - use a face enum.
- 101:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #endif
- 102:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 103:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	if(p == DEBUGPORT)
- 104:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	{
- 105:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		return;
- 106:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	}
- 107:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 108:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #endif
- 109:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 110:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #ifdef LOG_DEBUG
- 111:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(isHostPort(p)) {
- 112:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       return;
- 113:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   }
- 114:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #endif
- 115:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 116:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	if(p < NUM_PORTS)
- 117:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	{
- 118:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		// is the state changing?  Trigger handler
- 119:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    if(thisNeighborhood.n[p] != b)
- 120:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    {
- 121:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        thisNeighborhood.n[p] = b;
- 122:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        triggerHandler(EVENT_NEIGHBOR_CHANGE);
- 123:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #ifdef CLOCK_SYNC
- 124:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			handleNeighborChange(p);
- 125:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #endif
- 126:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    }
- 127:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	  
- 128:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	}
- 129:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	
- 130:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	//	printf("Block %d now has %d neighbors \n",getGUID(),getNeighborCount());
- 131:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 132:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 133:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // called when start handshake message is complete by success or failure
- 134:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** void neighborScanCB(void)
- 135:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
- 136:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #ifdef LOG_DEBUG
- 137:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(isHostPort(faceNum(thisChunk))) {
- 138:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	  //disableTimer(ttNeighbor[faceNum(thisChunk)]);
- 139:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	  freeChunk(thisChunk);
- 140:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       return;
- 141:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   }
- 142:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** #endif
- 143:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 144:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // message was received.  wait for handshake to return, but allow for timeout to restart scan
- 145:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
- 146:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 147:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD;
- 148:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 149:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // else failure
- 150:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   else
- 151:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 152:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_SCAN_PERIOD;
- 153:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 154:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 155:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // re-enable timer with potentially new period
- 156:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   enableTimer(ttNeighbor[faceNum(thisChunk)]);
- 157:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****  
- 158:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
- 159:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 160:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 161:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // send a start handshake message to a vacant port
- 162:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** void neighborScan(void)
- 163:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
- 164:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   byte buf[4];
- 165:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   PRef p = thisTimeout->arg;
- 166:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 167:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // could check for non-vacant neighbor here?
- 168:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   #ifdef DEBUGPORT
- 169:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(p == DEBUGPORT) {
- 170:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       return;
- 171:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   }
- 172:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   #endif
- 173:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   #ifdef LOG_DEBUG
- 174:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(isHostPort(p)) {
- 175:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       return;
- 176:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   }
- 177:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   #endif
- 178:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 179:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // prepare message
- 180:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   buf[0] = NEIGHBOR_MSG;
- 181:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   buf[1] = MSG_NEIGHBOR_START;
- 182:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(getGUID(), &(buf[2]));
- 183:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   
- 184:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // disable timer so no extra time-based calls are executed until sent message callback
- 185:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[p]);
- 186:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(ttNeighbor[p].t.state != INACTIVE)
- 187:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 188:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       deregisterTimeout(&(ttNeighbor[p].t));
- 189:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 190:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 191:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // enqueue message
- 192:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   sendSystemMessage(p, buf, 4, RES_SYS_HANDLER, (GenericHandler)&neighborScanCB);
- 193:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 194:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 195:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** void neighborKeepaliveCB(void)
- 196:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
- 197:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     // message was received.  re-enable timer and continue as normal
- 198:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     // note that since we always ACK a received message, this will happen even if the other block 
- 199:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     // does not understand why the keepalive was sent.  however, the other block will restart a han
- 200:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
- 201:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 202:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         enableTimer(ttNeighbor[faceNum(thisChunk)]);
- 203:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 204:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     else // neighbor lost!  begin rescanning
- 205:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 206:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         restartScan(faceNum(thisChunk));
- 207:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 208:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 209:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     freeChunk(thisChunk);
- 210:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 211:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 212:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // this is called periodically to verify neighbor is still there and in the right state
- 213:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** void neighborKeepalive(void)
- 214:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
+  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb"
+   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #include "ensemble.bbh"
+   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #include "message.bbh"
+   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #include "data_link.bbh"
+   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #ifdef CLOCK_SYNC
+   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #include "clock.bbh"
+   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #endif
+   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #ifdef LOG_DEBUG
+   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #include "log.bbh"
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #endif
+  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** //     allocated chunks rather than a user allocated chunk
+  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** threadvar Neighborhood thisNeighborhood;
+  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** threadvar Timer ttNeighbor[6];
+  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // converts a UID into a passed in character stream.  Assumes 2-byte GUIDs.
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** void GUIDIntoChar(Uid id, byte * c)
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+  24:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  25:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // takes a passed in character array and returns a UID representing the array.  Assumes 2-byte GUID
+  26:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid charToGUID(byte * c)
+  27:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+  28:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     Uid tmp;
+  29:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+  32:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  33:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     return tmp;
+  34:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+  35:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  36:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // returns number of neighbors that are not VACANT.
+  37:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** byte getNeighborCount()
+  38:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+  39:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	uint8_t count, i;
+  40:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	
+  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	for(count = 0, i = 0; i < NUM_PORTS; ++i)
+  42:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	{
+  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		if(thisNeighborhood.n[i] != VACANT)
+  44:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		{
+  45:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 			count++;
+  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		}	
+  47:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	}
+  48:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  49:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** //	if(count>0)
+  50:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** //	  printf("NEIGHBORCOUNT = %d\r\n", count);
+  51:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	return count;
+  52:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+  53:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  54:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // simple functions to access geographic neighbors
+  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid down(void) { return thisNeighborhood.n[DOWN]; }
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid up(void) { return thisNeighborhood.n[UP]; }
+  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid north(void) { return thisNeighborhood.n[NORTH]; }
+  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid south(void) { return thisNeighborhood.n[SOUTH]; }
+  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid east(void) { return thisNeighborhood.n[EAST]; }
+  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid west(void) { return thisNeighborhood.n[WEST]; }
+  61:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  62:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // called to set the GUID of a neighbor.
+  63:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // if the neighbor is the same as before, do nothing.
+  64:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // if the neighbor has a different GUID (or VACANT), trigger a neighbor change event.
+  65:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** void	updateNeighbor(PRef p, Uid b)
+  66:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+  67:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #ifdef DEBUG
+  68:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #if DEBUG == 5 // UP
+  69:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  70:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 5
+  71:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTD1
+  72:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  73:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 1 // NORTH
+  74:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  75:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 1
+  76:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTC1
+  77:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  78:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 4 //SOUTH
+  79:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  80:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 4
+  81:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTE0
+  82:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  83:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 2 //EAST
+  84:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  85:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 2
+  86:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTF0
+  87:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  88:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 3 //WEST
+  89:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  90:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 3
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTC0
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  93:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #elif DEBUG == 0 //DOWN
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  95:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGPORT 0
+  96:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #define DEBUGUART USARTD0
+  97:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+  98:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #endif
+  99:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #ifndef DEBUGPORT
+ 100:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #error Invalid DEBUG option chosen - use a face enum.
+ 101:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #endif
+ 102:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 103:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	if(p == DEBUGPORT)
+ 104:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	{
+ 105:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		return;
+ 106:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	}
+ 107:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 108:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #endif
+ 109:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 110:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #ifdef LOG_DEBUG
+ 111:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(isHostPort(p)) {
+ 112:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       return;
+ 113:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   }
+ 114:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #endif
+ 115:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 116:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	if(p < NUM_PORTS)
+ 117:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	{
+ 118:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		// is the state changing?  Trigger handler
+ 119:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    if(thisNeighborhood.n[p] != b)
+ 120:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    {
+ 121:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        thisNeighborhood.n[p] = b;
+ 122:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        triggerHandler(EVENT_NEIGHBOR_CHANGE);
+ 123:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #ifdef CLOCK_SYNC
+ 124:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 			handleNeighborChange(p);
+ 125:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #endif
+ 126:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    }
+ 127:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	  
+ 128:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	}
+ 129:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	
+ 130:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	//	printf("Block %d now has %d neighbors \n",getGUID(),getNeighborCount());
+ 131:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 132:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 133:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // called when start handshake message is complete by success or failure
+ 134:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** void neighborScanCB(void)
+ 135:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+ 136:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #ifdef LOG_DEBUG
+ 137:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(isHostPort(faceNum(thisChunk))) {
+ 138:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	  //disableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 139:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	  freeChunk(thisChunk);
+ 140:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       return;
+ 141:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   }
+ 142:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** #endif
+ 143:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 144:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // message was received.  wait for handshake to return, but allow for timeout to restart scan
+ 145:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 146:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 147:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD;
+ 148:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 149:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // else failure
+ 150:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   else
+ 151:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 152:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_SCAN_PERIOD;
+ 153:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 154:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 155:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // re-enable timer with potentially new period
+ 156:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 157:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****  
+ 158:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
+ 159:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 160:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 161:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // send a start handshake message to a vacant port
+ 162:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** void neighborScan(void)
+ 163:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+ 164:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   byte buf[4];
+ 165:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   PRef p = thisTimeout->arg;
+ 166:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 167:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // could check for non-vacant neighbor here?
+ 168:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   #ifdef DEBUGPORT
+ 169:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(p == DEBUGPORT) {
+ 170:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       return;
+ 171:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   }
+ 172:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   #endif
+ 173:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   #ifdef LOG_DEBUG
+ 174:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(isHostPort(p)) {
+ 175:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       return;
+ 176:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   }
+ 177:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   #endif
+ 178:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 179:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // prepare message
+ 180:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   buf[0] = NEIGHBOR_MSG;
+ 181:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   buf[1] = MSG_NEIGHBOR_START;
+ 182:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(getGUID(), &(buf[2]));
+ 183:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   
+ 184:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // disable timer so no extra time-based calls are executed until sent message callback
+ 185:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[p]);
+ 186:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(ttNeighbor[p].t.state != INACTIVE)
+ 187:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 188:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       deregisterTimeout(&(ttNeighbor[p].t));
+ 189:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 190:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 191:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // enqueue message
+ 192:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   sendSystemMessage(p, buf, 4, RES_SYS_HANDLER, (GenericHandler)&neighborScanCB);
+ 193:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 194:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 195:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** void neighborKeepaliveCB(void)
+ 196:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+ 197:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     // message was received.  re-enable timer and continue as normal
+ 198:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     // note that since we always ACK a received message, this will happen even if the other block 
+ 199:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     // does not understand why the keepalive was sent.  however, the other block will restart a han
+ 200:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 201:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 202:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 203:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 204:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     else // neighbor lost!  begin rescanning
+ 205:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 206:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         restartScan(faceNum(thisChunk));
+ 207:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 208:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 209:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     freeChunk(thisChunk);
+ 210:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 211:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 212:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // this is called periodically to verify neighbor is still there and in the right state
+ 213:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** void neighborKeepalive(void)
+ 214:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
   16               		.loc 1 214 0
   17 0000 0F93      		push r16
   18               	.LCFI0:
@@ -245,32 +245,32 @@
   32               	/* frame size = 6 */
   33               	/* stack size = 10 */
   34               	.L__stack_usage = 10
- 215:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // craft and send a keeplive message of the form:
- 216:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // [header] [myGUID][yourGUID]
- 217:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   byte buf[6];
- 218:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   buf[0] = NEIGHBOR_MSG;
+ 215:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // craft and send a keeplive message of the form:
+ 216:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // [header] [myGUID][yourGUID]
+ 217:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   byte buf[6];
+ 218:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   buf[0] = NEIGHBOR_MSG;
   35               		.loc 1 218 0
   36 0010 81E0      		ldi r24,lo8(1)
   37 0012 8983      		std Y+1,r24
- 219:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   buf[1] = MSG_NEIGHBOR_KEEPALIVE;
+ 219:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   buf[1] = MSG_NEIGHBOR_KEEPALIVE;
   38               		.loc 1 219 0
   39 0014 83E0      		ldi r24,lo8(3)
   40 0016 8A83      		std Y+2,r24
- 220:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(getGUID(), &(buf[2]));
+ 220:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(getGUID(), &(buf[2]));
   41               		.loc 1 220 0
   42 0018 0E94 0000 		call getGUID
   43               	.LVL0:
   44               	.LBB24:
   45               	.LBB25:
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
   46               		.loc 1 21 0
   47 001c 9B83      		std Y+3,r25
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
   48               		.loc 1 22 0
   49 001e 8C83      		std Y+4,r24
   50               	.LBE25:
   51               	.LBE24:
- 221:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(thisNeighborhood.n[thisTimeout->arg], &(buf[4]));
+ 221:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(thisNeighborhood.n[thisTimeout->arg], &(buf[4]));
   52               		.loc 1 221 0
   53 0020 A091 0000 		lds r26,thisTimeout
   54 0024 B091 0000 		lds r27,thisTimeout+1
@@ -290,17 +290,17 @@
   68               	.LVL3:
   69               	.LBB26:
   70               	.LBB27:
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
   71               		.loc 1 21 0
   72 003e 3D83      		std Y+5,r19
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
   73               		.loc 1 22 0
   74 0040 2E83      		std Y+6,r18
   75               	.LBE27:
   76               	.LBE26:
- 222:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 223:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // prevent timer from calling this again, message callback will reenable as necessary
- 224:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[thisTimeout->arg]);
+ 222:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 223:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // prevent timer from calling this again, message callback will reenable as necessary
+ 224:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[thisTimeout->arg]);
   77               		.loc 1 224 0
   78 0042 21E1      		ldi r18,lo8(17)
   79               	.LVL4:
@@ -313,9 +313,9 @@
   86 004e E050      		subi r30,lo8(-(ttNeighbor))
   87 0050 F040      		sbci r31,hi8(-(ttNeighbor))
   88 0052 108A      		std Z+16,__zero_reg__
- 225:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 226:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // send message - CB will either re-add timer, or restart scanning for neighbors
- 227:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   sendSystemMessage(thisTimeout->arg, buf, 6, RES_SYS_HANDLER, (GenericHandler)&neighborKeepaliveCB
+ 225:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 226:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // send message - CB will either re-add timer, or restart scanning for neighbors
+ 227:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   sendSystemMessage(thisTimeout->arg, buf, 6, RES_SYS_HANDLER, (GenericHandler)&neighborKeepaliveCB
   89               		.loc 1 227 0
   90 0054 00E0      		ldi r16,lo8(gs(neighborKeepaliveCB))
   91 0056 10E0      		ldi r17,hi8(gs(neighborKeepaliveCB))
@@ -331,7 +331,7 @@
  101 0068 0E94 0000 		call sendSystemMessage
  102               	.LVL7:
  103               	/* epilogue start */
- 228:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
+ 228:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
  104               		.loc 1 228 0
  105 006c 2696      		adiw r28,6
  106 006e CDBF      		out __SP_L__,r28
@@ -345,7 +345,7 @@
  115               	.global	neighborScan
  117               	neighborScan:
  118               	.LFB17:
- 163:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
+ 163:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
  119               		.loc 1 163 0
  120 007c FF92      		push r15
  121               	.LCFI6:
@@ -367,41 +367,41 @@
  137               	/* frame size = 4 */
  138               	/* stack size = 9 */
  139               	.L__stack_usage = 9
- 165:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   PRef p = thisTimeout->arg;
+ 165:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   PRef p = thisTimeout->arg;
  140               		.loc 1 165 0
  141 008e E091 0000 		lds r30,thisTimeout
  142 0092 F091 0000 		lds r31,thisTimeout+1
  143 0096 F184      		ldd r15,Z+9
  144               	.LVL8:
- 174:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(isHostPort(p)) {
+ 174:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(isHostPort(p)) {
  145               		.loc 1 174 0
  146 0098 8F2D      		mov r24,r15
  147 009a 0E94 0000 		call isHostPort
  148               	.LVL9:
  149 009e 8111      		cpse r24,__zero_reg__
  150 00a0 00C0      		rjmp .L2
- 180:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   buf[0] = NEIGHBOR_MSG;
+ 180:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   buf[0] = NEIGHBOR_MSG;
  151               		.loc 1 180 0
  152 00a2 81E0      		ldi r24,lo8(1)
  153 00a4 8983      		std Y+1,r24
- 181:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   buf[1] = MSG_NEIGHBOR_START;
+ 181:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   buf[1] = MSG_NEIGHBOR_START;
  154               		.loc 1 181 0
  155 00a6 8A83      		std Y+2,r24
- 182:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(getGUID(), &(buf[2]));
+ 182:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   GUIDIntoChar(getGUID(), &(buf[2]));
  156               		.loc 1 182 0
  157 00a8 0E94 0000 		call getGUID
  158               	.LVL10:
  159               	.LBB28:
  160               	.LBB29:
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
  161               		.loc 1 21 0
  162 00ac 9B83      		std Y+3,r25
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
  163               		.loc 1 22 0
  164 00ae 8C83      		std Y+4,r24
  165               	.LBE29:
  166               	.LBE28:
- 185:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[p]);
+ 185:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[p]);
  167               		.loc 1 185 0
  168 00b0 81E1      		ldi r24,lo8(17)
  169               	.LVL11:
@@ -412,12 +412,12 @@
  174 00ba E050      		subi r30,lo8(-(ttNeighbor))
  175 00bc F040      		sbci r31,hi8(-(ttNeighbor))
  176 00be 108A      		std Z+16,__zero_reg__
- 186:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(ttNeighbor[p].t.state != INACTIVE)
+ 186:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(ttNeighbor[p].t.state != INACTIVE)
  177               		.loc 1 186 0
  178 00c0 8285      		ldd r24,Z+10
  179 00c2 8823      		tst r24
  180 00c4 01F0      		breq .L4
- 188:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       deregisterTimeout(&(ttNeighbor[p].t));
+ 188:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       deregisterTimeout(&(ttNeighbor[p].t));
  181               		.loc 1 188 0
  182 00c6 C901      		movw r24,r18
  183 00c8 8050      		subi r24,lo8(-(ttNeighbor+2))
@@ -425,7 +425,7 @@
  185 00cc 0E94 0000 		call deregisterTimeout
  186               	.LVL12:
  187               	.L4:
- 192:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   sendSystemMessage(p, buf, 4, RES_SYS_HANDLER, (GenericHandler)&neighborScanCB);
+ 192:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   sendSystemMessage(p, buf, 4, RES_SYS_HANDLER, (GenericHandler)&neighborScanCB);
  188               		.loc 1 192 0
  189 00d0 00E0      		ldi r16,lo8(gs(neighborScanCB))
  190 00d2 10E0      		ldi r17,hi8(gs(neighborScanCB))
@@ -440,7 +440,7 @@
  199               	.LVL13:
  200               	.L2:
  201               	/* epilogue start */
- 193:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
+ 193:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
  202               		.loc 1 193 0
  203 00e6 2496      		adiw r28,4
  204 00e8 CDBF      		out __SP_L__,r28
@@ -456,13 +456,13 @@
  215               	.global	neighborScanCB
  217               	neighborScanCB:
  218               	.LFB16:
- 135:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
+ 135:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
  219               		.loc 1 135 0
  220               	/* prologue: function */
  221               	/* frame size = 0 */
  222               	/* stack size = 0 */
  223               	.L__stack_usage = 0
- 137:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(isHostPort(faceNum(thisChunk))) {
+ 137:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(isHostPort(faceNum(thisChunk))) {
  224               		.loc 1 137 0
  225 00f8 E091 0000 		lds r30,thisChunk
  226 00fc F091 0000 		lds r31,thisChunk+1
@@ -475,7 +475,7 @@
  233 0110 8111      		cpse r24,__zero_reg__
  234 0112 00C0      		rjmp .L14
  235               	.L10:
- 145:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 145:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
  236               		.loc 1 145 0
  237 0114 A189      		ldd r26,Z+17
  238 0116 8A2F      		mov r24,r26
@@ -483,7 +483,7 @@
  240 011a A770      		andi r26,lo8(7)
  241 011c 8830      		cpi r24,lo8(8)
  242 011e 01F4      		brne .L11
- 147:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD;
+ 147:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD;
  243               		.loc 1 147 0
  244 0120 81E1      		ldi r24,lo8(17)
  245 0122 A89F      		mul r26,r24
@@ -497,7 +497,7 @@
  253 0132 70E0      		ldi r23,0
  254 0134 00C0      		rjmp .L13
  255               	.L11:
- 152:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_SCAN_PERIOD;
+ 152:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       (ttNeighbor[faceNum(thisChunk)]).period = NEIGHBOR_SCAN_PERIOD;
  256               		.loc 1 152 0
  257 0136 81E1      		ldi r24,lo8(17)
  258 0138 A89F      		mul r26,r24
@@ -516,7 +516,7 @@
  271 0150 6D93      		st X+,r22
  272 0152 7C93      		st X,r23
  273 0154 1F97      		sbiw r26,12+3
- 156:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 156:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   enableTimer(ttNeighbor[faceNum(thisChunk)]);
  274               		.loc 1 156 0
  275 0156 A189      		ldd r26,Z+17
  276 0158 A770      		andi r26,lo8(7)
@@ -530,7 +530,7 @@
  284 0168 5096      		adiw r26,16
  285 016a 8C93      		st X,r24
  286               	.L14:
- 158:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
+ 158:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
  287               		.loc 1 158 0
  288 016c CF01      		movw r24,r30
  289 016e 0C94 0000 		jmp freeChunk
@@ -539,18 +539,18 @@
  293               	.global	GUIDIntoChar
  295               	GUIDIntoChar:
  296               	.LFB6:
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
  297               		.loc 1 20 0
  298               	.LVL17:
  299               	/* prologue: function */
  300               	/* frame size = 0 */
  301               	/* stack size = 0 */
  302               	.L__stack_usage = 0
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
  303               		.loc 1 21 0
  304 0172 FB01      		movw r30,r22
  305 0174 9083      		st Z,r25
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
  306               		.loc 1 22 0
  307 0176 8183      		std Z+1,r24
  308 0178 0895      		ret
@@ -558,24 +558,24 @@
  311               	.global	charToGUID
  313               	charToGUID:
  314               	.LFB7:
-  27:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
+  27:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
  315               		.loc 1 27 0
  316               	.LVL18:
  317               	/* prologue: function */
  318               	/* frame size = 0 */
  319               	/* stack size = 0 */
  320               	.L__stack_usage = 0
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
  321               		.loc 1 30 0
  322 017a FC01      		movw r30,r24
  323 017c 3081      		ld r19,Z
  324 017e 20E0      		ldi r18,0
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
  325               		.loc 1 31 0
  326 0180 8181      		ldd r24,Z+1
  327               	.LVL19:
  328 0182 282B      		or r18,r24
-  34:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
+  34:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
  329               		.loc 1 34 0
  330 0184 C901      		movw r24,r18
  331 0186 0895      		ret
@@ -583,7 +583,7 @@
  334               	.global	getNeighborCount
  336               	getNeighborCount:
  337               	.LFB8:
-  38:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
+  38:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
  338               		.loc 1 38 0
  339               	/* prologue: function */
  340               	/* frame size = 0 */
@@ -592,43 +592,43 @@
  343               	.LVL20:
  344 0188 E0E0      		ldi r30,lo8(thisNeighborhood)
  345 018a F0E0      		ldi r31,hi8(thisNeighborhood)
-  41:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	for(count = 0, i = 0; i < NUM_PORTS; ++i)
+  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	for(count = 0, i = 0; i < NUM_PORTS; ++i)
  346               		.loc 1 41 0
  347 018c 80E0      		ldi r24,0
  348               	.LVL21:
  349               	.L19:
-  43:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		if(thisNeighborhood.n[i] != VACANT)
+  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		if(thisNeighborhood.n[i] != VACANT)
  350               		.loc 1 43 0
  351 018e 2191      		ld r18,Z+
  352 0190 3191      		ld r19,Z+
  353 0192 232B      		or r18,r19
  354 0194 01F0      		breq .L18
-  45:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			count++;
+  45:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 			count++;
  355               		.loc 1 45 0
  356 0196 8F5F      		subi r24,lo8(-(1))
  357               	.LVL22:
  358               	.L18:
-  41:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	for(count = 0, i = 0; i < NUM_PORTS; ++i)
+  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	for(count = 0, i = 0; i < NUM_PORTS; ++i)
  359               		.loc 1 41 0
  360 0198 90E0      		ldi r25,hi8(thisNeighborhood+12)
  361 019a E030      		cpi r30,lo8(thisNeighborhood+12)
  362 019c F907      		cpc r31,r25
  363 019e 01F4      		brne .L19
  364               	/* epilogue start */
-  52:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
+  52:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
  365               		.loc 1 52 0
  366 01a0 0895      		ret
  367               	.LFE8:
  369               	.global	down
  371               	down:
  372               	.LFB9:
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid down(void) { return thisNeighborhood.n[DOWN]; }
+  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid down(void) { return thisNeighborhood.n[DOWN]; }
  373               		.loc 1 55 0
  374               	/* prologue: function */
  375               	/* frame size = 0 */
  376               	/* stack size = 0 */
  377               	.L__stack_usage = 0
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid down(void) { return thisNeighborhood.n[DOWN]; }
+  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid down(void) { return thisNeighborhood.n[DOWN]; }
  378               		.loc 1 55 0
  379 01a2 E0E0      		ldi r30,lo8(thisNeighborhood)
  380 01a4 F0E0      		ldi r31,hi8(thisNeighborhood)
@@ -639,13 +639,13 @@
  386               	.global	up
  388               	up:
  389               	.LFB10:
-  56:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid up(void) { return thisNeighborhood.n[UP]; }
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid up(void) { return thisNeighborhood.n[UP]; }
  390               		.loc 1 56 0
  391               	/* prologue: function */
  392               	/* frame size = 0 */
  393               	/* stack size = 0 */
  394               	.L__stack_usage = 0
-  56:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid up(void) { return thisNeighborhood.n[UP]; }
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid up(void) { return thisNeighborhood.n[UP]; }
  395               		.loc 1 56 0
  396 01ac E0E0      		ldi r30,lo8(thisNeighborhood+10)
  397 01ae F0E0      		ldi r31,hi8(thisNeighborhood+10)
@@ -656,13 +656,13 @@
  403               	.global	north
  405               	north:
  406               	.LFB11:
-  57:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid north(void) { return thisNeighborhood.n[NORTH]; }
+  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid north(void) { return thisNeighborhood.n[NORTH]; }
  407               		.loc 1 57 0
  408               	/* prologue: function */
  409               	/* frame size = 0 */
  410               	/* stack size = 0 */
  411               	.L__stack_usage = 0
-  57:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid north(void) { return thisNeighborhood.n[NORTH]; }
+  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid north(void) { return thisNeighborhood.n[NORTH]; }
  412               		.loc 1 57 0
  413 01b6 E0E0      		ldi r30,lo8(thisNeighborhood+2)
  414 01b8 F0E0      		ldi r31,hi8(thisNeighborhood+2)
@@ -673,13 +673,13 @@
  420               	.global	south
  422               	south:
  423               	.LFB12:
-  58:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid south(void) { return thisNeighborhood.n[SOUTH]; }
+  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid south(void) { return thisNeighborhood.n[SOUTH]; }
  424               		.loc 1 58 0
  425               	/* prologue: function */
  426               	/* frame size = 0 */
  427               	/* stack size = 0 */
  428               	.L__stack_usage = 0
-  58:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid south(void) { return thisNeighborhood.n[SOUTH]; }
+  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid south(void) { return thisNeighborhood.n[SOUTH]; }
  429               		.loc 1 58 0
  430 01c0 E0E0      		ldi r30,lo8(thisNeighborhood+8)
  431 01c2 F0E0      		ldi r31,hi8(thisNeighborhood+8)
@@ -690,13 +690,13 @@
  437               	.global	east
  439               	east:
  440               	.LFB13:
-  59:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid east(void) { return thisNeighborhood.n[EAST]; }
+  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid east(void) { return thisNeighborhood.n[EAST]; }
  441               		.loc 1 59 0
  442               	/* prologue: function */
  443               	/* frame size = 0 */
  444               	/* stack size = 0 */
  445               	.L__stack_usage = 0
-  59:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid east(void) { return thisNeighborhood.n[EAST]; }
+  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid east(void) { return thisNeighborhood.n[EAST]; }
  446               		.loc 1 59 0
  447 01ca E0E0      		ldi r30,lo8(thisNeighborhood+4)
  448 01cc F0E0      		ldi r31,hi8(thisNeighborhood+4)
@@ -707,13 +707,13 @@
  454               	.global	west
  456               	west:
  457               	.LFB14:
-  60:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid west(void) { return thisNeighborhood.n[WEST]; }
+  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid west(void) { return thisNeighborhood.n[WEST]; }
  458               		.loc 1 60 0
  459               	/* prologue: function */
  460               	/* frame size = 0 */
  461               	/* stack size = 0 */
  462               	.L__stack_usage = 0
-  60:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** Uid west(void) { return thisNeighborhood.n[WEST]; }
+  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** Uid west(void) { return thisNeighborhood.n[WEST]; }
  463               		.loc 1 60 0
  464 01d4 E0E0      		ldi r30,lo8(thisNeighborhood+6)
  465 01d6 F0E0      		ldi r31,hi8(thisNeighborhood+6)
@@ -724,7 +724,7 @@
  471               	.global	updateNeighbor
  473               	updateNeighbor:
  474               	.LFB15:
-  66:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
+  66:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
  475               		.loc 1 66 0
  476               	.LVL23:
  477 01de 1F93      		push r17
@@ -739,20 +739,20 @@
  486               	.L__stack_usage = 3
  487 01e4 182F      		mov r17,r24
  488 01e6 EB01      		movw r28,r22
- 111:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(isHostPort(p)) {
+ 111:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(isHostPort(p)) {
  489               		.loc 1 111 0
  490 01e8 0E94 0000 		call isHostPort
  491               	.LVL24:
  492 01ec 8111      		cpse r24,__zero_reg__
  493 01ee 00C0      		rjmp .L30
- 116:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	if(p < NUM_PORTS)
+ 116:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	if(p < NUM_PORTS)
  494               		.loc 1 116 0
  495 01f0 1630      		cpi r17,lo8(6)
  496 01f2 00F4      		brsh .L30
  497               	.LVL25:
  498               	.LBB34:
  499               	.LBB35:
- 119:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    if(thisNeighborhood.n[p] != b)
+ 119:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    if(thisNeighborhood.n[p] != b)
  500               		.loc 1 119 0
  501 01f4 E12F      		mov r30,r17
  502 01f6 F0E0      		ldi r31,0
@@ -760,1013 +760,1007 @@
  504 01fa FF1F      		rol r31
  505 01fc E050      		subi r30,lo8(-(thisNeighborhood))
  506 01fe F040      		sbci r31,hi8(-(thisNeighborhood))
- 507 0200 2081      		ld r18,Z
- 508 0202 3181      		ldd r19,Z+1
- 509 0204 2C17      		cp r18,r28
- 510 0206 3D07      		cpc r19,r29
+ 507 0200 8081      		ld r24,Z
+ 508 0202 9181      		ldd r25,Z+1
+ 509 0204 8C17      		cp r24,r28
+ 510 0206 9D07      		cpc r25,r29
  511 0208 01F0      		breq .L30
- 121:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        thisNeighborhood.n[p] = b;
+ 121:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        thisNeighborhood.n[p] = b;
  512               		.loc 1 121 0
  513 020a C083      		st Z,r28
  514 020c D183      		std Z+1,r29
- 122:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        triggerHandler(EVENT_NEIGHBOR_CHANGE);
+ 122:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        triggerHandler(EVENT_NEIGHBOR_CHANGE);
  515               		.loc 1 122 0
  516 020e 83E1      		ldi r24,lo8(19)
- 517 0210 0E94 0000 		call triggerHandler
- 518               	.LVL26:
- 124:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			handleNeighborChange(p);
- 519               		.loc 1 124 0
- 520 0214 812F      		mov r24,r17
- 521               	/* epilogue start */
- 522               	.LBE35:
- 523               	.LBE34:
- 131:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 524               		.loc 1 131 0
- 525 0216 DF91      		pop r29
- 526 0218 CF91      		pop r28
- 527               	.LVL27:
- 528 021a 1F91      		pop r17
- 529               	.LVL28:
- 530               	.LBB37:
- 531               	.LBB36:
- 124:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			handleNeighborChange(p);
- 532               		.loc 1 124 0
- 533 021c 0C94 0000 		jmp handleNeighborChange
- 534               	.LVL29:
- 535               	.L30:
- 536               	/* epilogue start */
- 537               	.LBE36:
- 538               	.LBE37:
- 131:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 539               		.loc 1 131 0
- 540 0220 DF91      		pop r29
- 541 0222 CF91      		pop r28
- 542               	.LVL30:
- 543 0224 1F91      		pop r17
- 544               	.LVL31:
- 545 0226 0895      		ret
- 546               	.LFE15:
- 548               	.global	restartScan
- 550               	restartScan:
- 551               	.LFB22:
- 229:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 230:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // callback for neighbor_response packet
- 231:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** void neighborHandshakeCB(void)
- 232:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
- 233:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     // message was received.  add neighbor to neighborhood and initiate keepalives
- 234:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
- 235:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 236:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       // pull neighbor from packet, same position as how we initially sent it
- 237:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       Uid neighbor = charToGUID(&(thisChunk->data[4]));
- 238:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       
- 239:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       // re-add timer for keepalive purposes
- 240:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
- 241:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
- 242:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	{
- 243:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
- 244:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	}
- 245:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
- 246:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       enableTimer(ttNeighbor[faceNum(thisChunk)]);
- 247:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       
- 248:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       // add new neighbor to neighborhood
- 249:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       updateNeighbor(faceNum(thisChunk), neighbor);
- 250:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 251:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 252:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     else // no neighbor ACK!  begin rescanning
- 253:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 254:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       restartScan(faceNum(thisChunk));
- 255:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 256:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   
- 257:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
- 258:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 259:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 260:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // called for all NEIGHBOR_MSG type reserved system handlers
- 261:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** byte handleNeighborMessage(void)
- 262:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
- 263:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     if( thisChunk == NULL ) 
- 264:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 265:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       return 0;
- 266:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 267:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   
- 268:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     switch(thisChunk->data[1])
- 269:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 270:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       // a neighbor wants to initiate a response with us, craft a response
- 271:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       case MSG_NEIGHBOR_START:
- 272:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       {
- 273:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    // have we already received an ACK to our own NEIGHBOR_MSG?  If not, respond
- 274:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period != NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
- 275:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    {
- 276:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      // build a neighbor handshake packet
- 277:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      // of the form:
- 278:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      // [handshake header] [my guid] [your guid]
- 279:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      byte buf[6];
- 280:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      buf[0] = NEIGHBOR_MSG;
- 281:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      buf[1] = MSG_NEIGHBOR_RESPONSE;
- 282:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      GUIDIntoChar(getGUID(), &(buf[2]));
- 283:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      buf[4] = thisChunk->data[2];
- 284:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      buf[5] = thisChunk->data[3];
- 285:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	
- 286:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      // if our neighbor is already vacant, nothing happens.
- 287:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      // if this guid == old guid, they got reset somehow, so drop neighbor so user can re-add gra
- 288:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      // if this guid != old guid, then we got a new block, so drop neighbor so user can re-add gr
- 289:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      updateNeighbor(faceNum(thisChunk), VACANT);
- 290:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    
- 291:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      // stop any imminent timeouts such as neighborscanning
- 292:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      disableTimer(ttNeighbor[faceNum(thisChunk)]);
- 293:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
- 294:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		{
- 295:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
- 296:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		}
- 297:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 298:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      // callback will add neighbor or restart scanning, as necessary
- 299:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      sendSystemMessage(faceNum(thisChunk), buf, 6, RES_SYS_HANDLER, (GenericHandler)&neighborHand
- 300:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    }
- 301:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    // else we are waiting for handshake, stay in NEIGHBOR_HANDSHAKE and don't send a response mes
- 302:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    // (they are probably sending one to us right now)
- 303:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    break;
- 304:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       }
- 305:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       // got a response to our request for a neighbor handshake
- 306:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       case MSG_NEIGHBOR_RESPONSE:
- 307:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       {
- 308:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    // are we waiting for a handshake?  well, here it is!
- 309:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
- 310:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    {
- 311:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        Uid me, neighbor;
- 312:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    
- 313:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        // pull [your guid][my guid] from the handshake packet - reversed from how it was sent
- 314:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        neighbor = charToGUID(&(thisChunk->data[2]));
- 315:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        me = charToGUID(&(thisChunk->data[4]));
- 316:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    
- 317:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        // got a sensible response
- 318:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        if(me == getGUID())
- 319:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        {
- 320:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        // stop any imminent rescans
- 321:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        disableTimer(ttNeighbor[faceNum(thisChunk)]);
- 322:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
- 323:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			  {
- 324:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			    deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
- 325:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			  }
- 326:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		
- 327:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        // re-add timer, but now for keepalive purposes
- 328:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
- 329:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
- 330:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         		enableTimer(ttNeighbor[faceNum(thisChunk)]);
- 331:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		
- 332:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        // add new neighbor to neighborhood
- 333:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         		updateNeighbor(faceNum(thisChunk), neighbor);
- 334:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 335:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        // a good place to check and store the time, if we wanted to keep track of neighbor uptim
- 336:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        }
- 337:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        // else we got a bad handshake;  either it will come or we'll start scanning again on time
- 338:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    }
- 339:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    // else we got a bad handshake;  either it will come or we'll start scanning again on timeout
- 340:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    break;
- 341:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       }
- 342:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       case MSG_NEIGHBOR_KEEPALIVE:
- 343:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       {
- 344:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    // are we currently looking for keepalives?  if yes, here it is!
- 345:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_KEEPALIVE_PERIOD)
- 346:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    {
- 347:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        Uid me, neighbor;
- 348:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 349:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        neighbor = charToGUID(&(thisChunk->data[2]));
- 350:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        me = charToGUID(&(thisChunk->data[4]));
- 351:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 352:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        // got a bad or unexpected response - clear neighbor and restart scan
- 353:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        if(me != getGUID() || neighbor != thisNeighborhood.n[faceNum(thisChunk)])
- 354:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        {
- 355:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        restartScan(faceNum(thisChunk));
- 356:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        }
- 357:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    }
- 358:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    // else do nothing;  we are already in another state actively trying to acquire a neighbor
- 359:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         break;
- 360:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       }
- 361:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       default: 
- 362:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         break;  
- 363:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 364:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     return 1;
- 365:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 366:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 367:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** // sets neighbor to VACANT, and starts a timer/timeout to send handshake initialization messages
- 368:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** void restartScan(PRef i)
- 369:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
- 552               		.loc 1 369 0
- 553               	.LVL32:
- 554 0228 1F93      		push r17
- 555               	.LCFI16:
- 556 022a CF93      		push r28
- 557               	.LCFI17:
- 558 022c DF93      		push r29
- 559               	.LCFI18:
- 560               	/* prologue: function */
- 561               	/* frame size = 0 */
- 562               	/* stack size = 3 */
- 563               	.L__stack_usage = 3
- 564 022e 182F      		mov r17,r24
- 370:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   updateNeighbor(i, VACANT);
- 565               		.loc 1 370 0
- 566 0230 60E0      		ldi r22,0
- 567 0232 70E0      		ldi r23,0
- 568 0234 0E94 0000 		call updateNeighbor
- 569               	.LVL33:
- 371:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 372:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // deregister timer and deregister timeouts if they are already in the lists
- 373:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[i]);
- 570               		.loc 1 373 0
- 571 0238 C12F      		mov r28,r17
- 572 023a D0E0      		ldi r29,0
- 573 023c 81E1      		ldi r24,lo8(17)
- 574 023e 189F      		mul r17,r24
- 575 0240 9001      		movw r18,r0
- 576 0242 1124      		clr __zero_reg__
- 577 0244 F901      		movw r30,r18
- 578 0246 E050      		subi r30,lo8(-(ttNeighbor))
- 579 0248 F040      		sbci r31,hi8(-(ttNeighbor))
- 580 024a 108A      		std Z+16,__zero_reg__
- 374:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   if(ttNeighbor[i].t.state != INACTIVE)
- 581               		.loc 1 374 0
- 582 024c 8285      		ldd r24,Z+10
- 583 024e 8823      		tst r24
- 584 0250 01F0      		breq .L33
- 375:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 376:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       deregisterTimeout(&(ttNeighbor[i].t));
- 585               		.loc 1 376 0
- 586 0252 C901      		movw r24,r18
- 587 0254 8050      		subi r24,lo8(-(ttNeighbor+2))
- 588 0256 9040      		sbci r25,hi8(-(ttNeighbor+2))
- 589 0258 0E94 0000 		call deregisterTimeout
- 590               	.LVL34:
- 591               	.L33:
- 377:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 378:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 379:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   // set up timer to call neighbor scan
- 380:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   (ttNeighbor[i]).t.arg = i;
- 592               		.loc 1 380 0
- 593 025c 81E1      		ldi r24,lo8(17)
- 594 025e 8C9F      		mul r24,r28
- 595 0260 F001      		movw r30,r0
- 596 0262 8D9F      		mul r24,r29
- 597 0264 F00D      		add r31,r0
- 598 0266 1124      		clr __zero_reg__
- 599 0268 E050      		subi r30,lo8(-(ttNeighbor))
- 600 026a F040      		sbci r31,hi8(-(ttNeighbor))
- 601 026c 1387      		std Z+11,r17
- 381:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   (ttNeighbor[i]).t.callback = (GenericHandler)&neighborScan;
- 602               		.loc 1 381 0
- 603 026e 80E0      		ldi r24,lo8(gs(neighborScan))
- 604 0270 90E0      		ldi r25,hi8(gs(neighborScan))
- 605 0272 8087      		std Z+8,r24
- 606 0274 9187      		std Z+9,r25
- 382:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   (ttNeighbor[i]).period = NEIGHBOR_SCAN_PERIOD;
- 607               		.loc 1 382 0
- 608 0276 82E3      		ldi r24,lo8(50)
- 609 0278 90E0      		ldi r25,0
- 610 027a A0E0      		ldi r26,0
- 611 027c B0E0      		ldi r27,0
- 612 027e 8487      		std Z+12,r24
- 613 0280 9587      		std Z+13,r25
- 614 0282 A687      		std Z+14,r26
- 615 0284 B787      		std Z+15,r27
- 383:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   enableTimer(ttNeighbor[i]);
- 616               		.loc 1 383 0
- 617 0286 81E0      		ldi r24,lo8(1)
- 618 0288 808B      		std Z+16,r24
- 619               	/* epilogue start */
- 384:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 620               		.loc 1 384 0
- 621 028a DF91      		pop r29
- 622 028c CF91      		pop r28
- 623 028e 1F91      		pop r17
- 624               	.LVL35:
- 625 0290 0895      		ret
- 626               	.LFE22:
- 628               	.global	handleNeighborMessage
- 630               	handleNeighborMessage:
- 631               	.LFB21:
- 262:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
- 632               		.loc 1 262 0
- 633 0292 DF92      		push r13
- 634               	.LCFI19:
- 635 0294 EF92      		push r14
- 636               	.LCFI20:
- 637 0296 FF92      		push r15
- 638               	.LCFI21:
- 639 0298 0F93      		push r16
- 640               	.LCFI22:
- 641 029a 1F93      		push r17
- 642               	.LCFI23:
- 643 029c CF93      		push r28
- 644               	.LCFI24:
- 645 029e DF93      		push r29
- 646               	.LCFI25:
- 647 02a0 00D0      		rcall .
- 648 02a2 00D0      		rcall .
- 649               	.LCFI26:
- 650 02a4 CDB7      		in r28,__SP_L__
- 651 02a6 DEB7      		in r29,__SP_H__
- 652               	.LCFI27:
- 653               	/* prologue: function */
- 654               	/* frame size = 6 */
- 655               	/* stack size = 13 */
- 656               	.L__stack_usage = 13
- 263:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     if( thisChunk == NULL ) 
- 657               		.loc 1 263 0
- 658 02a8 E091 0000 		lds r30,thisChunk
- 659 02ac F091 0000 		lds r31,thisChunk+1
- 660 02b0 3097      		sbiw r30,0
- 661 02b2 01F4      		brne .+2
- 662 02b4 00C0      		rjmp .L47
- 268:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     switch(thisChunk->data[1])
- 663               		.loc 1 268 0
- 664 02b6 9181      		ldd r25,Z+1
- 665 02b8 9230      		cpi r25,lo8(2)
- 666 02ba 01F4      		brne .+2
- 667 02bc 00C0      		rjmp .L40
- 668 02be 9330      		cpi r25,lo8(3)
- 669 02c0 01F4      		brne .+2
- 670 02c2 00C0      		rjmp .L41
- 671 02c4 9130      		cpi r25,lo8(1)
- 672 02c6 01F0      		breq .+2
- 673 02c8 00C0      		rjmp .L55
- 274:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period != NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
- 674               		.loc 1 274 0
- 675 02ca E189      		ldd r30,Z+17
- 676 02cc E770      		andi r30,lo8(7)
- 677 02ce 11E1      		ldi r17,lo8(17)
- 678 02d0 1E9F      		mul r17,r30
- 679 02d2 F001      		movw r30,r0
- 680 02d4 1124      		clr __zero_reg__
- 681 02d6 E050      		subi r30,lo8(-(ttNeighbor))
- 682 02d8 F040      		sbci r31,hi8(-(ttNeighbor))
- 683 02da 4485      		ldd r20,Z+12
- 684 02dc 5585      		ldd r21,Z+13
- 685 02de 6685      		ldd r22,Z+14
- 686 02e0 7785      		ldd r23,Z+15
- 687 02e2 4436      		cpi r20,100
- 688 02e4 5105      		cpc r21,__zero_reg__
- 689 02e6 6105      		cpc r22,__zero_reg__
- 690 02e8 7105      		cpc r23,__zero_reg__
- 691 02ea 01F4      		brne .L42
- 692 02ec 00C0      		rjmp .L55
- 693               	.L42:
- 694               	.LBB38:
- 280:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      buf[0] = NEIGHBOR_MSG;
- 695               		.loc 1 280 0
- 696 02ee 9983      		std Y+1,r25
- 281:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      buf[1] = MSG_NEIGHBOR_RESPONSE;
- 697               		.loc 1 281 0
- 698 02f0 82E0      		ldi r24,lo8(2)
- 699 02f2 8A83      		std Y+2,r24
- 282:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      GUIDIntoChar(getGUID(), &(buf[2]));
- 700               		.loc 1 282 0
- 701 02f4 0E94 0000 		call getGUID
- 702               	.LVL36:
- 703               	.LBB39:
- 704               	.LBB40:
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
- 705               		.loc 1 21 0
- 706 02f8 9B83      		std Y+3,r25
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
- 707               		.loc 1 22 0
- 708 02fa 8C83      		std Y+4,r24
- 709               	.LBE40:
- 710               	.LBE39:
- 283:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      buf[4] = thisChunk->data[2];
- 711               		.loc 1 283 0
- 712 02fc E091 0000 		lds r30,thisChunk
- 713 0300 F091 0000 		lds r31,thisChunk+1
- 714 0304 8281      		ldd r24,Z+2
- 715               	.LVL37:
- 716 0306 8D83      		std Y+5,r24
- 284:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      buf[5] = thisChunk->data[3];
- 717               		.loc 1 284 0
- 718 0308 8381      		ldd r24,Z+3
- 719 030a 8E83      		std Y+6,r24
- 289:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      updateNeighbor(faceNum(thisChunk), VACANT);
- 720               		.loc 1 289 0
- 721 030c 8189      		ldd r24,Z+17
- 722 030e 60E0      		ldi r22,0
- 723 0310 70E0      		ldi r23,0
- 724 0312 8770      		andi r24,lo8(7)
- 725 0314 0E94 0000 		call updateNeighbor
- 726               	.LVL38:
- 292:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      disableTimer(ttNeighbor[faceNum(thisChunk)]);
- 727               		.loc 1 292 0
- 728 0318 A091 0000 		lds r26,thisChunk
- 729 031c B091 0000 		lds r27,thisChunk+1
- 730 0320 5196      		adiw r26,17
- 731 0322 EC91      		ld r30,X
- 732 0324 5197      		sbiw r26,17
- 733 0326 E770      		andi r30,lo8(7)
- 734 0328 1E9F      		mul r17,r30
- 735 032a F001      		movw r30,r0
- 736 032c 1124      		clr __zero_reg__
- 737 032e E050      		subi r30,lo8(-(ttNeighbor))
- 738 0330 F040      		sbci r31,hi8(-(ttNeighbor))
- 739 0332 108A      		std Z+16,__zero_reg__
- 293:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
- 740               		.loc 1 293 0
- 741 0334 5196      		adiw r26,17
- 742 0336 8C91      		ld r24,X
- 743 0338 8770      		andi r24,lo8(7)
- 744 033a 189F      		mul r17,r24
- 745 033c C001      		movw r24,r0
- 746 033e 1124      		clr __zero_reg__
- 747 0340 FC01      		movw r30,r24
- 748 0342 E050      		subi r30,lo8(-(ttNeighbor))
- 749 0344 F040      		sbci r31,hi8(-(ttNeighbor))
- 750 0346 2285      		ldd r18,Z+10
- 751 0348 2223      		tst r18
- 752 034a 01F0      		breq .L43
- 295:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
- 753               		.loc 1 295 0
- 754 034c 8050      		subi r24,lo8(-(ttNeighbor+2))
- 755 034e 9040      		sbci r25,hi8(-(ttNeighbor+2))
- 756 0350 0E94 0000 		call deregisterTimeout
- 757               	.LVL39:
- 758               	.L43:
- 299:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	      sendSystemMessage(faceNum(thisChunk), buf, 6, RES_SYS_HANDLER, (GenericHandler)&neighborHand
- 759               		.loc 1 299 0
- 760 0354 E091 0000 		lds r30,thisChunk
- 761 0358 F091 0000 		lds r31,thisChunk+1
- 762 035c 8189      		ldd r24,Z+17
- 763 035e 00E0      		ldi r16,lo8(gs(neighborHandshakeCB))
- 764 0360 10E0      		ldi r17,hi8(gs(neighborHandshakeCB))
- 765 0362 20E0      		ldi r18,0
- 766 0364 30E0      		ldi r19,0
- 767 0366 46E0      		ldi r20,lo8(6)
- 768 0368 BE01      		movw r22,r28
- 769 036a 6F5F      		subi r22,-1
- 770 036c 7F4F      		sbci r23,-1
- 771 036e 8770      		andi r24,lo8(7)
- 772 0370 0E94 0000 		call sendSystemMessage
- 773               	.LVL40:
- 774 0374 00C0      		rjmp .L55
- 775               	.LVL41:
- 776               	.L40:
- 777               	.LBE38:
- 309:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
- 778               		.loc 1 309 0
- 779 0376 A189      		ldd r26,Z+17
- 780 0378 A770      		andi r26,lo8(7)
- 781 037a 51E1      		ldi r21,lo8(17)
- 782 037c D52E      		mov r13,r21
- 783 037e DA9E      		mul r13,r26
- 784 0380 D001      		movw r26,r0
- 785 0382 1124      		clr __zero_reg__
- 786 0384 A050      		subi r26,lo8(-(ttNeighbor))
- 787 0386 B040      		sbci r27,hi8(-(ttNeighbor))
- 788 0388 1C96      		adiw r26,12
- 789 038a 4D91      		ld r20,X+
- 790 038c 5D91      		ld r21,X+
- 791 038e 6D91      		ld r22,X+
- 792 0390 7C91      		ld r23,X
- 793 0392 1F97      		sbiw r26,12+3
- 794 0394 4436      		cpi r20,100
- 795 0396 5105      		cpc r21,__zero_reg__
- 796 0398 6105      		cpc r22,__zero_reg__
- 797 039a 7105      		cpc r23,__zero_reg__
- 798 039c 01F0      		breq .+2
- 799 039e 00C0      		rjmp .L55
- 800               	.LVL42:
- 801               	.LBB41:
- 802               	.LBB42:
- 803               	.LBB43:
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
- 804               		.loc 1 30 0
- 805 03a0 0281      		ldd r16,Z+2
- 806               	.LVL43:
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
- 807               		.loc 1 31 0
- 808 03a2 1381      		ldd r17,Z+3
- 809               	.LVL44:
- 810               	.LBE43:
- 811               	.LBE42:
- 812               	.LBB45:
- 813               	.LBB46:
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
- 814               		.loc 1 30 0
- 815 03a4 3481      		ldd r19,Z+4
- 816 03a6 20E0      		ldi r18,0
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
- 817               		.loc 1 31 0
- 818 03a8 8581      		ldd r24,Z+5
- 819 03aa 7901      		movw r14,r18
- 820 03ac E82A      		or r14,r24
- 821               	.LVL45:
- 822               	.LBE46:
- 823               	.LBE45:
- 318:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        if(me == getGUID())
- 824               		.loc 1 318 0
- 825 03ae 0E94 0000 		call getGUID
- 826               	.LVL46:
- 827 03b2 E816      		cp r14,r24
- 828 03b4 F906      		cpc r15,r25
- 829 03b6 01F0      		breq .+2
- 830 03b8 00C0      		rjmp .L55
- 321:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        disableTimer(ttNeighbor[faceNum(thisChunk)]);
- 831               		.loc 1 321 0
- 832 03ba A091 0000 		lds r26,thisChunk
- 833 03be B091 0000 		lds r27,thisChunk+1
- 834 03c2 5196      		adiw r26,17
- 835 03c4 EC91      		ld r30,X
- 836 03c6 5197      		sbiw r26,17
- 837 03c8 E770      		andi r30,lo8(7)
- 838 03ca DE9E      		mul r13,r30
- 839 03cc F001      		movw r30,r0
- 840 03ce 1124      		clr __zero_reg__
- 841 03d0 E050      		subi r30,lo8(-(ttNeighbor))
- 842 03d2 F040      		sbci r31,hi8(-(ttNeighbor))
- 843 03d4 108A      		std Z+16,__zero_reg__
- 322:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
- 844               		.loc 1 322 0
- 845 03d6 5196      		adiw r26,17
- 846 03d8 8C91      		ld r24,X
- 847 03da 8770      		andi r24,lo8(7)
- 848 03dc D89E      		mul r13,r24
- 849 03de C001      		movw r24,r0
- 850 03e0 1124      		clr __zero_reg__
- 851 03e2 FC01      		movw r30,r24
- 852 03e4 E050      		subi r30,lo8(-(ttNeighbor))
- 853 03e6 F040      		sbci r31,hi8(-(ttNeighbor))
- 854 03e8 2285      		ldd r18,Z+10
- 855 03ea 2223      		tst r18
- 856 03ec 01F0      		breq .L45
- 324:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 			    deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
- 857               		.loc 1 324 0
- 858 03ee 8050      		subi r24,lo8(-(ttNeighbor+2))
- 859 03f0 9040      		sbci r25,hi8(-(ttNeighbor+2))
- 860 03f2 0E94 0000 		call deregisterTimeout
- 861               	.LVL47:
- 862               	.L45:
- 328:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
- 863               		.loc 1 328 0
- 864 03f6 2091 0000 		lds r18,thisChunk
- 865 03fa 3091 0000 		lds r19,thisChunk+1
- 866 03fe D901      		movw r26,r18
- 867 0400 5196      		adiw r26,17
- 868 0402 EC91      		ld r30,X
- 869 0404 E770      		andi r30,lo8(7)
- 870 0406 B1E1      		ldi r27,lo8(17)
- 871 0408 EB9F      		mul r30,r27
- 872 040a F001      		movw r30,r0
- 873 040c 1124      		clr __zero_reg__
- 874 040e E050      		subi r30,lo8(-(ttNeighbor))
- 875 0410 F040      		sbci r31,hi8(-(ttNeighbor))
- 876 0412 84EF      		ldi r24,lo8(-12)
- 877 0414 91E0      		ldi r25,lo8(1)
- 878 0416 A0E0      		ldi r26,0
- 879 0418 B0E0      		ldi r27,0
- 880 041a 8487      		std Z+12,r24
- 881 041c 9587      		std Z+13,r25
- 882 041e A687      		std Z+14,r26
- 883 0420 B787      		std Z+15,r27
- 329:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
- 884               		.loc 1 329 0
- 885 0422 80E0      		ldi r24,lo8(gs(neighborKeepalive))
- 886 0424 90E0      		ldi r25,hi8(gs(neighborKeepalive))
- 887 0426 8087      		std Z+8,r24
- 888 0428 9187      		std Z+9,r25
- 330:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         		enableTimer(ttNeighbor[faceNum(thisChunk)]);
- 889               		.loc 1 330 0
- 890 042a 81E0      		ldi r24,lo8(1)
- 891 042c 808B      		std Z+16,r24
- 892               	.LBB47:
- 893               	.LBB44:
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
- 894               		.loc 1 30 0
- 895 042e 702F      		mov r23,r16
- 896 0430 60E0      		ldi r22,0
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
- 897               		.loc 1 31 0
- 898 0432 612B      		or r22,r17
- 899               	.LBE44:
- 900               	.LBE47:
- 333:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         		updateNeighbor(faceNum(thisChunk), neighbor);
- 901               		.loc 1 333 0
- 902 0434 F901      		movw r30,r18
- 903 0436 8189      		ldd r24,Z+17
- 904 0438 8770      		andi r24,lo8(7)
- 905 043a 0E94 0000 		call updateNeighbor
- 906               	.LVL48:
- 907 043e 00C0      		rjmp .L55
- 908               	.LVL49:
- 909               	.L41:
- 910               	.LBE41:
- 345:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_KEEPALIVE_PERIOD)
- 911               		.loc 1 345 0
- 912 0440 A189      		ldd r26,Z+17
- 913 0442 A770      		andi r26,lo8(7)
- 914 0444 21E1      		ldi r18,lo8(17)
- 915 0446 A29F      		mul r26,r18
- 916 0448 D001      		movw r26,r0
- 917 044a 1124      		clr __zero_reg__
- 918 044c A050      		subi r26,lo8(-(ttNeighbor))
- 919 044e B040      		sbci r27,hi8(-(ttNeighbor))
- 920 0450 1C96      		adiw r26,12
- 921 0452 8D91      		ld r24,X+
- 922 0454 9D91      		ld r25,X+
- 923 0456 0D90      		ld __tmp_reg__,X+
- 924 0458 BC91      		ld r27,X
- 925 045a A02D      		mov r26,__tmp_reg__
- 926 045c 843F      		cpi r24,-12
- 927 045e 9140      		sbci r25,1
- 928 0460 A105      		cpc r26,__zero_reg__
- 929 0462 B105      		cpc r27,__zero_reg__
- 930 0464 01F4      		brne .L55
- 931               	.LVL50:
- 932               	.LBB48:
- 933               	.LBB49:
- 934               	.LBB50:
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
- 935               		.loc 1 30 0
- 936 0466 E280      		ldd r14,Z+2
- 937               	.LVL51:
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
- 938               		.loc 1 31 0
- 939 0468 F380      		ldd r15,Z+3
- 940               	.LVL52:
- 941               	.LBE50:
- 942               	.LBE49:
- 943               	.LBB52:
- 944               	.LBB53:
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
- 945               		.loc 1 30 0
- 946 046a 9481      		ldd r25,Z+4
- 947 046c 80E0      		ldi r24,0
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
- 948               		.loc 1 31 0
- 949 046e 2581      		ldd r18,Z+5
- 950 0470 8C01      		movw r16,r24
- 951 0472 022B      		or r16,r18
- 952               	.LVL53:
- 953               	.LBE53:
- 954               	.LBE52:
- 353:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        if(me != getGUID() || neighbor != thisNeighborhood.n[faceNum(thisChunk)])
- 955               		.loc 1 353 0
- 956 0474 0E94 0000 		call getGUID
- 957               	.LVL54:
- 958 0478 0817      		cp r16,r24
- 959 047a 1907      		cpc r17,r25
- 960 047c 01F4      		brne .L46
- 961               	.LBB54:
- 962               	.LBB51:
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
- 963               		.loc 1 30 0 discriminator 1
- 964 047e 9E2D      		mov r25,r14
- 965 0480 80E0      		ldi r24,0
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
- 966               		.loc 1 31 0 discriminator 1
- 967 0482 8F29      		or r24,r15
- 968               	.LBE51:
- 969               	.LBE54:
- 353:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	        if(me != getGUID() || neighbor != thisNeighborhood.n[faceNum(thisChunk)])
- 970               		.loc 1 353 0 discriminator 1
- 971 0484 E091 0000 		lds r30,thisChunk
- 972 0488 F091 0000 		lds r31,thisChunk+1
- 973 048c E189      		ldd r30,Z+17
- 974 048e E770      		andi r30,lo8(7)
- 975 0490 F0E0      		ldi r31,0
- 976 0492 EE0F      		lsl r30
- 977 0494 FF1F      		rol r31
- 978 0496 E050      		subi r30,lo8(-(thisNeighborhood))
- 979 0498 F040      		sbci r31,hi8(-(thisNeighborhood))
- 980 049a 2081      		ld r18,Z
- 981 049c 3181      		ldd r19,Z+1
- 982 049e 8217      		cp r24,r18
- 983 04a0 9307      		cpc r25,r19
- 984 04a2 01F0      		breq .L55
- 985               	.L46:
- 355:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 		        restartScan(faceNum(thisChunk));
- 986               		.loc 1 355 0
- 987 04a4 E091 0000 		lds r30,thisChunk
- 988 04a8 F091 0000 		lds r31,thisChunk+1
- 989 04ac 8189      		ldd r24,Z+17
- 990 04ae 8770      		andi r24,lo8(7)
- 991 04b0 0E94 0000 		call restartScan
- 992               	.LVL55:
- 993 04b4 00C0      		rjmp .L55
- 994               	.LVL56:
- 995               	.L47:
- 996               	.LBE48:
- 265:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       return 0;
- 997               		.loc 1 265 0
- 998 04b6 80E0      		ldi r24,0
- 999 04b8 00C0      		rjmp .L38
- 1000               	.L55:
- 364:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     return 1;
- 1001               		.loc 1 364 0
- 1002 04ba 81E0      		ldi r24,lo8(1)
- 1003               	.L38:
- 1004               	/* epilogue start */
- 365:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 1005               		.loc 1 365 0
- 1006 04bc 2696      		adiw r28,6
- 1007 04be CDBF      		out __SP_L__,r28
- 1008 04c0 DEBF      		out __SP_H__,r29
- 1009 04c2 DF91      		pop r29
- 1010 04c4 CF91      		pop r28
- 1011 04c6 1F91      		pop r17
- 1012 04c8 0F91      		pop r16
- 1013 04ca FF90      		pop r15
- 1014 04cc EF90      		pop r14
- 1015 04ce DF90      		pop r13
- 1016 04d0 0895      		ret
- 1017               	.LFE21:
- 1019               	.global	neighborHandshakeCB
- 1021               	neighborHandshakeCB:
- 1022               	.LFB20:
- 232:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
- 1023               		.loc 1 232 0
- 1024 04d2 CF93      		push r28
- 1025               	.LCFI28:
- 1026 04d4 DF93      		push r29
- 1027               	.LCFI29:
- 1028               	/* prologue: function */
- 1029               	/* frame size = 0 */
- 1030               	/* stack size = 2 */
- 1031               	.L__stack_usage = 2
- 234:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
- 1032               		.loc 1 234 0
- 1033 04d6 E091 0000 		lds r30,thisChunk
- 1034 04da F091 0000 		lds r31,thisChunk+1
- 1035 04de 8189      		ldd r24,Z+17
- 1036 04e0 982F      		mov r25,r24
- 1037 04e2 9871      		andi r25,lo8(24)
- 1038 04e4 9830      		cpi r25,lo8(8)
- 1039 04e6 01F4      		brne .L57
- 1040               	.LVL57:
- 1041               	.LBB55:
- 1042               	.LBB56:
- 1043               	.LBB57:
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
- 1044               		.loc 1 30 0
- 1045 04e8 7481      		ldd r23,Z+4
- 1046 04ea 60E0      		ldi r22,0
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
- 1047               		.loc 1 31 0
- 1048 04ec 9581      		ldd r25,Z+5
- 1049 04ee EB01      		movw r28,r22
- 1050 04f0 C92B      		or r28,r25
- 1051               	.LVL58:
- 1052               	.LBE57:
- 1053               	.LBE56:
- 240:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
- 1054               		.loc 1 240 0
- 1055 04f2 8770      		andi r24,lo8(7)
- 1056 04f4 21E1      		ldi r18,lo8(17)
- 1057 04f6 829F      		mul r24,r18
- 1058 04f8 C001      		movw r24,r0
- 1059 04fa 1124      		clr __zero_reg__
- 1060 04fc FC01      		movw r30,r24
- 1061               	.LVL59:
- 1062 04fe E050      		subi r30,lo8(-(ttNeighbor))
- 1063 0500 F040      		sbci r31,hi8(-(ttNeighbor))
- 1064 0502 44EF      		ldi r20,lo8(-12)
- 1065 0504 51E0      		ldi r21,lo8(1)
- 1066 0506 60E0      		ldi r22,0
- 1067 0508 70E0      		ldi r23,0
- 1068 050a 4487      		std Z+12,r20
- 1069 050c 5587      		std Z+13,r21
- 1070 050e 6687      		std Z+14,r22
- 1071 0510 7787      		std Z+15,r23
- 241:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
- 1072               		.loc 1 241 0
- 1073 0512 2285      		ldd r18,Z+10
- 1074 0514 2223      		tst r18
- 1075 0516 01F0      		breq .L58
- 243:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
- 1076               		.loc 1 243 0
- 1077 0518 8050      		subi r24,lo8(-(ttNeighbor+2))
- 1078 051a 9040      		sbci r25,hi8(-(ttNeighbor+2))
- 1079 051c 0E94 0000 		call deregisterTimeout
- 1080               	.LVL60:
- 1081               	.L58:
- 245:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
- 1082               		.loc 1 245 0
- 1083 0520 A091 0000 		lds r26,thisChunk
- 1084 0524 B091 0000 		lds r27,thisChunk+1
- 1085 0528 5196      		adiw r26,17
- 1086 052a EC91      		ld r30,X
- 1087 052c 5197      		sbiw r26,17
- 1088 052e E770      		andi r30,lo8(7)
- 1089 0530 81E1      		ldi r24,lo8(17)
- 1090 0532 E89F      		mul r30,r24
- 1091 0534 F001      		movw r30,r0
- 1092 0536 1124      		clr __zero_reg__
- 1093 0538 E050      		subi r30,lo8(-(ttNeighbor))
- 1094 053a F040      		sbci r31,hi8(-(ttNeighbor))
- 1095 053c 80E0      		ldi r24,lo8(gs(neighborKeepalive))
- 1096 053e 90E0      		ldi r25,hi8(gs(neighborKeepalive))
- 1097 0540 8087      		std Z+8,r24
- 1098 0542 9187      		std Z+9,r25
- 246:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       enableTimer(ttNeighbor[faceNum(thisChunk)]);
- 1099               		.loc 1 246 0
- 1100 0544 81E0      		ldi r24,lo8(1)
- 1101 0546 808B      		std Z+16,r24
- 249:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       updateNeighbor(faceNum(thisChunk), neighbor);
- 1102               		.loc 1 249 0
- 1103 0548 5196      		adiw r26,17
- 1104 054a 8C91      		ld r24,X
- 1105 054c BE01      		movw r22,r28
- 1106 054e 8770      		andi r24,lo8(7)
- 1107 0550 0E94 0000 		call updateNeighbor
- 1108               	.LVL61:
- 1109 0554 00C0      		rjmp .L59
- 1110               	.LVL62:
- 1111               	.L57:
- 1112               	.LBE55:
- 254:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****       restartScan(faceNum(thisChunk));
- 1113               		.loc 1 254 0
- 1114 0556 8770      		andi r24,lo8(7)
- 1115 0558 0E94 0000 		call restartScan
- 1116               	.LVL63:
- 1117               	.L59:
- 257:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
- 1118               		.loc 1 257 0
- 1119 055c 8091 0000 		lds r24,thisChunk
- 1120 0560 9091 0000 		lds r25,thisChunk+1
- 1121               	/* epilogue start */
- 258:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 1122               		.loc 1 258 0
- 1123 0564 DF91      		pop r29
- 1124 0566 CF91      		pop r28
- 257:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
- 1125               		.loc 1 257 0
- 1126 0568 0C94 0000 		jmp freeChunk
- 1127               	.LVL64:
- 1128               	.LFE20:
- 1130               	.global	neighborKeepaliveCB
- 1132               	neighborKeepaliveCB:
- 1133               	.LFB18:
- 196:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
- 1134               		.loc 1 196 0
- 1135               	/* prologue: function */
- 1136               	/* frame size = 0 */
- 1137               	/* stack size = 0 */
- 1138               	.L__stack_usage = 0
- 200:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
- 1139               		.loc 1 200 0
- 1140 056c E091 0000 		lds r30,thisChunk
- 1141 0570 F091 0000 		lds r31,thisChunk+1
- 1142 0574 8189      		ldd r24,Z+17
- 1143 0576 982F      		mov r25,r24
- 1144 0578 9871      		andi r25,lo8(24)
- 1145 057a 8770      		andi r24,lo8(7)
- 1146 057c 9830      		cpi r25,lo8(8)
- 1147 057e 01F4      		brne .L64
- 202:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         enableTimer(ttNeighbor[faceNum(thisChunk)]);
- 1148               		.loc 1 202 0
- 1149 0580 91E1      		ldi r25,lo8(17)
- 1150 0582 899F      		mul r24,r25
- 1151 0584 F001      		movw r30,r0
- 1152 0586 1124      		clr __zero_reg__
- 1153 0588 E050      		subi r30,lo8(-(ttNeighbor))
- 1154 058a F040      		sbci r31,hi8(-(ttNeighbor))
- 1155 058c 81E0      		ldi r24,lo8(1)
- 1156 058e 808B      		std Z+16,r24
- 1157 0590 00C0      		rjmp .L65
- 1158               	.L64:
- 206:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         restartScan(faceNum(thisChunk));
- 1159               		.loc 1 206 0
- 1160 0592 0E94 0000 		call restartScan
- 1161               	.LVL65:
- 1162               	.L65:
- 209:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     freeChunk(thisChunk);
- 1163               		.loc 1 209 0
- 1164 0596 8091 0000 		lds r24,thisChunk
- 1165 059a 9091 0000 		lds r25,thisChunk+1
- 1166 059e 0C94 0000 		jmp freeChunk
- 1167               	.LVL66:
- 1168               	.LFE18:
- 1170               	.global	initEnsemble
- 1172               	initEnsemble:
- 1173               	.LFB23:
- 385:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 386:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** void initEnsemble(void)
- 387:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** {
- 1174               		.loc 1 387 0
- 1175 05a2 FF92      		push r15
- 1176               	.LCFI30:
- 1177 05a4 0F93      		push r16
- 1178               	.LCFI31:
- 1179 05a6 1F93      		push r17
- 1180               	.LCFI32:
- 1181 05a8 CF93      		push r28
- 1182               	.LCFI33:
- 1183 05aa DF93      		push r29
- 1184               	.LCFI34:
- 1185               	/* prologue: function */
- 1186               	/* frame size = 0 */
- 1187               	/* stack size = 5 */
- 1188               	.L__stack_usage = 5
- 1189               	.LVL67:
- 1190 05ac 00E0      		ldi r16,lo8(ttNeighbor+16)
- 1191 05ae 10E0      		ldi r17,hi8(ttNeighbor+16)
- 388:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     int i;
- 389:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****   
- 390:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     // restart scanning for neighbors on all ports
- 391:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     for( i=0; i<NUM_PORTS; ++i)
- 1192               		.loc 1 391 0
- 1193 05b0 C0E0      		ldi r28,0
- 1194 05b2 D0E0      		ldi r29,0
- 392:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     {
- 393:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         #ifdef DEBUGPORT
- 394:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         if(i == DEBUGPORT) {
- 395:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****             continue;
- 396:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         }
- 397:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         #endif
- 398:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 
- 399:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	registerTimer(&(ttNeighbor[i]));
- 1195               		.loc 1 399 0
- 1196 05b4 61E1      		ldi r22,lo8(17)
- 1197 05b6 F62E      		mov r15,r22
- 1198               	.LVL68:
- 1199               	.L67:
- 1200               		.loc 1 399 0 is_stmt 0 discriminator 2
- 1201 05b8 FC9E      		mul r15,r28
- 1202 05ba C001      		movw r24,r0
- 1203 05bc FD9E      		mul r15,r29
- 1204 05be 900D      		add r25,r0
- 1205 05c0 1124      		clr __zero_reg__
- 1206 05c2 8050      		subi r24,lo8(-(ttNeighbor))
- 1207 05c4 9040      		sbci r25,hi8(-(ttNeighbor))
- 1208 05c6 0E94 0000 		call registerTimer
- 1209               	.LVL69:
- 400:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** 	disableTimer(ttNeighbor[i]);
- 1210               		.loc 1 400 0 is_stmt 1 discriminator 2
- 1211 05ca F801      		movw r30,r16
- 1212 05cc 1082      		st Z,__zero_reg__
- 401:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****         restartScan(i);
- 1213               		.loc 1 401 0 discriminator 2
- 1214 05ce 8C2F      		mov r24,r28
- 1215 05d0 0E94 0000 		call restartScan
- 1216               	.LVL70:
- 391:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     for( i=0; i<NUM_PORTS; ++i)
- 1217               		.loc 1 391 0 discriminator 2
- 1218 05d4 2196      		adiw r28,1
- 1219               	.LVL71:
- 1220 05d6 0F5E      		subi r16,-17
- 1221 05d8 1F4F      		sbci r17,-1
- 1222 05da C630      		cpi r28,6
- 1223 05dc D105      		cpc r29,__zero_reg__
- 1224 05de 01F4      		brne .L67
- 1225               	/* epilogue start */
- 402:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb ****     }
- 403:/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bb **** }
- 1226               		.loc 1 403 0
- 1227 05e0 DF91      		pop r29
- 1228 05e2 CF91      		pop r28
- 1229               	.LVL72:
- 1230 05e4 1F91      		pop r17
- 1231 05e6 0F91      		pop r16
- 1232 05e8 FF90      		pop r15
- 1233 05ea 0895      		ret
- 1234               	.LFE23:
- 1236               		.comm	ttNeighbor,102,1
- 1237               		.comm	thisNeighborhood,12,1
- 1598               	.Letext0:
- 1599               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
- 1600               		.file 3 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/defs.bbh"
- 1601               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/handler.bbh"
- 1602               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/memory.bbh"
- 1603               		.file 6 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/hardwaretime.bbh"
- 1604               		.file 7 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/serial.bbh"
- 1605               		.file 8 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bbh"
- 1606               		.file 9 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bbh"
- 1607               		.file 10 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bbh"
- 1608               		.file 11 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bbh"
- 1609               		.file 12 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/clock.bbh"
- 1610               		.file 13 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/../hw-api/hwMemory.h"
+ 517               	/* epilogue start */
+ 518               	.LBE35:
+ 519               	.LBE34:
+ 131:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 520               		.loc 1 131 0
+ 521 0210 DF91      		pop r29
+ 522 0212 CF91      		pop r28
+ 523               	.LVL26:
+ 524 0214 1F91      		pop r17
+ 525               	.LVL27:
+ 526               	.LBB37:
+ 527               	.LBB36:
+ 122:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        triggerHandler(EVENT_NEIGHBOR_CHANGE);
+ 528               		.loc 1 122 0
+ 529 0216 0C94 0000 		jmp triggerHandler
+ 530               	.LVL28:
+ 531               	.L30:
+ 532               	/* epilogue start */
+ 533               	.LBE36:
+ 534               	.LBE37:
+ 131:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 535               		.loc 1 131 0
+ 536 021a DF91      		pop r29
+ 537 021c CF91      		pop r28
+ 538               	.LVL29:
+ 539 021e 1F91      		pop r17
+ 540               	.LVL30:
+ 541 0220 0895      		ret
+ 542               	.LFE15:
+ 544               	.global	restartScan
+ 546               	restartScan:
+ 547               	.LFB22:
+ 229:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 230:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // callback for neighbor_response packet
+ 231:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** void neighborHandshakeCB(void)
+ 232:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+ 233:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     // message was received.  add neighbor to neighborhood and initiate keepalives
+ 234:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 235:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 236:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       // pull neighbor from packet, same position as how we initially sent it
+ 237:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       Uid neighbor = charToGUID(&(thisChunk->data[4]));
+ 238:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       
+ 239:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       // re-add timer for keepalive purposes
+ 240:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
+ 241:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 242:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	{
+ 243:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 244:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	}
+ 245:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
+ 246:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 247:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       
+ 248:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       // add new neighbor to neighborhood
+ 249:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       updateNeighbor(faceNum(thisChunk), neighbor);
+ 250:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 251:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 252:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     else // no neighbor ACK!  begin rescanning
+ 253:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 254:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       restartScan(faceNum(thisChunk));
+ 255:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 256:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   
+ 257:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
+ 258:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 259:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 260:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // called for all NEIGHBOR_MSG type reserved system handlers
+ 261:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** byte handleNeighborMessage(void)
+ 262:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+ 263:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     if( thisChunk == NULL ) 
+ 264:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 265:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       return 0;
+ 266:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 267:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   
+ 268:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     switch(thisChunk->data[1])
+ 269:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 270:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       // a neighbor wants to initiate a response with us, craft a response
+ 271:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       case MSG_NEIGHBOR_START:
+ 272:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       {
+ 273:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    // have we already received an ACK to our own NEIGHBOR_MSG?  If not, respond
+ 274:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period != NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
+ 275:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    {
+ 276:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      // build a neighbor handshake packet
+ 277:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      // of the form:
+ 278:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      // [handshake header] [my guid] [your guid]
+ 279:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      byte buf[6];
+ 280:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      buf[0] = NEIGHBOR_MSG;
+ 281:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      buf[1] = MSG_NEIGHBOR_RESPONSE;
+ 282:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      GUIDIntoChar(getGUID(), &(buf[2]));
+ 283:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      buf[4] = thisChunk->data[2];
+ 284:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      buf[5] = thisChunk->data[3];
+ 285:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	
+ 286:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      // if our neighbor is already vacant, nothing happens.
+ 287:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      // if this guid == old guid, they got reset somehow, so drop neighbor so user can re-add gra
+ 288:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      // if this guid != old guid, then we got a new block, so drop neighbor so user can re-add gr
+ 289:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      updateNeighbor(faceNum(thisChunk), VACANT);
+ 290:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    
+ 291:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      // stop any imminent timeouts such as neighborscanning
+ 292:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      disableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 293:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 294:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		{
+ 295:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 296:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		}
+ 297:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 298:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      // callback will add neighbor or restart scanning, as necessary
+ 299:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      sendSystemMessage(faceNum(thisChunk), buf, 6, RES_SYS_HANDLER, (GenericHandler)&neighborHand
+ 300:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    }
+ 301:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    // else we are waiting for handshake, stay in NEIGHBOR_HANDSHAKE and don't send a response mes
+ 302:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    // (they are probably sending one to us right now)
+ 303:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    break;
+ 304:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       }
+ 305:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       // got a response to our request for a neighbor handshake
+ 306:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       case MSG_NEIGHBOR_RESPONSE:
+ 307:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       {
+ 308:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    // are we waiting for a handshake?  well, here it is!
+ 309:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
+ 310:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    {
+ 311:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        Uid me, neighbor;
+ 312:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    
+ 313:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        // pull [your guid][my guid] from the handshake packet - reversed from how it was sent
+ 314:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        neighbor = charToGUID(&(thisChunk->data[2]));
+ 315:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        me = charToGUID(&(thisChunk->data[4]));
+ 316:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    
+ 317:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        // got a sensible response
+ 318:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        if(me == getGUID())
+ 319:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        {
+ 320:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        // stop any imminent rescans
+ 321:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        disableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 322:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 			if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 323:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 			  {
+ 324:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 			    deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 325:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 			  }
+ 326:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		
+ 327:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        // re-add timer, but now for keepalive purposes
+ 328:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
+ 329:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
+ 330:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         		enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 331:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		
+ 332:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        // add new neighbor to neighborhood
+ 333:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         		updateNeighbor(faceNum(thisChunk), neighbor);
+ 334:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 335:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        // a good place to check and store the time, if we wanted to keep track of neighbor uptim
+ 336:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        }
+ 337:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        // else we got a bad handshake;  either it will come or we'll start scanning again on time
+ 338:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    }
+ 339:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    // else we got a bad handshake;  either it will come or we'll start scanning again on timeout
+ 340:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    break;
+ 341:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       }
+ 342:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       case MSG_NEIGHBOR_KEEPALIVE:
+ 343:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       {
+ 344:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    // are we currently looking for keepalives?  if yes, here it is!
+ 345:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_KEEPALIVE_PERIOD)
+ 346:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    {
+ 347:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        Uid me, neighbor;
+ 348:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 349:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        neighbor = charToGUID(&(thisChunk->data[2]));
+ 350:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        me = charToGUID(&(thisChunk->data[4]));
+ 351:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 352:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        // got a bad or unexpected response - clear neighbor and restart scan
+ 353:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        if(me != getGUID() || neighbor != thisNeighborhood.n[faceNum(thisChunk)])
+ 354:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        {
+ 355:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        restartScan(faceNum(thisChunk));
+ 356:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        }
+ 357:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    }
+ 358:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    // else do nothing;  we are already in another state actively trying to acquire a neighbor
+ 359:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         break;
+ 360:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       }
+ 361:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       default: 
+ 362:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         break;  
+ 363:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 364:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     return 1;
+ 365:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 366:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 367:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** // sets neighbor to VACANT, and starts a timer/timeout to send handshake initialization messages
+ 368:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** void restartScan(PRef i)
+ 369:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+ 548               		.loc 1 369 0
+ 549               	.LVL31:
+ 550 0222 1F93      		push r17
+ 551               	.LCFI16:
+ 552 0224 CF93      		push r28
+ 553               	.LCFI17:
+ 554 0226 DF93      		push r29
+ 555               	.LCFI18:
+ 556               	/* prologue: function */
+ 557               	/* frame size = 0 */
+ 558               	/* stack size = 3 */
+ 559               	.L__stack_usage = 3
+ 560 0228 182F      		mov r17,r24
+ 370:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   updateNeighbor(i, VACANT);
+ 561               		.loc 1 370 0
+ 562 022a 60E0      		ldi r22,0
+ 563 022c 70E0      		ldi r23,0
+ 564 022e 0E94 0000 		call updateNeighbor
+ 565               	.LVL32:
+ 371:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 372:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // deregister timer and deregister timeouts if they are already in the lists
+ 373:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   disableTimer(ttNeighbor[i]);
+ 566               		.loc 1 373 0
+ 567 0232 C12F      		mov r28,r17
+ 568 0234 D0E0      		ldi r29,0
+ 569 0236 81E1      		ldi r24,lo8(17)
+ 570 0238 189F      		mul r17,r24
+ 571 023a 9001      		movw r18,r0
+ 572 023c 1124      		clr __zero_reg__
+ 573 023e F901      		movw r30,r18
+ 574 0240 E050      		subi r30,lo8(-(ttNeighbor))
+ 575 0242 F040      		sbci r31,hi8(-(ttNeighbor))
+ 576 0244 108A      		std Z+16,__zero_reg__
+ 374:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   if(ttNeighbor[i].t.state != INACTIVE)
+ 577               		.loc 1 374 0
+ 578 0246 8285      		ldd r24,Z+10
+ 579 0248 8823      		tst r24
+ 580 024a 01F0      		breq .L33
+ 375:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 376:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       deregisterTimeout(&(ttNeighbor[i].t));
+ 581               		.loc 1 376 0
+ 582 024c C901      		movw r24,r18
+ 583 024e 8050      		subi r24,lo8(-(ttNeighbor+2))
+ 584 0250 9040      		sbci r25,hi8(-(ttNeighbor+2))
+ 585 0252 0E94 0000 		call deregisterTimeout
+ 586               	.LVL33:
+ 587               	.L33:
+ 377:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 378:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 379:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   // set up timer to call neighbor scan
+ 380:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   (ttNeighbor[i]).t.arg = i;
+ 588               		.loc 1 380 0
+ 589 0256 81E1      		ldi r24,lo8(17)
+ 590 0258 8C9F      		mul r24,r28
+ 591 025a F001      		movw r30,r0
+ 592 025c 8D9F      		mul r24,r29
+ 593 025e F00D      		add r31,r0
+ 594 0260 1124      		clr __zero_reg__
+ 595 0262 E050      		subi r30,lo8(-(ttNeighbor))
+ 596 0264 F040      		sbci r31,hi8(-(ttNeighbor))
+ 597 0266 1387      		std Z+11,r17
+ 381:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   (ttNeighbor[i]).t.callback = (GenericHandler)&neighborScan;
+ 598               		.loc 1 381 0
+ 599 0268 80E0      		ldi r24,lo8(gs(neighborScan))
+ 600 026a 90E0      		ldi r25,hi8(gs(neighborScan))
+ 601 026c 8087      		std Z+8,r24
+ 602 026e 9187      		std Z+9,r25
+ 382:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   (ttNeighbor[i]).period = NEIGHBOR_SCAN_PERIOD;
+ 603               		.loc 1 382 0
+ 604 0270 82E3      		ldi r24,lo8(50)
+ 605 0272 90E0      		ldi r25,0
+ 606 0274 A0E0      		ldi r26,0
+ 607 0276 B0E0      		ldi r27,0
+ 608 0278 8487      		std Z+12,r24
+ 609 027a 9587      		std Z+13,r25
+ 610 027c A687      		std Z+14,r26
+ 611 027e B787      		std Z+15,r27
+ 383:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   enableTimer(ttNeighbor[i]);
+ 612               		.loc 1 383 0
+ 613 0280 81E0      		ldi r24,lo8(1)
+ 614 0282 808B      		std Z+16,r24
+ 615               	/* epilogue start */
+ 384:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 616               		.loc 1 384 0
+ 617 0284 DF91      		pop r29
+ 618 0286 CF91      		pop r28
+ 619 0288 1F91      		pop r17
+ 620               	.LVL34:
+ 621 028a 0895      		ret
+ 622               	.LFE22:
+ 624               	.global	handleNeighborMessage
+ 626               	handleNeighborMessage:
+ 627               	.LFB21:
+ 262:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+ 628               		.loc 1 262 0
+ 629 028c DF92      		push r13
+ 630               	.LCFI19:
+ 631 028e EF92      		push r14
+ 632               	.LCFI20:
+ 633 0290 FF92      		push r15
+ 634               	.LCFI21:
+ 635 0292 0F93      		push r16
+ 636               	.LCFI22:
+ 637 0294 1F93      		push r17
+ 638               	.LCFI23:
+ 639 0296 CF93      		push r28
+ 640               	.LCFI24:
+ 641 0298 DF93      		push r29
+ 642               	.LCFI25:
+ 643 029a 00D0      		rcall .
+ 644 029c 00D0      		rcall .
+ 645               	.LCFI26:
+ 646 029e CDB7      		in r28,__SP_L__
+ 647 02a0 DEB7      		in r29,__SP_H__
+ 648               	.LCFI27:
+ 649               	/* prologue: function */
+ 650               	/* frame size = 6 */
+ 651               	/* stack size = 13 */
+ 652               	.L__stack_usage = 13
+ 263:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     if( thisChunk == NULL ) 
+ 653               		.loc 1 263 0
+ 654 02a2 E091 0000 		lds r30,thisChunk
+ 655 02a6 F091 0000 		lds r31,thisChunk+1
+ 656 02aa 3097      		sbiw r30,0
+ 657 02ac 01F4      		brne .+2
+ 658 02ae 00C0      		rjmp .L47
+ 268:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     switch(thisChunk->data[1])
+ 659               		.loc 1 268 0
+ 660 02b0 9181      		ldd r25,Z+1
+ 661 02b2 9230      		cpi r25,lo8(2)
+ 662 02b4 01F4      		brne .+2
+ 663 02b6 00C0      		rjmp .L40
+ 664 02b8 9330      		cpi r25,lo8(3)
+ 665 02ba 01F4      		brne .+2
+ 666 02bc 00C0      		rjmp .L41
+ 667 02be 9130      		cpi r25,lo8(1)
+ 668 02c0 01F0      		breq .+2
+ 669 02c2 00C0      		rjmp .L55
+ 274:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period != NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
+ 670               		.loc 1 274 0
+ 671 02c4 E189      		ldd r30,Z+17
+ 672 02c6 E770      		andi r30,lo8(7)
+ 673 02c8 11E1      		ldi r17,lo8(17)
+ 674 02ca 1E9F      		mul r17,r30
+ 675 02cc F001      		movw r30,r0
+ 676 02ce 1124      		clr __zero_reg__
+ 677 02d0 E050      		subi r30,lo8(-(ttNeighbor))
+ 678 02d2 F040      		sbci r31,hi8(-(ttNeighbor))
+ 679 02d4 4485      		ldd r20,Z+12
+ 680 02d6 5585      		ldd r21,Z+13
+ 681 02d8 6685      		ldd r22,Z+14
+ 682 02da 7785      		ldd r23,Z+15
+ 683 02dc 4436      		cpi r20,100
+ 684 02de 5105      		cpc r21,__zero_reg__
+ 685 02e0 6105      		cpc r22,__zero_reg__
+ 686 02e2 7105      		cpc r23,__zero_reg__
+ 687 02e4 01F4      		brne .L42
+ 688 02e6 00C0      		rjmp .L55
+ 689               	.L42:
+ 690               	.LBB38:
+ 280:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      buf[0] = NEIGHBOR_MSG;
+ 691               		.loc 1 280 0
+ 692 02e8 9983      		std Y+1,r25
+ 281:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      buf[1] = MSG_NEIGHBOR_RESPONSE;
+ 693               		.loc 1 281 0
+ 694 02ea 82E0      		ldi r24,lo8(2)
+ 695 02ec 8A83      		std Y+2,r24
+ 282:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      GUIDIntoChar(getGUID(), &(buf[2]));
+ 696               		.loc 1 282 0
+ 697 02ee 0E94 0000 		call getGUID
+ 698               	.LVL35:
+ 699               	.LBB39:
+ 700               	.LBB40:
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[0] = (id >> 8) & 0x00FF;
+ 701               		.loc 1 21 0
+ 702 02f2 9B83      		std Y+3,r25
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     c[1] = (id & 0x00FF); 
+ 703               		.loc 1 22 0
+ 704 02f4 8C83      		std Y+4,r24
+ 705               	.LBE40:
+ 706               	.LBE39:
+ 283:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      buf[4] = thisChunk->data[2];
+ 707               		.loc 1 283 0
+ 708 02f6 E091 0000 		lds r30,thisChunk
+ 709 02fa F091 0000 		lds r31,thisChunk+1
+ 710 02fe 8281      		ldd r24,Z+2
+ 711               	.LVL36:
+ 712 0300 8D83      		std Y+5,r24
+ 284:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      buf[5] = thisChunk->data[3];
+ 713               		.loc 1 284 0
+ 714 0302 8381      		ldd r24,Z+3
+ 715 0304 8E83      		std Y+6,r24
+ 289:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      updateNeighbor(faceNum(thisChunk), VACANT);
+ 716               		.loc 1 289 0
+ 717 0306 8189      		ldd r24,Z+17
+ 718 0308 60E0      		ldi r22,0
+ 719 030a 70E0      		ldi r23,0
+ 720 030c 8770      		andi r24,lo8(7)
+ 721 030e 0E94 0000 		call updateNeighbor
+ 722               	.LVL37:
+ 292:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      disableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 723               		.loc 1 292 0
+ 724 0312 A091 0000 		lds r26,thisChunk
+ 725 0316 B091 0000 		lds r27,thisChunk+1
+ 726 031a 5196      		adiw r26,17
+ 727 031c EC91      		ld r30,X
+ 728 031e 5197      		sbiw r26,17
+ 729 0320 E770      		andi r30,lo8(7)
+ 730 0322 1E9F      		mul r17,r30
+ 731 0324 F001      		movw r30,r0
+ 732 0326 1124      		clr __zero_reg__
+ 733 0328 E050      		subi r30,lo8(-(ttNeighbor))
+ 734 032a F040      		sbci r31,hi8(-(ttNeighbor))
+ 735 032c 108A      		std Z+16,__zero_reg__
+ 293:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 736               		.loc 1 293 0
+ 737 032e 5196      		adiw r26,17
+ 738 0330 8C91      		ld r24,X
+ 739 0332 8770      		andi r24,lo8(7)
+ 740 0334 189F      		mul r17,r24
+ 741 0336 C001      		movw r24,r0
+ 742 0338 1124      		clr __zero_reg__
+ 743 033a FC01      		movw r30,r24
+ 744 033c E050      		subi r30,lo8(-(ttNeighbor))
+ 745 033e F040      		sbci r31,hi8(-(ttNeighbor))
+ 746 0340 2285      		ldd r18,Z+10
+ 747 0342 2223      		tst r18
+ 748 0344 01F0      		breq .L43
+ 295:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 749               		.loc 1 295 0
+ 750 0346 8050      		subi r24,lo8(-(ttNeighbor+2))
+ 751 0348 9040      		sbci r25,hi8(-(ttNeighbor+2))
+ 752 034a 0E94 0000 		call deregisterTimeout
+ 753               	.LVL38:
+ 754               	.L43:
+ 299:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	      sendSystemMessage(faceNum(thisChunk), buf, 6, RES_SYS_HANDLER, (GenericHandler)&neighborHand
+ 755               		.loc 1 299 0
+ 756 034e E091 0000 		lds r30,thisChunk
+ 757 0352 F091 0000 		lds r31,thisChunk+1
+ 758 0356 8189      		ldd r24,Z+17
+ 759 0358 00E0      		ldi r16,lo8(gs(neighborHandshakeCB))
+ 760 035a 10E0      		ldi r17,hi8(gs(neighborHandshakeCB))
+ 761 035c 20E0      		ldi r18,0
+ 762 035e 30E0      		ldi r19,0
+ 763 0360 46E0      		ldi r20,lo8(6)
+ 764 0362 BE01      		movw r22,r28
+ 765 0364 6F5F      		subi r22,-1
+ 766 0366 7F4F      		sbci r23,-1
+ 767 0368 8770      		andi r24,lo8(7)
+ 768 036a 0E94 0000 		call sendSystemMessage
+ 769               	.LVL39:
+ 770 036e 00C0      		rjmp .L55
+ 771               	.LVL40:
+ 772               	.L40:
+ 773               	.LBE38:
+ 309:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
+ 774               		.loc 1 309 0
+ 775 0370 A189      		ldd r26,Z+17
+ 776 0372 A770      		andi r26,lo8(7)
+ 777 0374 51E1      		ldi r21,lo8(17)
+ 778 0376 D52E      		mov r13,r21
+ 779 0378 DA9E      		mul r13,r26
+ 780 037a D001      		movw r26,r0
+ 781 037c 1124      		clr __zero_reg__
+ 782 037e A050      		subi r26,lo8(-(ttNeighbor))
+ 783 0380 B040      		sbci r27,hi8(-(ttNeighbor))
+ 784 0382 1C96      		adiw r26,12
+ 785 0384 4D91      		ld r20,X+
+ 786 0386 5D91      		ld r21,X+
+ 787 0388 6D91      		ld r22,X+
+ 788 038a 7C91      		ld r23,X
+ 789 038c 1F97      		sbiw r26,12+3
+ 790 038e 4436      		cpi r20,100
+ 791 0390 5105      		cpc r21,__zero_reg__
+ 792 0392 6105      		cpc r22,__zero_reg__
+ 793 0394 7105      		cpc r23,__zero_reg__
+ 794 0396 01F0      		breq .+2
+ 795 0398 00C0      		rjmp .L55
+ 796               	.LVL41:
+ 797               	.LBB41:
+ 798               	.LBB42:
+ 799               	.LBB43:
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 800               		.loc 1 30 0
+ 801 039a 0281      		ldd r16,Z+2
+ 802               	.LVL42:
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 803               		.loc 1 31 0
+ 804 039c 1381      		ldd r17,Z+3
+ 805               	.LVL43:
+ 806               	.LBE43:
+ 807               	.LBE42:
+ 808               	.LBB45:
+ 809               	.LBB46:
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 810               		.loc 1 30 0
+ 811 039e 3481      		ldd r19,Z+4
+ 812 03a0 20E0      		ldi r18,0
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 813               		.loc 1 31 0
+ 814 03a2 8581      		ldd r24,Z+5
+ 815 03a4 7901      		movw r14,r18
+ 816 03a6 E82A      		or r14,r24
+ 817               	.LVL44:
+ 818               	.LBE46:
+ 819               	.LBE45:
+ 318:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        if(me == getGUID())
+ 820               		.loc 1 318 0
+ 821 03a8 0E94 0000 		call getGUID
+ 822               	.LVL45:
+ 823 03ac E816      		cp r14,r24
+ 824 03ae F906      		cpc r15,r25
+ 825 03b0 01F0      		breq .+2
+ 826 03b2 00C0      		rjmp .L55
+ 321:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        disableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 827               		.loc 1 321 0
+ 828 03b4 A091 0000 		lds r26,thisChunk
+ 829 03b8 B091 0000 		lds r27,thisChunk+1
+ 830 03bc 5196      		adiw r26,17
+ 831 03be EC91      		ld r30,X
+ 832 03c0 5197      		sbiw r26,17
+ 833 03c2 E770      		andi r30,lo8(7)
+ 834 03c4 DE9E      		mul r13,r30
+ 835 03c6 F001      		movw r30,r0
+ 836 03c8 1124      		clr __zero_reg__
+ 837 03ca E050      		subi r30,lo8(-(ttNeighbor))
+ 838 03cc F040      		sbci r31,hi8(-(ttNeighbor))
+ 839 03ce 108A      		std Z+16,__zero_reg__
+ 322:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 			if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 840               		.loc 1 322 0
+ 841 03d0 5196      		adiw r26,17
+ 842 03d2 8C91      		ld r24,X
+ 843 03d4 8770      		andi r24,lo8(7)
+ 844 03d6 D89E      		mul r13,r24
+ 845 03d8 C001      		movw r24,r0
+ 846 03da 1124      		clr __zero_reg__
+ 847 03dc FC01      		movw r30,r24
+ 848 03de E050      		subi r30,lo8(-(ttNeighbor))
+ 849 03e0 F040      		sbci r31,hi8(-(ttNeighbor))
+ 850 03e2 2285      		ldd r18,Z+10
+ 851 03e4 2223      		tst r18
+ 852 03e6 01F0      		breq .L45
+ 324:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 			    deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 853               		.loc 1 324 0
+ 854 03e8 8050      		subi r24,lo8(-(ttNeighbor+2))
+ 855 03ea 9040      		sbci r25,hi8(-(ttNeighbor+2))
+ 856 03ec 0E94 0000 		call deregisterTimeout
+ 857               	.LVL46:
+ 858               	.L45:
+ 328:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
+ 859               		.loc 1 328 0
+ 860 03f0 2091 0000 		lds r18,thisChunk
+ 861 03f4 3091 0000 		lds r19,thisChunk+1
+ 862 03f8 D901      		movw r26,r18
+ 863 03fa 5196      		adiw r26,17
+ 864 03fc EC91      		ld r30,X
+ 865 03fe E770      		andi r30,lo8(7)
+ 866 0400 B1E1      		ldi r27,lo8(17)
+ 867 0402 EB9F      		mul r30,r27
+ 868 0404 F001      		movw r30,r0
+ 869 0406 1124      		clr __zero_reg__
+ 870 0408 E050      		subi r30,lo8(-(ttNeighbor))
+ 871 040a F040      		sbci r31,hi8(-(ttNeighbor))
+ 872 040c 84EF      		ldi r24,lo8(-12)
+ 873 040e 91E0      		ldi r25,lo8(1)
+ 874 0410 A0E0      		ldi r26,0
+ 875 0412 B0E0      		ldi r27,0
+ 876 0414 8487      		std Z+12,r24
+ 877 0416 9587      		std Z+13,r25
+ 878 0418 A687      		std Z+14,r26
+ 879 041a B787      		std Z+15,r27
+ 329:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
+ 880               		.loc 1 329 0
+ 881 041c 80E0      		ldi r24,lo8(gs(neighborKeepalive))
+ 882 041e 90E0      		ldi r25,hi8(gs(neighborKeepalive))
+ 883 0420 8087      		std Z+8,r24
+ 884 0422 9187      		std Z+9,r25
+ 330:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         		enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 885               		.loc 1 330 0
+ 886 0424 81E0      		ldi r24,lo8(1)
+ 887 0426 808B      		std Z+16,r24
+ 888               	.LBB47:
+ 889               	.LBB44:
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 890               		.loc 1 30 0
+ 891 0428 702F      		mov r23,r16
+ 892 042a 60E0      		ldi r22,0
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 893               		.loc 1 31 0
+ 894 042c 612B      		or r22,r17
+ 895               	.LBE44:
+ 896               	.LBE47:
+ 333:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         		updateNeighbor(faceNum(thisChunk), neighbor);
+ 897               		.loc 1 333 0
+ 898 042e F901      		movw r30,r18
+ 899 0430 8189      		ldd r24,Z+17
+ 900 0432 8770      		andi r24,lo8(7)
+ 901 0434 0E94 0000 		call updateNeighbor
+ 902               	.LVL47:
+ 903 0438 00C0      		rjmp .L55
+ 904               	.LVL48:
+ 905               	.L41:
+ 906               	.LBE41:
+ 345:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	    if((ttNeighbor[faceNum(thisChunk)]).period == NEIGHBOR_KEEPALIVE_PERIOD)
+ 907               		.loc 1 345 0
+ 908 043a A189      		ldd r26,Z+17
+ 909 043c A770      		andi r26,lo8(7)
+ 910 043e 21E1      		ldi r18,lo8(17)
+ 911 0440 A29F      		mul r26,r18
+ 912 0442 D001      		movw r26,r0
+ 913 0444 1124      		clr __zero_reg__
+ 914 0446 A050      		subi r26,lo8(-(ttNeighbor))
+ 915 0448 B040      		sbci r27,hi8(-(ttNeighbor))
+ 916 044a 1C96      		adiw r26,12
+ 917 044c 8D91      		ld r24,X+
+ 918 044e 9D91      		ld r25,X+
+ 919 0450 0D90      		ld __tmp_reg__,X+
+ 920 0452 BC91      		ld r27,X
+ 921 0454 A02D      		mov r26,__tmp_reg__
+ 922 0456 843F      		cpi r24,-12
+ 923 0458 9140      		sbci r25,1
+ 924 045a A105      		cpc r26,__zero_reg__
+ 925 045c B105      		cpc r27,__zero_reg__
+ 926 045e 01F4      		brne .L55
+ 927               	.LVL49:
+ 928               	.LBB48:
+ 929               	.LBB49:
+ 930               	.LBB50:
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 931               		.loc 1 30 0
+ 932 0460 E280      		ldd r14,Z+2
+ 933               	.LVL50:
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 934               		.loc 1 31 0
+ 935 0462 F380      		ldd r15,Z+3
+ 936               	.LVL51:
+ 937               	.LBE50:
+ 938               	.LBE49:
+ 939               	.LBB52:
+ 940               	.LBB53:
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 941               		.loc 1 30 0
+ 942 0464 9481      		ldd r25,Z+4
+ 943 0466 80E0      		ldi r24,0
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 944               		.loc 1 31 0
+ 945 0468 2581      		ldd r18,Z+5
+ 946 046a 8C01      		movw r16,r24
+ 947 046c 022B      		or r16,r18
+ 948               	.LVL52:
+ 949               	.LBE53:
+ 950               	.LBE52:
+ 353:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        if(me != getGUID() || neighbor != thisNeighborhood.n[faceNum(thisChunk)])
+ 951               		.loc 1 353 0
+ 952 046e 0E94 0000 		call getGUID
+ 953               	.LVL53:
+ 954 0472 0817      		cp r16,r24
+ 955 0474 1907      		cpc r17,r25
+ 956 0476 01F4      		brne .L46
+ 957               	.LBB54:
+ 958               	.LBB51:
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 959               		.loc 1 30 0 discriminator 1
+ 960 0478 9E2D      		mov r25,r14
+ 961 047a 80E0      		ldi r24,0
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 962               		.loc 1 31 0 discriminator 1
+ 963 047c 8F29      		or r24,r15
+ 964               	.LBE51:
+ 965               	.LBE54:
+ 353:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	        if(me != getGUID() || neighbor != thisNeighborhood.n[faceNum(thisChunk)])
+ 966               		.loc 1 353 0 discriminator 1
+ 967 047e E091 0000 		lds r30,thisChunk
+ 968 0482 F091 0000 		lds r31,thisChunk+1
+ 969 0486 E189      		ldd r30,Z+17
+ 970 0488 E770      		andi r30,lo8(7)
+ 971 048a F0E0      		ldi r31,0
+ 972 048c EE0F      		lsl r30
+ 973 048e FF1F      		rol r31
+ 974 0490 E050      		subi r30,lo8(-(thisNeighborhood))
+ 975 0492 F040      		sbci r31,hi8(-(thisNeighborhood))
+ 976 0494 2081      		ld r18,Z
+ 977 0496 3181      		ldd r19,Z+1
+ 978 0498 8217      		cp r24,r18
+ 979 049a 9307      		cpc r25,r19
+ 980 049c 01F0      		breq .L55
+ 981               	.L46:
+ 355:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 		        restartScan(faceNum(thisChunk));
+ 982               		.loc 1 355 0
+ 983 049e E091 0000 		lds r30,thisChunk
+ 984 04a2 F091 0000 		lds r31,thisChunk+1
+ 985 04a6 8189      		ldd r24,Z+17
+ 986 04a8 8770      		andi r24,lo8(7)
+ 987 04aa 0E94 0000 		call restartScan
+ 988               	.LVL54:
+ 989 04ae 00C0      		rjmp .L55
+ 990               	.LVL55:
+ 991               	.L47:
+ 992               	.LBE48:
+ 265:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       return 0;
+ 993               		.loc 1 265 0
+ 994 04b0 80E0      		ldi r24,0
+ 995 04b2 00C0      		rjmp .L38
+ 996               	.L55:
+ 364:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     return 1;
+ 997               		.loc 1 364 0
+ 998 04b4 81E0      		ldi r24,lo8(1)
+ 999               	.L38:
+ 1000               	/* epilogue start */
+ 365:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 1001               		.loc 1 365 0
+ 1002 04b6 2696      		adiw r28,6
+ 1003 04b8 CDBF      		out __SP_L__,r28
+ 1004 04ba DEBF      		out __SP_H__,r29
+ 1005 04bc DF91      		pop r29
+ 1006 04be CF91      		pop r28
+ 1007 04c0 1F91      		pop r17
+ 1008 04c2 0F91      		pop r16
+ 1009 04c4 FF90      		pop r15
+ 1010 04c6 EF90      		pop r14
+ 1011 04c8 DF90      		pop r13
+ 1012 04ca 0895      		ret
+ 1013               	.LFE21:
+ 1015               	.global	neighborHandshakeCB
+ 1017               	neighborHandshakeCB:
+ 1018               	.LFB20:
+ 232:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+ 1019               		.loc 1 232 0
+ 1020 04cc CF93      		push r28
+ 1021               	.LCFI28:
+ 1022 04ce DF93      		push r29
+ 1023               	.LCFI29:
+ 1024               	/* prologue: function */
+ 1025               	/* frame size = 0 */
+ 1026               	/* stack size = 2 */
+ 1027               	.L__stack_usage = 2
+ 234:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 1028               		.loc 1 234 0
+ 1029 04d0 E091 0000 		lds r30,thisChunk
+ 1030 04d4 F091 0000 		lds r31,thisChunk+1
+ 1031 04d8 8189      		ldd r24,Z+17
+ 1032 04da 982F      		mov r25,r24
+ 1033 04dc 9871      		andi r25,lo8(24)
+ 1034 04de 9830      		cpi r25,lo8(8)
+ 1035 04e0 01F4      		brne .L57
+ 1036               	.LVL56:
+ 1037               	.LBB55:
+ 1038               	.LBB56:
+ 1039               	.LBB57:
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp = (Uid)(c[0]) << 8;
+ 1040               		.loc 1 30 0
+ 1041 04e2 7481      		ldd r23,Z+4
+ 1042 04e4 60E0      		ldi r22,0
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     tmp |= c[1];
+ 1043               		.loc 1 31 0
+ 1044 04e6 9581      		ldd r25,Z+5
+ 1045 04e8 EB01      		movw r28,r22
+ 1046 04ea C92B      		or r28,r25
+ 1047               	.LVL57:
+ 1048               	.LBE57:
+ 1049               	.LBE56:
+ 240:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].period = NEIGHBOR_KEEPALIVE_PERIOD;
+ 1050               		.loc 1 240 0
+ 1051 04ec 8770      		andi r24,lo8(7)
+ 1052 04ee 21E1      		ldi r18,lo8(17)
+ 1053 04f0 829F      		mul r24,r18
+ 1054 04f2 C001      		movw r24,r0
+ 1055 04f4 1124      		clr __zero_reg__
+ 1056 04f6 FC01      		movw r30,r24
+ 1057               	.LVL58:
+ 1058 04f8 E050      		subi r30,lo8(-(ttNeighbor))
+ 1059 04fa F040      		sbci r31,hi8(-(ttNeighbor))
+ 1060 04fc 44EF      		ldi r20,lo8(-12)
+ 1061 04fe 51E0      		ldi r21,lo8(1)
+ 1062 0500 60E0      		ldi r22,0
+ 1063 0502 70E0      		ldi r23,0
+ 1064 0504 4487      		std Z+12,r20
+ 1065 0506 5587      		std Z+13,r21
+ 1066 0508 6687      		std Z+14,r22
+ 1067 050a 7787      		std Z+15,r23
+ 241:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       if(ttNeighbor[faceNum(thisChunk)].t.state != INACTIVE)
+ 1068               		.loc 1 241 0
+ 1069 050c 2285      		ldd r18,Z+10
+ 1070 050e 2223      		tst r18
+ 1071 0510 01F0      		breq .L58
+ 243:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	  deregisterTimeout(&(ttNeighbor[faceNum(thisChunk)].t));
+ 1072               		.loc 1 243 0
+ 1073 0512 8050      		subi r24,lo8(-(ttNeighbor+2))
+ 1074 0514 9040      		sbci r25,hi8(-(ttNeighbor+2))
+ 1075 0516 0E94 0000 		call deregisterTimeout
+ 1076               	.LVL59:
+ 1077               	.L58:
+ 245:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       ttNeighbor[faceNum(thisChunk)].t.callback = (GenericHandler)&neighborKeepalive;
+ 1078               		.loc 1 245 0
+ 1079 051a A091 0000 		lds r26,thisChunk
+ 1080 051e B091 0000 		lds r27,thisChunk+1
+ 1081 0522 5196      		adiw r26,17
+ 1082 0524 EC91      		ld r30,X
+ 1083 0526 5197      		sbiw r26,17
+ 1084 0528 E770      		andi r30,lo8(7)
+ 1085 052a 81E1      		ldi r24,lo8(17)
+ 1086 052c E89F      		mul r30,r24
+ 1087 052e F001      		movw r30,r0
+ 1088 0530 1124      		clr __zero_reg__
+ 1089 0532 E050      		subi r30,lo8(-(ttNeighbor))
+ 1090 0534 F040      		sbci r31,hi8(-(ttNeighbor))
+ 1091 0536 80E0      		ldi r24,lo8(gs(neighborKeepalive))
+ 1092 0538 90E0      		ldi r25,hi8(gs(neighborKeepalive))
+ 1093 053a 8087      		std Z+8,r24
+ 1094 053c 9187      		std Z+9,r25
+ 246:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 1095               		.loc 1 246 0
+ 1096 053e 81E0      		ldi r24,lo8(1)
+ 1097 0540 808B      		std Z+16,r24
+ 249:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       updateNeighbor(faceNum(thisChunk), neighbor);
+ 1098               		.loc 1 249 0
+ 1099 0542 5196      		adiw r26,17
+ 1100 0544 8C91      		ld r24,X
+ 1101 0546 BE01      		movw r22,r28
+ 1102 0548 8770      		andi r24,lo8(7)
+ 1103 054a 0E94 0000 		call updateNeighbor
+ 1104               	.LVL60:
+ 1105 054e 00C0      		rjmp .L59
+ 1106               	.LVL61:
+ 1107               	.L57:
+ 1108               	.LBE55:
+ 254:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****       restartScan(faceNum(thisChunk));
+ 1109               		.loc 1 254 0
+ 1110 0550 8770      		andi r24,lo8(7)
+ 1111 0552 0E94 0000 		call restartScan
+ 1112               	.LVL62:
+ 1113               	.L59:
+ 257:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
+ 1114               		.loc 1 257 0
+ 1115 0556 8091 0000 		lds r24,thisChunk
+ 1116 055a 9091 0000 		lds r25,thisChunk+1
+ 1117               	/* epilogue start */
+ 258:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 1118               		.loc 1 258 0
+ 1119 055e DF91      		pop r29
+ 1120 0560 CF91      		pop r28
+ 257:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   freeChunk(thisChunk);
+ 1121               		.loc 1 257 0
+ 1122 0562 0C94 0000 		jmp freeChunk
+ 1123               	.LVL63:
+ 1124               	.LFE20:
+ 1126               	.global	neighborKeepaliveCB
+ 1128               	neighborKeepaliveCB:
+ 1129               	.LFB18:
+ 196:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+ 1130               		.loc 1 196 0
+ 1131               	/* prologue: function */
+ 1132               	/* frame size = 0 */
+ 1133               	/* stack size = 0 */
+ 1134               	.L__stack_usage = 0
+ 200:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
+ 1135               		.loc 1 200 0
+ 1136 0566 E091 0000 		lds r30,thisChunk
+ 1137 056a F091 0000 		lds r31,thisChunk+1
+ 1138 056e 8189      		ldd r24,Z+17
+ 1139 0570 982F      		mov r25,r24
+ 1140 0572 9871      		andi r25,lo8(24)
+ 1141 0574 8770      		andi r24,lo8(7)
+ 1142 0576 9830      		cpi r25,lo8(8)
+ 1143 0578 01F4      		brne .L64
+ 202:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         enableTimer(ttNeighbor[faceNum(thisChunk)]);
+ 1144               		.loc 1 202 0
+ 1145 057a 91E1      		ldi r25,lo8(17)
+ 1146 057c 899F      		mul r24,r25
+ 1147 057e F001      		movw r30,r0
+ 1148 0580 1124      		clr __zero_reg__
+ 1149 0582 E050      		subi r30,lo8(-(ttNeighbor))
+ 1150 0584 F040      		sbci r31,hi8(-(ttNeighbor))
+ 1151 0586 81E0      		ldi r24,lo8(1)
+ 1152 0588 808B      		std Z+16,r24
+ 1153 058a 00C0      		rjmp .L65
+ 1154               	.L64:
+ 206:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         restartScan(faceNum(thisChunk));
+ 1155               		.loc 1 206 0
+ 1156 058c 0E94 0000 		call restartScan
+ 1157               	.LVL64:
+ 1158               	.L65:
+ 209:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     freeChunk(thisChunk);
+ 1159               		.loc 1 209 0
+ 1160 0590 8091 0000 		lds r24,thisChunk
+ 1161 0594 9091 0000 		lds r25,thisChunk+1
+ 1162 0598 0C94 0000 		jmp freeChunk
+ 1163               	.LVL65:
+ 1164               	.LFE18:
+ 1166               	.global	initEnsemble
+ 1168               	initEnsemble:
+ 1169               	.LFB23:
+ 385:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 386:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** void initEnsemble(void)
+ 387:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** {
+ 1170               		.loc 1 387 0
+ 1171 059c FF92      		push r15
+ 1172               	.LCFI30:
+ 1173 059e 0F93      		push r16
+ 1174               	.LCFI31:
+ 1175 05a0 1F93      		push r17
+ 1176               	.LCFI32:
+ 1177 05a2 CF93      		push r28
+ 1178               	.LCFI33:
+ 1179 05a4 DF93      		push r29
+ 1180               	.LCFI34:
+ 1181               	/* prologue: function */
+ 1182               	/* frame size = 0 */
+ 1183               	/* stack size = 5 */
+ 1184               	.L__stack_usage = 5
+ 1185               	.LVL66:
+ 1186 05a6 00E0      		ldi r16,lo8(ttNeighbor+16)
+ 1187 05a8 10E0      		ldi r17,hi8(ttNeighbor+16)
+ 388:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     int i;
+ 389:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****   
+ 390:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     // restart scanning for neighbors on all ports
+ 391:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     for( i=0; i<NUM_PORTS; ++i)
+ 1188               		.loc 1 391 0
+ 1189 05aa C0E0      		ldi r28,0
+ 1190 05ac D0E0      		ldi r29,0
+ 392:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     {
+ 393:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         #ifdef DEBUGPORT
+ 394:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         if(i == DEBUGPORT) {
+ 395:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****             continue;
+ 396:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         }
+ 397:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         #endif
+ 398:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 
+ 399:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	registerTimer(&(ttNeighbor[i]));
+ 1191               		.loc 1 399 0
+ 1192 05ae 61E1      		ldi r22,lo8(17)
+ 1193 05b0 F62E      		mov r15,r22
+ 1194               	.LVL67:
+ 1195               	.L67:
+ 1196               		.loc 1 399 0 is_stmt 0 discriminator 2
+ 1197 05b2 FC9E      		mul r15,r28
+ 1198 05b4 C001      		movw r24,r0
+ 1199 05b6 FD9E      		mul r15,r29
+ 1200 05b8 900D      		add r25,r0
+ 1201 05ba 1124      		clr __zero_reg__
+ 1202 05bc 8050      		subi r24,lo8(-(ttNeighbor))
+ 1203 05be 9040      		sbci r25,hi8(-(ttNeighbor))
+ 1204 05c0 0E94 0000 		call registerTimer
+ 1205               	.LVL68:
+ 400:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** 	disableTimer(ttNeighbor[i]);
+ 1206               		.loc 1 400 0 is_stmt 1 discriminator 2
+ 1207 05c4 F801      		movw r30,r16
+ 1208 05c6 1082      		st Z,__zero_reg__
+ 401:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****         restartScan(i);
+ 1209               		.loc 1 401 0 discriminator 2
+ 1210 05c8 8C2F      		mov r24,r28
+ 1211 05ca 0E94 0000 		call restartScan
+ 1212               	.LVL69:
+ 391:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     for( i=0; i<NUM_PORTS; ++i)
+ 1213               		.loc 1 391 0 discriminator 2
+ 1214 05ce 2196      		adiw r28,1
+ 1215               	.LVL70:
+ 1216 05d0 0F5E      		subi r16,-17
+ 1217 05d2 1F4F      		sbci r17,-1
+ 1218 05d4 C630      		cpi r28,6
+ 1219 05d6 D105      		cpc r29,__zero_reg__
+ 1220 05d8 01F4      		brne .L67
+ 1221               	/* epilogue start */
+ 402:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb ****     }
+ 403:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bb **** }
+ 1222               		.loc 1 403 0
+ 1223 05da DF91      		pop r29
+ 1224 05dc CF91      		pop r28
+ 1225               	.LVL71:
+ 1226 05de 1F91      		pop r17
+ 1227 05e0 0F91      		pop r16
+ 1228 05e2 FF90      		pop r15
+ 1229 05e4 0895      		ret
+ 1230               	.LFE23:
+ 1232               		.comm	ttNeighbor,102,1
+ 1233               		.comm	thisNeighborhood,12,1
+ 1594               	.Letext0:
+ 1595               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 1596               		.file 3 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/defs.bbh"
+ 1597               		.file 4 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/handler.bbh"
+ 1598               		.file 5 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/memory.bbh"
+ 1599               		.file 6 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/hardwaretime.bbh"
+ 1600               		.file 7 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/serial.bbh"
+ 1601               		.file 8 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bbh"
+ 1602               		.file 9 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/data_link.bbh"
+ 1603               		.file 10 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bbh"
+ 1604               		.file 11 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bbh"
+ 1605               		.file 12 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/../hw-api/hwMemory.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 ensemble.c
-     /tmp/ccfoYrTG.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccfoYrTG.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccfoYrTG.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccfoYrTG.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccfoYrTG.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccfoYrTG.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccfoYrTG.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccfoYrTG.s:13     .text:0000000000000000 neighborKeepalive
+     /tmp/ccC79N7a.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccC79N7a.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccC79N7a.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccC79N7a.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccC79N7a.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccC79N7a.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccC79N7a.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccC79N7a.s:13     .text:0000000000000000 neighborKeepalive
                             *COM*:000000000000000c thisNeighborhood
                             *COM*:0000000000000066 ttNeighbor
-     /tmp/ccfoYrTG.s:1132   .text:000000000000056c neighborKeepaliveCB
-     /tmp/ccfoYrTG.s:117    .text:000000000000007c neighborScan
-     /tmp/ccfoYrTG.s:217    .text:00000000000000f8 neighborScanCB
-     /tmp/ccfoYrTG.s:295    .text:0000000000000172 GUIDIntoChar
-     /tmp/ccfoYrTG.s:313    .text:000000000000017a charToGUID
-     /tmp/ccfoYrTG.s:336    .text:0000000000000188 getNeighborCount
-     /tmp/ccfoYrTG.s:371    .text:00000000000001a2 down
-     /tmp/ccfoYrTG.s:388    .text:00000000000001ac up
-     /tmp/ccfoYrTG.s:405    .text:00000000000001b6 north
-     /tmp/ccfoYrTG.s:422    .text:00000000000001c0 south
-     /tmp/ccfoYrTG.s:439    .text:00000000000001ca east
-     /tmp/ccfoYrTG.s:456    .text:00000000000001d4 west
-     /tmp/ccfoYrTG.s:473    .text:00000000000001de updateNeighbor
-     /tmp/ccfoYrTG.s:550    .text:0000000000000228 restartScan
-     /tmp/ccfoYrTG.s:630    .text:0000000000000292 handleNeighborMessage
-     /tmp/ccfoYrTG.s:1021   .text:00000000000004d2 neighborHandshakeCB
-     /tmp/ccfoYrTG.s:1172   .text:00000000000005a2 initEnsemble
+     /tmp/ccC79N7a.s:1128   .text:0000000000000566 neighborKeepaliveCB
+     /tmp/ccC79N7a.s:117    .text:000000000000007c neighborScan
+     /tmp/ccC79N7a.s:217    .text:00000000000000f8 neighborScanCB
+     /tmp/ccC79N7a.s:295    .text:0000000000000172 GUIDIntoChar
+     /tmp/ccC79N7a.s:313    .text:000000000000017a charToGUID
+     /tmp/ccC79N7a.s:336    .text:0000000000000188 getNeighborCount
+     /tmp/ccC79N7a.s:371    .text:00000000000001a2 down
+     /tmp/ccC79N7a.s:388    .text:00000000000001ac up
+     /tmp/ccC79N7a.s:405    .text:00000000000001b6 north
+     /tmp/ccC79N7a.s:422    .text:00000000000001c0 south
+     /tmp/ccC79N7a.s:439    .text:00000000000001ca east
+     /tmp/ccC79N7a.s:456    .text:00000000000001d4 west
+     /tmp/ccC79N7a.s:473    .text:00000000000001de updateNeighbor
+     /tmp/ccC79N7a.s:546    .text:0000000000000222 restartScan
+     /tmp/ccC79N7a.s:626    .text:000000000000028c handleNeighborMessage
+     /tmp/ccC79N7a.s:1017   .text:00000000000004cc neighborHandshakeCB
+     /tmp/ccC79N7a.s:1168   .text:000000000000059c initEnsemble
 
 UNDEFINED SYMBOLS
 getGUID
@@ -1777,6 +1771,5 @@ deregisterTimeout
 thisChunk
 freeChunk
 triggerHandler
-handleNeighborChange
 registerTimer
 __do_clear_bss

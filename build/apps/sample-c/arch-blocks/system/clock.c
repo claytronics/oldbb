@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/clock.bb"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/clock.bb"
 #include "clock.h"
 #include "ensemble.h"
 #include "data_link.h"

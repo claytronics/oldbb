@@ -69,7 +69,6 @@ int main(int argc, char** argv) {
 	} 
 	  getchar();
 	  sendCmd(i);
-	  sleep(1);
 	}
       cout << "Type 'q' to quit or any other key to start again...";
       c = getchar();

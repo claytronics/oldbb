@@ -11,59 +11,60 @@
   11               	.global	freeLogChunk
   13               	freeLogChunk:
   14               	.LFB7:
-  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb"
-   1:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #include <stdarg.h>
-   2:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #include <string.h>
-   3:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #include <stdio.h>
-   4:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-   5:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #include "log.bbh"
-   6:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #include "ensemble.bbh"
-   7:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #include "data_link.bbh"
-   8:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #include "serial.bbh"
-   9:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #define UNDEFINED_HOST 200
-  11:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  12:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #define LOG_I_AM_HOST			0x01
-  13:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #define LOG_PATH_TO_HOST		0x02
-  14:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #define LOG_NEED_PATH_TO_HOST		0x03
-  15:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #define LOG_DATA			0x04
-  16:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #define LOG_CMD				0x05
-  17:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  18:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** //#define FORCE_TRANSMISSION
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** threadvar byte PCConnection = 0;
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** threadvar PRef toHost = 200; //= NUM_PORT; // UNDEFINED_HOST (compilation error with SIM)
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  23:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** int seq = 0; // sequence number for avoiding loops when broadcasting commands
-  24:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  25:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void myMsgHandler(void);
-  26:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void freeMyChunk(void);
-  27:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void freeLogChunk(void);
-  28:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh);
-  29:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void freeMyChunk(void)
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
-  32:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     free(thisChunk);
-  33:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
-  34:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  35:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void freeLogChunk(void)
-  36:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
-  16               		.loc 1 36 0
+  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb"
+   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #include <stdarg.h>
+   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #include <string.h>
+   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #include <stdio.h>
+   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #include <stdlib.h>
+   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #include "log.bbh"
+   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #include "ensemble.bbh"
+   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #include "data_link.bbh"
+   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #include "serial.bbh"
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #define UNDEFINED_HOST 200
+  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #define LOG_I_AM_HOST			0x01
+  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #define LOG_PATH_TO_HOST		0x02
+  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #define LOG_NEED_PATH_TO_HOST		0x03
+  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #define LOG_DATA			0x04
+  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #define LOG_CMD				0x05
+  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** //#define FORCE_TRANSMISSION
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** threadvar byte PCConnection = 0;
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** threadvar PRef toHost = 200; //= NUM_PORT; // UNDEFINED_HOST (compilation error with SIM)
+  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  24:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** int seq = 0; // sequence number for avoiding loops when broadcasting commands
+  25:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  26:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void myMsgHandler(void);
+  27:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void freeMyChunk(void);
+  28:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void freeLogChunk(void);
+  29:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh);
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void freeMyChunk(void)
+  32:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+  33:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     free(thisChunk);
+  34:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+  35:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  36:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void freeLogChunk(void)
+  37:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+  16               		.loc 1 37 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
-  37:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #ifdef FORCE_TRANSMISSION
-  38:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	 if(chunkResponseType(thisChunk) == MSG_RESP_ACK) {
-  39:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		free(thisChunk);
-  40:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	} else {
-  41:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		// try again
-  42:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		sendLogChunk(faceNum(thisChunk), thisChunk->data, DATA_SIZE);
-  43:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		free(thisChunk);
-  44:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
-  45:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #else
-  46:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	free(thisChunk);
-  21               		.loc 1 46 0
+  38:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #ifdef FORCE_TRANSMISSION
+  39:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	 if(chunkResponseType(thisChunk) == MSG_RESP_ACK) {
+  40:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		free(thisChunk);
+  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	} else {
+  42:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		// try again
+  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		sendLogChunk(faceNum(thisChunk), thisChunk->data, DATA_SIZE);
+  44:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		free(thisChunk);
+  45:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #else
+  47:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	free(thisChunk);
+  21               		.loc 1 47 0
   22 0000 8091 0000 		lds r24,thisChunk
   23 0004 9091 0000 		lds r25,thisChunk+1
   24 0008 0C94 0000 		jmp free
@@ -72,14 +73,14 @@
   28               	.global	freeMyChunk
   30               	freeMyChunk:
   31               	.LFB6:
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
-  32               		.loc 1 31 0
+  32:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+  32               		.loc 1 32 0
   33               	/* prologue: function */
   34               	/* frame size = 0 */
   35               	/* stack size = 0 */
   36               	.L__stack_usage = 0
-  32:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     free(thisChunk);
-  37               		.loc 1 32 0
+  33:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     free(thisChunk);
+  37               		.loc 1 33 0
   38 000c 8091 0000 		lds r24,thisChunk
   39 0010 9091 0000 		lds r25,thisChunk+1
   40 0014 0C94 0000 		jmp free
@@ -88,12 +89,12 @@
   44               	.global	sendMyChunk
   46               	sendMyChunk:
   47               	.LFB8:
-  47:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #endif
-  48:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
-  49:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  50:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh) 
-  51:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
-  48               		.loc 1 51 0
+  48:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #endif
+  49:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+  50:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  51:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh) 
+  52:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+  48               		.loc 1 52 0
   49               	.LVL2:
   50 0018 8F92      		push r8
   51               	.LCFI0:
@@ -129,8 +130,8 @@
   81 0034 B82E      		mov r11,r24
   82 0036 6B01      		movw r12,r22
   83 0038 8901      		movw r16,r18
-  52:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     Chunk *c=calloc(sizeof(Chunk), 1);
-  84               		.loc 1 52 0
+  53:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     Chunk *c=calloc(sizeof(Chunk), 1);
+  84               		.loc 1 53 0
   85 003a 61E0      		ldi r22,lo8(1)
   86 003c 70E0      		ldi r23,0
   87               	.LVL3:
@@ -142,16 +143,16 @@
   93               	.LVL5:
   94 0048 4C01      		movw r8,r24
   95               	.LVL6:
-  53:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     if (c == NULL)
-  96               		.loc 1 53 0
+  54:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     if (c == NULL)
+  96               		.loc 1 54 0
   97 004a 4981      		ldd r20,Y+1
   98 004c 0097      		sbiw r24,0
   99 004e 01F0      		breq .L5
-  54:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     {
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****         return 0;
-  56:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     }
-  57:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeMyChunk) == 0)
- 100               		.loc 1 57 0
+  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     {
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****         return 0;
+  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     }
+  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeMyChunk) == 0)
+ 100               		.loc 1 58 0
  101 0050 80E0      		ldi r24,lo8(gs(freeMyChunk))
  102 0052 E82E      		mov r14,r24
  103 0054 80E0      		ldi r24,hi8(gs(freeMyChunk))
@@ -164,27 +165,27 @@
  110               	.LVL7:
  111 0064 8111      		cpse r24,__zero_reg__
  112 0066 00C0      		rjmp .L6
-  58:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     {
-  59:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****         free(c);
- 113               		.loc 1 59 0
+  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     {
+  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****         free(c);
+ 113               		.loc 1 60 0
  114 0068 C401      		movw r24,r8
  115 006a 0E94 0000 		call free
  116               	.LVL8:
  117               	.L5:
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****         return 0;
- 118               		.loc 1 55 0
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****         return 0;
+ 118               		.loc 1 56 0
  119 006e 80E0      		ldi r24,0
  120 0070 00C0      		rjmp .L4
  121               	.L6:
-  60:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****         return 0;
-  61:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     }
-  62:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     return 1;
- 122               		.loc 1 62 0
+  61:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****         return 0;
+  62:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     }
+  63:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     return 1;
+ 122               		.loc 1 63 0
  123 0072 81E0      		ldi r24,lo8(1)
  124               	.L4:
  125               	/* epilogue start */
-  63:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 126               		.loc 1 63 0
+  64:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 126               		.loc 1 64 0
  127 0074 0F90      		pop __tmp_reg__
  128 0076 DF91      		pop r29
  129 0078 CF91      		pop r28
@@ -206,10 +207,10 @@
  146               	.global	processCmd
  148               	processCmd:
  149               	.LFB9:
-  64:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  65:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void processCmd(void) 
-  66:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
- 150               		.loc 1 66 0
+  65:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  66:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void processCmd(void) 
+  67:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+ 150               		.loc 1 67 0
  151 008e CF93      		push r28
  152               	.LCFI13:
  153               	/* prologue: function */
@@ -217,9 +218,9 @@
  155               	/* stack size = 1 */
  156               	.L__stack_usage = 1
  157               	.LVL13:
-  67:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****    int X = 0;
-  68:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     if (seq < thisChunk->data[2]) {
- 158               		.loc 1 68 0
+  68:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****    int X = 0;
+  69:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     if (seq < thisChunk->data[2]) {
+ 158               		.loc 1 69 0
  159 0090 E091 0000 		lds r30,thisChunk
  160 0094 F091 0000 		lds r31,thisChunk+1
  161 0098 8281      		ldd r24,Z+2
@@ -229,8 +230,8 @@
  165 00a4 2817      		cp r18,r24
  166 00a6 3907      		cpc r19,r25
  167 00a8 04F4      		brge .L7
-  69:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	  seq = thisChunk->data[2];
- 168               		.loc 1 69 0
+  70:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	  seq = thisChunk->data[2];
+ 168               		.loc 1 70 0
  169 00aa 8093 0000 		sts seq,r24
  170 00ae 9093 0000 		sts seq+1,r25
  171               	.LVL14:
@@ -239,9 +240,9 @@
  174               	.L9:
  175               	.LBB4:
  176               	.LBB5:
-  70:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	  for (X ; X <= 5 ; X++) {
-  71:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	    sendMyChunk(X, thisChunk->data, 4, (MsgHandler)myMsgHandler);
- 177               		.loc 1 71 0
+  71:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	  for (X ; X <= 5 ; X++) {
+  72:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	    sendMyChunk(X, thisChunk->data, 4, (MsgHandler)myMsgHandler);
+ 177               		.loc 1 72 0
  178 00b4 6091 0000 		lds r22,thisChunk
  179 00b8 7091 0000 		lds r23,thisChunk+1
  180 00bc 20E0      		ldi r18,lo8(gs(myMsgHandler))
@@ -251,70 +252,71 @@
  184 00c4 0E94 0000 		call sendMyChunk
  185               	.LVL16:
  186 00c8 CF5F      		subi r28,lo8(-(1))
-  70:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	  for (X ; X <= 5 ; X++) {
- 187               		.loc 1 70 0
+  71:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	  for (X ; X <= 5 ; X++) {
+ 187               		.loc 1 71 0
  188 00ca C630      		cpi r28,lo8(6)
  189 00cc 01F4      		brne .L9
-  72:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	  }
-  73:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	  triggerHandler(EVENT_COMMAND_RECEIVED);
- 190               		.loc 1 73 0
+  73:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	  }
+  74:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	  callHandler(EVENT_COMMAND_RECEIVED);
+ 190               		.loc 1 74 0
  191 00ce 85E1      		ldi r24,lo8(21)
  192               	/* epilogue start */
  193               	.LBE5:
  194               	.LBE4:
-  74:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     } 
-  75:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 195               		.loc 1 75 0
+  75:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	  //triggerHandler(EVENT_COMMAND_RECEIVED);
+  76:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     }
+  77:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 195               		.loc 1 77 0
  196 00d0 CF91      		pop r28
  197               	.LBB7:
  198               	.LBB6:
-  73:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	  triggerHandler(EVENT_COMMAND_RECEIVED);
- 199               		.loc 1 73 0
- 200 00d2 0C94 0000 		jmp triggerHandler
+  74:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	  callHandler(EVENT_COMMAND_RECEIVED);
+ 199               		.loc 1 74 0
+ 200 00d2 0C94 0000 		jmp callHandler
  201               	.LVL17:
  202               	.L7:
  203               	/* epilogue start */
  204               	.LBE6:
  205               	.LBE7:
- 206               		.loc 1 75 0
+ 206               		.loc 1 77 0
  207 00d6 CF91      		pop r28
  208 00d8 0895      		ret
  209               	.LFE9:
  211               	.global	myMsgHandler
  213               	myMsgHandler:
  214               	.LFB10:
-  76:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  77:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void myMsgHandler(void)
-  78:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
- 215               		.loc 1 78 0
+  78:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  79:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void myMsgHandler(void)
+  80:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+ 215               		.loc 1 80 0
  216               	/* prologue: function */
  217               	/* frame size = 0 */
  218               	/* stack size = 0 */
  219               	.L__stack_usage = 0
-  79:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****   processCmd();
- 220               		.loc 1 79 0
+  81:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****   processCmd();
+ 220               		.loc 1 81 0
  221 00da 0C94 0000 		jmp processCmd
  222               	.LVL18:
  223               	.LFE10:
  225               	.global	isHostPort
  227               	isHostPort:
  228               	.LFB11:
-  80:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
-  81:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  82:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** byte isHostPort(PRef p)
-  83:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
- 229               		.loc 1 83 0
+  82:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+  83:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  84:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** byte isHostPort(PRef p)
+  85:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+ 229               		.loc 1 85 0
  230               	.LVL19:
  231               	/* prologue: function */
  232               	/* frame size = 0 */
  233               	/* stack size = 0 */
  234               	.L__stack_usage = 0
-  84:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	return ((p == toHost) && (PCConnection == 1));
- 235               		.loc 1 84 0
+  86:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	return ((p == toHost) && (PCConnection == 1));
+ 235               		.loc 1 86 0
  236 00de 9091 0000 		lds r25,toHost
  237 00e2 8913      		cpse r24,r25
  238 00e4 00C0      		rjmp .L15
- 239               		.loc 1 84 0 is_stmt 0 discriminator 1
+ 239               		.loc 1 86 0 is_stmt 0 discriminator 1
  240 00e6 81E0      		ldi r24,lo8(1)
  241 00e8 90E0      		ldi r25,0
  242               	.LVL20:
@@ -322,21 +324,21 @@
  244 00ee 2130      		cpi r18,lo8(1)
  245 00f0 01F0      		breq .L13
  246               	.L15:
- 247               		.loc 1 84 0
+ 247               		.loc 1 86 0
  248 00f2 80E0      		ldi r24,0
  249 00f4 90E0      		ldi r25,0
  250               	.L13:
-  85:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 251               		.loc 1 85 0 is_stmt 1 discriminator 4
+  87:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 251               		.loc 1 87 0 is_stmt 1 discriminator 4
  252 00f6 0895      		ret
  253               	.LFE11:
  255               	.global	sendLogChunk
  257               	sendLogChunk:
  258               	.LFB12:
-  86:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
-  87:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** byte sendLogChunk(PRef p, byte *d, byte s)
-  88:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
- 259               		.loc 1 88 0
+  88:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+  89:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** byte sendLogChunk(PRef p, byte *d, byte s)
+  90:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+ 259               		.loc 1 90 0
  260               	.LVL21:
  261 00f8 8F92      		push r8
  262               	.LCFI14:
@@ -371,8 +373,8 @@
  291               	.L__stack_usage = 12
  292 0114 B82E      		mov r11,r24
  293 0116 6B01      		movw r12,r22
-  89:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	Chunk *c=calloc(sizeof(Chunk), 1);
- 294               		.loc 1 89 0
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	Chunk *c=calloc(sizeof(Chunk), 1);
+ 294               		.loc 1 91 0
  295 0118 61E0      		ldi r22,lo8(1)
  296 011a 70E0      		ldi r23,0
  297               	.LVL22:
@@ -384,24 +386,24 @@
  303               	.LVL24:
  304 0126 4C01      		movw r8,r24
  305               	.LVL25:
-  90:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #ifdef FORCE_TRANSMISSION
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	while (c == NULL)
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{
-  93:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		c=calloc(sizeof(Chunk), 1);
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
-  95:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	while (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk) =
-  96:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	return 1;
-  97:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #else
-  98:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	if (c == NULL)
- 306               		.loc 1 98 0
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #ifdef FORCE_TRANSMISSION
+  93:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	while (c == NULL)
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{
+  95:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		c=calloc(sizeof(Chunk), 1);
+  96:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+  97:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	while (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk) =
+  98:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	return 1;
+  99:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #else
+ 100:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	if (c == NULL)
+ 306               		.loc 1 100 0
  307 0128 2981      		ldd r18,Y+1
  308 012a 0097      		sbiw r24,0
  309 012c 01F0      		breq .L21
-  99:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{
- 100:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		return 0;
- 101:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 102:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	if (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk) == 0
- 310               		.loc 1 102 0
+ 101:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{
+ 102:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		return 0;
+ 103:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 104:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	if (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk) == 0
+ 310               		.loc 1 104 0
  311 012e 90E0      		ldi r25,lo8(gs(freeLogChunk))
  312 0130 E92E      		mov r14,r25
  313 0132 90E0      		ldi r25,hi8(gs(freeLogChunk))
@@ -415,29 +417,29 @@
  321               	.LVL26:
  322 0144 8111      		cpse r24,__zero_reg__
  323 0146 00C0      		rjmp .L22
- 103:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{
- 104:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		free(c);
- 324               		.loc 1 104 0
+ 105:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{
+ 106:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		free(c);
+ 324               		.loc 1 106 0
  325 0148 C401      		movw r24,r8
  326 014a 0E94 0000 		call free
  327               	.LVL27:
  328               	.L21:
- 100:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		return 0;
- 329               		.loc 1 100 0
+ 102:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		return 0;
+ 329               		.loc 1 102 0
  330 014e 80E0      		ldi r24,0
  331 0150 00C0      		rjmp .L20
  332               	.L22:
- 105:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		return 0;
- 106:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 107:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	return 1;
- 333               		.loc 1 107 0
+ 107:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		return 0;
+ 108:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 109:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	return 1;
+ 333               		.loc 1 109 0
  334 0152 81E0      		ldi r24,lo8(1)
  335               	.L20:
  336               	/* epilogue start */
- 108:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** #endif
- 109:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 110:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 337               		.loc 1 110 0
+ 110:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** #endif
+ 111:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 112:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 337               		.loc 1 112 0
  338 0154 0F90      		pop __tmp_reg__
  339 0156 DF91      		pop r29
  340 0158 CF91      		pop r28
@@ -458,11 +460,11 @@
  356               	.global	sendPathToHost
  358               	sendPathToHost:
  359               	.LFB13:
- 111:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 112:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 113:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void sendPathToHost(PRef p)
- 114:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
- 360               		.loc 1 114 0
+ 113:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 114:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 115:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void sendPathToHost(PRef p)
+ 116:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+ 360               		.loc 1 116 0
  361               	.LVL31:
  362 016e CF93      		push r28
  363               	.LCFI27:
@@ -478,18 +480,18 @@
  373               	/* frame size = 2 */
  374               	/* stack size = 4 */
  375               	.L__stack_usage = 4
- 115:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte buf[2];
- 116:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 117:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	buf[0] = LOG_MSG;
- 376               		.loc 1 117 0
+ 117:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte buf[2];
+ 118:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 119:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	buf[0] = LOG_MSG;
+ 376               		.loc 1 119 0
  377 017a 90E5      		ldi r25,lo8(80)
  378 017c 9983      		std Y+1,r25
- 118:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	buf[1] = LOG_PATH_TO_HOST;
- 379               		.loc 1 118 0
+ 120:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	buf[1] = LOG_PATH_TO_HOST;
+ 379               		.loc 1 120 0
  380 017e 92E0      		ldi r25,lo8(2)
  381 0180 9A83      		std Y+2,r25
- 119:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	sendLogChunk(p, buf, 2);
- 382               		.loc 1 119 0
+ 121:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	sendLogChunk(p, buf, 2);
+ 382               		.loc 1 121 0
  383 0182 42E0      		ldi r20,lo8(2)
  384 0184 BE01      		movw r22,r28
  385 0186 6F5F      		subi r22,-1
@@ -497,9 +499,9 @@
  387 018a 0E94 0000 		call sendLogChunk
  388               	.LVL32:
  389               	/* epilogue start */
- 120:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 121:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 390               		.loc 1 121 0
+ 122:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 123:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 390               		.loc 1 123 0
  391 018e 0F90      		pop __tmp_reg__
  392 0190 0F90      		pop __tmp_reg__
  393 0192 DF91      		pop r29
@@ -509,10 +511,10 @@
  398               	.global	spreadPathToHost
  400               	spreadPathToHost:
  401               	.LFB14:
- 122:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 123:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void spreadPathToHost(PRef excluded)
- 124:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
- 402               		.loc 1 124 0
+ 124:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 125:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void spreadPathToHost(PRef excluded)
+ 126:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+ 402               		.loc 1 126 0
  403               	.LVL33:
  404 0198 0F93      		push r16
  405               	.LCFI31:
@@ -530,43 +532,43 @@
  417               	.LVL34:
  418 01a2 C0E0      		ldi r28,lo8(thisNeighborhood)
  419 01a4 D0E0      		ldi r29,hi8(thisNeighborhood)
- 125:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte p;
- 126:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 127:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	for( p = 0; p < NUM_PORTS; p++)
- 420               		.loc 1 127 0
+ 127:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte p;
+ 128:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 129:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	for( p = 0; p < NUM_PORTS; p++)
+ 420               		.loc 1 129 0
  421 01a6 10E0      		ldi r17,0
  422               	.LVL35:
  423               	.L26:
- 128:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{
- 129:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		if ((p == excluded) || (thisNeighborhood.n[p] == VACANT))
- 424               		.loc 1 129 0
+ 130:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{
+ 131:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		if ((p == excluded) || (thisNeighborhood.n[p] == VACANT))
+ 424               		.loc 1 131 0
  425 01a8 1017      		cp r17,r16
  426 01aa 01F0      		breq .L25
- 427               		.loc 1 129 0 is_stmt 0 discriminator 1
+ 427               		.loc 1 131 0 is_stmt 0 discriminator 1
  428 01ac 2881      		ld r18,Y
  429 01ae 3981      		ldd r19,Y+1
  430 01b0 232B      		or r18,r19
  431 01b2 01F0      		breq .L25
- 130:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		{
- 131:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			continue;
- 132:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		}
- 133:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		sendPathToHost(p);
- 432               		.loc 1 133 0 is_stmt 1
+ 132:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		{
+ 133:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			continue;
+ 134:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		}
+ 135:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		sendPathToHost(p);
+ 432               		.loc 1 135 0 is_stmt 1
  433 01b4 812F      		mov r24,r17
  434 01b6 0E94 0000 		call sendPathToHost
  435               	.LVL36:
  436               	.L25:
- 127:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	for( p = 0; p < NUM_PORTS; p++)
- 437               		.loc 1 127 0
+ 129:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	for( p = 0; p < NUM_PORTS; p++)
+ 437               		.loc 1 129 0
  438 01ba 1F5F      		subi r17,lo8(-(1))
  439               	.LVL37:
  440 01bc 2296      		adiw r28,2
  441 01be 1630      		cpi r17,lo8(6)
  442 01c0 01F4      		brne .L26
  443               	/* epilogue start */
- 134:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 135:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 444               		.loc 1 135 0
+ 136:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 137:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 444               		.loc 1 137 0
  445 01c2 DF91      		pop r29
  446 01c4 CF91      		pop r28
  447 01c6 1F91      		pop r17
@@ -578,24 +580,24 @@
  454               	.global	forwardToHost
  456               	forwardToHost:
  457               	.LFB15:
- 136:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 137:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void forwardToHost(Chunk *c)
- 138:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
- 458               		.loc 1 138 0
+ 138:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 139:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void forwardToHost(Chunk *c)
+ 140:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+ 458               		.loc 1 140 0
  459               	.LVL40:
  460               	/* prologue: function */
  461               	/* frame size = 0 */
  462               	/* stack size = 0 */
  463               	.L__stack_usage = 0
  464 01cc BC01      		movw r22,r24
- 139:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	if(toHost != UNDEFINED_HOST) {
- 465               		.loc 1 139 0
+ 141:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	if(toHost != UNDEFINED_HOST) {
+ 465               		.loc 1 141 0
  466 01ce 8091 0000 		lds r24,toHost
  467               	.LVL41:
  468 01d2 883C      		cpi r24,lo8(-56)
  469 01d4 01F0      		breq .L31
- 140:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		sendLogChunk(toHost, c->data, DATA_SIZE);
- 470               		.loc 1 140 0
+ 142:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		sendLogChunk(toHost, c->data, DATA_SIZE);
+ 470               		.loc 1 142 0
  471 01d6 41E1      		ldi r20,lo8(17)
  472 01d8 0C94 0000 		jmp sendLogChunk
  473               	.LVL42:
@@ -605,12 +607,12 @@
  478               	.global	initLogDebug
  480               	initLogDebug:
  481               	.LFB16:
- 141:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 142:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 143:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 144:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** void initLogDebug(void)
- 145:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
- 482               		.loc 1 145 0
+ 143:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 144:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 145:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 146:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** void initLogDebug(void)
+ 147:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+ 482               		.loc 1 147 0
  483 01de FF92      		push r15
  484               	.LCFI35:
  485 01e0 0F93      		push r16
@@ -631,51 +633,51 @@
  500               	/* frame size = 2 */
  501               	/* stack size = 7 */
  502               	.L__stack_usage = 7
- 146:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte buf[2];
- 147:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 148:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	toHost = UNDEFINED_HOST;
- 503               		.loc 1 148 0
+ 148:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte buf[2];
+ 149:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 150:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	toHost = UNDEFINED_HOST;
+ 503               		.loc 1 150 0
  504 01f0 88EC      		ldi r24,lo8(-56)
  505 01f2 8093 0000 		sts toHost,r24
- 149:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	PCConnection = 0;
- 506               		.loc 1 149 0
+ 151:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	PCConnection = 0;
+ 506               		.loc 1 151 0
  507 01f6 1092 0000 		sts PCConnection,__zero_reg__
- 150:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 151:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	buf[0] = LOG_MSG;
- 508               		.loc 1 151 0
+ 152:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 153:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	buf[0] = LOG_MSG;
+ 508               		.loc 1 153 0
  509 01fa 80E5      		ldi r24,lo8(80)
  510 01fc 8983      		std Y+1,r24
- 152:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	buf[1] = LOG_NEED_PATH_TO_HOST;
- 511               		.loc 1 152 0
+ 154:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	buf[1] = LOG_NEED_PATH_TO_HOST;
+ 511               		.loc 1 154 0
  512 01fe 83E0      		ldi r24,lo8(3)
  513 0200 8A83      		std Y+2,r24
- 153:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte p;
- 154:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 155:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	setColor(ORANGE); // to remember to the user that the block is waiting
- 514               		.loc 1 155 0
+ 155:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte p;
+ 156:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 157:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	setColor(ORANGE); // to remember to the user that the block is waiting
+ 514               		.loc 1 157 0
  515 0202 81E0      		ldi r24,lo8(1)
  516 0204 0E94 0000 		call setColor
  517               	.LVL43:
- 156:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
- 518               		.loc 1 156 0
+ 158:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
+ 518               		.loc 1 158 0
  519 0208 00C0      		rjmp .L34
  520               	.L36:
- 157:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{
- 158:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		for( p = 0; p < NUM_PORTS; p++)
- 159:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		{
- 160:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			if ((thisNeighborhood.n[p] == VACANT))
- 521               		.loc 1 160 0
+ 159:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{
+ 160:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		for( p = 0; p < NUM_PORTS; p++)
+ 161:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		{
+ 162:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			if ((thisNeighborhood.n[p] == VACANT))
+ 521               		.loc 1 162 0
  522 020a F801      		movw r30,r16
  523 020c 2191      		ld r18,Z+
  524 020e 3191      		ld r19,Z+
  525 0210 8F01      		movw r16,r30
  526 0212 232B      		or r18,r19
  527 0214 01F0      		breq .L35
- 161:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			{
- 162:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				continue;
- 163:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			}
- 164:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			sendLogChunk(p, buf, 2);
- 528               		.loc 1 164 0
+ 163:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			{
+ 164:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				continue;
+ 165:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			}
+ 166:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			sendLogChunk(p, buf, 2);
+ 528               		.loc 1 166 0
  529 0216 42E0      		ldi r20,lo8(2)
  530 0218 BE01      		movw r22,r28
  531 021a 6F5F      		subi r22,-1
@@ -684,691 +686,739 @@
  534 0220 0E94 0000 		call sendLogChunk
  535               	.LVL44:
  536               	.L35:
- 158:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		for( p = 0; p < NUM_PORTS; p++)
- 537               		.loc 1 158 0
+ 160:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		for( p = 0; p < NUM_PORTS; p++)
+ 537               		.loc 1 160 0
  538 0224 F394      		inc r15
  539               	.LVL45:
  540 0226 F6E0      		ldi r31,lo8(6)
  541 0228 FF12      		cpse r15,r31
  542 022a 00C0      		rjmp .L36
- 165:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		}
- 166:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		delayMS(6);
- 543               		.loc 1 166 0
- 544 022c 86E0      		ldi r24,lo8(6)
+ 167:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		}
+ 168:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		delayMS(200);
+ 543               		.loc 1 168 0
+ 544 022c 88EC      		ldi r24,lo8(-56)
  545 022e 90E0      		ldi r25,0
  546 0230 0E94 0000 		call delayMS
  547               	.LVL46:
  548               	.L34:
- 156:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
- 549               		.loc 1 156 0 discriminator 1
+ 158:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
+ 549               		.loc 1 158 0 discriminator 1
  550 0234 8091 0000 		lds r24,toHost
  551 0238 883C      		cpi r24,lo8(-56)
- 552 023a 01F4      		brne .L33
+ 552 023a 01F4      		brne .L37
  553 023c 00E0      		ldi r16,lo8(thisNeighborhood)
  554 023e 10E0      		ldi r17,hi8(thisNeighborhood)
- 156:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
- 555               		.loc 1 156 0 is_stmt 0
+ 158:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
+ 555               		.loc 1 158 0 is_stmt 0
  556 0240 F12C      		mov r15,__zero_reg__
  557 0242 00C0      		rjmp .L36
- 558               	.L33:
- 559               	/* epilogue start */
- 167:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 168:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 560               		.loc 1 168 0 is_stmt 1
- 561 0244 0F90      		pop __tmp_reg__
- 562 0246 0F90      		pop __tmp_reg__
- 563 0248 DF91      		pop r29
- 564 024a CF91      		pop r28
- 565 024c 1F91      		pop r17
- 566 024e 0F91      		pop r16
- 567 0250 FF90      		pop r15
- 568 0252 0895      		ret
- 569               	.LFE16:
- 571               	.global	handleLogMessage
- 573               	handleLogMessage:
- 574               	.LFB17:
- 169:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 170:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** byte handleLogMessage(void)
- 171:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
- 575               		.loc 1 171 0
- 576               	/* prologue: function */
- 577               	/* frame size = 0 */
- 578               	/* stack size = 0 */
- 579               	.L__stack_usage = 0
- 172:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	if( thisChunk == NULL ) 
- 580               		.loc 1 172 0
- 581 0254 E091 0000 		lds r30,thisChunk
- 582 0258 F091 0000 		lds r31,thisChunk+1
- 583 025c 3097      		sbiw r30,0
- 584 025e 01F0      		breq .L50
- 173:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{
- 174:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		return 0;
- 175:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 176:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	switch(thisChunk->data[1])
- 585               		.loc 1 176 0
- 586 0260 9181      		ldd r25,Z+1
- 587 0262 9330      		cpi r25,lo8(3)
- 588 0264 01F0      		breq .L46
- 589 0266 00F4      		brsh .L49
- 590 0268 9130      		cpi r25,lo8(1)
- 591 026a 01F0      		breq .L44
- 592 026c 9230      		cpi r25,lo8(2)
- 593 026e 01F4      		brne .L54
- 594 0270 00C0      		rjmp .L45
- 595               	.L49:
- 596 0272 9430      		cpi r25,lo8(4)
- 597 0274 01F0      		breq .L47
- 598 0276 9530      		cpi r25,lo8(5)
- 599 0278 01F4      		brne .L54
- 600 027a 00C0      		rjmp .L48
- 601               	.L44:
- 177:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{
- 178:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		case LOG_I_AM_HOST:
- 179:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			toHost = faceNum(thisChunk);			
- 602               		.loc 1 179 0
- 603 027c 8189      		ldd r24,Z+17
- 604 027e 8770      		andi r24,lo8(7)
- 605 0280 8093 0000 		sts toHost,r24
- 180:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			PCConnection = 1;
- 606               		.loc 1 180 0
- 607 0284 9093 0000 		sts PCConnection,r25
- 608 0288 00C0      		rjmp .L55
- 609               	.L45:
- 181:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			spreadPathToHost(faceNum(thisChunk));
- 182:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		break;
- 183:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		case LOG_PATH_TO_HOST:
- 184:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			if (toHost == UNDEFINED_HOST) {
- 610               		.loc 1 184 0
- 611 028a 8091 0000 		lds r24,toHost
- 612 028e 883C      		cpi r24,lo8(-56)
- 613 0290 01F4      		brne .L54
- 185:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				toHost = faceNum(thisChunk);
- 614               		.loc 1 185 0
- 615 0292 8189      		ldd r24,Z+17
- 616 0294 8770      		andi r24,lo8(7)
- 617 0296 8093 0000 		sts toHost,r24
- 186:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				PCConnection = 0;
- 618               		.loc 1 186 0
- 619 029a 1092 0000 		sts PCConnection,__zero_reg__
- 620               	.L55:
- 187:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				spreadPathToHost(faceNum(thisChunk));
- 621               		.loc 1 187 0
- 622 029e 0E94 0000 		call spreadPathToHost
- 623               	.LVL47:
- 624 02a2 00C0      		rjmp .L54
- 625               	.L46:
- 188:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			}
- 189:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		break;
- 190:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		case LOG_NEED_PATH_TO_HOST:
- 191:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			if (toHost != UNDEFINED_HOST) {
- 626               		.loc 1 191 0
- 627 02a4 8091 0000 		lds r24,toHost
- 628 02a8 883C      		cpi r24,lo8(-56)
- 629 02aa 01F0      		breq .L54
- 192:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				sendPathToHost(faceNum(thisChunk));
- 630               		.loc 1 192 0
- 631 02ac 8189      		ldd r24,Z+17
- 632 02ae 8770      		andi r24,lo8(7)
- 633 02b0 0E94 0000 		call sendPathToHost
- 634               	.LVL48:
- 635 02b4 00C0      		rjmp .L54
- 636               	.L47:
- 193:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			}
- 194:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		break;
- 195:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		case LOG_DATA:
- 196:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			if(toHost != UNDEFINED_HOST) {
- 637               		.loc 1 196 0
- 638 02b6 8091 0000 		lds r24,toHost
- 639 02ba 883C      		cpi r24,lo8(-56)
- 640 02bc 01F0      		breq .L54
- 197:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				forwardToHost(thisChunk);
- 641               		.loc 1 197 0
- 642 02be CF01      		movw r24,r30
- 643 02c0 0E94 0000 		call forwardToHost
- 644               	.LVL49:
- 645 02c4 00C0      		rjmp .L54
- 646               	.L48:
- 198:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			}
- 199:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		break;		
- 200:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		case LOG_CMD:
- 201:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			processCmd();
- 647               		.loc 1 201 0
- 648 02c6 0E94 0000 		call processCmd
- 649               	.LVL50:
- 650 02ca 00C0      		rjmp .L54
- 651               	.L50:
- 174:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		return 0;
- 652               		.loc 1 174 0
- 653 02cc 80E0      		ldi r24,0
- 654 02ce 0895      		ret
- 655               	.L54:
- 202:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		break;
- 203:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 204:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 205:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	return 1;
- 656               		.loc 1 205 0
- 657 02d0 81E0      		ldi r24,lo8(1)
- 206:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 658               		.loc 1 206 0
- 659 02d2 0895      		ret
- 660               	.LFE17:
- 662               	.global	getSize
- 664               	getSize:
- 665               	.LFB18:
- 207:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 208:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** byte getSize(char* str) {
- 666               		.loc 1 208 0
- 667               	.LVL51:
- 668               	/* prologue: function */
- 669               	/* frame size = 0 */
- 670               	/* stack size = 0 */
- 671               	.L__stack_usage = 0
- 209:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte sizeCar = 0;
- 210:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte sizeChunk = 1;
- 211:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 212:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	if (str == NULL) {
- 672               		.loc 1 212 0
- 673 02d4 0097      		sbiw r24,0
- 674 02d6 01F0      		breq .L59
- 213:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****         return 0;
- 214:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     }
- 215:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 216:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	sizeCar = strlen(str) + 1;
- 675               		.loc 1 216 0
- 676 02d8 DC01      		movw r26,r24
- 677               		0:
- 678 02da 0D90      		ld __tmp_reg__,X+
- 679 02dc 0020      		tst __tmp_reg__
- 680 02de 01F4      		brne 0b
- 681 02e0 1197      		sbiw r26,1
- 682 02e2 A81B      		sub r26,r24
- 683               	.LVL52:
- 684 02e4 8A2F      		mov r24,r26
- 685               	.LVL53:
- 686 02e6 8F5F      		subi r24,lo8(-(1))
- 687               	.LVL54:
- 217:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 218:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     if (sizeCar < 11) {
- 688               		.loc 1 218 0
- 689 02e8 8B30      		cpi r24,lo8(11)
- 690 02ea 00F0      		brlo .L60
- 219:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****         return 1;
- 220:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     }
- 221:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     
- 222:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     sizeCar -= 10;
- 691               		.loc 1 222 0
- 692 02ec 8A50      		subi r24,lo8(-(-10))
- 693               	.LVL55:
- 223:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     sizeChunk += sizeCar / 11;
- 694               		.loc 1 223 0
- 695 02ee 6BE0      		ldi r22,lo8(11)
- 696 02f0 0E94 0000 		call __udivmodqi4
- 697               	.LVL56:
- 224:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	if ((sizeCar % 11) != 0) {
- 698               		.loc 1 224 0
- 699 02f4 9111      		cpse r25,__zero_reg__
- 700 02f6 00C0      		rjmp .L58
- 223:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****     sizeChunk += sizeCar / 11;
- 701               		.loc 1 223 0
- 702 02f8 8F5F      		subi r24,lo8(-(1))
- 703               	.LVL57:
- 704 02fa 0895      		ret
- 705               	.LVL58:
- 706               	.L58:
- 225:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		sizeChunk++;
- 707               		.loc 1 225 0
- 708 02fc 8E5F      		subi r24,lo8(-(2))
- 709               	.LVL59:
- 710 02fe 0895      		ret
- 711               	.LVL60:
- 712               	.L59:
- 213:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****         return 0;
- 713               		.loc 1 213 0
- 714 0300 80E0      		ldi r24,0
- 715               	.LVL61:
- 716 0302 0895      		ret
- 717               	.LVL62:
- 718               	.L60:
- 219:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb ****         return 1;
- 719               		.loc 1 219 0
- 720 0304 81E0      		ldi r24,lo8(1)
- 721               	.LVL63:
- 226:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 227:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	return sizeChunk;
- 228:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 722               		.loc 1 228 0
- 723 0306 0895      		ret
- 724               	.LFE18:
- 726               	.global	printDebug
- 728               	printDebug:
- 729               	.LFB19:
- 229:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 230:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** // format: <LOG_MSG> <LOG_DATA> <block id (2 bytes) > <message # (1 byte)> < fragment # (1 byte)> <
- 231:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** byte printDebug(char* str) {
- 730               		.loc 1 231 0
- 731               	.LVL64:
- 732 0308 8F92      		push r8
- 733               	.LCFI42:
- 734 030a 9F92      		push r9
- 735               	.LCFI43:
- 736 030c AF92      		push r10
- 737               	.LCFI44:
- 738 030e BF92      		push r11
- 739               	.LCFI45:
- 740 0310 CF92      		push r12
- 741               	.LCFI46:
- 742 0312 DF92      		push r13
- 743               	.LCFI47:
- 744 0314 EF92      		push r14
- 745               	.LCFI48:
- 746 0316 FF92      		push r15
- 747               	.LCFI49:
- 748 0318 0F93      		push r16
- 749               	.LCFI50:
- 750 031a 1F93      		push r17
- 751               	.LCFI51:
- 752 031c CF93      		push r28
- 753               	.LCFI52:
- 754 031e DF93      		push r29
- 755               	.LCFI53:
- 756 0320 CDB7      		in r28,__SP_L__
- 757 0322 DEB7      		in r29,__SP_H__
- 758               	.LCFI54:
- 759 0324 6197      		sbiw r28,17
- 760               	.LCFI55:
- 761 0326 CDBF      		out __SP_L__,r28
- 762 0328 DEBF      		out __SP_H__,r29
- 763               	/* prologue: function */
- 764               	/* frame size = 17 */
- 765               	/* stack size = 29 */
- 766               	.L__stack_usage = 29
- 767 032a 8C01      		movw r16,r24
- 232:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte size = getSize(str);
- 768               		.loc 1 232 0
- 769 032c 0E94 0000 		call getSize
- 770               	.LVL65:
- 771 0330 B82E      		mov r11,r24
- 772               	.LVL66:
- 233:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	static byte mId = 0;
- 234:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	uint8_t index = 0;
- 235:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte buf[DATA_SIZE];
- 236:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte s = 0;	
- 237:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte fId = 0;
- 238:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	byte off = 6;
- 239:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 240:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	if (toHost == UNDEFINED_HOST)
- 773               		.loc 1 240 0
- 774 0332 8091 0000 		lds r24,toHost
- 775 0336 883C      		cpi r24,lo8(-56)
- 776 0338 01F4      		brne .+2
- 777 033a 00C0      		rjmp .L68
- 241:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{
- 242:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		return 0;
- 243:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 244:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 245:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	buf[0] = LOG_MSG;
- 778               		.loc 1 245 0
- 779 033c 80E5      		ldi r24,lo8(80)
- 780 033e 8983      		std Y+1,r24
- 246:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	buf[1] = LOG_DATA;
- 781               		.loc 1 246 0
- 782 0340 84E0      		ldi r24,lo8(4)
- 783 0342 8A83      		std Y+2,r24
- 247:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	GUIDIntoChar(getGUID(), &(buf[2]));
- 784               		.loc 1 247 0
- 785 0344 0E94 0000 		call getGUID
- 786               	.LVL67:
- 787 0348 BE01      		movw r22,r28
- 788 034a 6D5F      		subi r22,-3
- 789 034c 7F4F      		sbci r23,-1
- 790 034e 0E94 0000 		call GUIDIntoChar
- 791               	.LVL68:
- 248:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	buf[4] = mId;
- 792               		.loc 1 248 0
- 793 0352 8091 0000 		lds r24,mId.4068
- 794 0356 8D83      		std Y+5,r24
- 249:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	
- 250:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	if (size == 1) 
- 795               		.loc 1 250 0
- 796 0358 81E0      		ldi r24,lo8(1)
- 797 035a B812      		cpse r11,r24
- 798 035c 00C0      		rjmp .L69
- 799               	.LVL69:
- 251:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{
- 252:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		off = 7;
- 253:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		s = strlen(str)+1;
- 800               		.loc 1 253 0
- 801 035e D801      		movw r26,r16
- 802               		0:
- 803 0360 0D90      		ld __tmp_reg__,X+
- 804 0362 0020      		tst __tmp_reg__
- 805 0364 01F4      		brne 0b
- 806 0366 1197      		sbiw r26,1
- 807 0368 FA2E      		mov r15,r26
- 808 036a F01A      		sub r15,r16
- 809               	.LVL70:
- 254:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		memcpy(buf+off, str, s);
- 810               		.loc 1 254 0
- 811 036c 9E01      		movw r18,r28
- 812 036e 285F      		subi r18,-8
- 813 0370 3F4F      		sbci r19,-1
- 253:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		s = strlen(str)+1;
- 814               		.loc 1 253 0
- 815 0372 4F2D      		mov r20,r15
- 816 0374 4F5F      		subi r20,lo8(-(1))
- 817               	.LVL71:
- 818               		.loc 1 254 0
- 819 0376 50E0      		ldi r21,0
- 820 0378 B801      		movw r22,r16
- 821 037a C901      		movw r24,r18
- 822 037c 0E94 0000 		call memcpy
- 823               	.LVL72:
- 255:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		buf[5] = 0;	
- 824               		.loc 1 255 0
- 825 0380 1E82      		std Y+6,__zero_reg__
- 256:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		buf[6] = size;
- 826               		.loc 1 256 0
- 827 0382 BF82      		std Y+7,r11
- 257:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		sendLogChunk(toHost, buf, s+off);
- 828               		.loc 1 257 0
- 829 0384 4F2D      		mov r20,r15
- 830 0386 485F      		subi r20,lo8(-(8))
- 831 0388 BE01      		movw r22,r28
- 832 038a 6F5F      		subi r22,-1
- 833 038c 7F4F      		sbci r23,-1
- 834 038e 8091 0000 		lds r24,toHost
- 835 0392 0E94 0000 		call sendLogChunk
- 836               	.LVL73:
- 837 0396 00C0      		rjmp .L64
- 838               	.LVL74:
- 839               	.L67:
- 258:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	} 
- 259:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	else
- 260:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{	
- 261:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		for (fId = 0; fId < size; fId++)
- 262:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		{
- 263:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			buf[5] = fId;
- 840               		.loc 1 263 0
- 841 0398 EE82      		std Y+6,r14
- 264:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			if (fId == 0)
- 842               		.loc 1 264 0
- 843 039a 8111      		cpse r24,__zero_reg__
- 844 039c 00C0      		rjmp .L65
- 265:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			{
- 266:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				buf[6] = size;
- 845               		.loc 1 266 0
- 846 039e BF82      		std Y+7,r11
- 847               	.LVL75:
- 267:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				off = 7;
- 848               		.loc 1 267 0
- 849 03a0 57E0      		ldi r21,lo8(7)
- 850 03a2 852E      		mov r8,r21
- 268:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				s = 10;
- 851               		.loc 1 268 0
- 852 03a4 6AE0      		ldi r22,lo8(10)
- 853 03a6 A62E      		mov r10,r22
- 854 03a8 00C0      		rjmp .L66
- 855               	.LVL76:
- 856               	.L65:
- 269:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			}
- 270:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			else if (fId == (size -1))
- 857               		.loc 1 270 0
- 858 03aa EC14      		cp r14,r12
- 859 03ac FD04      		cpc r15,r13
- 860 03ae 01F4      		brne .L70
- 271:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			{
- 272:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				s = strlen(str+index)+1 ;
- 861               		.loc 1 272 0
- 862 03b0 F801      		movw r30,r16
- 863 03b2 E90D      		add r30,r9
- 864 03b4 F11D      		adc r31,__zero_reg__
- 865 03b6 DF01      		movw r26,r30
- 866               		0:
- 867 03b8 0D90      		ld __tmp_reg__,X+
- 868 03ba 0020      		tst __tmp_reg__
- 869 03bc 01F4      		brne 0b
- 870 03be AA2E      		mov r10,r26
- 871 03c0 AE1A      		sub r10,r30
- 872               	.LVL77:
- 873 03c2 46E0      		ldi r20,lo8(6)
- 874 03c4 842E      		mov r8,r20
- 875 03c6 00C0      		rjmp .L66
- 876               	.LVL78:
- 877               	.L70:
- 270:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			else if (fId == (size -1))
- 878               		.loc 1 270 0
- 879 03c8 26E0      		ldi r18,lo8(6)
- 880 03ca 822E      		mov r8,r18
- 273:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			} 
- 274:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			else
- 275:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			{
- 276:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 				s = 11;
- 881               		.loc 1 276 0
- 882 03cc 3BE0      		ldi r19,lo8(11)
- 883 03ce A32E      		mov r10,r19
- 884               	.LVL79:
- 885               	.L66:
- 277:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			}
- 278:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			memcpy(buf+off, str+index, s);
- 886               		.loc 1 278 0
- 887 03d0 21E0      		ldi r18,lo8(1)
- 888 03d2 30E0      		ldi r19,0
- 889 03d4 2C0F      		add r18,r28
- 890 03d6 3D1F      		adc r19,r29
- 891 03d8 280D      		add r18,r8
- 892 03da 311D      		adc r19,__zero_reg__
- 893 03dc F801      		movw r30,r16
- 894 03de E90D      		add r30,r9
- 895 03e0 F11D      		adc r31,__zero_reg__
- 896 03e2 4A2D      		mov r20,r10
- 897 03e4 50E0      		ldi r21,0
- 898 03e6 BF01      		movw r22,r30
- 899 03e8 C901      		movw r24,r18
- 900 03ea 0E94 0000 		call memcpy
- 901               	.LVL80:
- 279:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			index += s;
- 902               		.loc 1 279 0
- 903 03ee 9A0C      		add r9,r10
- 904               	.LVL81:
- 280:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			sendLogChunk(toHost, buf, s+off);
- 905               		.loc 1 280 0
- 906 03f0 482D      		mov r20,r8
- 907 03f2 4A0D      		add r20,r10
- 908 03f4 BE01      		movw r22,r28
- 909 03f6 6F5F      		subi r22,-1
- 910 03f8 7F4F      		sbci r23,-1
- 911 03fa 8091 0000 		lds r24,toHost
- 912 03fe 0E94 0000 		call sendLogChunk
- 913               	.LVL82:
- 914 0402 8FEF      		ldi r24,-1
- 915 0404 E81A      		sub r14,r24
- 916 0406 F80A      		sbc r15,r24
- 917 0408 00C0      		rjmp .L63
- 918               	.LVL83:
- 919               	.L69:
- 250:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	if (size == 1) 
- 920               		.loc 1 250 0
- 921 040a E12C      		mov r14,__zero_reg__
- 922 040c F12C      		mov r15,__zero_reg__
- 923 040e 912C      		mov r9,__zero_reg__
- 270:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			else if (fId == (size -1))
- 924               		.loc 1 270 0
- 925 0410 CB2C      		mov r12,r11
- 926 0412 D12C      		mov r13,__zero_reg__
- 927 0414 81E0      		ldi r24,1
- 928 0416 C81A      		sub r12,r24
- 929 0418 D108      		sbc r13,__zero_reg__
- 930               	.LVL84:
- 931               	.L63:
- 932 041a 8E2D      		mov r24,r14
- 933               	.LVL85:
- 261:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		for (fId = 0; fId < size; fId++)
- 934               		.loc 1 261 0 discriminator 1
- 935 041c EB14      		cp r14,r11
- 936 041e 00F4      		brsh .+2
- 937 0420 00C0      		rjmp .L67
- 938               	.LVL86:
- 939               	.L64:
- 281:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 			off = 6;
- 282:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		}
- 283:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 284:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	mId++;
- 940               		.loc 1 284 0
- 941 0422 8091 0000 		lds r24,mId.4068
- 942 0426 8F5F      		subi r24,lo8(-(1))
- 943 0428 8093 0000 		sts mId.4068,r24
- 285:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	return 1;
- 944               		.loc 1 285 0
- 945 042c 81E0      		ldi r24,lo8(1)
- 946 042e 00C0      		rjmp .L62
- 947               	.LVL87:
- 948               	.L68:
- 242:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		return 0;
- 949               		.loc 1 242 0
- 950 0430 80E0      		ldi r24,0
- 951               	.LVL88:
- 952               	.L62:
- 953               	/* epilogue start */
- 286:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 954               		.loc 1 286 0
- 955 0432 6196      		adiw r28,17
- 956 0434 CDBF      		out __SP_L__,r28
- 957 0436 DEBF      		out __SP_H__,r29
- 958 0438 DF91      		pop r29
- 959 043a CF91      		pop r28
- 960 043c 1F91      		pop r17
- 961 043e 0F91      		pop r16
- 962               	.LVL89:
- 963 0440 FF90      		pop r15
- 964 0442 EF90      		pop r14
- 965 0444 DF90      		pop r13
- 966 0446 CF90      		pop r12
- 967 0448 BF90      		pop r11
- 968               	.LVL90:
- 969 044a AF90      		pop r10
- 970 044c 9F90      		pop r9
- 971 044e 8F90      		pop r8
- 972 0450 0895      		ret
- 973               	.LFE19:
- 975               	.global	blockingPrintDebug
- 977               	blockingPrintDebug:
- 978               	.LFB20:
- 287:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 
- 288:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** byte blockingPrintDebug(char *s)
- 289:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** {
- 979               		.loc 1 289 0
- 980               	.LVL91:
- 981 0452 CF93      		push r28
- 982               	.LCFI56:
- 983 0454 DF93      		push r29
- 984               	.LCFI57:
- 985               	/* prologue: function */
- 986               	/* frame size = 0 */
- 987               	/* stack size = 2 */
- 988               	.L__stack_usage = 2
- 989 0456 EC01      		movw r28,r24
- 290:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
- 990               		.loc 1 290 0
- 991 0458 00C0      		rjmp .L72
- 992               	.LVL92:
- 993               	.L73:
- 291:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	{
- 292:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 		delayMS(1);
- 994               		.loc 1 292 0
- 995 045a 81E0      		ldi r24,lo8(1)
- 996 045c 90E0      		ldi r25,0
- 997 045e 0E94 0000 		call delayMS
- 998               	.LVL93:
- 999               	.L72:
- 290:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
- 1000               		.loc 1 290 0 discriminator 1
- 1001 0462 8091 0000 		lds r24,toHost
- 1002 0466 883C      		cpi r24,lo8(-56)
- 1003 0468 01F0      		breq .L73
- 293:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	}
- 294:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	return printDebug(s);
- 1004               		.loc 1 294 0
- 1005 046a CE01      		movw r24,r28
- 1006               	/* epilogue start */
- 295:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** }
- 1007               		.loc 1 295 0
- 1008 046c DF91      		pop r29
- 1009 046e CF91      		pop r28
- 1010               	.LVL94:
- 294:/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bb **** 	return printDebug(s);
- 1011               		.loc 1 294 0
- 1012 0470 0C94 0000 		jmp printDebug
- 1013               	.LVL95:
- 1014               	.LFE20:
- 1016               	.global	seq
- 1017               		.section .bss
- 1020               	seq:
- 1021 0000 0000      		.zero	2
- 1022               	.global	toHost
- 1023               		.data
- 1026               	toHost:
- 1027 0000 C8        		.byte	-56
- 1028               	.global	PCConnection
- 1029               		.section .bss
- 1032               	PCConnection:
- 1033 0002 00        		.zero	1
- 1034               		.local	mId.4068
- 1035               		.comm	mId.4068,1,1
- 1502               	.Letext0:
- 1503               		.file 2 "/usr/lib/gcc/avr/4.7.2/include/stddef.h"
- 1504               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
- 1505               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/defs.bbh"
- 1506               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/handler.bbh"
- 1507               		.file 6 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/memory.bbh"
- 1508               		.file 7 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/serial.bbh"
- 1509               		.file 8 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/ensemble.bbh"
- 1510               		.file 9 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/led.bbh"
- 1511               		.file 10 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/data_link.bbh"
- 1512               		.file 11 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdlib.h"
- 1513               		.file 12 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/message.bbh"
- 1514               		.file 13 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/hardwaretime.bbh"
- 1515               		.file 14 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/../hw-api/hwMemory.h"
+ 558               	.L37:
+ 169:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 170:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	srand(getGUID());
+ 559               		.loc 1 170 0 is_stmt 1
+ 560 0244 0E94 0000 		call getGUID
+ 561               	.LVL47:
+ 562 0248 0E94 0000 		call srand
+ 563               	.LVL48:
+ 564               	/* epilogue start */
+ 171:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 565               		.loc 1 171 0
+ 566 024c 0F90      		pop __tmp_reg__
+ 567 024e 0F90      		pop __tmp_reg__
+ 568 0250 DF91      		pop r29
+ 569 0252 CF91      		pop r28
+ 570 0254 1F91      		pop r17
+ 571 0256 0F91      		pop r16
+ 572 0258 FF90      		pop r15
+ 573 025a 0895      		ret
+ 574               	.LFE16:
+ 576               	.global	handleLogMessage
+ 578               	handleLogMessage:
+ 579               	.LFB17:
+ 172:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 173:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** byte handleLogMessage(void)
+ 174:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+ 580               		.loc 1 174 0
+ 581               	/* prologue: function */
+ 582               	/* frame size = 0 */
+ 583               	/* stack size = 0 */
+ 584               	.L__stack_usage = 0
+ 175:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	if( thisChunk == NULL ) 
+ 585               		.loc 1 175 0
+ 586 025c E091 0000 		lds r30,thisChunk
+ 587 0260 F091 0000 		lds r31,thisChunk+1
+ 588 0264 3097      		sbiw r30,0
+ 589 0266 01F0      		breq .L50
+ 176:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{
+ 177:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		return 0;
+ 178:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 179:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 180:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 181:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	switch(thisChunk->data[1])
+ 590               		.loc 1 181 0
+ 591 0268 9181      		ldd r25,Z+1
+ 592 026a 9330      		cpi r25,lo8(3)
+ 593 026c 01F0      		breq .L46
+ 594 026e 00F4      		brsh .L49
+ 595 0270 9130      		cpi r25,lo8(1)
+ 596 0272 01F0      		breq .L44
+ 597 0274 9230      		cpi r25,lo8(2)
+ 598 0276 01F4      		brne .L54
+ 599 0278 00C0      		rjmp .L45
+ 600               	.L49:
+ 601 027a 9430      		cpi r25,lo8(4)
+ 602 027c 01F0      		breq .L47
+ 603 027e 9530      		cpi r25,lo8(5)
+ 604 0280 01F4      		brne .L54
+ 605 0282 00C0      		rjmp .L48
+ 606               	.L44:
+ 182:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{
+ 183:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		case LOG_I_AM_HOST:
+ 184:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			toHost = faceNum(thisChunk);			
+ 607               		.loc 1 184 0
+ 608 0284 8189      		ldd r24,Z+17
+ 609 0286 8770      		andi r24,lo8(7)
+ 610 0288 8093 0000 		sts toHost,r24
+ 185:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			PCConnection = 1;
+ 611               		.loc 1 185 0
+ 612 028c 9093 0000 		sts PCConnection,r25
+ 613 0290 00C0      		rjmp .L55
+ 614               	.L45:
+ 186:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			spreadPathToHost(faceNum(thisChunk));
+ 187:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		break;
+ 188:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		case LOG_PATH_TO_HOST:
+ 189:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			if (toHost == UNDEFINED_HOST) {
+ 615               		.loc 1 189 0
+ 616 0292 8091 0000 		lds r24,toHost
+ 617 0296 883C      		cpi r24,lo8(-56)
+ 618 0298 01F4      		brne .L54
+ 190:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				toHost = faceNum(thisChunk);
+ 619               		.loc 1 190 0
+ 620 029a 8189      		ldd r24,Z+17
+ 621 029c 8770      		andi r24,lo8(7)
+ 622 029e 8093 0000 		sts toHost,r24
+ 191:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				PCConnection = 0;
+ 623               		.loc 1 191 0
+ 624 02a2 1092 0000 		sts PCConnection,__zero_reg__
+ 625               	.L55:
+ 192:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				spreadPathToHost(faceNum(thisChunk));
+ 626               		.loc 1 192 0
+ 627 02a6 0E94 0000 		call spreadPathToHost
+ 628               	.LVL49:
+ 629 02aa 00C0      		rjmp .L54
+ 630               	.L46:
+ 193:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			}
+ 194:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		break;
+ 195:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		case LOG_NEED_PATH_TO_HOST:
+ 196:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			if (toHost != UNDEFINED_HOST) {
+ 631               		.loc 1 196 0
+ 632 02ac 8091 0000 		lds r24,toHost
+ 633 02b0 883C      		cpi r24,lo8(-56)
+ 634 02b2 01F0      		breq .L54
+ 197:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				sendPathToHost(faceNum(thisChunk));
+ 635               		.loc 1 197 0
+ 636 02b4 8189      		ldd r24,Z+17
+ 637 02b6 8770      		andi r24,lo8(7)
+ 638 02b8 0E94 0000 		call sendPathToHost
+ 639               	.LVL50:
+ 640 02bc 00C0      		rjmp .L54
+ 641               	.L47:
+ 198:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			}
+ 199:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		break;
+ 200:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		case LOG_DATA:
+ 201:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			if(toHost != UNDEFINED_HOST) {
+ 642               		.loc 1 201 0
+ 643 02be 8091 0000 		lds r24,toHost
+ 644 02c2 883C      		cpi r24,lo8(-56)
+ 645 02c4 01F0      		breq .L54
+ 202:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				forwardToHost(thisChunk);
+ 646               		.loc 1 202 0
+ 647 02c6 CF01      		movw r24,r30
+ 648 02c8 0E94 0000 		call forwardToHost
+ 649               	.LVL51:
+ 650 02cc 00C0      		rjmp .L54
+ 651               	.L48:
+ 203:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			}
+ 204:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		break;		
+ 205:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		case LOG_CMD:
+ 206:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			processCmd();
+ 652               		.loc 1 206 0
+ 653 02ce 0E94 0000 		call processCmd
+ 654               	.LVL52:
+ 655 02d2 00C0      		rjmp .L54
+ 656               	.L50:
+ 177:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		return 0;
+ 657               		.loc 1 177 0
+ 658 02d4 80E0      		ldi r24,0
+ 659 02d6 0895      		ret
+ 660               	.L54:
+ 207:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		break;
+ 208:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 209:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 210:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	return 1;
+ 661               		.loc 1 210 0
+ 662 02d8 81E0      		ldi r24,lo8(1)
+ 211:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 663               		.loc 1 211 0
+ 664 02da 0895      		ret
+ 665               	.LFE17:
+ 667               	.global	getSize
+ 669               	getSize:
+ 670               	.LFB18:
+ 212:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 213:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** byte getSize(char* str) {
+ 671               		.loc 1 213 0
+ 672               	.LVL53:
+ 673               	/* prologue: function */
+ 674               	/* frame size = 0 */
+ 675               	/* stack size = 0 */
+ 676               	.L__stack_usage = 0
+ 214:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte sizeCar = 0;
+ 215:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte sizeChunk = 1;
+ 216:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 217:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	if (str == NULL) {
+ 677               		.loc 1 217 0
+ 678 02dc 0097      		sbiw r24,0
+ 679 02de 01F0      		breq .L59
+ 218:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****         return 0;
+ 219:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     }
+ 220:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 221:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	sizeCar = strlen(str) + 1;
+ 680               		.loc 1 221 0
+ 681 02e0 DC01      		movw r26,r24
+ 682               		0:
+ 683 02e2 0D90      		ld __tmp_reg__,X+
+ 684 02e4 0020      		tst __tmp_reg__
+ 685 02e6 01F4      		brne 0b
+ 686 02e8 1197      		sbiw r26,1
+ 687 02ea A81B      		sub r26,r24
+ 688               	.LVL54:
+ 689 02ec 8A2F      		mov r24,r26
+ 690               	.LVL55:
+ 691 02ee 8F5F      		subi r24,lo8(-(1))
+ 692               	.LVL56:
+ 222:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 223:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     if (sizeCar < 11) {
+ 693               		.loc 1 223 0
+ 694 02f0 8B30      		cpi r24,lo8(11)
+ 695 02f2 00F0      		brlo .L60
+ 224:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****         return 1;
+ 225:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     }
+ 226:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     
+ 227:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     sizeCar -= 10;
+ 696               		.loc 1 227 0
+ 697 02f4 8A50      		subi r24,lo8(-(-10))
+ 698               	.LVL57:
+ 228:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     sizeChunk += sizeCar / 11;
+ 699               		.loc 1 228 0
+ 700 02f6 6BE0      		ldi r22,lo8(11)
+ 701 02f8 0E94 0000 		call __udivmodqi4
+ 702               	.LVL58:
+ 229:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	if ((sizeCar % 11) != 0) {
+ 703               		.loc 1 229 0
+ 704 02fc 9111      		cpse r25,__zero_reg__
+ 705 02fe 00C0      		rjmp .L58
+ 228:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****     sizeChunk += sizeCar / 11;
+ 706               		.loc 1 228 0
+ 707 0300 8F5F      		subi r24,lo8(-(1))
+ 708               	.LVL59:
+ 709 0302 0895      		ret
+ 710               	.LVL60:
+ 711               	.L58:
+ 230:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		sizeChunk++;
+ 712               		.loc 1 230 0
+ 713 0304 8E5F      		subi r24,lo8(-(2))
+ 714               	.LVL61:
+ 715 0306 0895      		ret
+ 716               	.LVL62:
+ 717               	.L59:
+ 218:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****         return 0;
+ 718               		.loc 1 218 0
+ 719 0308 80E0      		ldi r24,0
+ 720               	.LVL63:
+ 721 030a 0895      		ret
+ 722               	.LVL64:
+ 723               	.L60:
+ 224:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb ****         return 1;
+ 724               		.loc 1 224 0
+ 725 030c 81E0      		ldi r24,lo8(1)
+ 726               	.LVL65:
+ 231:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 232:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	return sizeChunk;
+ 233:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 727               		.loc 1 233 0
+ 728 030e 0895      		ret
+ 729               	.LFE18:
+ 731               	.global	printDebug
+ 733               	printDebug:
+ 734               	.LFB19:
+ 234:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 235:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** // format: <LOG_MSG> <LOG_DATA> <block id (2 bytes) > <message # (1 byte)> < fragment # (1 byte)> <
+ 236:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** byte printDebug(char* str) {
+ 735               		.loc 1 236 0
+ 736               	.LVL66:
+ 737 0310 7F92      		push r7
+ 738               	.LCFI42:
+ 739 0312 8F92      		push r8
+ 740               	.LCFI43:
+ 741 0314 9F92      		push r9
+ 742               	.LCFI44:
+ 743 0316 AF92      		push r10
+ 744               	.LCFI45:
+ 745 0318 BF92      		push r11
+ 746               	.LCFI46:
+ 747 031a CF92      		push r12
+ 748               	.LCFI47:
+ 749 031c DF92      		push r13
+ 750               	.LCFI48:
+ 751 031e EF92      		push r14
+ 752               	.LCFI49:
+ 753 0320 FF92      		push r15
+ 754               	.LCFI50:
+ 755 0322 0F93      		push r16
+ 756               	.LCFI51:
+ 757 0324 1F93      		push r17
+ 758               	.LCFI52:
+ 759 0326 CF93      		push r28
+ 760               	.LCFI53:
+ 761 0328 DF93      		push r29
+ 762               	.LCFI54:
+ 763 032a CDB7      		in r28,__SP_L__
+ 764 032c DEB7      		in r29,__SP_H__
+ 765               	.LCFI55:
+ 766 032e 6197      		sbiw r28,17
+ 767               	.LCFI56:
+ 768 0330 CDBF      		out __SP_L__,r28
+ 769 0332 DEBF      		out __SP_H__,r29
+ 770               	/* prologue: function */
+ 771               	/* frame size = 17 */
+ 772               	/* stack size = 30 */
+ 773               	.L__stack_usage = 30
+ 774 0334 8C01      		movw r16,r24
+ 237:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte size = getSize(str);
+ 775               		.loc 1 237 0
+ 776 0336 0E94 0000 		call getSize
+ 777               	.LVL67:
+ 778 033a B82E      		mov r11,r24
+ 779               	.LVL68:
+ 238:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	static byte mId = 0;
+ 239:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	uint8_t index = 0;
+ 240:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte buf[DATA_SIZE];
+ 241:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte s = 0;	
+ 242:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte fId = 0;
+ 243:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte off = 6;
+ 244:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte random =  rand() % 45 + 1; 
+ 780               		.loc 1 244 0
+ 781 033c 0E94 0000 		call rand
+ 782               	.LVL69:
+ 783 0340 7C01      		movw r14,r24
+ 784               	.LVL70:
+ 245:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	if (toHost == UNDEFINED_HOST)
+ 785               		.loc 1 245 0
+ 786 0342 8091 0000 		lds r24,toHost
+ 787 0346 883C      		cpi r24,lo8(-56)
+ 788 0348 01F4      		brne .+2
+ 789 034a 00C0      		rjmp .L69
+ 246:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{
+ 247:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		return 0;
+ 248:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 249:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 250:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	buf[0] = LOG_MSG;
+ 790               		.loc 1 250 0
+ 791 034c 80E5      		ldi r24,lo8(80)
+ 792 034e 8983      		std Y+1,r24
+ 251:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	buf[1] = LOG_DATA;
+ 793               		.loc 1 251 0
+ 794 0350 84E0      		ldi r24,lo8(4)
+ 795 0352 8A83      		std Y+2,r24
+ 252:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	GUIDIntoChar(getGUID(), &(buf[2]));
+ 796               		.loc 1 252 0
+ 797 0354 0E94 0000 		call getGUID
+ 798               	.LVL71:
+ 799 0358 BE01      		movw r22,r28
+ 800 035a 6D5F      		subi r22,-3
+ 801 035c 7F4F      		sbci r23,-1
+ 802 035e 0E94 0000 		call GUIDIntoChar
+ 803               	.LVL72:
+ 253:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	buf[4] = mId;
+ 804               		.loc 1 253 0
+ 805 0362 8091 0000 		lds r24,mId.4068
+ 806 0366 8D83      		std Y+5,r24
+ 254:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	
+ 255:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	if (size == 1) 
+ 807               		.loc 1 255 0
+ 808 0368 81E0      		ldi r24,lo8(1)
+ 809 036a B816      		cp r11,r24
+ 810 036c 01F0      		breq .L63
+ 244:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	byte random =  rand() % 45 + 1; 
+ 811               		.loc 1 244 0
+ 812 036e C701      		movw r24,r14
+ 813 0370 6DE2      		ldi r22,lo8(45)
+ 814 0372 70E0      		ldi r23,0
+ 815 0374 0E94 0000 		call __divmodhi4
+ 816               	.LVL73:
+ 817 0378 A82E      		mov r10,r24
+ 818 037a A394      		inc r10
+ 256:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{
+ 257:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		off = 7;
+ 258:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		s = strlen(str)+1;
+ 259:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		memcpy(buf+off, str, s);
+ 260:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		buf[5] = 0;	
+ 261:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		buf[6] = size;
+ 262:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		sendLogChunk(toHost, buf, s+off);
+ 263:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	} 
+ 264:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	else
+ 265:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{	
+ 266:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		for (fId = 0; fId < size; fId++)
+ 267:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		{
+ 268:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			buf[5] = fId;
+ 269:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			if (fId == 0)
+ 270:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			{
+ 271:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				buf[6] = size;
+ 272:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				off = 7;
+ 273:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				s = 10;
+ 274:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			}
+ 275:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			else if (fId == (size -1))
+ 276:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			{
+ 277:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				s = strlen(str+index)+1 ;
+ 278:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			} 
+ 279:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			else
+ 280:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			{
+ 281:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				s = 11;
+ 282:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			}
+ 283:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			memcpy(buf+off, str+index, s);
+ 284:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			index += s;
+ 285:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			delayMS(random);
+ 819               		.loc 1 285 0
+ 820 037c E12C      		mov r14,__zero_reg__
+ 821 037e F12C      		mov r15,__zero_reg__
+ 822 0380 812C      		mov r8,__zero_reg__
+ 275:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			else if (fId == (size -1))
+ 823               		.loc 1 275 0
+ 824 0382 CB2C      		mov r12,r11
+ 825 0384 D12C      		mov r13,__zero_reg__
+ 826 0386 81E0      		ldi r24,1
+ 827 0388 C81A      		sub r12,r24
+ 828 038a D108      		sbc r13,__zero_reg__
+ 829               	.LVL74:
+ 830 038c 00C0      		rjmp .L64
+ 831               	.LVL75:
+ 832               	.L63:
+ 258:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		s = strlen(str)+1;
+ 833               		.loc 1 258 0
+ 834 038e D801      		movw r26,r16
+ 835               		0:
+ 836 0390 0D90      		ld __tmp_reg__,X+
+ 837 0392 0020      		tst __tmp_reg__
+ 838 0394 01F4      		brne 0b
+ 839 0396 1197      		sbiw r26,1
+ 840 0398 FA2E      		mov r15,r26
+ 841 039a F01A      		sub r15,r16
+ 842               	.LVL76:
+ 259:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		memcpy(buf+off, str, s);
+ 843               		.loc 1 259 0
+ 844 039c 9E01      		movw r18,r28
+ 845 039e 285F      		subi r18,-8
+ 846 03a0 3F4F      		sbci r19,-1
+ 258:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		s = strlen(str)+1;
+ 847               		.loc 1 258 0
+ 848 03a2 4F2D      		mov r20,r15
+ 849 03a4 4F5F      		subi r20,lo8(-(1))
+ 850               	.LVL77:
+ 259:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		memcpy(buf+off, str, s);
+ 851               		.loc 1 259 0
+ 852 03a6 50E0      		ldi r21,0
+ 853 03a8 B801      		movw r22,r16
+ 854 03aa C901      		movw r24,r18
+ 855 03ac 0E94 0000 		call memcpy
+ 856               	.LVL78:
+ 260:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		buf[5] = 0;	
+ 857               		.loc 1 260 0
+ 858 03b0 1E82      		std Y+6,__zero_reg__
+ 261:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		buf[6] = size;
+ 859               		.loc 1 261 0
+ 860 03b2 BF82      		std Y+7,r11
+ 262:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		sendLogChunk(toHost, buf, s+off);
+ 861               		.loc 1 262 0
+ 862 03b4 4F2D      		mov r20,r15
+ 863 03b6 485F      		subi r20,lo8(-(8))
+ 864 03b8 BE01      		movw r22,r28
+ 865 03ba 6F5F      		subi r22,-1
+ 866 03bc 7F4F      		sbci r23,-1
+ 867 03be 8091 0000 		lds r24,toHost
+ 868 03c2 0E94 0000 		call sendLogChunk
+ 869               	.LVL79:
+ 870 03c6 00C0      		rjmp .L65
+ 871               	.LVL80:
+ 872               	.L68:
+ 268:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			buf[5] = fId;
+ 873               		.loc 1 268 0
+ 874 03c8 EE82      		std Y+6,r14
+ 269:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			if (fId == 0)
+ 875               		.loc 1 269 0
+ 876 03ca 8111      		cpse r24,__zero_reg__
+ 877 03cc 00C0      		rjmp .L66
+ 271:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				buf[6] = size;
+ 878               		.loc 1 271 0
+ 879 03ce BF82      		std Y+7,r11
+ 880               	.LVL81:
+ 272:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				off = 7;
+ 881               		.loc 1 272 0
+ 882 03d0 57E0      		ldi r21,lo8(7)
+ 883 03d2 752E      		mov r7,r21
+ 273:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				s = 10;
+ 884               		.loc 1 273 0
+ 885 03d4 6AE0      		ldi r22,lo8(10)
+ 886 03d6 962E      		mov r9,r22
+ 887 03d8 00C0      		rjmp .L67
+ 888               	.LVL82:
+ 889               	.L66:
+ 275:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			else if (fId == (size -1))
+ 890               		.loc 1 275 0
+ 891 03da EC14      		cp r14,r12
+ 892 03dc FD04      		cpc r15,r13
+ 893 03de 01F4      		brne .L70
+ 277:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				s = strlen(str+index)+1 ;
+ 894               		.loc 1 277 0
+ 895 03e0 F801      		movw r30,r16
+ 896 03e2 E80D      		add r30,r8
+ 897 03e4 F11D      		adc r31,__zero_reg__
+ 898 03e6 DF01      		movw r26,r30
+ 899               		0:
+ 900 03e8 0D90      		ld __tmp_reg__,X+
+ 901 03ea 0020      		tst __tmp_reg__
+ 902 03ec 01F4      		brne 0b
+ 903 03ee 9A2E      		mov r9,r26
+ 904 03f0 9E1A      		sub r9,r30
+ 905               	.LVL83:
+ 906 03f2 46E0      		ldi r20,lo8(6)
+ 907 03f4 742E      		mov r7,r20
+ 908 03f6 00C0      		rjmp .L67
+ 909               	.LVL84:
+ 910               	.L70:
+ 275:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			else if (fId == (size -1))
+ 911               		.loc 1 275 0
+ 912 03f8 26E0      		ldi r18,lo8(6)
+ 913 03fa 722E      		mov r7,r18
+ 281:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 				s = 11;
+ 914               		.loc 1 281 0
+ 915 03fc 3BE0      		ldi r19,lo8(11)
+ 916 03fe 932E      		mov r9,r19
+ 917               	.LVL85:
+ 918               	.L67:
+ 283:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			memcpy(buf+off, str+index, s);
+ 919               		.loc 1 283 0
+ 920 0400 21E0      		ldi r18,lo8(1)
+ 921 0402 30E0      		ldi r19,0
+ 922 0404 2C0F      		add r18,r28
+ 923 0406 3D1F      		adc r19,r29
+ 924 0408 270D      		add r18,r7
+ 925 040a 311D      		adc r19,__zero_reg__
+ 926 040c F801      		movw r30,r16
+ 927 040e E80D      		add r30,r8
+ 928 0410 F11D      		adc r31,__zero_reg__
+ 929 0412 492D      		mov r20,r9
+ 930 0414 50E0      		ldi r21,0
+ 931 0416 BF01      		movw r22,r30
+ 932 0418 C901      		movw r24,r18
+ 933 041a 0E94 0000 		call memcpy
+ 934               	.LVL86:
+ 284:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			index += s;
+ 935               		.loc 1 284 0
+ 936 041e 890C      		add r8,r9
+ 937               	.LVL87:
+ 938               		.loc 1 285 0
+ 939 0420 8A2D      		mov r24,r10
+ 940 0422 90E0      		ldi r25,0
+ 941 0424 0E94 0000 		call delayMS
+ 942               	.LVL88:
+ 286:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			sendLogChunk(toHost, buf, s+off);
+ 943               		.loc 1 286 0
+ 944 0428 472D      		mov r20,r7
+ 945 042a 490D      		add r20,r9
+ 946 042c BE01      		movw r22,r28
+ 947 042e 6F5F      		subi r22,-1
+ 948 0430 7F4F      		sbci r23,-1
+ 949 0432 8091 0000 		lds r24,toHost
+ 950 0436 0E94 0000 		call sendLogChunk
+ 951               	.LVL89:
+ 952 043a 8FEF      		ldi r24,-1
+ 953 043c E81A      		sub r14,r24
+ 954 043e F80A      		sbc r15,r24
+ 955               	.LVL90:
+ 956               	.L64:
+ 957 0440 8E2D      		mov r24,r14
+ 958               	.LVL91:
+ 266:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		for (fId = 0; fId < size; fId++)
+ 959               		.loc 1 266 0 discriminator 1
+ 960 0442 EB14      		cp r14,r11
+ 961 0444 00F0      		brlo .L68
+ 962               	.LVL92:
+ 963               	.L65:
+ 287:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 			off = 6;
+ 288:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		}
+ 289:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 290:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	mId++;
+ 964               		.loc 1 290 0
+ 965 0446 8091 0000 		lds r24,mId.4068
+ 966 044a 8F5F      		subi r24,lo8(-(1))
+ 967 044c 8093 0000 		sts mId.4068,r24
+ 291:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	return 1;
+ 968               		.loc 1 291 0
+ 969 0450 81E0      		ldi r24,lo8(1)
+ 970 0452 00C0      		rjmp .L62
+ 971               	.LVL93:
+ 972               	.L69:
+ 247:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		return 0;
+ 973               		.loc 1 247 0
+ 974 0454 80E0      		ldi r24,0
+ 975               	.LVL94:
+ 976               	.L62:
+ 977               	/* epilogue start */
+ 292:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 978               		.loc 1 292 0
+ 979 0456 6196      		adiw r28,17
+ 980 0458 CDBF      		out __SP_L__,r28
+ 981 045a DEBF      		out __SP_H__,r29
+ 982 045c DF91      		pop r29
+ 983 045e CF91      		pop r28
+ 984 0460 1F91      		pop r17
+ 985 0462 0F91      		pop r16
+ 986               	.LVL95:
+ 987 0464 FF90      		pop r15
+ 988 0466 EF90      		pop r14
+ 989 0468 DF90      		pop r13
+ 990 046a CF90      		pop r12
+ 991 046c BF90      		pop r11
+ 992               	.LVL96:
+ 993 046e AF90      		pop r10
+ 994 0470 9F90      		pop r9
+ 995 0472 8F90      		pop r8
+ 996 0474 7F90      		pop r7
+ 997 0476 0895      		ret
+ 998               	.LFE19:
+ 1000               	.global	blockingPrintDebug
+ 1002               	blockingPrintDebug:
+ 1003               	.LFB20:
+ 293:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 
+ 294:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** byte blockingPrintDebug(char *s)
+ 295:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** {
+ 1004               		.loc 1 295 0
+ 1005               	.LVL97:
+ 1006 0478 CF93      		push r28
+ 1007               	.LCFI57:
+ 1008 047a DF93      		push r29
+ 1009               	.LCFI58:
+ 1010               	/* prologue: function */
+ 1011               	/* frame size = 0 */
+ 1012               	/* stack size = 2 */
+ 1013               	.L__stack_usage = 2
+ 1014 047c EC01      		movw r28,r24
+ 296:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
+ 1015               		.loc 1 296 0
+ 1016 047e 00C0      		rjmp .L72
+ 1017               	.LVL98:
+ 1018               	.L73:
+ 297:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	{
+ 298:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 		delayMS(1);
+ 1019               		.loc 1 298 0
+ 1020 0480 81E0      		ldi r24,lo8(1)
+ 1021 0482 90E0      		ldi r25,0
+ 1022 0484 0E94 0000 		call delayMS
+ 1023               	.LVL99:
+ 1024               	.L72:
+ 296:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	while(toHost == UNDEFINED_HOST)
+ 1025               		.loc 1 296 0 discriminator 1
+ 1026 0488 8091 0000 		lds r24,toHost
+ 1027 048c 883C      		cpi r24,lo8(-56)
+ 1028 048e 01F0      		breq .L73
+ 299:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	}
+ 300:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	return printDebug(s);
+ 1029               		.loc 1 300 0
+ 1030 0490 CE01      		movw r24,r28
+ 1031               	/* epilogue start */
+ 301:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** }
+ 1032               		.loc 1 301 0
+ 1033 0492 DF91      		pop r29
+ 1034 0494 CF91      		pop r28
+ 1035               	.LVL100:
+ 300:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bb **** 	return printDebug(s);
+ 1036               		.loc 1 300 0
+ 1037 0496 0C94 0000 		jmp printDebug
+ 1038               	.LVL101:
+ 1039               	.LFE20:
+ 1041               	.global	seq
+ 1042               		.section .bss
+ 1045               	seq:
+ 1046 0000 0000      		.zero	2
+ 1047               	.global	toHost
+ 1048               		.data
+ 1051               	toHost:
+ 1052 0000 C8        		.byte	-56
+ 1053               	.global	PCConnection
+ 1054               		.section .bss
+ 1057               	PCConnection:
+ 1058 0002 00        		.zero	1
+ 1059               		.local	mId.4068
+ 1060               		.comm	mId.4068,1,1
+ 1533               	.Letext0:
+ 1534               		.file 2 "/usr/lib/gcc/avr/4.7.2/include/stddef.h"
+ 1535               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
+ 1536               		.file 4 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/defs.bbh"
+ 1537               		.file 5 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/handler.bbh"
+ 1538               		.file 6 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/memory.bbh"
+ 1539               		.file 7 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/serial.bbh"
+ 1540               		.file 8 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/ensemble.bbh"
+ 1541               		.file 9 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/led.bbh"
+ 1542               		.file 10 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/data_link.bbh"
+ 1543               		.file 11 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdlib.h"
+ 1544               		.file 12 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/message.bbh"
+ 1545               		.file 13 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/hardwaretime.bbh"
+ 1546               		.file 14 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/../hw-api/hwMemory.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 log.c
-     /tmp/cctzGkNc.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cctzGkNc.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cctzGkNc.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cctzGkNc.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cctzGkNc.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cctzGkNc.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cctzGkNc.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cctzGkNc.s:13     .text:0000000000000000 freeLogChunk
-     /tmp/cctzGkNc.s:30     .text:000000000000000c freeMyChunk
-     /tmp/cctzGkNc.s:46     .text:0000000000000018 sendMyChunk
-     /tmp/cctzGkNc.s:148    .text:000000000000008e processCmd
-     /tmp/cctzGkNc.s:1020   .bss:0000000000000000 seq
-     /tmp/cctzGkNc.s:213    .text:00000000000000da myMsgHandler
-     /tmp/cctzGkNc.s:227    .text:00000000000000de isHostPort
-     /tmp/cctzGkNc.s:1026   .data:0000000000000000 toHost
-     /tmp/cctzGkNc.s:1032   .bss:0000000000000002 PCConnection
-     /tmp/cctzGkNc.s:257    .text:00000000000000f8 sendLogChunk
-     /tmp/cctzGkNc.s:358    .text:000000000000016e sendPathToHost
-     /tmp/cctzGkNc.s:400    .text:0000000000000198 spreadPathToHost
-     /tmp/cctzGkNc.s:456    .text:00000000000001cc forwardToHost
-     /tmp/cctzGkNc.s:480    .text:00000000000001de initLogDebug
-     /tmp/cctzGkNc.s:573    .text:0000000000000254 handleLogMessage
-     /tmp/cctzGkNc.s:664    .text:00000000000002d4 getSize
-     /tmp/cctzGkNc.s:728    .text:0000000000000308 printDebug
+     /tmp/ccPzzRJE.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccPzzRJE.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccPzzRJE.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccPzzRJE.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccPzzRJE.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccPzzRJE.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccPzzRJE.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccPzzRJE.s:13     .text:0000000000000000 freeLogChunk
+     /tmp/ccPzzRJE.s:30     .text:000000000000000c freeMyChunk
+     /tmp/ccPzzRJE.s:46     .text:0000000000000018 sendMyChunk
+     /tmp/ccPzzRJE.s:148    .text:000000000000008e processCmd
+     /tmp/ccPzzRJE.s:1045   .bss:0000000000000000 seq
+     /tmp/ccPzzRJE.s:213    .text:00000000000000da myMsgHandler
+     /tmp/ccPzzRJE.s:227    .text:00000000000000de isHostPort
+     /tmp/ccPzzRJE.s:1051   .data:0000000000000000 toHost
+     /tmp/ccPzzRJE.s:1057   .bss:0000000000000002 PCConnection
+     /tmp/ccPzzRJE.s:257    .text:00000000000000f8 sendLogChunk
+     /tmp/ccPzzRJE.s:358    .text:000000000000016e sendPathToHost
+     /tmp/ccPzzRJE.s:400    .text:0000000000000198 spreadPathToHost
+     /tmp/ccPzzRJE.s:456    .text:00000000000001cc forwardToHost
+     /tmp/ccPzzRJE.s:480    .text:00000000000001de initLogDebug
+     /tmp/ccPzzRJE.s:578    .text:000000000000025c handleLogMessage
+     /tmp/ccPzzRJE.s:669    .text:00000000000002dc getSize
+     /tmp/ccPzzRJE.s:733    .text:0000000000000310 printDebug
                              .bss:0000000000000003 mId.4068
-     /tmp/cctzGkNc.s:977    .text:0000000000000452 blockingPrintDebug
+     /tmp/ccPzzRJE.s:1002   .text:0000000000000478 blockingPrintDebug
 
 UNDEFINED SYMBOLS
 thisChunk
 free
 calloc
 sendMessageToPort
-triggerHandler
+callHandler
 thisNeighborhood
 setColor
 delayMS
-__udivmodqi4
 getGUID
+srand
+__udivmodqi4
+rand
 GUIDIntoChar
+__divmodhi4
 memcpy
 __do_copy_data
 __do_clear_bss

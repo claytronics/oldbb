@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/clock.bbh"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/clock.bbh"
 #ifndef __CLOCK_H__
 #define __CLOCK_H__
 

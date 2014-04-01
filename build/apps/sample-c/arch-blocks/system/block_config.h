@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bbh"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bbh"
 // block_config.h
 //
 // Contains block configuration data

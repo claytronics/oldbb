@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/circ_buffer.bbh"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/circ_buffer.bbh"
 #ifndef __CIRC_BUFFER_H__
 #define __CIRC_BUFFER_H__
 

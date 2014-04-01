@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/queues.bb"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/queues.bb"
 // queues.c
 //
 // implementation of the queues

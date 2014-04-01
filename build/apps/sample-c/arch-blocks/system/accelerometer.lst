@@ -11,28 +11,28 @@
   11               	.global	getAccelData
   13               	getAccelData:
   14               	.LFB5:
-  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb"
-   1:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** // SYSTEM INCLUDES
-   2:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** #include "accelerometer.bbh"
-   3:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** #include "handler.bbh"
-   4:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 
-   5:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** // HARDWARE INCLUDES
-   6:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** #include "../hw-api/hwAccelerometer.h"
-   7:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 
-   8:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** threadvar AccelData _acc;
-   9:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** AccelData getAccelData()
-  11:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** {
+  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb"
+   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** // SYSTEM INCLUDES
+   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** #include "accelerometer.bbh"
+   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** #include "handler.bbh"
+   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 
+   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** // HARDWARE INCLUDES
+   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** #include "../hw-api/hwAccelerometer.h"
+   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 
+   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** threadvar AccelData _acc;
+   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** AccelData getAccelData()
+  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** {
   16               		.loc 1 11 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
-  12:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 	return _acc;
+  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 	return _acc;
   21               		.loc 1 12 0
   22 0000 6091 0000 		lds r22,_acc
   23 0004 7091 0000 		lds r23,_acc+1
-  13:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** }
+  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** }
   24               		.loc 1 13 0
   25 0008 8091 0000 		lds r24,_acc+2
   26 000c 9091 0000 		lds r25,_acc+3
@@ -41,15 +41,15 @@
   30               	.global	newAccelData
   32               	newAccelData:
   33               	.LFB6:
-  14:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 
-  15:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** int newAccelData()
-  16:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** {
+  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 
+  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** int newAccelData()
+  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** {
   34               		.loc 1 16 0
   35               	/* prologue: function */
   36               	/* frame size = 0 */
   37               	/* stack size = 0 */
   38               	.L__stack_usage = 0
-  17:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 	return newHWAccelData();
+  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 	return newHWAccelData();
   39               		.loc 1 17 0
   40 0012 0C94 0000 		jmp newHWAccelData
   41               	.LVL0:
@@ -57,19 +57,19 @@
   44               	.global	updateAccel
   46               	updateAccel:
   47               	.LFB7:
-  18:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** }
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** void updateAccel()
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** {
+  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** }
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** void updateAccel()
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** {
   48               		.loc 1 21 0
   49               	/* prologue: function */
   50               	/* frame size = 0 */
   51               	/* stack size = 0 */
   52               	.L__stack_usage = 0
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 	//byte oldstatus = _acc.status & ACC_O_MASK;
-  23:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 
-  24:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 	// this changes the _acc datastructure with new data, if available
-  25:/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bb **** 	updateHWAccel();
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 	//byte oldstatus = _acc.status & ACC_O_MASK;
+  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 
+  24:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 	// this changes the _acc datastructure with new data, if available
+  25:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bb **** 	updateHWAccel();
   53               		.loc 1 25 0
   54 0016 0C94 0000 		jmp updateHWAccel
   55               	.LVL1:
@@ -77,22 +77,22 @@
   58               		.comm	_acc,4,1
  101               	.Letext0:
  102               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
- 103               		.file 3 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/defs.bbh"
- 104               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/accelerometer.bbh"
- 105               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/../hw-api/hwAccelerometer.h"
+ 103               		.file 3 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/defs.bbh"
+ 104               		.file 4 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/accelerometer.bbh"
+ 105               		.file 5 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/../hw-api/hwAccelerometer.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 accelerometer.c
-     /tmp/ccruDA2n.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccruDA2n.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccruDA2n.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccruDA2n.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccruDA2n.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccruDA2n.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccruDA2n.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccruDA2n.s:13     .text:0000000000000000 getAccelData
+     /tmp/ccghRM8X.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccghRM8X.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccghRM8X.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccghRM8X.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccghRM8X.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccghRM8X.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccghRM8X.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccghRM8X.s:13     .text:0000000000000000 getAccelData
                             *COM*:0000000000000004 _acc
-     /tmp/ccruDA2n.s:32     .text:0000000000000012 newAccelData
-     /tmp/ccruDA2n.s:46     .text:0000000000000016 updateAccel
+     /tmp/ccghRM8X.s:32     .text:0000000000000012 newAccelData
+     /tmp/ccghRM8X.s:46     .text:0000000000000016 updateAccel
 
 UNDEFINED SYMBOLS
 newHWAccelData

@@ -48,6 +48,8 @@ Archive member included because of file (symbol)
                               arch-blocks/system/log.o (__udivmodqi4)
 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
                               arch-blocks/system/clock.o (__udivmodhi4)
+/usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
+                              arch-blocks/system/log.o (__divmodhi4)
 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
                               arch-blocks/hw-block/soft_uart2.o (__udivmodsi4)
 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
@@ -64,6 +66,8 @@ Archive member included because of file (symbol)
                               arch-blocks/system/log.o (calloc)
 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
                               /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(calloc.o) (malloc)
+/usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
+                              arch-blocks/system/log.o (rand)
 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
                               arch-blocks/system/hardwaretime.o (abort)
 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
@@ -88,6 +92,10 @@ Archive member included because of file (symbol)
                               /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libprintf_flt.a(vfprintf_flt.o) (__ultoa_invert)
 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
                               /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o) (__iob)
+/usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+                              /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o) (__mulohisi3)
+/usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
+                              /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o) (__divmodsi4)
 
 Allocating common symbols
 Common symbol       size              file
@@ -272,7 +280,7 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
 .rela.plt
  *(.rela.plt)
 
-.text           0x0000000000000000     0x532e
+.text           0x0000000000000000     0x5414
  *(.vectors)
  .vectors       0x0000000000000000      0x1e8 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/crtx256a3.o
                 0x0000000000000000                __vectors
@@ -435,523 +443,570 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
                 0x000000000000032c                __vector_65
                 0x000000000000032c                __vector_120
  .text          0x0000000000000330        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libprintf_flt.a(vfprintf_flt.o)
- .text          0x0000000000000330      0x110 arch-blocks/system/test.o
+ .text          0x0000000000000330       0xfc arch-blocks/system/test.o
                 0x0000000000000330                myMain
                 0x0000000000000338                getCmdData
-                0x000000000000042c                userRegistration
- .text          0x0000000000000440       0x1a arch-blocks/system/accelerometer.o
-                0x0000000000000440                getAccelData
-                0x0000000000000452                newAccelData
-                0x0000000000000456                updateAccel
- .text          0x000000000000045a       0x96 arch-blocks/system/block.o
-                0x000000000000045a                blockTick
-                0x00000000000004b0                initBlock
- .text          0x00000000000004f0       0x22 arch-blocks/system/block_config.o
-                0x00000000000004f0                setUID
-                0x00000000000004fa                setAndStoreUID
- .text          0x0000000000000512        0x4 arch-blocks/system/boot.o
-                0x0000000000000512                jumpToBootSection
- .text          0x0000000000000516       0x7a arch-blocks/system/circ_buffer.o
-                0x0000000000000516                push
-                0x000000000000054c                pop
-                0x0000000000000582                isEmpty
- .text          0x0000000000000590      0x254 arch-blocks/system/data_link.o
-                0x0000000000000590                defaultMsgHandler
-                0x0000000000000594                reservedSystemHandler
-                0x00000000000005ce                removeFromSq
-                0x0000000000000656                flushSendQueue
-                0x0000000000000680                setupChunk
-                0x00000000000006f8                queueChunk
-                0x000000000000075c                handleOneMessage
-                0x00000000000007ca                initDataLink
- .text          0x00000000000007e4        0x4 arch-blocks/system/debug.o
-                0x00000000000007e4                initDebug
- .text          0x00000000000007e8      0x5ec arch-blocks/system/ensemble.o
-                0x00000000000007e8                neighborKeepalive
-                0x0000000000000864                neighborScan
-                0x00000000000008e0                neighborScanCB
-                0x000000000000095a                GUIDIntoChar
-                0x0000000000000962                charToGUID
-                0x0000000000000970                getNeighborCount
-                0x000000000000098a                down
-                0x0000000000000994                up
-                0x000000000000099e                north
-                0x00000000000009a8                south
-                0x00000000000009b2                east
-                0x00000000000009bc                west
-                0x00000000000009c6                updateNeighbor
-                0x0000000000000a10                restartScan
-                0x0000000000000a7a                handleNeighborMessage
-                0x0000000000000cba                neighborHandshakeCB
-                0x0000000000000d54                neighborKeepaliveCB
-                0x0000000000000d8a                initEnsemble
- .text          0x0000000000000dd4      0x200 arch-blocks/system/handler.o
-                0x0000000000000dd4                initHandlers
-                0x0000000000000e06                executeHandlers
-                0x0000000000000ef4                triggerHandler
-                0x0000000000000f62                registerHandler
-                0x0000000000000f8c                unregisterHandler
-                0x0000000000000fb6                callHandler
- .text          0x0000000000000fd4       0x68 arch-blocks/system/led.o
-                0x0000000000000fd4                getColor
-                0x0000000000000fda                getNextColor
-                0x0000000000000fe8                setColor
-                0x000000000000100a                setNextColor
-                0x0000000000001018                setLED
-                0x000000000000101c                setIntensity
-                0x0000000000001032                getIntensity
-                0x0000000000001038                initLED
- .text          0x000000000000103c       0x86 arch-blocks/system/memory.o
-                0x000000000000103c                initializeMemory
-                0x000000000000105e                freeChunk
-                0x000000000000107a                getSystemChunk
-                0x00000000000010b6                getSystemRXChunk
-                0x00000000000010bc                getSystemTXChunk
- .text          0x00000000000010c2      0x142 arch-blocks/system/message.o
-                0x00000000000010c2                sendMessageToUid
-                0x0000000000001110                sendMessageToPort
-                0x0000000000001148                sendSystemMessage
-                0x0000000000001202                initSystemMessage
- .text          0x0000000000001204       0x16 arch-blocks/system/queues.o
-                0x0000000000001204                retrySend
- .text          0x000000000000121a       0x72 arch-blocks/system/serial.o
-                0x000000000000121a                initPortQueues
-                0x0000000000001246                initPorts
- .text          0x000000000000128c       0x12 arch-blocks/system/system.o
-                0x000000000000128c                blockProgram
- .text          0x000000000000129e      0x354 arch-blocks/system/hardwaretime.o
-                0x000000000000129e                delayMS
-                0x00000000000012e2                getTime
-                0x00000000000012e6                checkTimeout
-                0x0000000000001378                registerTimeout
-                0x0000000000001408                deregisterTimeout
-                0x000000000000145e                deregisterTimeoutByHandler
-                0x00000000000014b4                checkTimer
-                0x000000000000150a                registerTimer
-                0x0000000000001552                deregisterTimer
-                0x00000000000015a8                clearTimer
-                0x00000000000015d6                initTime
- .text          0x00000000000015f2        0xa arch-blocks/system/microphone.o
-                0x00000000000015f2                getMicData
- .text          0x00000000000015fc      0x474 arch-blocks/system/log.o
-                0x00000000000015fc                freeLogChunk
-                0x0000000000001608                freeMyChunk
-                0x0000000000001614                sendMyChunk
-                0x000000000000168a                processCmd
-                0x00000000000016d6                myMsgHandler
-                0x00000000000016da                isHostPort
-                0x00000000000016f4                sendLogChunk
-                0x000000000000176a                sendPathToHost
-                0x0000000000001794                spreadPathToHost
-                0x00000000000017c8                forwardToHost
-                0x00000000000017da                initLogDebug
-                0x0000000000001850                handleLogMessage
-                0x00000000000018d0                getSize
-                0x0000000000001904                printDebug
-                0x0000000000001a4e                blockingPrintDebug
- .text          0x0000000000001a70      0x9de arch-blocks/system/clock.o
-                0x0000000000001a70                freeClockChunk
-                0x0000000000001a7c                printSlope
-                0x0000000000001a7e                getClockForTime
-                0x0000000000001ad0                getEstimatedGlobalClock
-                0x0000000000001b26                getClock
-                0x0000000000001b76                isTimeLeader
-                0x0000000000001b7c                isElecting
-                0x0000000000001b82                isAClockSyncMessage
-                0x0000000000001b9e                insertReceiveTime
-                0x0000000000001bb6                insertSendTime
-                0x0000000000001bce                isSynchronized
-                0x0000000000001bfe                initSTChildren
-                0x0000000000001c18                setSlave
-                0x0000000000001c30                scheduleLeaderElection
-                0x0000000000001c72                handleNeighborChange
-                0x0000000000001c7e                initClock
-                0x0000000000001d00                sendClockChunk
-                0x0000000000001d76                sendGoMsg
-                0x0000000000001db8                sendBackMsg
-                0x0000000000001e08                synchronizeNeighbor
-                0x0000000000001e34                synchronizeNeighbors
-                0x0000000000001e80                setLeader
-                0x0000000000001ec0                requestSync
-                0x0000000000001eea                broadcastClockChunk
-                0x0000000000001f40                broadcastGoMsg
-                0x0000000000001f82                startLeaderElection
-                0x0000000000001ff4                handleClockSyncMessage
- .text          0x000000000000244e      0x2bc arch-blocks/hw-block/eeprom_driver.o
-                0x000000000000244e                EEPROM_WaitForNVM
-                0x0000000000002458                EEPROM_ReadByte
-                0x00000000000024b2                EEPROM_FlushBuffer
-                0x00000000000024e2                EEPROM_WriteByte
-                0x0000000000002544                EEPROM_LoadByte
-                0x0000000000002576                EEPROM_LoadPage
-                0x00000000000025a6                EEPROM_LoadPartialPage
-                0x00000000000025fc                EEPROM_AtomicWritePage
-                0x0000000000002648                EEPROM_ErasePage
-                0x0000000000002694                EEPROM_SplitWritePage
-                0x00000000000026e0                EEPROM_EraseAll
- .text          0x000000000000270a      0x208 arch-blocks/hw-block/ext_memory.o
-                0x000000000000270a                spiTxRx
-                0x000000000000271c                setSS
-                0x0000000000002744                readExtMem
-                0x00000000000027f4                writeExtMem
-                0x000000000000289a                initFlash
-                0x000000000000289c                initSRAM
-                0x00000000000028e8                initExtMem
- .text          0x0000000000002912      0x306 arch-blocks/hw-block/hwAccelerometer.o
-                0x0000000000002912                newHWAccelData
-                0x000000000000292e                updateHWAccel
-                0x00000000000029d4                initHWAccel
-                0x0000000000002b0c                __vector_34
-                0x0000000000002b8a                __vector_46
-                0x0000000000002bde                setAccelRegister
- .text          0x0000000000002c18       0x8e arch-blocks/hw-block/hwBlockTick.o
-                0x0000000000002c18                scaryBlockTickHack
-                0x0000000000002c2e                initBlockTick
-                0x0000000000002c48                __vector_108
- .text          0x0000000000002ca6       0x10 arch-blocks/hw-block/hwBoot.o
-                0x0000000000002ca6                jumpToHWBootSection
- .text          0x0000000000002cb6      0x5f2 arch-blocks/hw-block/hwDataLink.o
-                0x0000000000002cb6                crcCalc
-                0x0000000000002cde                ackHandler
-                0x0000000000002d42                addToGlobalRq
-                0x0000000000002d7e                isSpecial
-                0x0000000000002d9e                sendToBuffer
-                0x0000000000002ede                processBuffer
-                0x000000000000310a                nextPacket
-                0x0000000000003154                sendOnSerial
-                0x00000000000032a6                initHWDataLink
- .text          0x00000000000032a8       0xb0 arch-blocks/hw-block/hwLED.o
-                0x00000000000032a8                setHWLED
-                0x00000000000032f8                initHWLED
- .text          0x0000000000003358       0xd8 arch-blocks/hw-block/hwMemory.o
-                0x0000000000003358                store
-                0x00000000000033c6                restore
-                0x0000000000003410                getGUID
- .text          0x0000000000003430      0x5aa arch-blocks/hw-block/hwSerial.o
-                0x0000000000003430                u_putchar
-                0x000000000000343c                u_getchar
-                0x0000000000003452                pPutChar
-                0x0000000000003476                pGetChar
-                0x00000000000034aa                initHWUart
-                0x00000000000034c0                initializeHWPort
-                0x00000000000034d6                initHWPorts
-                0x000000000000358a                __vector_91
-                0x00000000000035e2                __vector_93
-                0x0000000000003642                __vector_28
-                0x000000000000369a                __vector_30
-                0x00000000000036fa                __vector_119
-                0x0000000000003752                __vector_121
-                0x00000000000037b2                __vector_58
-                0x000000000000380a                __vector_60
-                0x000000000000386a                __vector_25
-                0x00000000000038c2                __vector_27
-                0x0000000000003922                __vector_88
-                0x000000000000397a                __vector_90
- .text          0x00000000000039da       0xba arch-blocks/hw-block/hwTime.o
-                0x00000000000039da                getHWTime
-                0x0000000000003a12                initHWClock
-                0x0000000000003a30                initHWRTC
-                0x0000000000003a5e                initHWTime
-                0x0000000000003a66                __vector_10
- .text          0x0000000000003a94       0xc8 arch-blocks/hw-block/hwMicrophone.o
-                0x0000000000003a94                updateHWMic
-                0x0000000000003ab6                initHWMic
-                0x0000000000003ade                rejuvenateHWMic
-                0x0000000000003af4                __vector_71
- .text          0x0000000000003b5c      0x2a4 arch-blocks/hw-block/soft_uart2.o
-                0x0000000000003b5c                timer_set
-                0x0000000000003bea                configure_soft_uart
-                0x0000000000003bfc                init_soft_uart
-                0x0000000000003c40                su_getchar
-                0x0000000000003c6c                set_tx_char
-                0x0000000000003c82                su_putchar
-                0x0000000000003c92                kbhit
-                0x0000000000003cac                __vector_83
- .text          0x0000000000003e00        0x0 arch-blocks/hw-block/system.o
- .text          0x0000000000003e00      0x1c6 arch-blocks/hw-block/twi_master_driver.o
-                0x0000000000003e00                TWI_MasterInit
-                0x0000000000003e22                TWI_MasterState
-                0x0000000000003e2e                TWI_MasterReady
-                0x0000000000003e36                TWI_MasterWriteRead
-                0x0000000000003ea4                TWI_MasterRead
-                0x0000000000003eb6                TWI_MasterWrite
-                0x0000000000003ec2                TWI_MasterArbitrationLostBusErrorHandler
-                0x0000000000003ee4                TWI_MasterWriteHandler
-                0x0000000000003f44                TWI_MasterReadHandler
-                0x0000000000003f96                TWI_MasterInterruptHandler
-                0x0000000000003fbe                TWI_MasterTransactionFinished
- .text          0x0000000000003fc6       0x22 arch-blocks/hw-block/hwDebug.o
-                0x0000000000003fc6                initDebugUart
-                0x0000000000003fda                debugPutChar
-                0x0000000000003fe0                debugGetChar
-                0x0000000000003fe6                initHWDebug
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3x.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3x.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixsfsi.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixunssfsi.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(floatsisf.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fmax.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_inf.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_nan.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscA.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscB.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_round.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_split3.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_zero.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3x.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(round.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mintl.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mpack.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(calloc.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen_P.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memcpy.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memset.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strcpy.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
- .text          0x0000000000003fe8        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
-                0x0000000000003fe8                . = ALIGN (0x2)
+                0x0000000000000418                userRegistration
+ .text          0x000000000000042c       0x1a arch-blocks/system/accelerometer.o
+                0x000000000000042c                getAccelData
+                0x000000000000043e                newAccelData
+                0x0000000000000442                updateAccel
+ .text          0x0000000000000446       0x92 arch-blocks/system/block.o
+                0x0000000000000446                blockTick
+                0x000000000000049c                initBlock
+ .text          0x00000000000004d8       0x22 arch-blocks/system/block_config.o
+                0x00000000000004d8                setUID
+                0x00000000000004e2                setAndStoreUID
+ .text          0x00000000000004fa        0x4 arch-blocks/system/boot.o
+                0x00000000000004fa                jumpToBootSection
+ .text          0x00000000000004fe       0x7a arch-blocks/system/circ_buffer.o
+                0x00000000000004fe                push
+                0x0000000000000534                pop
+                0x000000000000056a                isEmpty
+ .text          0x0000000000000578      0x248 arch-blocks/system/data_link.o
+                0x0000000000000578                defaultMsgHandler
+                0x000000000000057c                reservedSystemHandler
+                0x00000000000005aa                removeFromSq
+                0x0000000000000632                flushSendQueue
+                0x000000000000065c                setupChunk
+                0x00000000000006d4                queueChunk
+                0x0000000000000738                handleOneMessage
+                0x00000000000007a6                initDataLink
+ .text          0x00000000000007c0        0x4 arch-blocks/system/debug.o
+                0x00000000000007c0                initDebug
+ .text          0x00000000000007c4      0x5e6 arch-blocks/system/ensemble.o
+                0x00000000000007c4                neighborKeepalive
+                0x0000000000000840                neighborScan
+                0x00000000000008bc                neighborScanCB
+                0x0000000000000936                GUIDIntoChar
+                0x000000000000093e                charToGUID
+                0x000000000000094c                getNeighborCount
+                0x0000000000000966                down
+                0x0000000000000970                up
+                0x000000000000097a                north
+                0x0000000000000984                south
+                0x000000000000098e                east
+                0x0000000000000998                west
+                0x00000000000009a2                updateNeighbor
+                0x00000000000009e6                restartScan
+                0x0000000000000a50                handleNeighborMessage
+                0x0000000000000c90                neighborHandshakeCB
+                0x0000000000000d2a                neighborKeepaliveCB
+                0x0000000000000d60                initEnsemble
+ .text          0x0000000000000daa      0x200 arch-blocks/system/handler.o
+                0x0000000000000daa                initHandlers
+                0x0000000000000ddc                executeHandlers
+                0x0000000000000eca                triggerHandler
+                0x0000000000000f38                registerHandler
+                0x0000000000000f62                unregisterHandler
+                0x0000000000000f8c                callHandler
+ .text          0x0000000000000faa       0x68 arch-blocks/system/led.o
+                0x0000000000000faa                getColor
+                0x0000000000000fb0                getNextColor
+                0x0000000000000fbe                setColor
+                0x0000000000000fe0                setNextColor
+                0x0000000000000fee                setLED
+                0x0000000000000ff2                setIntensity
+                0x0000000000001008                getIntensity
+                0x000000000000100e                initLED
+ .text          0x0000000000001012       0x86 arch-blocks/system/memory.o
+                0x0000000000001012                initializeMemory
+                0x0000000000001034                freeChunk
+                0x0000000000001050                getSystemChunk
+                0x000000000000108c                getSystemRXChunk
+                0x0000000000001092                getSystemTXChunk
+ .text          0x0000000000001098      0x142 arch-blocks/system/message.o
+                0x0000000000001098                sendMessageToUid
+                0x00000000000010e6                sendMessageToPort
+                0x000000000000111e                sendSystemMessage
+                0x00000000000011d8                initSystemMessage
+ .text          0x00000000000011da       0x16 arch-blocks/system/queues.o
+                0x00000000000011da                retrySend
+ .text          0x00000000000011f0       0x72 arch-blocks/system/serial.o
+                0x00000000000011f0                initPortQueues
+                0x000000000000121c                initPorts
+ .text          0x0000000000001262       0x12 arch-blocks/system/system.o
+                0x0000000000001262                blockProgram
+ .text          0x0000000000001274      0x354 arch-blocks/system/hardwaretime.o
+                0x0000000000001274                delayMS
+                0x00000000000012b8                getTime
+                0x00000000000012bc                checkTimeout
+                0x000000000000134e                registerTimeout
+                0x00000000000013de                deregisterTimeout
+                0x0000000000001434                deregisterTimeoutByHandler
+                0x000000000000148a                checkTimer
+                0x00000000000014e0                registerTimer
+                0x0000000000001528                deregisterTimer
+                0x000000000000157e                clearTimer
+                0x00000000000015ac                initTime
+ .text          0x00000000000015c8        0xa arch-blocks/system/microphone.o
+                0x00000000000015c8                getMicData
+ .text          0x00000000000015d2      0x49a arch-blocks/system/log.o
+                0x00000000000015d2                freeLogChunk
+                0x00000000000015de                freeMyChunk
+                0x00000000000015ea                sendMyChunk
+                0x0000000000001660                processCmd
+                0x00000000000016ac                myMsgHandler
+                0x00000000000016b0                isHostPort
+                0x00000000000016ca                sendLogChunk
+                0x0000000000001740                sendPathToHost
+                0x000000000000176a                spreadPathToHost
+                0x000000000000179e                forwardToHost
+                0x00000000000017b0                initLogDebug
+                0x000000000000182e                handleLogMessage
+                0x00000000000018ae                getSize
+                0x00000000000018e2                printDebug
+                0x0000000000001a4a                blockingPrintDebug
+ .text          0x0000000000001a6c      0x9de arch-blocks/system/clock.o
+                0x0000000000001a6c                freeClockChunk
+                0x0000000000001a78                printSlope
+                0x0000000000001a7a                getClockForTime
+                0x0000000000001acc                getEstimatedGlobalClock
+                0x0000000000001b22                getClock
+                0x0000000000001b72                isTimeLeader
+                0x0000000000001b78                isElecting
+                0x0000000000001b7e                isAClockSyncMessage
+                0x0000000000001b9a                insertReceiveTime
+                0x0000000000001bb2                insertSendTime
+                0x0000000000001bca                isSynchronized
+                0x0000000000001bfa                initSTChildren
+                0x0000000000001c14                setSlave
+                0x0000000000001c2c                scheduleLeaderElection
+                0x0000000000001c6e                handleNeighborChange
+                0x0000000000001c7a                initClock
+                0x0000000000001cfc                sendClockChunk
+                0x0000000000001d72                sendGoMsg
+                0x0000000000001db4                sendBackMsg
+                0x0000000000001e04                synchronizeNeighbor
+                0x0000000000001e30                synchronizeNeighbors
+                0x0000000000001e7c                setLeader
+                0x0000000000001ebc                requestSync
+                0x0000000000001ee6                broadcastClockChunk
+                0x0000000000001f3c                broadcastGoMsg
+                0x0000000000001f7e                startLeaderElection
+                0x0000000000001ff0                handleClockSyncMessage
+ .text          0x000000000000244a      0x2bc arch-blocks/hw-block/eeprom_driver.o
+                0x000000000000244a                EEPROM_WaitForNVM
+                0x0000000000002454                EEPROM_ReadByte
+                0x00000000000024ae                EEPROM_FlushBuffer
+                0x00000000000024de                EEPROM_WriteByte
+                0x0000000000002540                EEPROM_LoadByte
+                0x0000000000002572                EEPROM_LoadPage
+                0x00000000000025a2                EEPROM_LoadPartialPage
+                0x00000000000025f8                EEPROM_AtomicWritePage
+                0x0000000000002644                EEPROM_ErasePage
+                0x0000000000002690                EEPROM_SplitWritePage
+                0x00000000000026dc                EEPROM_EraseAll
+ .text          0x0000000000002706      0x208 arch-blocks/hw-block/ext_memory.o
+                0x0000000000002706                spiTxRx
+                0x0000000000002718                setSS
+                0x0000000000002740                readExtMem
+                0x00000000000027f0                writeExtMem
+                0x0000000000002896                initFlash
+                0x0000000000002898                initSRAM
+                0x00000000000028e4                initExtMem
+ .text          0x000000000000290e      0x306 arch-blocks/hw-block/hwAccelerometer.o
+                0x000000000000290e                newHWAccelData
+                0x000000000000292a                updateHWAccel
+                0x00000000000029d0                initHWAccel
+                0x0000000000002b08                __vector_34
+                0x0000000000002b86                __vector_46
+                0x0000000000002bda                setAccelRegister
+ .text          0x0000000000002c14       0x8e arch-blocks/hw-block/hwBlockTick.o
+                0x0000000000002c14                scaryBlockTickHack
+                0x0000000000002c2a                initBlockTick
+                0x0000000000002c44                __vector_108
+ .text          0x0000000000002ca2       0x10 arch-blocks/hw-block/hwBoot.o
+                0x0000000000002ca2                jumpToHWBootSection
+ .text          0x0000000000002cb2      0x5ae arch-blocks/hw-block/hwDataLink.o
+                0x0000000000002cb2                crcCalc
+                0x0000000000002cda                ackHandler
+                0x0000000000002d3e                addToGlobalRq
+                0x0000000000002d7a                isSpecial
+                0x0000000000002d9a                sendToBuffer
+                0x0000000000002eda                processBuffer
+                0x00000000000030f6                nextPacket
+                0x0000000000003140                sendOnSerial
+                0x000000000000325e                initHWDataLink
+ .text          0x0000000000003260       0xb0 arch-blocks/hw-block/hwLED.o
+                0x0000000000003260                setHWLED
+                0x00000000000032b0                initHWLED
+ .text          0x0000000000003310       0xd8 arch-blocks/hw-block/hwMemory.o
+                0x0000000000003310                store
+                0x000000000000337e                restore
+                0x00000000000033c8                getGUID
+ .text          0x00000000000033e8      0x5aa arch-blocks/hw-block/hwSerial.o
+                0x00000000000033e8                u_putchar
+                0x00000000000033f4                u_getchar
+                0x000000000000340a                pPutChar
+                0x000000000000342e                pGetChar
+                0x0000000000003462                initHWUart
+                0x0000000000003478                initializeHWPort
+                0x000000000000348e                initHWPorts
+                0x0000000000003542                __vector_91
+                0x000000000000359a                __vector_93
+                0x00000000000035fa                __vector_28
+                0x0000000000003652                __vector_30
+                0x00000000000036b2                __vector_119
+                0x000000000000370a                __vector_121
+                0x000000000000376a                __vector_58
+                0x00000000000037c2                __vector_60
+                0x0000000000003822                __vector_25
+                0x000000000000387a                __vector_27
+                0x00000000000038da                __vector_88
+                0x0000000000003932                __vector_90
+ .text          0x0000000000003992       0xba arch-blocks/hw-block/hwTime.o
+                0x0000000000003992                getHWTime
+                0x00000000000039ca                initHWClock
+                0x00000000000039e8                initHWRTC
+                0x0000000000003a16                initHWTime
+                0x0000000000003a1e                __vector_10
+ .text          0x0000000000003a4c       0xc8 arch-blocks/hw-block/hwMicrophone.o
+                0x0000000000003a4c                updateHWMic
+                0x0000000000003a6e                initHWMic
+                0x0000000000003a96                rejuvenateHWMic
+                0x0000000000003aac                __vector_71
+ .text          0x0000000000003b14      0x2a4 arch-blocks/hw-block/soft_uart2.o
+                0x0000000000003b14                timer_set
+                0x0000000000003ba2                configure_soft_uart
+                0x0000000000003bb4                init_soft_uart
+                0x0000000000003bf8                su_getchar
+                0x0000000000003c24                set_tx_char
+                0x0000000000003c3a                su_putchar
+                0x0000000000003c4a                kbhit
+                0x0000000000003c64                __vector_83
+ .text          0x0000000000003db8        0x0 arch-blocks/hw-block/system.o
+ .text          0x0000000000003db8      0x1c6 arch-blocks/hw-block/twi_master_driver.o
+                0x0000000000003db8                TWI_MasterInit
+                0x0000000000003dda                TWI_MasterState
+                0x0000000000003de6                TWI_MasterReady
+                0x0000000000003dee                TWI_MasterWriteRead
+                0x0000000000003e5c                TWI_MasterRead
+                0x0000000000003e6e                TWI_MasterWrite
+                0x0000000000003e7a                TWI_MasterArbitrationLostBusErrorHandler
+                0x0000000000003e9c                TWI_MasterWriteHandler
+                0x0000000000003efc                TWI_MasterReadHandler
+                0x0000000000003f4e                TWI_MasterInterruptHandler
+                0x0000000000003f76                TWI_MasterTransactionFinished
+ .text          0x0000000000003f7e       0x22 arch-blocks/hw-block/hwDebug.o
+                0x0000000000003f7e                initDebugUart
+                0x0000000000003f92                debugPutChar
+                0x0000000000003f98                debugGetChar
+                0x0000000000003f9e                initHWDebug
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3x.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3x.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixsfsi.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixunssfsi.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(floatsisf.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fmax.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_inf.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_nan.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscA.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscB.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_round.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_split3.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_zero.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3x.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(round.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mintl.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mpack.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(calloc.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen_P.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memcpy.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memset.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strcpy.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+ .text          0x0000000000003fa0        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
+                0x0000000000003fa0                . = ALIGN (0x2)
  *(.text.*)
  .text.avr-libc
-                0x0000000000003fe8      0x74e /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libprintf_flt.a(vfprintf_flt.o)
-                0x0000000000003fe8                vfprintf
- .text.startup  0x0000000000004736        0x4 arch-blocks/hw-block/system.o
-                0x0000000000004736                main
+                0x0000000000003fa0      0x74e /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libprintf_flt.a(vfprintf_flt.o)
+                0x0000000000003fa0                vfprintf
+ .text.startup  0x00000000000046ee        0x4 arch-blocks/hw-block/system.o
+                0x00000000000046ee                main
  .text.avr-libc.fplib
-                0x000000000000473a        0xa /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3.o)
-                0x000000000000473a                __subsf3
-                0x000000000000473c                __addsf3
+                0x00000000000046f2        0xa /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3.o)
+                0x00000000000046f2                __subsf3
+                0x00000000000046f4                __addsf3
  .text.avr-libc.fplib
-                0x0000000000004744       0xc0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3x.o)
-                0x000000000000475e                __addsf3x
+                0x00000000000046fc       0xc0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3x.o)
+                0x0000000000004716                __addsf3x
  .text.avr-libc.fplib
-                0x0000000000004804        0x4 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3.o)
-                0x0000000000004804                __divsf3
+                0x00000000000047bc        0x4 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3.o)
+                0x00000000000047bc                __divsf3
  .text.avr-libc.fplib
-                0x0000000000004808       0xcc /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3x.o)
-                0x000000000000481e                __divsf3x
-                0x0000000000004822                __divsf3_pse
+                0x00000000000047c0       0xcc /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3x.o)
+                0x00000000000047d6                __divsf3x
+                0x00000000000047da                __divsf3_pse
  .text.avr-libc.fplib
-                0x00000000000048d4        0xa /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixsfsi.o)
-                0x00000000000048d4                __fixsfsi
+                0x000000000000488c        0xa /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixsfsi.o)
+                0x000000000000488c                __fixsfsi
  .text.avr-libc.fplib
-                0x00000000000048de       0x58 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixunssfsi.o)
-                0x00000000000048de                __fixunssfsi
+                0x0000000000004896       0x58 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixunssfsi.o)
+                0x0000000000004896                __fixunssfsi
  .text.avr-libc.fplib
-                0x0000000000004936       0x7a /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(floatsisf.o)
-                0x0000000000004936                __floatunsisf
-                0x000000000000493a                __floatsisf
+                0x00000000000048ee       0x7a /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(floatsisf.o)
+                0x00000000000048ee                __floatunsisf
+                0x00000000000048f2                __floatsisf
  .text.avr-libc.fplib
-                0x00000000000049b0       0x3e /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fmax.o)
-                0x00000000000049b0                fmax
+                0x0000000000004968       0x3e /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fmax.o)
+                0x0000000000004968                fmax
  .text.avr-libc.fplib
-                0x00000000000049ee        0xc /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_inf.o)
-                0x00000000000049ee                __fp_inf
+                0x00000000000049a6        0xc /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_inf.o)
+                0x00000000000049a6                __fp_inf
  .text.avr-libc.fplib
-                0x00000000000049fa        0x6 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_nan.o)
-                0x00000000000049fa                __fp_nan
+                0x00000000000049b2        0x6 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_nan.o)
+                0x00000000000049b2                __fp_nan
  .text.avr-libc.fplib
-                0x0000000000004a00        0xe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscA.o)
-                0x0000000000004a00                __fp_pscA
+                0x00000000000049b8        0xe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscA.o)
+                0x00000000000049b8                __fp_pscA
  .text.avr-libc.fplib
-                0x0000000000004a0e        0xe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscB.o)
-                0x0000000000004a0e                __fp_pscB
+                0x00000000000049c6        0xe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscB.o)
+                0x00000000000049c6                __fp_pscB
  .text.avr-libc.fplib
-                0x0000000000004a1c       0x22 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_round.o)
-                0x0000000000004a1c                __fp_round
+                0x00000000000049d4       0x22 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_round.o)
+                0x00000000000049d4                __fp_round
  .text.avr-libc.fplib
-                0x0000000000004a3e       0x44 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_split3.o)
-                0x0000000000004a3e                __fp_split3
-                0x0000000000004a4e                __fp_splitA
+                0x00000000000049f6       0x44 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_split3.o)
+                0x00000000000049f6                __fp_split3
+                0x0000000000004a06                __fp_splitA
  .text.avr-libc.fplib
-                0x0000000000004a82        0xe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_zero.o)
-                0x0000000000004a82                __fp_zero
-                0x0000000000004a84                __fp_szero
+                0x0000000000004a3a        0xe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_zero.o)
+                0x0000000000004a3a                __fp_zero
+                0x0000000000004a3c                __fp_szero
  .text.avr-libc.fplib
-                0x0000000000004a90        0x4 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3.o)
-                0x0000000000004a90                __mulsf3
+                0x0000000000004a48        0x4 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3.o)
+                0x0000000000004a48                __mulsf3
  .text.avr-libc.fplib
-                0x0000000000004a94       0xc2 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3x.o)
-                0x0000000000004aa8                __mulsf3x
-                0x0000000000004aac                __mulsf3_pse
+                0x0000000000004a4c       0xc2 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3x.o)
+                0x0000000000004a60                __mulsf3x
+                0x0000000000004a64                __mulsf3_pse
  .text.avr-libc.fplib
-                0x0000000000004b56       0x40 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(round.o)
-                0x0000000000004b56                round
+                0x0000000000004b0e       0x40 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(round.o)
+                0x0000000000004b0e                round
  .text.avr-libc.fplib
-                0x0000000000004b96       0x36 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mintl.o)
-                0x0000000000004b96                __fp_mintl
+                0x0000000000004b4e       0x36 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mintl.o)
+                0x0000000000004b4e                __fp_mintl
  .text.avr-libc.fplib
-                0x0000000000004bcc       0x1c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mpack.o)
-                0x0000000000004bcc                __fp_mpack
-                0x0000000000004bd0                __fp_mpack_finite
+                0x0000000000004b84       0x1c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mpack.o)
+                0x0000000000004b84                __fp_mpack
+                0x0000000000004b88                __fp_mpack_finite
  .text.libgcc.mul
-                0x0000000000004be8       0x16 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
-                0x0000000000004be8                __muluhisi3
+                0x0000000000004ba0       0x16 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
+                0x0000000000004ba0                __muluhisi3
  .text.libgcc.div
-                0x0000000000004bfe        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
- .text.libgcc   0x0000000000004bfe        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
+                0x0000000000004bb6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
+ .text.libgcc   0x0000000000004bb6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
  .text.libgcc.prologue
-                0x0000000000004bfe        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
+                0x0000000000004bb6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
  .text.libgcc.builtins
-                0x0000000000004bfe        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
+                0x0000000000004bb6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
  .text.libgcc.fmul
-                0x0000000000004bfe        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
+                0x0000000000004bb6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
  .text.libgcc.mul
-                0x0000000000004bfe        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
+                0x0000000000004bb6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
  .text.libgcc.div
-                0x0000000000004bfe       0x18 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
-                0x0000000000004bfe                __udivmodqi4
- .text.libgcc   0x0000000000004c16        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
+                0x0000000000004bb6       0x18 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
+                0x0000000000004bb6                __udivmodqi4
+ .text.libgcc   0x0000000000004bce        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
  .text.libgcc.prologue
-                0x0000000000004c16        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
+                0x0000000000004bce        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
  .text.libgcc.builtins
-                0x0000000000004c16        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
+                0x0000000000004bce        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
  .text.libgcc.fmul
-                0x0000000000004c16        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
+                0x0000000000004bce        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
  .text.libgcc.mul
-                0x0000000000004c16        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
+                0x0000000000004bce        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
  .text.libgcc.div
-                0x0000000000004c16       0x28 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
-                0x0000000000004c16                __udivmodhi4
- .text.libgcc   0x0000000000004c3e        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
+                0x0000000000004bce       0x28 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
+                0x0000000000004bce                __udivmodhi4
+ .text.libgcc   0x0000000000004bf6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
  .text.libgcc.prologue
-                0x0000000000004c3e        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
+                0x0000000000004bf6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
  .text.libgcc.builtins
-                0x0000000000004c3e        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
+                0x0000000000004bf6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
  .text.libgcc.fmul
-                0x0000000000004c3e        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
+                0x0000000000004bf6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
  .text.libgcc.mul
-                0x0000000000004c3e        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
+                0x0000000000004bf6        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
  .text.libgcc.div
-                0x0000000000004c3e       0x44 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
-                0x0000000000004c3e                __udivmodsi4
- .text.libgcc   0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
+                0x0000000000004bf6       0x28 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
+                0x0000000000004bf6                __divmodhi4
+                0x0000000000004bf6                _div
+ .text.libgcc   0x0000000000004c1e        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
  .text.libgcc.prologue
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
+                0x0000000000004c1e        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
  .text.libgcc.builtins
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
+                0x0000000000004c1e        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
  .text.libgcc.fmul
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
+                0x0000000000004c1e        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
  .text.libgcc.mul
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
+                0x0000000000004c1e        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
  .text.libgcc.div
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
- .text.libgcc   0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
+                0x0000000000004c1e       0x44 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
+                0x0000000000004c1e                __udivmodsi4
+ .text.libgcc   0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
  .text.libgcc.prologue
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
  .text.libgcc.builtins
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
  .text.libgcc.fmul
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
  .text.libgcc.mul
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
  .text.libgcc.div
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
- .text.libgcc   0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
+ .text.libgcc   0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
  .text.libgcc.prologue
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
  .text.libgcc.builtins
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
  .text.libgcc.fmul
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
  .text.libgcc.mul
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
  .text.libgcc.div
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
- .text.libgcc   0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
+ .text.libgcc   0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
  .text.libgcc.prologue
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
  .text.libgcc.builtins
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
  .text.libgcc.fmul
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
  .text.libgcc.mul
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
  .text.libgcc.div
-                0x0000000000004c82        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
- .text.libgcc   0x0000000000004c82       0x18 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
-                0x0000000000004c82                __cmpdi2_s8
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
+ .text.libgcc   0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
  .text.libgcc.prologue
-                0x0000000000004c9a        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
  .text.libgcc.builtins
-                0x0000000000004c9a        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
  .text.libgcc.fmul
-                0x0000000000004c9a        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
  .text.libgcc.mul
-                0x0000000000004c9a       0x18 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
-                0x0000000000004c9a                __umulhisi3
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
  .text.libgcc.div
-                0x0000000000004cb2        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
- .text.libgcc   0x0000000000004cb2        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+                0x0000000000004c62        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
+ .text.libgcc   0x0000000000004c62       0x18 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
+                0x0000000000004c62                __cmpdi2_s8
  .text.libgcc.prologue
-                0x0000000000004cb2        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+                0x0000000000004c7a        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
  .text.libgcc.builtins
-                0x0000000000004cb2        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+                0x0000000000004c7a        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
  .text.libgcc.fmul
-                0x0000000000004cb2        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+                0x0000000000004c7a        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
+ .text.libgcc.mul
+                0x0000000000004c7a       0x18 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+                0x0000000000004c7a                __umulhisi3
+ .text.libgcc.div
+                0x0000000000004c92        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+ .text.libgcc   0x0000000000004c92        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+ .text.libgcc.prologue
+                0x0000000000004c92        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+ .text.libgcc.builtins
+                0x0000000000004c92        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+ .text.libgcc.fmul
+                0x0000000000004c92        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
  .text.avr-libc
-                0x0000000000004cb2       0x3c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(calloc.o)
-                0x0000000000004cb2                calloc
+                0x0000000000004c92       0x3c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(calloc.o)
+                0x0000000000004c92                calloc
  .text.avr-libc
-                0x0000000000004cee      0x272 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
-                0x0000000000004cee                malloc
-                0x0000000000004e24                free
+                0x0000000000004cce      0x272 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
+                0x0000000000004cce                malloc
+                0x0000000000004e04                free
  .text.avr-libc
-                0x0000000000004f60        0xa /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
-                0x0000000000004f60                abort
+                0x0000000000004f40       0xbe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
+                0x0000000000004fdc                rand_r
+                0x0000000000004fe0                rand
+                0x0000000000004fe8                srand
  .text.avr-libc
-                0x0000000000004f6a      0x1b0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
-                0x0000000000004f6a                __ftoa_engine
+                0x0000000000004ffe        0xa /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
+                0x0000000000004ffe                abort
  .text.avr-libc
-                0x000000000000511a       0x16 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen_P.o)
-                0x000000000000511a                strnlen_P
+                0x0000000000005008      0x1b0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
+                0x0000000000005008                __ftoa_engine
  .text.avr-libc
-                0x0000000000005130       0x12 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memcpy.o)
-                0x0000000000005130                memcpy
+                0x00000000000051b8       0x16 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen_P.o)
+                0x00000000000051b8                strnlen_P
  .text.avr-libc
-                0x0000000000005142        0xe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memset.o)
-                0x0000000000005142                memset
+                0x00000000000051ce       0x12 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memcpy.o)
+                0x00000000000051ce                memcpy
  .text.avr-libc
-                0x0000000000005150        0xe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strcpy.o)
-                0x0000000000005150                strcpy
+                0x00000000000051e0        0xe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memset.o)
+                0x00000000000051e0                memset
  .text.avr-libc
-                0x000000000000515e       0x16 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen.o)
-                0x000000000000515e                strnlen
+                0x00000000000051ee        0xe /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strcpy.o)
+                0x00000000000051ee                strcpy
  .text.avr-libc
-                0x0000000000005174       0x58 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
-                0x0000000000005174                fputc
+                0x00000000000051fc       0x16 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen.o)
+                0x00000000000051fc                strnlen
  .text.avr-libc
-                0x00000000000051cc       0x30 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
-                0x00000000000051cc                printf
+                0x0000000000005212       0x58 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
+                0x0000000000005212                fputc
  .text.avr-libc
-                0x00000000000051fc       0x72 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
-                0x00000000000051fc                snprintf
+                0x000000000000526a       0x30 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
+                0x000000000000526a                printf
  .text.avr-libc
-                0x000000000000526e       0xbc /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
-                0x000000000000526e                __ultoa_invert
-                0x000000000000532a                . = ALIGN (0x2)
+                0x000000000000529a       0x72 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
+                0x000000000000529a                snprintf
+ .text.avr-libc
+                0x000000000000530c       0xbc /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
+                0x000000000000530c                __ultoa_invert
+ .text.libgcc.mul
+                0x00000000000053c8       0x10 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+                0x00000000000053c8                __mulshisi3
+                0x00000000000053ce                __mulohisi3
+ .text.libgcc.div
+                0x00000000000053d8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+ .text.libgcc   0x00000000000053d8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+ .text.libgcc.prologue
+                0x00000000000053d8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+ .text.libgcc.builtins
+                0x00000000000053d8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+ .text.libgcc.fmul
+                0x00000000000053d8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+ .text.libgcc.mul
+                0x00000000000053d8        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
+ .text.libgcc.div
+                0x00000000000053d8       0x38 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
+                0x00000000000053d8                __divmodsi4
+ .text.libgcc   0x0000000000005410        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
+ .text.libgcc.prologue
+                0x0000000000005410        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
+ .text.libgcc.builtins
+                0x0000000000005410        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
+ .text.libgcc.fmul
+                0x0000000000005410        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
+                0x0000000000005410                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x000000000000532a        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
-                0x000000000000532a                exit
-                0x000000000000532a                _exit
+ .fini9         0x0000000000005410        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
+                0x0000000000005410                exit
+                0x0000000000005410                _exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -970,11 +1025,11 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x000000000000532a        0x4 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
+ .fini0         0x0000000000005410        0x4 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
  *(.fini0)
-                0x000000000000532e                _etext = .
+                0x0000000000005414                _etext = .
 
-.data           0x0000000000802000      0x122 load address 0x000000000000532e
+.data           0x0000000000802000      0x126 load address 0x0000000000005414
                 0x0000000000802000                PROVIDE (__data_start, .)
  *(.data)
  .data          0x0000000000802000        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/crtx256a3.o
@@ -1040,6 +1095,7 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
  .data          0x000000000080201d        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
  .data          0x000000000080201d        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
  .data          0x000000000080201d        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
+ .data          0x000000000080201d        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
  .data          0x000000000080201d        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
  .data          0x000000000080201d        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
  .data          0x000000000080201d        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
@@ -1051,189 +1107,196 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
                 0x000000000080201d                __malloc_heap_end
                 0x000000000080201f                __malloc_heap_start
                 0x0000000000802021                __malloc_margin
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen_P.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memcpy.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memset.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strcpy.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
- .data          0x0000000000802023        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
+ .data          0x0000000000802023        0x4 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen_P.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memcpy.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memset.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strcpy.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+ .data          0x0000000000802027        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
  *(.data*)
  *(.rodata)
  *(.rodata*)
  .rodata.str1.1
-                0x0000000000802023       0xd4 arch-blocks/system/test.o
+                0x0000000000802027       0xd4 arch-blocks/system/test.o
  .rodata.str1.1
-                0x00000000008020f7       0x1f arch-blocks/system/clock.o
+                0x00000000008020fb       0x1f arch-blocks/system/clock.o
  .rodata.str1.1
-                0x0000000000802116        0xc arch-blocks/hw-block/ext_memory.o
+                0x000000000080211a        0xc arch-blocks/hw-block/ext_memory.o
  *(.gnu.linkonce.d*)
-                0x0000000000802122                . = ALIGN (0x2)
-                0x0000000000802122                _edata = .
-                0x0000000000802122                PROVIDE (__data_end, .)
+                0x0000000000802126                . = ALIGN (0x2)
+                0x0000000000802126                _edata = .
+                0x0000000000802126                PROVIDE (__data_end, .)
 
-.bss            0x0000000000802122      0x5c2
-                0x0000000000802122                PROVIDE (__bss_start, .)
+.bss            0x0000000000802126      0x5c2
+                0x0000000000802126                PROVIDE (__bss_start, .)
  *(.bss)
- .bss           0x0000000000802122        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/crtx256a3.o
- .bss           0x0000000000802122        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libprintf_flt.a(vfprintf_flt.o)
- .bss           0x0000000000802122        0x0 arch-blocks/system/test.o
- .bss           0x0000000000802122        0x0 arch-blocks/system/accelerometer.o
- .bss           0x0000000000802122        0x4 arch-blocks/system/block.o
-                0x0000000000802122                accelReady
-                0x0000000000802124                blockTickRunning
- .bss           0x0000000000802126        0x0 arch-blocks/system/block_config.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/boot.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/circ_buffer.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/data_link.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/debug.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/ensemble.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/handler.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/led.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/memory.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/message.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/queues.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/serial.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/system.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/hardwaretime.o
- .bss           0x0000000000802126        0x0 arch-blocks/system/microphone.o
- .bss           0x0000000000802126        0x4 arch-blocks/system/log.o
-                0x0000000000802126                seq
-                0x0000000000802128                PCConnection
- .bss           0x000000000080212a       0x18 arch-blocks/system/clock.o
-                0x000000000080212a                localClockMaxReach
-                0x000000000080212e                firstCalibRec
-                0x0000000000802132                offset
-                0x0000000000802136                nbSync
-                0x0000000000802138                firstCalibSend
-                0x000000000080213c                speedAvg
-                0x0000000000802140                electing
-                0x0000000000802141                isLeader
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/eeprom_driver.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/ext_memory.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/hwAccelerometer.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/hwBlockTick.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/hwBoot.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/hwDataLink.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/hwLED.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/hwMemory.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/hwSerial.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/hwTime.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/hwMicrophone.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/soft_uart2.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/system.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/twi_master_driver.o
- .bss           0x0000000000802142        0x0 arch-blocks/hw-block/hwDebug.o
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3x.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3x.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixsfsi.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixunssfsi.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(floatsisf.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fmax.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_inf.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_nan.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscA.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscB.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_round.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_split3.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_zero.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3x.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(round.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mintl.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mpack.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(calloc.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen_P.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memcpy.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memset.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strcpy.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
- .bss           0x0000000000802142        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
+ .bss           0x0000000000802126        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/crtx256a3.o
+ .bss           0x0000000000802126        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libprintf_flt.a(vfprintf_flt.o)
+ .bss           0x0000000000802126        0x0 arch-blocks/system/test.o
+ .bss           0x0000000000802126        0x0 arch-blocks/system/accelerometer.o
+ .bss           0x0000000000802126        0x4 arch-blocks/system/block.o
+                0x0000000000802126                accelReady
+                0x0000000000802128                blockTickRunning
+ .bss           0x000000000080212a        0x0 arch-blocks/system/block_config.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/boot.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/circ_buffer.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/data_link.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/debug.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/ensemble.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/handler.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/led.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/memory.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/message.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/queues.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/serial.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/system.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/hardwaretime.o
+ .bss           0x000000000080212a        0x0 arch-blocks/system/microphone.o
+ .bss           0x000000000080212a        0x4 arch-blocks/system/log.o
+                0x000000000080212a                seq
+                0x000000000080212c                PCConnection
+ .bss           0x000000000080212e       0x18 arch-blocks/system/clock.o
+                0x000000000080212e                localClockMaxReach
+                0x0000000000802132                firstCalibRec
+                0x0000000000802136                offset
+                0x000000000080213a                nbSync
+                0x000000000080213c                firstCalibSend
+                0x0000000000802140                speedAvg
+                0x0000000000802144                electing
+                0x0000000000802145                isLeader
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/eeprom_driver.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/ext_memory.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/hwAccelerometer.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/hwBlockTick.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/hwBoot.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/hwDataLink.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/hwLED.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/hwMemory.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/hwSerial.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/hwTime.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/hwMicrophone.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/soft_uart2.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/system.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/twi_master_driver.o
+ .bss           0x0000000000802146        0x0 arch-blocks/hw-block/hwDebug.o
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3x.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3x.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixsfsi.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fixunssfsi.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(floatsisf.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fmax.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_inf.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_nan.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscA.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_pscB.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_round.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_split3.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_zero.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3x.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(round.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mintl.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(fp_mpack.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_clear_bss.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_cmpdi2_s8.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_umulhisi3.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(calloc.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen_P.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memcpy.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memset.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strcpy.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+ .bss           0x0000000000802146        0x0 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
  *(.bss*)
  *(COMMON)
- COMMON         0x0000000000802142        0x4 arch-blocks/system/accelerometer.o
-                0x0000000000802142                _acc
- COMMON         0x0000000000802146        0x7 arch-blocks/system/data_link.o
-                0x0000000000802146                globalRq
-                0x000000000080214b                thisChunk
- COMMON         0x000000000080214d       0x72 arch-blocks/system/ensemble.o
-                0x000000000080214d                thisNeighborhood
-                0x0000000000802159                ttNeighbor
- COMMON         0x00000000008021bf       0x48 arch-blocks/system/handler.o
-                0x00000000008021bf                system
- COMMON         0x0000000000802207        0x4 arch-blocks/system/led.o
-                0x0000000000802207                currentRGB
-                0x000000000080220a                currentColor
- COMMON         0x000000000080220b      0x245 arch-blocks/system/memory.o
-                0x000000000080220b                conf
-                0x000000000080220f                txChunks
-                0x000000000080232f                rxChunks
-                0x000000000080244f                numFreeChunks
- COMMON         0x0000000000802450      0x210 arch-blocks/system/serial.o
-                0x0000000000802450                port
- COMMON         0x0000000000802660        0x6 arch-blocks/system/hardwaretime.o
-                0x0000000000802660                thisTimeout
-                0x0000000000802662                timerList
-                0x0000000000802664                timeoutList
- COMMON         0x0000000000802666        0x2 arch-blocks/system/microphone.o
-                0x0000000000802666                _mic
- COMMON         0x0000000000802668       0x25 arch-blocks/system/clock.o
-                0x0000000000802668                nbNeededAnswers
-                0x0000000000802669                syncTimer
-                0x000000000080267a                minId
-                0x000000000080267c                leaderElectionTimeOut
-                0x0000000000802686                minIdSender
-                0x0000000000802687                syncChildren
- COMMON         0x000000000080268d       0x11 arch-blocks/hw-block/hwAccelerometer.o
-                0x000000000080268d                twiMaster
- COMMON         0x000000000080269e        0x6 arch-blocks/hw-block/hwDataLink.o
-                0x000000000080269e                wasEscapeStore
- COMMON         0x00000000008026a4       0x12 arch-blocks/hw-block/hwSerial.o
-                0x00000000008026a4                hwPort
- COMMON         0x00000000008026b6        0x2 arch-blocks/hw-block/hwTime.o
-                0x00000000008026b6                timeHi
- COMMON         0x00000000008026b8       0x14 arch-blocks/hw-block/soft_uart2.o
-                0x00000000008026b8                soft_uart
- COMMON         0x00000000008026cc        0xe arch-blocks/hw-block/hwDebug.o
-                0x00000000008026cc                debug
- COMMON         0x00000000008026da        0x4 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
-                0x00000000008026da                __brkval
-                0x00000000008026dc                __flp
- COMMON         0x00000000008026de        0x6 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
-                0x00000000008026de                __iob
-                0x00000000008026e4                PROVIDE (__bss_end, .)
-                0x000000000000532e                __data_load_start = LOADADDR (.data)
-                0x0000000000005450                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x0000000000802146        0x4 arch-blocks/system/accelerometer.o
+                0x0000000000802146                _acc
+ COMMON         0x000000000080214a        0x7 arch-blocks/system/data_link.o
+                0x000000000080214a                globalRq
+                0x000000000080214f                thisChunk
+ COMMON         0x0000000000802151       0x72 arch-blocks/system/ensemble.o
+                0x0000000000802151                thisNeighborhood
+                0x000000000080215d                ttNeighbor
+ COMMON         0x00000000008021c3       0x48 arch-blocks/system/handler.o
+                0x00000000008021c3                system
+ COMMON         0x000000000080220b        0x4 arch-blocks/system/led.o
+                0x000000000080220b                currentRGB
+                0x000000000080220e                currentColor
+ COMMON         0x000000000080220f      0x245 arch-blocks/system/memory.o
+                0x000000000080220f                conf
+                0x0000000000802213                txChunks
+                0x0000000000802333                rxChunks
+                0x0000000000802453                numFreeChunks
+ COMMON         0x0000000000802454      0x210 arch-blocks/system/serial.o
+                0x0000000000802454                port
+ COMMON         0x0000000000802664        0x6 arch-blocks/system/hardwaretime.o
+                0x0000000000802664                thisTimeout
+                0x0000000000802666                timerList
+                0x0000000000802668                timeoutList
+ COMMON         0x000000000080266a        0x2 arch-blocks/system/microphone.o
+                0x000000000080266a                _mic
+ COMMON         0x000000000080266c       0x25 arch-blocks/system/clock.o
+                0x000000000080266c                nbNeededAnswers
+                0x000000000080266d                syncTimer
+                0x000000000080267e                minId
+                0x0000000000802680                leaderElectionTimeOut
+                0x000000000080268a                minIdSender
+                0x000000000080268b                syncChildren
+ COMMON         0x0000000000802691       0x11 arch-blocks/hw-block/hwAccelerometer.o
+                0x0000000000802691                twiMaster
+ COMMON         0x00000000008026a2        0x6 arch-blocks/hw-block/hwDataLink.o
+                0x00000000008026a2                wasEscapeStore
+ COMMON         0x00000000008026a8       0x12 arch-blocks/hw-block/hwSerial.o
+                0x00000000008026a8                hwPort
+ COMMON         0x00000000008026ba        0x2 arch-blocks/hw-block/hwTime.o
+                0x00000000008026ba                timeHi
+ COMMON         0x00000000008026bc       0x14 arch-blocks/hw-block/soft_uart2.o
+                0x00000000008026bc                soft_uart
+ COMMON         0x00000000008026d0        0xe arch-blocks/hw-block/hwDebug.o
+                0x00000000008026d0                debug
+ COMMON         0x00000000008026de        0x4 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
+                0x00000000008026de                __brkval
+                0x00000000008026e0                __flp
+ COMMON         0x00000000008026e2        0x6 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
+                0x00000000008026e2                __iob
+                0x00000000008026e8                PROVIDE (__bss_end, .)
+                0x0000000000005414                __data_load_start = LOADADDR (.data)
+                0x000000000000553a                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00000000008026e4        0x0
-                0x00000000008026e4                PROVIDE (__noinit_start, .)
+.noinit         0x00000000008026e8        0x0
+                0x00000000008026e8                PROVIDE (__noinit_start, .)
  *(.noinit*)
-                0x00000000008026e4                PROVIDE (__noinit_end, .)
-                0x00000000008026e4                _end = .
-                0x00000000008026e4                PROVIDE (__heap_start, .)
+                0x00000000008026e8                PROVIDE (__noinit_end, .)
+                0x00000000008026e8                _end = .
+                0x00000000008026e8                PROVIDE (__heap_start, .)
 
 .eeprom         0x0000000000810000        0x4
  *(.eeprom*)
@@ -1253,7 +1316,7 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
 .signature
  *(.signature*)
 
-.stab           0x0000000000000000     0x5a30
+.stab           0x0000000000000000     0x5cdc
  *(.stab)
  .stab          0x0000000000000000      0x6e4 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/crtx256a3.o
  .stab          0x00000000000006e4     0x12fc /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libprintf_flt.a(vfprintf_flt.o)
@@ -1302,34 +1365,36 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
                                         0x1f8 (size before relaxing)
  .stab          0x0000000000003be8      0x5b8 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
                                         0x798 (size before relaxing)
- .stab          0x00000000000041a0       0x48 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
+ .stab          0x00000000000041a0      0x2ac /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
+                                        0x30c (size before relaxing)
+ .stab          0x000000000000444c       0x48 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
                                          0x54 (size before relaxing)
- .stab          0x00000000000041e8      0xa38 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
+ .stab          0x0000000000004494      0xa38 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ftoa_engine.o)
                                         0xa44 (size before relaxing)
- .stab          0x0000000000004c20       0x9c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen_P.o)
+ .stab          0x0000000000004ecc       0x9c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen_P.o)
                                          0xa8 (size before relaxing)
- .stab          0x0000000000004cbc       0x84 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memcpy.o)
+ .stab          0x0000000000004f68       0x84 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memcpy.o)
                                          0x90 (size before relaxing)
- .stab          0x0000000000004d40       0x6c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memset.o)
+ .stab          0x0000000000004fec       0x6c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(memset.o)
                                          0x78 (size before relaxing)
- .stab          0x0000000000004dac       0x6c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strcpy.o)
+ .stab          0x0000000000005058       0x6c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strcpy.o)
                                          0x78 (size before relaxing)
- .stab          0x0000000000004e18       0x9c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen.o)
+ .stab          0x00000000000050c4       0x9c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(strnlen.o)
                                          0xa8 (size before relaxing)
- .stab          0x0000000000004eb4      0x1d4 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
+ .stab          0x0000000000005160      0x1d4 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
                                         0x3b4 (size before relaxing)
- .stab          0x0000000000005088      0x1bc /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
+ .stab          0x0000000000005334      0x1bc /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
                                         0x39c (size before relaxing)
- .stab          0x0000000000005244      0x240 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
+ .stab          0x00000000000054f0      0x240 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
                                         0x420 (size before relaxing)
- .stab          0x0000000000005484      0x480 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
+ .stab          0x0000000000005730      0x480 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
                                         0x48c (size before relaxing)
- .stab          0x0000000000005904      0x12c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
+ .stab          0x0000000000005bb0      0x12c /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(iob.o)
                                         0x30c (size before relaxing)
 
-.stabstr        0x0000000000000000     0x122d
+.stabstr        0x0000000000000000     0x12b7
  *(.stabstr)
- .stabstr       0x0000000000000000     0x122d /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/crtx256a3.o
+ .stabstr       0x0000000000000000     0x12b7 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/crtx256a3.o
 
 .stab.excl
  *(.stab.excl)
@@ -1385,6 +1450,7 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
  .comment       0x0000000000000000       0x12 arch-blocks/hw-block/hwDebug.o
  .comment       0x0000000000000000       0x12 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(calloc.o)
  .comment       0x0000000000000000       0x12 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
+ .comment       0x0000000000000000       0x12 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
  .comment       0x0000000000000000       0x12 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(fputc.o)
  .comment       0x0000000000000000       0x12 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(printf.o)
  .comment       0x0000000000000000       0x12 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(snprintf.o)
@@ -1478,46 +1544,46 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x0000000000000000     0xcc9d
+.debug_info     0x0000000000000000     0xcc07
  *(.debug_info)
- .debug_info    0x0000000000000000      0x4a2 arch-blocks/system/test.o
- .debug_info    0x00000000000004a2      0x16d arch-blocks/system/accelerometer.o
- .debug_info    0x000000000000060f      0x2ec arch-blocks/system/block.o
- .debug_info    0x00000000000008fb      0x166 arch-blocks/system/block_config.o
- .debug_info    0x0000000000000a61       0x55 arch-blocks/system/boot.o
- .debug_info    0x0000000000000ab6      0x274 arch-blocks/system/circ_buffer.o
- .debug_info    0x0000000000000d2a      0x883 arch-blocks/system/data_link.o
- .debug_info    0x00000000000015ad       0x94 arch-blocks/system/debug.o
- .debug_info    0x0000000000001641      0xc0a arch-blocks/system/ensemble.o
- .debug_info    0x000000000000224b      0x230 arch-blocks/system/handler.o
- .debug_info    0x000000000000247b      0x39f arch-blocks/system/led.o
- .debug_info    0x000000000000281a      0x2e8 arch-blocks/system/memory.o
- .debug_info    0x0000000000002b02      0x51e arch-blocks/system/message.o
- .debug_info    0x0000000000003020      0x27d arch-blocks/system/queues.o
- .debug_info    0x000000000000329d      0x425 arch-blocks/system/serial.o
- .debug_info    0x00000000000036c2      0x1b4 arch-blocks/system/system.o
- .debug_info    0x0000000000003876      0x54c arch-blocks/system/hardwaretime.o
- .debug_info    0x0000000000003dc2       0xa7 arch-blocks/system/microphone.o
- .debug_info    0x0000000000003e69      0xabf arch-blocks/system/log.o
- .debug_info    0x0000000000004928      0xf9d arch-blocks/system/clock.o
- .debug_info    0x00000000000058c5      0x530 arch-blocks/hw-block/eeprom_driver.o
- .debug_info    0x0000000000005df5      0x936 arch-blocks/hw-block/ext_memory.o
- .debug_info    0x000000000000672b      0xa7c arch-blocks/hw-block/hwAccelerometer.o
- .debug_info    0x00000000000071a7      0x7b7 arch-blocks/hw-block/hwBlockTick.o
- .debug_info    0x000000000000795e       0xf3 arch-blocks/hw-block/hwBoot.o
- .debug_info    0x0000000000007a51      0xa92 arch-blocks/hw-block/hwDataLink.o
- .debug_info    0x00000000000084e3      0xe23 arch-blocks/hw-block/hwLED.o
- .debug_info    0x0000000000009306      0x22f arch-blocks/hw-block/hwMemory.o
- .debug_info    0x0000000000009535      0xc48 arch-blocks/hw-block/hwSerial.o
- .debug_info    0x000000000000a17d      0x4db arch-blocks/hw-block/hwTime.o
- .debug_info    0x000000000000a658      0x88c arch-blocks/hw-block/hwMicrophone.o
- .debug_info    0x000000000000aee4     0x1167 arch-blocks/hw-block/soft_uart2.o
- .debug_info    0x000000000000c04b       0xa3 arch-blocks/hw-block/system.o
- .debug_info    0x000000000000c0ee      0x8eb arch-blocks/hw-block/twi_master_driver.o
- .debug_info    0x000000000000c9d9      0x2c4 arch-blocks/hw-block/hwDebug.o
+ .debug_info    0x0000000000000000      0x48f arch-blocks/system/test.o
+ .debug_info    0x000000000000048f      0x16d arch-blocks/system/accelerometer.o
+ .debug_info    0x00000000000005fc      0x2d9 arch-blocks/system/block.o
+ .debug_info    0x00000000000008d5      0x166 arch-blocks/system/block_config.o
+ .debug_info    0x0000000000000a3b       0x55 arch-blocks/system/boot.o
+ .debug_info    0x0000000000000a90      0x274 arch-blocks/system/circ_buffer.o
+ .debug_info    0x0000000000000d04      0x86c arch-blocks/system/data_link.o
+ .debug_info    0x0000000000001570       0x94 arch-blocks/system/debug.o
+ .debug_info    0x0000000000001604      0xbdd arch-blocks/system/ensemble.o
+ .debug_info    0x00000000000021e1      0x230 arch-blocks/system/handler.o
+ .debug_info    0x0000000000002411      0x39f arch-blocks/system/led.o
+ .debug_info    0x00000000000027b0      0x2e8 arch-blocks/system/memory.o
+ .debug_info    0x0000000000002a98      0x51e arch-blocks/system/message.o
+ .debug_info    0x0000000000002fb6      0x27d arch-blocks/system/queues.o
+ .debug_info    0x0000000000003233      0x425 arch-blocks/system/serial.o
+ .debug_info    0x0000000000003658      0x1b4 arch-blocks/system/system.o
+ .debug_info    0x000000000000380c      0x54c arch-blocks/system/hardwaretime.o
+ .debug_info    0x0000000000003d58       0xa7 arch-blocks/system/microphone.o
+ .debug_info    0x0000000000003dff      0xb17 arch-blocks/system/log.o
+ .debug_info    0x0000000000004916      0xf9d arch-blocks/system/clock.o
+ .debug_info    0x00000000000058b3      0x530 arch-blocks/hw-block/eeprom_driver.o
+ .debug_info    0x0000000000005de3      0x936 arch-blocks/hw-block/ext_memory.o
+ .debug_info    0x0000000000006719      0xa7c arch-blocks/hw-block/hwAccelerometer.o
+ .debug_info    0x0000000000007195      0x7b7 arch-blocks/hw-block/hwBlockTick.o
+ .debug_info    0x000000000000794c       0xf3 arch-blocks/hw-block/hwBoot.o
+ .debug_info    0x0000000000007a3f      0xa0e arch-blocks/hw-block/hwDataLink.o
+ .debug_info    0x000000000000844d      0xe23 arch-blocks/hw-block/hwLED.o
+ .debug_info    0x0000000000009270      0x22f arch-blocks/hw-block/hwMemory.o
+ .debug_info    0x000000000000949f      0xc48 arch-blocks/hw-block/hwSerial.o
+ .debug_info    0x000000000000a0e7      0x4db arch-blocks/hw-block/hwTime.o
+ .debug_info    0x000000000000a5c2      0x88c arch-blocks/hw-block/hwMicrophone.o
+ .debug_info    0x000000000000ae4e     0x1167 arch-blocks/hw-block/soft_uart2.o
+ .debug_info    0x000000000000bfb5       0xa3 arch-blocks/hw-block/system.o
+ .debug_info    0x000000000000c058      0x8eb arch-blocks/hw-block/twi_master_driver.o
+ .debug_info    0x000000000000c943      0x2c4 arch-blocks/hw-block/hwDebug.o
  *(.gnu.linkonce.wi.*)
 
-.debug_abbrev   0x0000000000000000     0x3a6a
+.debug_abbrev   0x0000000000000000     0x3a7d
  *(.debug_abbrev)
  .debug_abbrev  0x0000000000000000      0x17d arch-blocks/system/test.o
  .debug_abbrev  0x000000000000017d       0xf7 arch-blocks/system/accelerometer.o
@@ -1537,63 +1603,63 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
  .debug_abbrev  0x0000000000001593       0x9d arch-blocks/system/system.o
  .debug_abbrev  0x0000000000001630      0x230 arch-blocks/system/hardwaretime.o
  .debug_abbrev  0x0000000000001860       0x62 arch-blocks/system/microphone.o
- .debug_abbrev  0x00000000000018c2      0x30b arch-blocks/system/log.o
- .debug_abbrev  0x0000000000001bcd      0x3b2 arch-blocks/system/clock.o
- .debug_abbrev  0x0000000000001f7f      0x199 arch-blocks/hw-block/eeprom_driver.o
- .debug_abbrev  0x0000000000002118      0x226 arch-blocks/hw-block/ext_memory.o
- .debug_abbrev  0x000000000000233e      0x1f7 arch-blocks/hw-block/hwAccelerometer.o
- .debug_abbrev  0x0000000000002535      0x13c arch-blocks/hw-block/hwBlockTick.o
- .debug_abbrev  0x0000000000002671       0xa6 arch-blocks/hw-block/hwBoot.o
- .debug_abbrev  0x0000000000002717      0x293 arch-blocks/hw-block/hwDataLink.o
- .debug_abbrev  0x00000000000029aa      0x154 arch-blocks/hw-block/hwLED.o
- .debug_abbrev  0x0000000000002afe      0x10b arch-blocks/hw-block/hwMemory.o
- .debug_abbrev  0x0000000000002c09      0x2ce arch-blocks/hw-block/hwSerial.o
- .debug_abbrev  0x0000000000002ed7      0x21a arch-blocks/hw-block/hwTime.o
- .debug_abbrev  0x00000000000030f1      0x1c5 arch-blocks/hw-block/hwMicrophone.o
- .debug_abbrev  0x00000000000032b6      0x2e5 arch-blocks/hw-block/soft_uart2.o
- .debug_abbrev  0x000000000000359b       0x67 arch-blocks/hw-block/system.o
- .debug_abbrev  0x0000000000003602      0x2ff arch-blocks/hw-block/twi_master_driver.o
- .debug_abbrev  0x0000000000003901      0x169 arch-blocks/hw-block/hwDebug.o
+ .debug_abbrev  0x00000000000018c2      0x31e arch-blocks/system/log.o
+ .debug_abbrev  0x0000000000001be0      0x3b2 arch-blocks/system/clock.o
+ .debug_abbrev  0x0000000000001f92      0x199 arch-blocks/hw-block/eeprom_driver.o
+ .debug_abbrev  0x000000000000212b      0x226 arch-blocks/hw-block/ext_memory.o
+ .debug_abbrev  0x0000000000002351      0x1f7 arch-blocks/hw-block/hwAccelerometer.o
+ .debug_abbrev  0x0000000000002548      0x13c arch-blocks/hw-block/hwBlockTick.o
+ .debug_abbrev  0x0000000000002684       0xa6 arch-blocks/hw-block/hwBoot.o
+ .debug_abbrev  0x000000000000272a      0x293 arch-blocks/hw-block/hwDataLink.o
+ .debug_abbrev  0x00000000000029bd      0x154 arch-blocks/hw-block/hwLED.o
+ .debug_abbrev  0x0000000000002b11      0x10b arch-blocks/hw-block/hwMemory.o
+ .debug_abbrev  0x0000000000002c1c      0x2ce arch-blocks/hw-block/hwSerial.o
+ .debug_abbrev  0x0000000000002eea      0x21a arch-blocks/hw-block/hwTime.o
+ .debug_abbrev  0x0000000000003104      0x1c5 arch-blocks/hw-block/hwMicrophone.o
+ .debug_abbrev  0x00000000000032c9      0x2e5 arch-blocks/hw-block/soft_uart2.o
+ .debug_abbrev  0x00000000000035ae       0x67 arch-blocks/hw-block/system.o
+ .debug_abbrev  0x0000000000003615      0x2ff arch-blocks/hw-block/twi_master_driver.o
+ .debug_abbrev  0x0000000000003914      0x169 arch-blocks/hw-block/hwDebug.o
 
-.debug_line     0x0000000000000000     0x33d2
+.debug_line     0x0000000000000000     0x344f
  *(.debug_line)
- .debug_line    0x0000000000000000      0x12e arch-blocks/system/test.o
- .debug_line    0x000000000000012e      0x11b arch-blocks/system/accelerometer.o
- .debug_line    0x0000000000000249      0x205 arch-blocks/system/block.o
- .debug_line    0x000000000000044e       0xfe arch-blocks/system/block_config.o
- .debug_line    0x000000000000054c       0xa9 arch-blocks/system/boot.o
- .debug_line    0x00000000000005f5      0x14d arch-blocks/system/circ_buffer.o
- .debug_line    0x0000000000000742      0x2a5 arch-blocks/system/data_link.o
- .debug_line    0x00000000000009e7       0xab arch-blocks/system/debug.o
- .debug_line    0x0000000000000a92      0x2b5 arch-blocks/system/ensemble.o
- .debug_line    0x0000000000000d47       0xfe arch-blocks/system/handler.o
- .debug_line    0x0000000000000e45      0x116 arch-blocks/system/led.o
- .debug_line    0x0000000000000f5b      0x10c arch-blocks/system/memory.o
- .debug_line    0x0000000000001067      0x126 arch-blocks/system/message.o
- .debug_line    0x000000000000118d       0xeb arch-blocks/system/queues.o
- .debug_line    0x0000000000001278      0x16f arch-blocks/system/serial.o
- .debug_line    0x00000000000013e7       0xd8 arch-blocks/system/system.o
- .debug_line    0x00000000000014bf      0x203 arch-blocks/system/hardwaretime.o
- .debug_line    0x00000000000016c2       0xb5 arch-blocks/system/microphone.o
- .debug_line    0x0000000000001777      0x279 arch-blocks/system/log.o
- .debug_line    0x00000000000019f0      0x31e arch-blocks/system/clock.o
- .debug_line    0x0000000000001d0e      0x181 arch-blocks/hw-block/eeprom_driver.o
- .debug_line    0x0000000000001e8f      0x1b7 arch-blocks/hw-block/ext_memory.o
- .debug_line    0x0000000000002046      0x1f1 arch-blocks/hw-block/hwAccelerometer.o
- .debug_line    0x0000000000002237      0x12e arch-blocks/hw-block/hwBlockTick.o
- .debug_line    0x0000000000002365       0xde arch-blocks/hw-block/hwBoot.o
- .debug_line    0x0000000000002443      0x301 arch-blocks/hw-block/hwDataLink.o
- .debug_line    0x0000000000002744      0x145 arch-blocks/hw-block/hwLED.o
- .debug_line    0x0000000000002889      0x11a arch-blocks/hw-block/hwMemory.o
- .debug_line    0x00000000000029a3      0x243 arch-blocks/hw-block/hwSerial.o
- .debug_line    0x0000000000002be6      0x194 arch-blocks/hw-block/hwTime.o
- .debug_line    0x0000000000002d7a      0x191 arch-blocks/hw-block/hwMicrophone.o
- .debug_line    0x0000000000002f0b      0x1a5 arch-blocks/hw-block/soft_uart2.o
- .debug_line    0x00000000000030b0       0xa4 arch-blocks/hw-block/system.o
- .debug_line    0x0000000000003154      0x189 arch-blocks/hw-block/twi_master_driver.o
- .debug_line    0x00000000000032dd       0xf5 arch-blocks/hw-block/hwDebug.o
+ .debug_line    0x0000000000000000      0x130 arch-blocks/system/test.o
+ .debug_line    0x0000000000000130      0x123 arch-blocks/system/accelerometer.o
+ .debug_line    0x0000000000000253      0x1ff arch-blocks/system/block.o
+ .debug_line    0x0000000000000452      0x106 arch-blocks/system/block_config.o
+ .debug_line    0x0000000000000558       0xb1 arch-blocks/system/boot.o
+ .debug_line    0x0000000000000609      0x151 arch-blocks/system/circ_buffer.o
+ .debug_line    0x000000000000075a      0x29f arch-blocks/system/data_link.o
+ .debug_line    0x00000000000009f9       0xb3 arch-blocks/system/debug.o
+ .debug_line    0x0000000000000aac      0x2b3 arch-blocks/system/ensemble.o
+ .debug_line    0x0000000000000d5f      0x102 arch-blocks/system/handler.o
+ .debug_line    0x0000000000000e61      0x11e arch-blocks/system/led.o
+ .debug_line    0x0000000000000f7f      0x110 arch-blocks/system/memory.o
+ .debug_line    0x000000000000108f      0x12a arch-blocks/system/message.o
+ .debug_line    0x00000000000011b9       0xef arch-blocks/system/queues.o
+ .debug_line    0x00000000000012a8      0x177 arch-blocks/system/serial.o
+ .debug_line    0x000000000000141f       0xdc arch-blocks/system/system.o
+ .debug_line    0x00000000000014fb      0x20b arch-blocks/system/hardwaretime.o
+ .debug_line    0x0000000000001706       0xb9 arch-blocks/system/microphone.o
+ .debug_line    0x00000000000017bf      0x28a arch-blocks/system/log.o
+ .debug_line    0x0000000000001a49      0x326 arch-blocks/system/clock.o
+ .debug_line    0x0000000000001d6f      0x185 arch-blocks/hw-block/eeprom_driver.o
+ .debug_line    0x0000000000001ef4      0x1bb arch-blocks/hw-block/ext_memory.o
+ .debug_line    0x00000000000020af      0x1f9 arch-blocks/hw-block/hwAccelerometer.o
+ .debug_line    0x00000000000022a8      0x136 arch-blocks/hw-block/hwBlockTick.o
+ .debug_line    0x00000000000023de       0xe2 arch-blocks/hw-block/hwBoot.o
+ .debug_line    0x00000000000024c0      0x2c1 arch-blocks/hw-block/hwDataLink.o
+ .debug_line    0x0000000000002781      0x14d arch-blocks/hw-block/hwLED.o
+ .debug_line    0x00000000000028ce      0x122 arch-blocks/hw-block/hwMemory.o
+ .debug_line    0x00000000000029f0      0x24b arch-blocks/hw-block/hwSerial.o
+ .debug_line    0x0000000000002c3b      0x19c arch-blocks/hw-block/hwTime.o
+ .debug_line    0x0000000000002dd7      0x199 arch-blocks/hw-block/hwMicrophone.o
+ .debug_line    0x0000000000002f70      0x1ad arch-blocks/hw-block/soft_uart2.o
+ .debug_line    0x000000000000311d       0xac arch-blocks/hw-block/system.o
+ .debug_line    0x00000000000031c9      0x18d arch-blocks/hw-block/twi_master_driver.o
+ .debug_line    0x0000000000003356       0xf9 arch-blocks/hw-block/hwDebug.o
 
-.debug_frame    0x0000000000000000     0x1d48
+.debug_frame    0x0000000000000000     0x1d4c
  *(.debug_frame)
  .debug_frame   0x0000000000000000       0x58 arch-blocks/system/test.o
  .debug_frame   0x0000000000000058       0x44 arch-blocks/system/accelerometer.o
@@ -1613,126 +1679,126 @@ LOAD /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a
  .debug_frame   0x000000000000073c       0x24 arch-blocks/system/system.o
  .debug_frame   0x0000000000000760      0x13c arch-blocks/system/hardwaretime.o
  .debug_frame   0x000000000000089c       0x24 arch-blocks/system/microphone.o
- .debug_frame   0x00000000000008c0      0x220 arch-blocks/system/log.o
- .debug_frame   0x0000000000000ae0      0x380 arch-blocks/system/clock.o
- .debug_frame   0x0000000000000e60      0x14c arch-blocks/hw-block/eeprom_driver.o
- .debug_frame   0x0000000000000fac       0xe4 arch-blocks/hw-block/ext_memory.o
- .debug_frame   0x0000000000001090      0x150 arch-blocks/hw-block/hwAccelerometer.o
- .debug_frame   0x00000000000011e0       0x8c arch-blocks/hw-block/hwBlockTick.o
- .debug_frame   0x000000000000126c       0x24 arch-blocks/hw-block/hwBoot.o
- .debug_frame   0x0000000000001290      0x170 arch-blocks/hw-block/hwDataLink.o
- .debug_frame   0x0000000000001400       0x34 arch-blocks/hw-block/hwLED.o
- .debug_frame   0x0000000000001434       0x94 arch-blocks/hw-block/hwMemory.o
- .debug_frame   0x00000000000014c8      0x4c0 arch-blocks/hw-block/hwSerial.o
- .debug_frame   0x0000000000001988       0x84 arch-blocks/hw-block/hwTime.o
- .debug_frame   0x0000000000001a0c       0xa4 arch-blocks/hw-block/hwMicrophone.o
- .debug_frame   0x0000000000001ab0      0x130 arch-blocks/hw-block/soft_uart2.o
- .debug_frame   0x0000000000001be0       0x24 arch-blocks/hw-block/system.o
- .debug_frame   0x0000000000001c04       0xf0 arch-blocks/hw-block/twi_master_driver.o
- .debug_frame   0x0000000000001cf4       0x54 arch-blocks/hw-block/hwDebug.o
+ .debug_frame   0x00000000000008c0      0x224 arch-blocks/system/log.o
+ .debug_frame   0x0000000000000ae4      0x380 arch-blocks/system/clock.o
+ .debug_frame   0x0000000000000e64      0x14c arch-blocks/hw-block/eeprom_driver.o
+ .debug_frame   0x0000000000000fb0       0xe4 arch-blocks/hw-block/ext_memory.o
+ .debug_frame   0x0000000000001094      0x150 arch-blocks/hw-block/hwAccelerometer.o
+ .debug_frame   0x00000000000011e4       0x8c arch-blocks/hw-block/hwBlockTick.o
+ .debug_frame   0x0000000000001270       0x24 arch-blocks/hw-block/hwBoot.o
+ .debug_frame   0x0000000000001294      0x170 arch-blocks/hw-block/hwDataLink.o
+ .debug_frame   0x0000000000001404       0x34 arch-blocks/hw-block/hwLED.o
+ .debug_frame   0x0000000000001438       0x94 arch-blocks/hw-block/hwMemory.o
+ .debug_frame   0x00000000000014cc      0x4c0 arch-blocks/hw-block/hwSerial.o
+ .debug_frame   0x000000000000198c       0x84 arch-blocks/hw-block/hwTime.o
+ .debug_frame   0x0000000000001a10       0xa4 arch-blocks/hw-block/hwMicrophone.o
+ .debug_frame   0x0000000000001ab4      0x130 arch-blocks/hw-block/soft_uart2.o
+ .debug_frame   0x0000000000001be4       0x24 arch-blocks/hw-block/system.o
+ .debug_frame   0x0000000000001c08       0xf0 arch-blocks/hw-block/twi_master_driver.o
+ .debug_frame   0x0000000000001cf8       0x54 arch-blocks/hw-block/hwDebug.o
 
-.debug_str      0x0000000000000000     0x31ca
+.debug_str      0x0000000000000000     0x3217
  *(.debug_str)
- .debug_str     0x0000000000000000      0x38a arch-blocks/system/test.o
-                                        0x404 (size before relaxing)
- .debug_str     0x000000000000038a       0x83 arch-blocks/system/accelerometer.o
-                                        0x151 (size before relaxing)
- .debug_str     0x000000000000040d      0x17a arch-blocks/system/block.o
-                                        0x24e (size before relaxing)
- .debug_str     0x0000000000000587       0x67 arch-blocks/system/block_config.o
-                                        0x132 (size before relaxing)
- .debug_str     0x00000000000005ee       0x40 arch-blocks/system/boot.o
-                                         0x79 (size before relaxing)
- .debug_str     0x000000000000062e       0x71 arch-blocks/system/circ_buffer.o
-                                        0x12c (size before relaxing)
- .debug_str     0x000000000000069f      0x1ed arch-blocks/system/data_link.o
-                                        0x3d4 (size before relaxing)
- .debug_str     0x000000000000088c       0x31 arch-blocks/system/debug.o
-                                         0xd6 (size before relaxing)
- .debug_str     0x00000000000008bd      0x16d arch-blocks/system/ensemble.o
-                                        0x580 (size before relaxing)
- .debug_str     0x0000000000000a2a       0x7e arch-blocks/system/handler.o
-                                        0x1a5 (size before relaxing)
- .debug_str     0x0000000000000aa8       0x91 arch-blocks/system/led.o
-                                        0x1b2 (size before relaxing)
- .debug_str     0x0000000000000b39       0x7b arch-blocks/system/memory.o
-                                        0x1ce (size before relaxing)
- .debug_str     0x0000000000000bb4       0x45 arch-blocks/system/message.o
-                                        0x211 (size before relaxing)
- .debug_str     0x0000000000000bf9       0x2d arch-blocks/system/queues.o
-                                        0x1bd (size before relaxing)
- .debug_str     0x0000000000000c26       0x37 arch-blocks/system/serial.o
-                                        0x26a (size before relaxing)
- .debug_str     0x0000000000000c5d       0x29 arch-blocks/system/system.o
-                                        0x33b (size before relaxing)
- .debug_str     0x0000000000000c86       0xa4 arch-blocks/system/hardwaretime.o
-                                        0x21b (size before relaxing)
- .debug_str     0x0000000000000d2a       0x30 arch-blocks/system/microphone.o
-                                         0xe9 (size before relaxing)
- .debug_str     0x0000000000000d5a       0xec arch-blocks/system/log.o
-                                        0x56b (size before relaxing)
- .debug_str     0x0000000000000e46      0x283 arch-blocks/system/clock.o
-                                        0x521 (size before relaxing)
- .debug_str     0x00000000000010c9      0x4a2 arch-blocks/hw-block/eeprom_driver.o
-                                        0x549 (size before relaxing)
- .debug_str     0x000000000000156b      0x160 arch-blocks/hw-block/ext_memory.o
-                                        0x231 (size before relaxing)
- .debug_str     0x00000000000016cb      0x46e arch-blocks/hw-block/hwAccelerometer.o
-                                        0x897 (size before relaxing)
- .debug_str     0x0000000000001b39      0x444 arch-blocks/hw-block/hwBlockTick.o
-                                        0x5ae (size before relaxing)
- .debug_str     0x0000000000001f7d       0x72 arch-blocks/hw-block/hwBoot.o
-                                        0x122 (size before relaxing)
- .debug_str     0x0000000000001fef       0xe3 arch-blocks/hw-block/hwDataLink.o
-                                        0x3e9 (size before relaxing)
- .debug_str     0x00000000000020d2       0xfe arch-blocks/hw-block/hwLED.o
-                                        0x672 (size before relaxing)
- .debug_str     0x00000000000021d0       0x72 arch-blocks/hw-block/hwMemory.o
-                                        0x167 (size before relaxing)
- .debug_str     0x0000000000002242      0x297 arch-blocks/hw-block/hwSerial.o
-                                        0x5dc (size before relaxing)
- .debug_str     0x00000000000024d9      0x304 arch-blocks/hw-block/hwTime.o
-                                        0x43d (size before relaxing)
- .debug_str     0x00000000000027dd      0x583 arch-blocks/hw-block/hwMicrophone.o
-                                        0x7ea (size before relaxing)
- .debug_str     0x0000000000002d60      0x131 arch-blocks/hw-block/soft_uart2.o
-                                        0x822 (size before relaxing)
- .debug_str     0x0000000000002e91       0x40 arch-blocks/hw-block/system.o
-                                         0xce (size before relaxing)
- .debug_str     0x0000000000002ed1      0x27c arch-blocks/hw-block/twi_master_driver.o
-                                        0x59b (size before relaxing)
- .debug_str     0x000000000000314d       0x7d arch-blocks/hw-block/hwDebug.o
-                                        0x1fe (size before relaxing)
+ .debug_str     0x0000000000000000      0x38e arch-blocks/system/test.o
+                                        0x408 (size before relaxing)
+ .debug_str     0x000000000000038e       0x83 arch-blocks/system/accelerometer.o
+                                        0x155 (size before relaxing)
+ .debug_str     0x0000000000000411      0x170 arch-blocks/system/block.o
+                                        0x248 (size before relaxing)
+ .debug_str     0x0000000000000581       0x67 arch-blocks/system/block_config.o
+                                        0x136 (size before relaxing)
+ .debug_str     0x00000000000005e8       0x40 arch-blocks/system/boot.o
+                                         0x7d (size before relaxing)
+ .debug_str     0x0000000000000628       0x71 arch-blocks/system/circ_buffer.o
+                                        0x130 (size before relaxing)
+ .debug_str     0x0000000000000699      0x1d6 arch-blocks/system/data_link.o
+                                        0x3c1 (size before relaxing)
+ .debug_str     0x000000000000086f       0x31 arch-blocks/system/debug.o
+                                         0xda (size before relaxing)
+ .debug_str     0x00000000000008a0      0x158 arch-blocks/system/ensemble.o
+                                        0x56f (size before relaxing)
+ .debug_str     0x00000000000009f8       0x7e arch-blocks/system/handler.o
+                                        0x1a9 (size before relaxing)
+ .debug_str     0x0000000000000a76       0x91 arch-blocks/system/led.o
+                                        0x1b6 (size before relaxing)
+ .debug_str     0x0000000000000b07       0x7b arch-blocks/system/memory.o
+                                        0x1d2 (size before relaxing)
+ .debug_str     0x0000000000000b82       0x45 arch-blocks/system/message.o
+                                        0x215 (size before relaxing)
+ .debug_str     0x0000000000000bc7       0x2d arch-blocks/system/queues.o
+                                        0x1c1 (size before relaxing)
+ .debug_str     0x0000000000000bf4       0x37 arch-blocks/system/serial.o
+                                        0x26e (size before relaxing)
+ .debug_str     0x0000000000000c2b       0x29 arch-blocks/system/system.o
+                                        0x33f (size before relaxing)
+ .debug_str     0x0000000000000c54       0xa4 arch-blocks/system/hardwaretime.o
+                                        0x21f (size before relaxing)
+ .debug_str     0x0000000000000cf8       0x30 arch-blocks/system/microphone.o
+                                         0xed (size before relaxing)
+ .debug_str     0x0000000000000d28       0xf9 arch-blocks/system/log.o
+                                        0x57e (size before relaxing)
+ .debug_str     0x0000000000000e21      0x2b9 arch-blocks/system/clock.o
+                                        0x525 (size before relaxing)
+ .debug_str     0x00000000000010da      0x4a6 arch-blocks/hw-block/eeprom_driver.o
+                                        0x54d (size before relaxing)
+ .debug_str     0x0000000000001580      0x164 arch-blocks/hw-block/ext_memory.o
+                                        0x235 (size before relaxing)
+ .debug_str     0x00000000000016e4      0x472 arch-blocks/hw-block/hwAccelerometer.o
+                                        0x89b (size before relaxing)
+ .debug_str     0x0000000000001b56      0x448 arch-blocks/hw-block/hwBlockTick.o
+                                        0x5b2 (size before relaxing)
+ .debug_str     0x0000000000001f9e       0x76 arch-blocks/hw-block/hwBoot.o
+                                        0x126 (size before relaxing)
+ .debug_str     0x0000000000002014       0xe7 arch-blocks/hw-block/hwDataLink.o
+                                        0x3b8 (size before relaxing)
+ .debug_str     0x00000000000020fb      0x102 arch-blocks/hw-block/hwLED.o
+                                        0x676 (size before relaxing)
+ .debug_str     0x00000000000021fd       0x76 arch-blocks/hw-block/hwMemory.o
+                                        0x16b (size before relaxing)
+ .debug_str     0x0000000000002273      0x29b arch-blocks/hw-block/hwSerial.o
+                                        0x5e0 (size before relaxing)
+ .debug_str     0x000000000000250e      0x308 arch-blocks/hw-block/hwTime.o
+                                        0x441 (size before relaxing)
+ .debug_str     0x0000000000002816      0x587 arch-blocks/hw-block/hwMicrophone.o
+                                        0x7ee (size before relaxing)
+ .debug_str     0x0000000000002d9d      0x135 arch-blocks/hw-block/soft_uart2.o
+                                        0x826 (size before relaxing)
+ .debug_str     0x0000000000002ed2       0x44 arch-blocks/hw-block/system.o
+                                         0xd2 (size before relaxing)
+ .debug_str     0x0000000000002f16      0x280 arch-blocks/hw-block/twi_master_driver.o
+                                        0x59f (size before relaxing)
+ .debug_str     0x0000000000003196       0x81 arch-blocks/hw-block/hwDebug.o
+                                        0x202 (size before relaxing)
 
-.debug_loc      0x0000000000000000     0x5f91
+.debug_loc      0x0000000000000000     0x5fd3
  *(.debug_loc)
  .debug_loc     0x0000000000000000       0x48 arch-blocks/system/test.o
  .debug_loc     0x0000000000000048       0x41 arch-blocks/system/block.o
  .debug_loc     0x0000000000000089       0x32 arch-blocks/system/block_config.o
  .debug_loc     0x00000000000000bb       0xff arch-blocks/system/circ_buffer.o
  .debug_loc     0x00000000000001ba      0x3e4 arch-blocks/system/data_link.o
- .debug_loc     0x000000000000059e      0x664 arch-blocks/system/ensemble.o
- .debug_loc     0x0000000000000c02      0x1c5 arch-blocks/system/handler.o
- .debug_loc     0x0000000000000dc7      0x1cf arch-blocks/system/led.o
- .debug_loc     0x0000000000000f96       0xda arch-blocks/system/memory.o
- .debug_loc     0x0000000000001070      0x5f5 arch-blocks/system/message.o
- .debug_loc     0x0000000000001665       0xac arch-blocks/system/serial.o
- .debug_loc     0x0000000000001711      0x4ae arch-blocks/system/hardwaretime.o
- .debug_loc     0x0000000000001bbf      0x8d8 arch-blocks/system/log.o
- .debug_loc     0x0000000000002497      0xac6 arch-blocks/system/clock.o
- .debug_loc     0x0000000000002f5d      0x555 arch-blocks/hw-block/eeprom_driver.o
- .debug_loc     0x00000000000034b2      0x5c1 arch-blocks/hw-block/ext_memory.o
- .debug_loc     0x0000000000003a73      0x313 arch-blocks/hw-block/hwAccelerometer.o
- .debug_loc     0x0000000000003d86       0xcb arch-blocks/hw-block/hwBlockTick.o
- .debug_loc     0x0000000000003e51      0x724 arch-blocks/hw-block/hwDataLink.o
- .debug_loc     0x0000000000004575       0x39 arch-blocks/hw-block/hwLED.o
- .debug_loc     0x00000000000045ae      0x280 arch-blocks/hw-block/hwMemory.o
- .debug_loc     0x000000000000482e      0xc39 arch-blocks/hw-block/hwSerial.o
- .debug_loc     0x0000000000005467       0xb6 arch-blocks/hw-block/hwTime.o
- .debug_loc     0x000000000000551d      0x105 arch-blocks/hw-block/hwMicrophone.o
- .debug_loc     0x0000000000005622      0x358 arch-blocks/hw-block/soft_uart2.o
- .debug_loc     0x000000000000597a      0x5a8 arch-blocks/hw-block/twi_master_driver.o
- .debug_loc     0x0000000000005f22       0x6f arch-blocks/hw-block/hwDebug.o
+ .debug_loc     0x000000000000059e      0x666 arch-blocks/system/ensemble.o
+ .debug_loc     0x0000000000000c04      0x1c5 arch-blocks/system/handler.o
+ .debug_loc     0x0000000000000dc9      0x1cf arch-blocks/system/led.o
+ .debug_loc     0x0000000000000f98       0xda arch-blocks/system/memory.o
+ .debug_loc     0x0000000000001072      0x5f5 arch-blocks/system/message.o
+ .debug_loc     0x0000000000001667       0xac arch-blocks/system/serial.o
+ .debug_loc     0x0000000000001713      0x4ae arch-blocks/system/hardwaretime.o
+ .debug_loc     0x0000000000001bc1      0x918 arch-blocks/system/log.o
+ .debug_loc     0x00000000000024d9      0xac6 arch-blocks/system/clock.o
+ .debug_loc     0x0000000000002f9f      0x555 arch-blocks/hw-block/eeprom_driver.o
+ .debug_loc     0x00000000000034f4      0x5c1 arch-blocks/hw-block/ext_memory.o
+ .debug_loc     0x0000000000003ab5      0x313 arch-blocks/hw-block/hwAccelerometer.o
+ .debug_loc     0x0000000000003dc8       0xcb arch-blocks/hw-block/hwBlockTick.o
+ .debug_loc     0x0000000000003e93      0x724 arch-blocks/hw-block/hwDataLink.o
+ .debug_loc     0x00000000000045b7       0x39 arch-blocks/hw-block/hwLED.o
+ .debug_loc     0x00000000000045f0      0x280 arch-blocks/hw-block/hwMemory.o
+ .debug_loc     0x0000000000004870      0xc39 arch-blocks/hw-block/hwSerial.o
+ .debug_loc     0x00000000000054a9       0xb6 arch-blocks/hw-block/hwTime.o
+ .debug_loc     0x000000000000555f      0x105 arch-blocks/hw-block/hwMicrophone.o
+ .debug_loc     0x0000000000005664      0x358 arch-blocks/hw-block/soft_uart2.o
+ .debug_loc     0x00000000000059bc      0x5a8 arch-blocks/hw-block/twi_master_driver.o
+ .debug_loc     0x0000000000005f64       0x6f arch-blocks/hw-block/hwDebug.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1798,6 +1864,10 @@ __cmpdi2_s8                                       /usr/lib/gcc/avr/4.7.2/avrxmeg
 __data_end                                        /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
 __data_load_start                                 /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
 __data_start                                      /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
+__divmodhi4                                       /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
+                                                  arch-blocks/system/log.o
+__divmodsi4                                       /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
+                                                  /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
 __divsf3                                          /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3.o)
                                                   arch-blocks/system/clock.o
 __divsf3_pse                                      /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(divsf3x.o)
@@ -1825,6 +1895,7 @@ __do_clear_bss                                    /usr/lib/gcc/avr/4.7.2/avrxmeg
                                                   arch-blocks/system/block.o
                                                   arch-blocks/system/accelerometer.o
 __do_copy_data                                    /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_copy_data.o)
+                                                  /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
                                                   /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
                                                   arch-blocks/hw-block/ext_memory.o
                                                   arch-blocks/system/clock.o
@@ -1892,21 +1963,28 @@ __iob                                             /usr/lib/gcc/avr/4.7.2/../../.
 __malloc_heap_end                                 /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
 __malloc_heap_start                               /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
 __malloc_margin                                   /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(malloc.o)
+__mulohisi3                                       /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+                                                  /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
 __mulsf3                                          /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3.o)
                                                   arch-blocks/system/clock.o
 __mulsf3_pse                                      /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3x.o)
 __mulsf3x                                         /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3x.o)
                                                   /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(mulsf3.o)
+__mulshisi3                                       /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
 __muluhisi3                                       /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_muluhisi3.o)
+                                                  /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_mulshisi3.o)
+                                                  /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
                                                   arch-blocks/hw-block/soft_uart2.o
 __stack                                           /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/crtx256a3.o
 __subsf3                                          /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libm.a(addsf3.o)
                                                   arch-blocks/system/clock.o
 __udivmodhi4                                      /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodhi4.o)
+                                                  /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
                                                   arch-blocks/system/clock.o
 __udivmodqi4                                      /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodqi4.o)
                                                   arch-blocks/system/log.o
 __udivmodsi4                                      /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_udivmodsi4.o)
+                                                  /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodsi4.o)
                                                   arch-blocks/hw-block/soft_uart2.o
 __ultoa_invert                                    /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(ultoa_invert.o)
                                                   /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libprintf_flt.a(vfprintf_flt.o)
@@ -2055,6 +2133,7 @@ __vector_default                                  /usr/lib/gcc/avr/4.7.2/../../.
 __vectors                                         /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/crtx256a3.o
 _acc                                              arch-blocks/hw-block/hwAccelerometer.o
                                                   arch-blocks/system/accelerometer.o
+_div                                              /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_divmodhi4.o)
 _exit                                             /usr/lib/gcc/avr/4.7.2/avrxmega6/libgcc.a(_exit.o)
                                                   /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(abort.o)
 _mic                                              arch-blocks/hw-block/hwMicrophone.o
@@ -2074,6 +2153,7 @@ blockingPrintDebug                                arch-blocks/system/log.o
 broadcastClockChunk                               arch-blocks/system/clock.o
 broadcastGoMsg                                    arch-blocks/system/clock.o
 callHandler                                       arch-blocks/system/handler.o
+                                                  arch-blocks/system/log.o
                                                   arch-blocks/system/system.o
 calloc                                            /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(calloc.o)
                                                   arch-blocks/system/clock.o
@@ -2162,11 +2242,9 @@ getTime                                           arch-blocks/system/hardwaretim
 globalRq                                          arch-blocks/hw-block/hwDataLink.o
                                                   arch-blocks/system/data_link.o
 handleClockSyncMessage                            arch-blocks/system/clock.o
-                                                  arch-blocks/system/data_link.o
 handleLogMessage                                  arch-blocks/system/log.o
                                                   arch-blocks/system/data_link.o
 handleNeighborChange                              arch-blocks/system/clock.o
-                                                  arch-blocks/system/ensemble.o
 handleNeighborMessage                             arch-blocks/system/ensemble.o
                                                   arch-blocks/system/data_link.o
 handleOneMessage                                  arch-blocks/system/data_link.o
@@ -2177,7 +2255,6 @@ initBlock                                         arch-blocks/system/block.o
 initBlockTick                                     arch-blocks/hw-block/hwBlockTick.o
                                                   arch-blocks/system/block.o
 initClock                                         arch-blocks/system/clock.o
-                                                  arch-blocks/system/block.o
 initDataLink                                      arch-blocks/system/data_link.o
                                                   arch-blocks/system/block.o
 initDebug                                         arch-blocks/system/debug.o
@@ -2223,11 +2300,8 @@ initializeHWPort                                  arch-blocks/hw-block/hwSerial.
 initializeMemory                                  arch-blocks/system/memory.o
                                                   arch-blocks/system/block.o
 insertReceiveTime                                 arch-blocks/system/clock.o
-                                                  arch-blocks/hw-block/hwDataLink.o
 insertSendTime                                    arch-blocks/system/clock.o
-                                                  arch-blocks/hw-block/hwDataLink.o
 isAClockSyncMessage                               arch-blocks/system/clock.o
-                                                  arch-blocks/hw-block/hwDataLink.o
 isElecting                                        arch-blocks/system/clock.o
 isEmpty                                           arch-blocks/system/circ_buffer.o
                                                   arch-blocks/hw-block/soft_uart2.o
@@ -2304,6 +2378,9 @@ push                                              arch-blocks/system/circ_buffer
                                                   arch-blocks/hw-block/hwDataLink.o
 queueChunk                                        arch-blocks/system/data_link.o
                                                   arch-blocks/system/message.o
+rand                                              /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
+                                                  arch-blocks/system/log.o
+rand_r                                            /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
 readExtMem                                        arch-blocks/hw-block/ext_memory.o
 registerHandler                                   arch-blocks/system/handler.o
                                                   arch-blocks/system/test.o
@@ -2368,6 +2445,8 @@ south                                             arch-blocks/system/ensemble.o
 speedAvg                                          arch-blocks/system/clock.o
 spiTxRx                                           arch-blocks/hw-block/ext_memory.o
 spreadPathToHost                                  arch-blocks/system/log.o
+srand                                             /usr/lib/gcc/avr/4.7.2/../../../avr/lib/avrxmega6/libc.a(rand.o)
+                                                  arch-blocks/system/log.o
 startLeaderElection                               arch-blocks/system/clock.o
 store                                             arch-blocks/hw-block/hwMemory.o
                                                   arch-blocks/system/block_config.o
@@ -2403,7 +2482,6 @@ timer_set                                         arch-blocks/hw-block/soft_uart
 toHost                                            arch-blocks/system/log.o
 triggerHandler                                    arch-blocks/system/handler.o
                                                   arch-blocks/hw-block/hwAccelerometer.o
-                                                  arch-blocks/system/log.o
                                                   arch-blocks/system/ensemble.o
 ttNeighbor                                        arch-blocks/system/ensemble.o
 twiMaster                                         arch-blocks/hw-block/hwAccelerometer.o

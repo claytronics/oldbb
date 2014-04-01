@@ -11,23 +11,23 @@
   11               	.global	store
   13               	store:
   14               	.LFB13:
-  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c"
-   1:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** #include <stdio.h>
-   2:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** #include "../system/handler.h"
-   3:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** #include "../hw-api/hwMemory.h"
-   4:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 
-   5:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** // HARDWARE INCLUDE
-   6:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** #ifndef HOST
-   7:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** #include "eeprom_driver.h"
-   8:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** #endif
-   9:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** // Stores a data structure in EEPROM.  Writes it in pages to take a reasonable length of time.
-  11:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** //
-  12:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** //  nv_addr points to the desired EEMEM structure address (if you declared it using 'type EEMEM myd
-  13:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** //  data points to the desired SRAM structure address
-  14:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** //  len    is sizeof(type)
-  15:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** void store(void * nv_addr, void * data, int len)
-  16:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** {
+  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c"
+   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** #include <stdio.h>
+   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** #include "../system/handler.h"
+   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** #include "../hw-api/hwMemory.h"
+   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 
+   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** // HARDWARE INCLUDE
+   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** #ifndef HOST
+   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** #include "eeprom_driver.h"
+   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** #endif
+   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** // Stores a data structure in EEPROM.  Writes it in pages to take a reasonable length of time.
+  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** //
+  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** //  nv_addr points to the desired EEMEM structure address (if you declared it using 'type EEMEM myd
+  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** //  data points to the desired SRAM structure address
+  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** //  len    is sizeof(type)
+  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** void store(void * nv_addr, void * data, int len)
+  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** {
   16               		.loc 1 16 0
   17               	.LVL0:
   18 0000 CF92      		push r12
@@ -53,23 +53,23 @@
   38 0010 8C01      		movw r16,r24
   39 0012 7B01      		movw r14,r22
   40 0014 EA01      		movw r28,r20
-  17:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     uint8_t partial_offset, partial_length;
-  18:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     while(len != 0)
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     {
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         // grab the page offset address from the current
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         partial_offset = (uint16_t)nv_addr & (EEPROM_PAGESIZE - 1);
-  23:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     
-  24:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         partial_length = EEPROM_PAGESIZE - partial_offset;
+  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     uint8_t partial_offset, partial_length;
+  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     while(len != 0)
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     {
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         // grab the page offset address from the current
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         partial_offset = (uint16_t)nv_addr & (EEPROM_PAGESIZE - 1);
+  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     
+  24:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         partial_length = EEPROM_PAGESIZE - partial_offset;
   41               		.loc 1 24 0
   42 0016 30E2      		ldi r19,lo8(32)
   43 0018 C32E      		mov r12,r19
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     while(len != 0)
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     while(len != 0)
   44               		.loc 1 19 0
   45 001a 00C0      		rjmp .L2
   46               	.LVL1:
   47               	.L4:
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         partial_offset = (uint16_t)nv_addr & (EEPROM_PAGESIZE - 1);
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         partial_offset = (uint16_t)nv_addr & (EEPROM_PAGESIZE - 1);
   48               		.loc 1 22 0
   49 001c 602F      		mov r22,r16
   50 001e 6F71      		andi r22,lo8(31)
@@ -78,29 +78,29 @@
   53 0020 DC2C      		mov r13,r12
   54 0022 D61A      		sub r13,r22
   55               	.LVL3:
-  25:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         
-  26:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         if(partial_length > len)
+  25:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         
+  26:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         if(partial_length > len)
   56               		.loc 1 26 0
   57 0024 8D2D      		mov r24,r13
   58 0026 90E0      		ldi r25,0
   59 0028 C817      		cp r28,r24
   60 002a D907      		cpc r29,r25
   61 002c 04F4      		brge .L3
-  27:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         {
-  28:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****             partial_length = len;
+  27:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         {
+  28:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****             partial_length = len;
   62               		.loc 1 28 0
   63 002e DC2E      		mov r13,r28
   64               	.LVL4:
   65               	.L3:
-  29:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         }
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         EEPROM_LoadPartialPage(data, partial_offset, partial_length);
+  29:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         }
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         EEPROM_LoadPartialPage(data, partial_offset, partial_length);
   66               		.loc 1 31 0
   67 0030 4D2D      		mov r20,r13
   68 0032 C701      		movw r24,r14
   69 0034 0E94 0000 		call EEPROM_LoadPartialPage
   70               	.LVL5:
-  32:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         EEPROM_AtomicWritePage((uint16_t)nv_addr / (EEPROM_PAGESIZE));
+  32:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         EEPROM_AtomicWritePage((uint16_t)nv_addr / (EEPROM_PAGESIZE));
   71               		.loc 1 32 0
   72 0038 C801      		movw r24,r16
   73 003a 25E0      		ldi r18,5
@@ -111,33 +111,33 @@
   78 0042 01F4      		brne 1b
   79 0044 0E94 0000 		call EEPROM_AtomicWritePage
   80               	.LVL6:
-  33:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 
-  34:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         len -= partial_length;
+  33:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 
+  34:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         len -= partial_length;
   81               		.loc 1 34 0
   82 0048 4D2D      		mov r20,r13
   83 004a 50E0      		ldi r21,0
   84 004c C41B      		sub r28,r20
   85 004e D50B      		sbc r29,r21
   86               	.LVL7:
-  35:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         nv_addr += partial_length;
+  35:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         nv_addr += partial_length;
   87               		.loc 1 35 0
   88 0050 040F      		add r16,r20
   89 0052 151F      		adc r17,r21
   90               	.LVL8:
-  36:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         data += partial_length;
+  36:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         data += partial_length;
   91               		.loc 1 36 0
   92 0054 E40E      		add r14,r20
   93 0056 F51E      		adc r15,r21
   94               	.LVL9:
   95               	.L2:
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     while(len != 0)
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     while(len != 0)
   96               		.loc 1 19 0 discriminator 1
   97 0058 2097      		sbiw r28,0
   98 005a 01F4      		brne .L4
   99               	/* epilogue start */
-  37:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     }
-  38:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     
-  39:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** }
+  37:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     }
+  38:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     
+  39:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** }
  100               		.loc 1 39 0
  101 005c DF91      		pop r29
  102 005e CF91      		pop r28
@@ -155,10 +155,10 @@
  115               	.global	restore
  117               	restore:
  118               	.LFB14:
-  40:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 
-  41:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** // this could be done in pages but reads are pretty quick so it shouldn't matter
-  42:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** void restore(void * vaddr, void * vnv_addr, int len)
-  43:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** {    
+  40:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 
+  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** // this could be done in pages but reads are pretty quick so it shouldn't matter
+  42:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** void restore(void * vaddr, void * vnv_addr, int len)
+  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** {    
  119               		.loc 1 43 0
  120               	.LVL13:
  121 006e EF92      		push r14
@@ -179,24 +179,24 @@
  136               	.L__stack_usage = 6
  137 007a 7A01      		movw r14,r20
  138               	.LVL14:
-  42:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** void restore(void * vaddr, void * vnv_addr, int len)
+  42:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** void restore(void * vaddr, void * vnv_addr, int len)
  139               		.loc 1 42 0
  140 007c E60E      		add r14,r22
  141 007e F71E      		adc r15,r23
-  44:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 	byte *addr=(byte *)vaddr;
-  45:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 	byte *nv_addr=(byte *) vnv_addr;
+  44:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 	byte *addr=(byte *)vaddr;
+  45:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 	byte *nv_addr=(byte *) vnv_addr;
  142               		.loc 1 45 0
  143 0080 EB01      		movw r28,r22
-  44:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 	byte *addr=(byte *)vaddr;
+  44:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 	byte *addr=(byte *)vaddr;
  144               		.loc 1 44 0
  145 0082 8C01      		movw r16,r24
-  46:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     while(len != 0)
+  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     while(len != 0)
  146               		.loc 1 46 0
  147 0084 00C0      		rjmp .L6
  148               	.LVL15:
  149               	.L7:
-  47:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     {
-  48:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         *addr = EEPROM_ReadByte(((uint16_t)(nv_addr) / (EEPROM_PAGESIZE)), (uint16_t)(nv_addr) & (E
+  47:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     {
+  48:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         *addr = EEPROM_ReadByte(((uint16_t)(nv_addr) / (EEPROM_PAGESIZE)), (uint16_t)(nv_addr) & (E
  150               		.loc 1 48 0
  151 0086 BE01      		movw r22,r28
  152 0088 6F71      		andi r22,31
@@ -214,21 +214,21 @@
  164 009e 8193      		st Z+,r24
  165 00a0 8F01      		movw r16,r30
  166               	.LVL17:
-  49:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         nv_addr++;
+  49:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         nv_addr++;
  167               		.loc 1 49 0
  168 00a2 2196      		adiw r28,1
  169               	.LVL18:
  170               	.L6:
-  46:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     while(len != 0)
+  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     while(len != 0)
  171               		.loc 1 46 0 discriminator 1
  172 00a4 CE15      		cp r28,r14
  173 00a6 DF05      		cpc r29,r15
  174 00a8 01F4      		brne .L7
  175               	/* epilogue start */
-  50:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         addr++;
-  51:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****         len--;
-  52:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****     }
-  53:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** }
+  50:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         addr++;
+  51:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****         len--;
+  52:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****     }
+  53:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** }
  176               		.loc 1 53 0
  177 00aa DF91      		pop r29
  178 00ac CF91      		pop r28
@@ -243,14 +243,14 @@
  188               	.global	getGUID
  190               	getGUID:
  191               	.LFB15:
-  54:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** #define ID_PAGE_ADDR 0x00
-  56:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** #define ID_BYTE_ADDR 0x00
-  57:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 
-  58:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 
-  59:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** /* TODO: This is WRONG. It should be Uid, but the build system is being stupid and now is not a goo
-  60:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** //reads GUID from eeprom
-  61:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** uint16_t getGUID(){
+  54:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 
+  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** #define ID_PAGE_ADDR 0x00
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** #define ID_BYTE_ADDR 0x00
+  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 
+  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 
+  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** /* TODO: This is WRONG. It should be Uid, but the build system is being stupid and now is not a goo
+  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** //reads GUID from eeprom
+  61:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** uint16_t getGUID(){
  192               		.loc 1 61 0
  193 00b8 CF93      		push r28
  194               	.LCFI14:
@@ -258,27 +258,27 @@
  196               	/* frame size = 0 */
  197               	/* stack size = 1 */
  198               	.L__stack_usage = 1
-  62:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****   //return 255;
-  63:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 	//TODO: read from eeprom
-  64:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****   return (((uint16_t)EEPROM_ReadByte(ID_PAGE_ADDR, ID_BYTE_ADDR))<<8) |
+  62:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****   //return 255;
+  63:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 	//TODO: read from eeprom
+  64:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****   return (((uint16_t)EEPROM_ReadByte(ID_PAGE_ADDR, ID_BYTE_ADDR))<<8) |
  199               		.loc 1 64 0
  200 00ba 60E0      		ldi r22,0
  201 00bc 80E0      		ldi r24,0
  202 00be 0E94 0000 		call EEPROM_ReadByte
  203               	.LVL21:
  204 00c2 C82F      		mov r28,r24
-  65:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** 	  ((uint16_t)EEPROM_ReadByte(ID_PAGE_ADDR, ID_BYTE_ADDR+1));
+  65:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** 	  ((uint16_t)EEPROM_ReadByte(ID_PAGE_ADDR, ID_BYTE_ADDR+1));
  205               		.loc 1 65 0
  206 00c4 61E0      		ldi r22,lo8(1)
  207 00c6 80E0      		ldi r24,0
  208 00c8 0E94 0000 		call EEPROM_ReadByte
  209               	.LVL22:
-  64:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c ****   return (((uint16_t)EEPROM_ReadByte(ID_PAGE_ADDR, ID_BYTE_ADDR))<<8) |
+  64:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c ****   return (((uint16_t)EEPROM_ReadByte(ID_PAGE_ADDR, ID_BYTE_ADDR))<<8) |
  210               		.loc 1 64 0
  211 00cc 3C2F      		mov r19,r28
  212 00ce 20E0      		ldi r18,0
  213 00d0 282B      		or r18,r24
-  66:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwMemory.c **** }
+  66:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwMemory.c **** }
  214               		.loc 1 66 0
  215 00d2 C901      		movw r24,r18
  216               	/* epilogue start */
@@ -287,20 +287,20 @@
  219               	.LFE15:
  353               	.Letext0:
  354               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
- 355               		.file 3 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/defs.bbh"
- 356               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.h"
+ 355               		.file 3 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/defs.bbh"
+ 356               		.file 4 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwMemory.c
-     /tmp/ccapJjuT.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccapJjuT.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccapJjuT.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccapJjuT.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccapJjuT.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccapJjuT.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccapJjuT.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccapJjuT.s:13     .text:0000000000000000 store
-     /tmp/ccapJjuT.s:117    .text:000000000000006e restore
-     /tmp/ccapJjuT.s:190    .text:00000000000000b8 getGUID
+     /tmp/cc0Tcsrc.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc0Tcsrc.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc0Tcsrc.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc0Tcsrc.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc0Tcsrc.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cc0Tcsrc.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc0Tcsrc.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc0Tcsrc.s:13     .text:0000000000000000 store
+     /tmp/cc0Tcsrc.s:117    .text:000000000000006e restore
+     /tmp/cc0Tcsrc.s:190    .text:00000000000000b8 getGUID
 
 UNDEFINED SYMBOLS
 EEPROM_LoadPartialPage

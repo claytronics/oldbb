@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/microphone.bbh"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/microphone.bbh"
 #ifndef __MICROPHONE_BBH__
 #define __MICROPHONE_BBH__
 

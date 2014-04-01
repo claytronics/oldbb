@@ -11,38 +11,38 @@
   11               	.global	u_putchar
   13               	u_putchar:
   14               	.LFB6:
-  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c"
-   1:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** #include <avr/io.h>
-   2:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** #include <avr/interrupt.h>
-   3:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** #include "../system/circ_buffer.h"
-   4:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** #include "../hw-api/hwSerial.h"
-   5:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** #include "../system/serial.h"
-   6:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-   7:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** //#include "soft_uart2.h"
-   8:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-   9:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** #define HARDWARE_UART 0
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** #define SOFTWARE_UART 1
-  11:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  12:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** typedef union
-  13:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
-  14:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	USART_t* huart;
-  15:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	//soft_uart_t* suart;
-  16:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** } Uart;
-  17:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  18:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** typedef struct _uart
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	Uart uart;
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	byte ptype;
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** } HWPort;
-  23:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  24:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** HWPort hwPort[NUM_PORTS];
-  25:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** extern Port port[NUM_PORTS];
-  26:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  27:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** void initHWUart(USART_t * uart);
-  28:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  29:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** void u_putchar(char c, USART_t * uart)
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c"
+   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** #include <avr/io.h>
+   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** #include <avr/interrupt.h>
+   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** #include "../system/circ_buffer.h"
+   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** #include "../hw-api/hwSerial.h"
+   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** #include "../system/serial.h"
+   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** //#include "soft_uart2.h"
+   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** #define HARDWARE_UART 0
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** #define SOFTWARE_UART 1
+  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** typedef union
+  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
+  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	USART_t* huart;
+  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	//soft_uart_t* suart;
+  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** } Uart;
+  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** typedef struct _uart
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	Uart uart;
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	byte ptype;
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** } HWPort;
+  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  24:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** HWPort hwPort[NUM_PORTS];
+  25:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** extern Port port[NUM_PORTS];
+  26:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  27:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** void initHWUart(USART_t * uart);
+  28:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  29:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** void u_putchar(char c, USART_t * uart)
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
   16               		.loc 1 31 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
@@ -50,15 +50,15 @@
   20               	.L__stack_usage = 0
   21               	.LVL0:
   22               	.L2:
-  32:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	while(!(uart->STATUS & USART_DREIF_bm));
+  32:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	while(!(uart->STATUS & USART_DREIF_bm));
   23               		.loc 1 32 0 discriminator 1
   24 0000 FB01      		movw r30,r22
   25 0002 9181      		ldd r25,Z+1
   26 0004 95FF      		sbrs r25,5
   27 0006 00C0      		rjmp .L2
-  33:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c ****     //loop_until_bit_is_set(UCSR0A, UDRE0);
-  34:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	// Load buffer with your character
-  35:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c ****     uart->DATA = c;
+  33:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c ****     //loop_until_bit_is_set(UCSR0A, UDRE0);
+  34:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	// Load buffer with your character
+  35:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c ****     uart->DATA = c;
   28               		.loc 1 35 0
   29 0008 8083      		st Z,r24
   30 000a 0895      		ret
@@ -66,44 +66,44 @@
   33               	.global	u_getchar
   35               	u_getchar:
   36               	.LFB7:
-  36:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
-  37:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  38:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** int	u_getchar(USART_t * uart)
-  39:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+  36:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
+  37:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  38:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** int	u_getchar(USART_t * uart)
+  39:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
   37               		.loc 1 39 0
   38               	.LVL1:
   39               	/* prologue: function */
   40               	/* frame size = 0 */
   41               	/* stack size = 0 */
   42               	.L__stack_usage = 0
-  40:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	//char c;
-  41:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	// Wait for the receive buffer to be filled
-  42:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c ****     //loop_until_bit_is_set(UCSR0A, RXC0);
-  43:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if((uart->STATUS & USART_RXCIF_bm))
+  40:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	//char c;
+  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	// Wait for the receive buffer to be filled
+  42:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c ****     //loop_until_bit_is_set(UCSR0A, RXC0);
+  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if((uart->STATUS & USART_RXCIF_bm))
   43               		.loc 1 43 0
   44 000c FC01      		movw r30,r24
   45 000e 2181      		ldd r18,Z+1
   46 0010 27FF      		sbrs r18,7
   47 0012 00C0      		rjmp .L9
-  44:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
-  45:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		// Read the receive buffer
-  46:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		//c = uart->DATA;
-  47:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		return uart->DATA;
+  44:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+  45:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		// Read the receive buffer
+  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		//c = uart->DATA;
+  47:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		return uart->DATA;
   48               		.loc 1 47 0
   49 0014 2081      		ld r18,Z
   50 0016 30E0      		ldi r19,0
   51 0018 00C0      		rjmp .L8
   52               	.L9:
-  48:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
-  49:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	else
-  50:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
-  51:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		return -1;
+  48:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+  49:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	else
+  50:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+  51:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		return -1;
   53               		.loc 1 51 0
   54 001a 2FEF      		ldi r18,lo8(-1)
   55 001c 3FEF      		ldi r19,lo8(-1)
   56               	.L8:
-  52:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
-  53:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+  52:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+  53:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
   57               		.loc 1 53 0
   58 001e C901      		movw r24,r18
   59               	.LVL2:
@@ -112,21 +112,21 @@
   63               	.global	pPutChar
   65               	pPutChar:
   66               	.LFB8:
-  54:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** void pPutChar(char c, PRef p)
-  56:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+  54:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** void pPutChar(char c, PRef p)
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
   67               		.loc 1 56 0
   68               	.LVL3:
   69               	/* prologue: function */
   70               	/* frame size = 0 */
   71               	/* stack size = 0 */
   72               	.L__stack_usage = 0
-  57:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if(p >= 0 && p < NUM_PORTS)
+  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if(p >= 0 && p < NUM_PORTS)
   73               		.loc 1 57 0
   74 0022 6630      		cpi r22,lo8(6)
   75 0024 00F4      		brsh .L10
-  58:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
-  59:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		if(hwPort[p].ptype == HARDWARE_UART)
+  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		if(hwPort[p].ptype == HARDWARE_UART)
   76               		.loc 1 59 0
   77 0026 70E0      		ldi r23,0
   78 0028 FB01      		movw r30,r22
@@ -139,8 +139,8 @@
   85 0036 9281      		ldd r25,Z+2
   86 0038 9111      		cpse r25,__zero_reg__
   87 003a 00C0      		rjmp .L10
-  60:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		{
-  61:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 			u_putchar(c, hwPort[p].uart.huart);
+  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		{
+  61:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 			u_putchar(c, hwPort[p].uart.huart);
   88               		.loc 1 61 0
   89 003c 6081      		ld r22,Z
   90 003e 7181      		ldd r23,Z+1
@@ -153,28 +153,28 @@
   98               	.global	pGetChar
  100               	pGetChar:
  101               	.LFB9:
-  62:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		}
-  63:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		else
-  64:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		{
-  65:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 			//su_putchar(c, hwPort[p].uart.suart);
-  66:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		}
-  67:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
-  68:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
-  69:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  70:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** int pGetChar(PRef p)
-  71:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+  62:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		}
+  63:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		else
+  64:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		{
+  65:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 			//su_putchar(c, hwPort[p].uart.suart);
+  66:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		}
+  67:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+  68:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
+  69:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  70:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** int pGetChar(PRef p)
+  71:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  102               		.loc 1 71 0
  103               	.LVL6:
  104               	/* prologue: function */
  105               	/* frame size = 0 */
  106               	/* stack size = 0 */
  107               	.L__stack_usage = 0
-  72:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if(p >= 0 && p < NUM_PORTS)
+  72:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if(p >= 0 && p < NUM_PORTS)
  108               		.loc 1 72 0
  109 0046 8630      		cpi r24,lo8(6)
  110 0048 00F4      		brsh .L16
-  73:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
-  74:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		if(hwPort[p].ptype == HARDWARE_UART)
+  73:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+  74:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		if(hwPort[p].ptype == HARDWARE_UART)
  111               		.loc 1 74 0
  112 004a 90E0      		ldi r25,0
  113 004c FC01      		movw r30,r24
@@ -188,8 +188,8 @@
  121               	.LVL7:
  122 005c 8111      		cpse r24,__zero_reg__
  123 005e 00C0      		rjmp .L16
-  75:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		{
-  76:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 			return u_getchar(hwPort[p].uart.huart);
+  75:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		{
+  76:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 			return u_getchar(hwPort[p].uart.huart);
  124               		.loc 1 76 0
  125 0060 0190      		ld __tmp_reg__,Z+
  126 0062 F081      		ld r31,Z
@@ -197,33 +197,33 @@
  128               	.LVL8:
  129               	.LBB4:
  130               	.LBB5:
-  43:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if((uart->STATUS & USART_RXCIF_bm))
+  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if((uart->STATUS & USART_RXCIF_bm))
  131               		.loc 1 43 0
  132 0066 8181      		ldd r24,Z+1
  133 0068 87FF      		sbrs r24,7
  134 006a 00C0      		rjmp .L16
-  47:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		return uart->DATA;
+  47:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		return uart->DATA;
  135               		.loc 1 47 0
  136 006c 2081      		ld r18,Z
  137 006e 30E0      		ldi r19,0
  138 0070 00C0      		rjmp .L13
  139               	.LVL9:
  140               	.L16:
-  77:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		}
-  78:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		else
-  79:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		{
-  80:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 			//return su_getchar(hwPort[p].uart.suart);
-  81:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		}
-  82:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
-  83:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  84:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	return -1;
+  77:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		}
+  78:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		else
+  79:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		{
+  80:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 			//return su_getchar(hwPort[p].uart.suart);
+  81:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		}
+  82:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+  83:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  84:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	return -1;
  141               		.loc 1 84 0
  142 0072 2FEF      		ldi r18,lo8(-1)
  143 0074 3FEF      		ldi r19,lo8(-1)
  144               	.L13:
  145               	.LBE5:
  146               	.LBE4:
-  85:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+  85:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  147               		.loc 1 85 0
  148 0076 C901      		movw r24,r18
  149 0078 0895      		ret
@@ -231,46 +231,46 @@
  152               	.global	initHWUart
  154               	initHWUart:
  155               	.LFB12:
-  86:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  87:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** void initializeHWPort(HWPort *p, USART_t *huart)
-  88:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
-  89:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if(huart != NULL)
-  90:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
-  93:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
-  95:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
-  96:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
-  97:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
-  98:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** void initHWPorts()
-  99:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
- 100:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	// male headers
- 101:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTD.DIRSET = PIN7_bm;
- 102:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[UP]), &USARTD1);
- 103:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 104:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	// near the double TVS diodes
- 105:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTC.DIRSET = PIN7_bm;
- 106:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[NORTH]), &USARTC1);
- 107:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 108:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	// closest to audio amp
- 109:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTE.DIRSET = PIN3_bm;
- 110:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[SOUTH]), &USARTE0);
- 111:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 112:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	// closest to LEDs
- 113:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTF.DIRSET = PIN3_bm;	
- 114:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[EAST]), &USARTF0);
- 115:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 116:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	// closest to analog input dividers
- 117:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTC.DIRSET = PIN3_bm;	
- 118:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[WEST]), &USARTC0);
- 119:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 120:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTD.DIRSET = PIN3_bm;	
- 121:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[DOWN]), &USARTD0);
- 122:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
- 123:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 124:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** void initHWUart(USART_t * huart)
- 125:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+  86:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  87:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** void initializeHWPort(HWPort *p, USART_t *huart)
+  88:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
+  89:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if(huart != NULL)
+  90:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
+  93:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
+  95:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+  96:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
+  97:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+  98:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** void initHWPorts()
+  99:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
+ 100:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	// male headers
+ 101:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTD.DIRSET = PIN7_bm;
+ 102:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[UP]), &USARTD1);
+ 103:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 104:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	// near the double TVS diodes
+ 105:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTC.DIRSET = PIN7_bm;
+ 106:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[NORTH]), &USARTC1);
+ 107:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 108:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	// closest to audio amp
+ 109:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTE.DIRSET = PIN3_bm;
+ 110:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[SOUTH]), &USARTE0);
+ 111:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 112:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	// closest to LEDs
+ 113:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTF.DIRSET = PIN3_bm;	
+ 114:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[EAST]), &USARTF0);
+ 115:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 116:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	// closest to analog input dividers
+ 117:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTC.DIRSET = PIN3_bm;	
+ 118:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[WEST]), &USARTC0);
+ 119:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 120:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTD.DIRSET = PIN3_bm;	
+ 121:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	initializeHWPort(&(hwPort[DOWN]), &USARTD0);
+ 122:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
+ 123:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 124:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** void initHWUart(USART_t * huart)
+ 125:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  156               		.loc 1 125 0
  157               	.LVL10:
  158               	/* prologue: function */
@@ -278,25 +278,25 @@
  160               	/* stack size = 0 */
  161               	.L__stack_usage = 0
  162 007a FC01      		movw r30,r24
- 126:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	huart->CTRLB = USART_RXEN_bm | USART_TXEN_bm;		// turn on RX/TX, somewhat helpful!
+ 126:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	huart->CTRLB = USART_RXEN_bm | USART_TXEN_bm;		// turn on RX/TX, somewhat helpful!
  163               		.loc 1 126 0
  164 007c 88E1      		ldi r24,lo8(24)
  165               	.LVL11:
  166 007e 8483      		std Z+4,r24
- 127:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	huart->CTRLC = USART_CHSIZE_8BIT_gc;				// use 8-bit data
+ 127:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	huart->CTRLC = USART_CHSIZE_8BIT_gc;				// use 8-bit data
  167               		.loc 1 127 0
  168 0080 83E0      		ldi r24,lo8(3)
  169 0082 8583      		std Z+5,r24
- 128:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 129:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	huart->CTRLA = USART_RXCINTLVL_HI_gc | USART_TXCINTLVL_HI_gc;	// enable RX/TX interrupt support
+ 128:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 129:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	huart->CTRLA = USART_RXCINTLVL_HI_gc | USART_TXCINTLVL_HI_gc;	// enable RX/TX interrupt support
  170               		.loc 1 129 0
  171 0084 8CE3      		ldi r24,lo8(60)
  172 0086 8383      		std Z+3,r24
- 130:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	huart->BAUDCTRLA = 51;  // 38400 		// 57600   			//103;	//19200 	16; // 115200
+ 130:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	huart->BAUDCTRLA = 51;  // 38400 		// 57600   			//103;	//19200 	16; // 115200
  173               		.loc 1 130 0
  174 0088 83E3      		ldi r24,lo8(51)
  175 008a 8683      		std Z+6,r24
- 131:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	huart->BAUDCTRLB = 0;				//0xB4;  // 57600, set to 0 for others
+ 131:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	huart->BAUDCTRLB = 0;				//0xB4;  // 57600, set to 0 for others
  176               		.loc 1 131 0
  177 008c 1782      		std Z+7,__zero_reg__
  178 008e 0895      		ret
@@ -304,27 +304,27 @@
  181               	.global	initializeHWPort
  183               	initializeHWPort:
  184               	.LFB10:
-  88:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+  88:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  185               		.loc 1 88 0
  186               	.LVL12:
  187               	/* prologue: function */
  188               	/* frame size = 0 */
  189               	/* stack size = 0 */
  190               	.L__stack_usage = 0
-  89:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if(huart != NULL)
+  89:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if(huart != NULL)
  191               		.loc 1 89 0
  192 0090 6115      		cp r22,__zero_reg__
  193 0092 7105      		cpc r23,__zero_reg__
  194 0094 01F0      		breq .L18
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
  195               		.loc 1 91 0
  196 0096 FC01      		movw r30,r24
  197 0098 6083      		st Z,r22
  198 009a 7183      		std Z+1,r23
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
  199               		.loc 1 92 0
  200 009c 1282      		std Z+2,__zero_reg__
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
  201               		.loc 1 94 0
  202 009e CB01      		movw r24,r22
  203               	.LVL13:
@@ -336,7 +336,7 @@
  210               	.global	initHWPorts
  212               	initHWPorts:
  213               	.LFB11:
-  99:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+  99:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  214               		.loc 1 99 0
  215 00a6 FF92      		push r15
  216               	.LCFI0:
@@ -352,7 +352,7 @@
  226               	/* frame size = 0 */
  227               	/* stack size = 5 */
  228               	.L__stack_usage = 5
- 101:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTD.DIRSET = PIN7_bm;
+ 101:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTD.DIRSET = PIN7_bm;
  229               		.loc 1 101 0
  230 00b0 C0E6      		ldi r28,lo8(96)
  231 00b2 D6E0      		ldi r29,lo8(6)
@@ -362,22 +362,22 @@
  235               	.LVL15:
  236               	.LBB18:
  237               	.LBB19:
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
  238               		.loc 1 91 0
  239 00ba 80EB      		ldi r24,lo8(-80)
  240 00bc 99E0      		ldi r25,lo8(9)
  241 00be 8093 0000 		sts hwPort+15,r24
  242 00c2 9093 0000 		sts hwPort+15+1,r25
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
  243               		.loc 1 92 0
  244 00c6 1092 0000 		sts hwPort+17,__zero_reg__
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
  245               		.loc 1 94 0
  246 00ca 0E94 0000 		call initHWUart
  247               	.LVL16:
  248               	.LBE19:
  249               	.LBE18:
- 105:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTC.DIRSET = PIN7_bm;
+ 105:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTC.DIRSET = PIN7_bm;
  250               		.loc 1 105 0
  251 00ce 00E4      		ldi r16,lo8(64)
  252 00d0 16E0      		ldi r17,lo8(6)
@@ -386,22 +386,22 @@
  255               	.LVL17:
  256               	.LBB20:
  257               	.LBB21:
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
  258               		.loc 1 91 0
  259 00d6 80EB      		ldi r24,lo8(-80)
  260 00d8 98E0      		ldi r25,lo8(8)
  261 00da 8093 0000 		sts hwPort+3,r24
  262 00de 9093 0000 		sts hwPort+3+1,r25
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
  263               		.loc 1 92 0
  264 00e2 1092 0000 		sts hwPort+5,__zero_reg__
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
  265               		.loc 1 94 0
  266 00e6 0E94 0000 		call initHWUart
  267               	.LVL18:
  268               	.LBE21:
  269               	.LBE20:
- 109:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTE.DIRSET = PIN3_bm;
+ 109:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTE.DIRSET = PIN3_bm;
  270               		.loc 1 109 0
  271 00ea 48E0      		ldi r20,lo8(8)
  272 00ec F42E      		mov r15,r20
@@ -411,22 +411,22 @@
  276               	.LVL19:
  277               	.LBB22:
  278               	.LBB23:
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
  279               		.loc 1 91 0
  280 00f4 80EA      		ldi r24,lo8(-96)
  281 00f6 9AE0      		ldi r25,lo8(10)
  282 00f8 8093 0000 		sts hwPort+12,r24
  283 00fc 9093 0000 		sts hwPort+12+1,r25
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
  284               		.loc 1 92 0
  285 0100 1092 0000 		sts hwPort+14,__zero_reg__
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
  286               		.loc 1 94 0
  287 0104 0E94 0000 		call initHWUart
  288               	.LVL20:
  289               	.LBE23:
  290               	.LBE22:
- 113:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTF.DIRSET = PIN3_bm;	
+ 113:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTF.DIRSET = PIN3_bm;	
  291               		.loc 1 113 0
  292 0108 E0EA      		ldi r30,lo8(-96)
  293 010a F6E0      		ldi r31,lo8(6)
@@ -434,62 +434,62 @@
  295               	.LVL21:
  296               	.LBB24:
  297               	.LBB25:
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
  298               		.loc 1 91 0
  299 010e 80EA      		ldi r24,lo8(-96)
  300 0110 9BE0      		ldi r25,lo8(11)
  301 0112 8093 0000 		sts hwPort+6,r24
  302 0116 9093 0000 		sts hwPort+6+1,r25
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
  303               		.loc 1 92 0
  304 011a 1092 0000 		sts hwPort+8,__zero_reg__
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
  305               		.loc 1 94 0
  306 011e 0E94 0000 		call initHWUart
  307               	.LVL22:
  308               	.LBE25:
  309               	.LBE24:
- 117:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTC.DIRSET = PIN3_bm;	
+ 117:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTC.DIRSET = PIN3_bm;	
  310               		.loc 1 117 0
  311 0122 F801      		movw r30,r16
  312 0124 F182      		std Z+1,r15
  313               	.LVL23:
  314               	.LBB26:
  315               	.LBB27:
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
  316               		.loc 1 91 0
  317 0126 80EA      		ldi r24,lo8(-96)
  318 0128 98E0      		ldi r25,lo8(8)
  319 012a 8093 0000 		sts hwPort+9,r24
  320 012e 9093 0000 		sts hwPort+9+1,r25
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
  321               		.loc 1 92 0
  322 0132 1092 0000 		sts hwPort+11,__zero_reg__
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
  323               		.loc 1 94 0
  324 0136 0E94 0000 		call initHWUart
  325               	.LVL24:
  326               	.LBE27:
  327               	.LBE26:
- 120:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	PORTD.DIRSET = PIN3_bm;	
+ 120:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	PORTD.DIRSET = PIN3_bm;	
  328               		.loc 1 120 0
  329 013a F982      		std Y+1,r15
  330               	.LVL25:
  331               	.LBB28:
  332               	.LBB29:
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		(p->uart).huart = huart;
  333               		.loc 1 91 0
  334 013c 80EA      		ldi r24,lo8(-96)
  335 013e 99E0      		ldi r25,lo8(9)
  336 0140 8093 0000 		sts hwPort,r24
  337 0144 9093 0000 		sts hwPort+1,r25
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		p->ptype = HARDWARE_UART;
  338               		.loc 1 92 0
  339 0148 1092 0000 		sts hwPort+2,__zero_reg__
  340               	/* epilogue start */
  341               	.LBE29:
  342               	.LBE28:
- 122:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 122:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  343               		.loc 1 122 0
  344 014c DF91      		pop r29
  345 014e CF91      		pop r28
@@ -498,7 +498,7 @@
  348 0154 FF90      		pop r15
  349               	.LBB31:
  350               	.LBB30:
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		initHWUart(huart);
  351               		.loc 1 94 0
  352 0156 0C94 0000 		jmp initHWUart
  353               	.LVL26:
@@ -508,11 +508,11 @@
  358               	.global	__vector_91
  360               	__vector_91:
  361               	.LFB13:
- 132:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
- 133:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 134:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 135:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTD1_RXC_vect)
- 136:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 132:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
+ 133:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 134:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 135:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTD1_RXC_vect)
+ 136:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  362               		.loc 1 136 0
  363 015a 1F92      		push r1
  364               	.LCFI5:
@@ -551,21 +551,21 @@
  397               	/* frame size = 0 */
  398               	/* stack size = 16 */
  399               	.L__stack_usage = 16
- 137:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
- 138:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 139:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTD1.DATA;
+ 137:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
+ 138:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 139:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTD1.DATA;
  400               		.loc 1 139 0
  401 0180 8091 B009 		lds r24,2480
  402               	.LVL27:
- 140:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);	
- 141:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[UP].rx));
+ 140:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);	
+ 141:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[UP].rx));
  403               		.loc 1 141 0
  404 0184 60E0      		ldi r22,lo8(port+464)
  405 0186 70E0      		ldi r23,hi8(port+464)
  406 0188 0E94 0000 		call push
  407               	.LVL28:
  408               	/* epilogue start */
- 142:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 142:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  409               		.loc 1 142 0
  410 018c FF91      		pop r31
  411 018e EF91      		pop r30
@@ -590,9 +590,9 @@
  431               	.global	__vector_93
  433               	__vector_93:
  434               	.LFB14:
- 143:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 144:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTD1_TXC_vect)
- 145:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 143:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 144:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTD1_TXC_vect)
+ 145:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  435               		.loc 1 145 0
  436 01b2 1F92      		push r1
  437               	.LCFI19:
@@ -631,33 +631,33 @@
  470               	/* frame size = 0 */
  471               	/* stack size = 16 */
  472               	.L__stack_usage = 16
- 146:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
- 147:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 148:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[UP].tx));
+ 146:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
+ 147:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 148:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[UP].tx));
  473               		.loc 1 148 0
  474 01d8 80E0      		ldi r24,lo8(port+496)
  475 01da 90E0      		ldi r25,hi8(port+496)
  476 01dc 0E94 0000 		call pop
  477               	.LVL29:
- 149:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 150:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
+ 149:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 150:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
  478               		.loc 1 150 0
  479 01e0 8F3F      		cpi r24,-1
  480 01e2 2FEF      		ldi r18,-1
  481 01e4 9207      		cpc r25,r18
  482 01e6 01F0      		breq .L22
- 151:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
- 152:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		USARTD1.DATA = c;
+ 151:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+ 152:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		USARTD1.DATA = c;
  483               		.loc 1 152 0
  484 01e8 8093 B009 		sts 2480,r24
  485               	.L22:
  486               	/* epilogue start */
- 153:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
- 154:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	else
- 155:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
- 156:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		// should flag that we're waiting for an ACK now
- 157:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
- 158:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 153:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+ 154:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	else
+ 155:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+ 156:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		// should flag that we're waiting for an ACK now
+ 157:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+ 158:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  487               		.loc 1 158 0
  488 01ec FF91      		pop r31
  489 01ee EF91      		pop r30
@@ -683,9 +683,9 @@
  510               	.global	__vector_28
  512               	__vector_28:
  513               	.LFB15:
- 159:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 160:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTC1_RXC_vect)
- 161:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 159:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 160:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTC1_RXC_vect)
+ 161:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  514               		.loc 1 161 0
  515 0212 1F92      		push r1
  516               	.LCFI33:
@@ -724,21 +724,21 @@
  549               	/* frame size = 0 */
  550               	/* stack size = 16 */
  551               	.L__stack_usage = 16
- 162:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
- 163:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 164:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTC1.DATA;
+ 162:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
+ 163:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 164:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTC1.DATA;
  552               		.loc 1 164 0
  553 0238 8091 B008 		lds r24,2224
  554               	.LVL31:
- 165:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);	
- 166:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[NORTH].rx));
+ 165:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);	
+ 166:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[NORTH].rx));
  555               		.loc 1 166 0
  556 023c 60E0      		ldi r22,lo8(port+112)
  557 023e 70E0      		ldi r23,hi8(port+112)
  558 0240 0E94 0000 		call push
  559               	.LVL32:
  560               	/* epilogue start */
- 167:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 167:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  561               		.loc 1 167 0
  562 0244 FF91      		pop r31
  563 0246 EF91      		pop r30
@@ -763,8 +763,8 @@
  583               	.global	__vector_30
  585               	__vector_30:
  586               	.LFB16:
- 168:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTC1_TXC_vect)
- 169:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 168:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTC1_TXC_vect)
+ 169:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  587               		.loc 1 169 0
  588 026a 1F92      		push r1
  589               	.LCFI47:
@@ -803,29 +803,29 @@
  622               	/* frame size = 0 */
  623               	/* stack size = 16 */
  624               	.L__stack_usage = 16
- 170:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
- 171:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 172:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[NORTH].tx));
+ 170:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
+ 171:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 172:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[NORTH].tx));
  625               		.loc 1 172 0
  626 0290 80E0      		ldi r24,lo8(port+144)
  627 0292 90E0      		ldi r25,hi8(port+144)
  628 0294 0E94 0000 		call pop
  629               	.LVL33:
- 173:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 174:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
+ 173:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 174:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
  630               		.loc 1 174 0
  631 0298 8F3F      		cpi r24,-1
  632 029a 2FEF      		ldi r18,-1
  633 029c 9207      		cpc r25,r18
  634 029e 01F0      		breq .L28
- 175:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
- 176:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		USARTC1.DATA = c;
+ 175:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+ 176:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		USARTC1.DATA = c;
  635               		.loc 1 176 0
  636 02a0 8093 B008 		sts 2224,r24
  637               	.L28:
  638               	/* epilogue start */
- 177:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
- 178:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 177:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+ 178:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  639               		.loc 1 178 0
  640 02a4 FF91      		pop r31
  641 02a6 EF91      		pop r30
@@ -851,9 +851,9 @@
  662               	.global	__vector_119
  664               	__vector_119:
  665               	.LFB17:
- 179:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 180:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTF0_RXC_vect)
- 181:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 179:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 180:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTF0_RXC_vect)
+ 181:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  666               		.loc 1 181 0
  667 02ca 1F92      		push r1
  668               	.LCFI61:
@@ -892,21 +892,21 @@
  701               	/* frame size = 0 */
  702               	/* stack size = 16 */
  703               	.L__stack_usage = 16
- 182:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
- 183:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 184:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTF0.DATA;
+ 182:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
+ 183:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 184:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTF0.DATA;
  704               		.loc 1 184 0
  705 02f0 8091 A00B 		lds r24,2976
  706               	.LVL35:
- 185:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);	
- 186:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[EAST].rx));
+ 185:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);	
+ 186:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[EAST].rx));
  707               		.loc 1 186 0
  708 02f4 60E0      		ldi r22,lo8(port+200)
  709 02f6 70E0      		ldi r23,hi8(port+200)
  710 02f8 0E94 0000 		call push
  711               	.LVL36:
  712               	/* epilogue start */
- 187:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 187:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  713               		.loc 1 187 0
  714 02fc FF91      		pop r31
  715 02fe EF91      		pop r30
@@ -931,8 +931,8 @@
  735               	.global	__vector_121
  737               	__vector_121:
  738               	.LFB18:
- 188:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTF0_TXC_vect)
- 189:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 188:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTF0_TXC_vect)
+ 189:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  739               		.loc 1 189 0
  740 0322 1F92      		push r1
  741               	.LCFI75:
@@ -971,29 +971,29 @@
  774               	/* frame size = 0 */
  775               	/* stack size = 16 */
  776               	.L__stack_usage = 16
- 190:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
- 191:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 192:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[EAST].tx));
+ 190:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
+ 191:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 192:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[EAST].tx));
  777               		.loc 1 192 0
  778 0348 80E0      		ldi r24,lo8(port+232)
  779 034a 90E0      		ldi r25,hi8(port+232)
  780 034c 0E94 0000 		call pop
  781               	.LVL37:
- 193:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 194:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
+ 193:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 194:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
  782               		.loc 1 194 0
  783 0350 8F3F      		cpi r24,-1
  784 0352 2FEF      		ldi r18,-1
  785 0354 9207      		cpc r25,r18
  786 0356 01F0      		breq .L34
- 195:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
- 196:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		USARTF0.DATA = c;
+ 195:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+ 196:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		USARTF0.DATA = c;
  787               		.loc 1 196 0
  788 0358 8093 A00B 		sts 2976,r24
  789               	.L34:
  790               	/* epilogue start */
- 197:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
- 198:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 197:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+ 198:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  791               		.loc 1 198 0
  792 035c FF91      		pop r31
  793 035e EF91      		pop r30
@@ -1019,9 +1019,9 @@
  814               	.global	__vector_58
  816               	__vector_58:
  817               	.LFB19:
- 199:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 200:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTE0_RXC_vect)
- 201:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 199:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 200:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTE0_RXC_vect)
+ 201:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  818               		.loc 1 201 0
  819 0382 1F92      		push r1
  820               	.LCFI89:
@@ -1060,21 +1060,21 @@
  853               	/* frame size = 0 */
  854               	/* stack size = 16 */
  855               	.L__stack_usage = 16
- 202:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
- 203:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 204:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTE0.DATA;
+ 202:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
+ 203:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 204:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTE0.DATA;
  856               		.loc 1 204 0
  857 03a8 8091 A00A 		lds r24,2720
  858               	.LVL39:
- 205:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);	
- 206:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[SOUTH].rx));
+ 205:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);	
+ 206:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[SOUTH].rx));
  859               		.loc 1 206 0
  860 03ac 60E0      		ldi r22,lo8(port+376)
  861 03ae 70E0      		ldi r23,hi8(port+376)
  862 03b0 0E94 0000 		call push
  863               	.LVL40:
  864               	/* epilogue start */
- 207:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 207:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  865               		.loc 1 207 0
  866 03b4 FF91      		pop r31
  867 03b6 EF91      		pop r30
@@ -1099,8 +1099,8 @@
  887               	.global	__vector_60
  889               	__vector_60:
  890               	.LFB20:
- 208:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTE0_TXC_vect)
- 209:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 208:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTE0_TXC_vect)
+ 209:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  891               		.loc 1 209 0
  892 03da 1F92      		push r1
  893               	.LCFI103:
@@ -1139,29 +1139,29 @@
  926               	/* frame size = 0 */
  927               	/* stack size = 16 */
  928               	.L__stack_usage = 16
- 210:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
- 211:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 212:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[SOUTH].tx));
+ 210:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
+ 211:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 212:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[SOUTH].tx));
  929               		.loc 1 212 0
  930 0400 80E0      		ldi r24,lo8(port+408)
  931 0402 90E0      		ldi r25,hi8(port+408)
  932 0404 0E94 0000 		call pop
  933               	.LVL41:
- 213:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 214:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
+ 213:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 214:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
  934               		.loc 1 214 0
  935 0408 8F3F      		cpi r24,-1
  936 040a 2FEF      		ldi r18,-1
  937 040c 9207      		cpc r25,r18
  938 040e 01F0      		breq .L40
- 215:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
- 216:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		USARTE0.DATA = c;
+ 215:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+ 216:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		USARTE0.DATA = c;
  939               		.loc 1 216 0
  940 0410 8093 A00A 		sts 2720,r24
  941               	.L40:
  942               	/* epilogue start */
- 217:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
- 218:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 217:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+ 218:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  943               		.loc 1 218 0
  944 0414 FF91      		pop r31
  945 0416 EF91      		pop r30
@@ -1187,9 +1187,9 @@
  966               	.global	__vector_25
  968               	__vector_25:
  969               	.LFB21:
- 219:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 220:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTC0_RXC_vect)
- 221:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 219:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 220:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTC0_RXC_vect)
+ 221:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  970               		.loc 1 221 0
  971 043a 1F92      		push r1
  972               	.LCFI117:
@@ -1228,21 +1228,21 @@
  1005               	/* frame size = 0 */
  1006               	/* stack size = 16 */
  1007               	.L__stack_usage = 16
- 222:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
- 223:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 224:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTC0.DATA;
+ 222:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
+ 223:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 224:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTC0.DATA;
  1008               		.loc 1 224 0
  1009 0460 8091 A008 		lds r24,2208
  1010               	.LVL43:
- 225:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);	
- 226:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[WEST].rx));
+ 225:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);	
+ 226:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[WEST].rx));
  1011               		.loc 1 226 0
  1012 0464 60E0      		ldi r22,lo8(port+288)
  1013 0466 70E0      		ldi r23,hi8(port+288)
  1014 0468 0E94 0000 		call push
  1015               	.LVL44:
  1016               	/* epilogue start */
- 227:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 227:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  1017               		.loc 1 227 0
  1018 046c FF91      		pop r31
  1019 046e EF91      		pop r30
@@ -1267,8 +1267,8 @@
  1039               	.global	__vector_27
  1041               	__vector_27:
  1042               	.LFB22:
- 228:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTC0_TXC_vect)
- 229:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 228:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTC0_TXC_vect)
+ 229:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  1043               		.loc 1 229 0
  1044 0492 1F92      		push r1
  1045               	.LCFI131:
@@ -1307,29 +1307,29 @@
  1078               	/* frame size = 0 */
  1079               	/* stack size = 16 */
  1080               	.L__stack_usage = 16
- 230:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
- 231:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 232:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[WEST].tx));
+ 230:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
+ 231:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 232:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[WEST].tx));
  1081               		.loc 1 232 0
  1082 04b8 80E0      		ldi r24,lo8(port+320)
  1083 04ba 90E0      		ldi r25,hi8(port+320)
  1084 04bc 0E94 0000 		call pop
  1085               	.LVL45:
- 233:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 234:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
+ 233:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 234:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
  1086               		.loc 1 234 0
  1087 04c0 8F3F      		cpi r24,-1
  1088 04c2 2FEF      		ldi r18,-1
  1089 04c4 9207      		cpc r25,r18
  1090 04c6 01F0      		breq .L46
- 235:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
- 236:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		USARTC0.DATA = c;
+ 235:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+ 236:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		USARTC0.DATA = c;
  1091               		.loc 1 236 0
  1092 04c8 8093 A008 		sts 2208,r24
  1093               	.L46:
  1094               	/* epilogue start */
- 237:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
- 238:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 237:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+ 238:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  1095               		.loc 1 238 0
  1096 04cc FF91      		pop r31
  1097 04ce EF91      		pop r30
@@ -1355,9 +1355,9 @@
  1118               	.global	__vector_88
  1120               	__vector_88:
  1121               	.LFB23:
- 239:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 
- 240:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTD0_RXC_vect)
- 241:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 239:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 
+ 240:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTD0_RXC_vect)
+ 241:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  1122               		.loc 1 241 0
  1123 04f2 1F92      		push r1
  1124               	.LCFI145:
@@ -1396,21 +1396,21 @@
  1157               	/* frame size = 0 */
  1158               	/* stack size = 16 */
  1159               	.L__stack_usage = 16
- 242:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
- 243:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 244:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTD0.DATA;
+ 242:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	uint8_t c;
+ 243:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 244:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c = USARTD0.DATA;
  1160               		.loc 1 244 0
  1161 0518 8091 A009 		lds r24,2464
  1162               	.LVL47:
- 245:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);
- 246:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[DOWN].rx));
+ 245:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	//printf("R:%x",c);
+ 246:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	push(c, &(port[DOWN].rx));
  1163               		.loc 1 246 0
  1164 051c 60E0      		ldi r22,lo8(port+24)
  1165 051e 70E0      		ldi r23,hi8(port+24)
  1166 0520 0E94 0000 		call push
  1167               	.LVL48:
  1168               	/* epilogue start */
- 247:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 247:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  1169               		.loc 1 247 0
  1170 0524 FF91      		pop r31
  1171 0526 EF91      		pop r30
@@ -1435,8 +1435,8 @@
  1191               	.global	__vector_90
  1193               	__vector_90:
  1194               	.LFB24:
- 248:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTD0_TXC_vect)
- 249:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** {
+ 248:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** ISR(USARTD0_TXC_vect)
+ 249:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** {
  1195               		.loc 1 249 0
  1196 054a 1F92      		push r1
  1197               	.LCFI159:
@@ -1475,29 +1475,29 @@
  1230               	/* frame size = 0 */
  1231               	/* stack size = 16 */
  1232               	.L__stack_usage = 16
- 250:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
- 251:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 252:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[DOWN].tx));
+ 250:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	int16_t c;
+ 251:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 252:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	c  = pop(&(port[DOWN].tx));
  1233               		.loc 1 252 0
  1234 0570 80E0      		ldi r24,lo8(port+56)
  1235 0572 90E0      		ldi r25,hi8(port+56)
  1236 0574 0E94 0000 		call pop
  1237               	.LVL49:
- 253:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	
- 254:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
+ 253:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	
+ 254:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	if(c != -1)
  1238               		.loc 1 254 0
  1239 0578 8F3F      		cpi r24,-1
  1240 057a 2FEF      		ldi r18,-1
  1241 057c 9207      		cpc r25,r18
  1242 057e 01F0      		breq .L52
- 255:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	{
- 256:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 		USARTD0.DATA = c;
+ 255:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	{
+ 256:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 		USARTD0.DATA = c;
  1243               		.loc 1 256 0
  1244 0580 8093 A009 		sts 2464,r24
  1245               	.L52:
  1246               	/* epilogue start */
- 257:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** 	}
- 258:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/hwSerial.c **** }
+ 257:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** 	}
+ 258:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/hwSerial.c **** }
  1247               		.loc 1 258 0
  1248 0584 FF91      		pop r31
  1249 0586 EF91      		pop r30
@@ -1524,42 +1524,42 @@
  2479               	.Letext0:
  2480               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
  2481               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
- 2482               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/defs.bbh"
- 2483               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/circ_buffer.bbh"
- 2484               		.file 6 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/handler.bbh"
- 2485               		.file 7 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/memory.bbh"
- 2486               		.file 8 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/hardwaretime.bbh"
- 2487               		.file 9 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/queues.bbh"
- 2488               		.file 10 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/serial.bbh"
+ 2482               		.file 4 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/defs.bbh"
+ 2483               		.file 5 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/circ_buffer.bbh"
+ 2484               		.file 6 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/handler.bbh"
+ 2485               		.file 7 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/memory.bbh"
+ 2486               		.file 8 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/hardwaretime.bbh"
+ 2487               		.file 9 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/queues.bbh"
+ 2488               		.file 10 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/serial.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwSerial.c
-     /tmp/ccCCQkcU.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccCCQkcU.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccCCQkcU.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccCCQkcU.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccCCQkcU.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccCCQkcU.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccCCQkcU.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccCCQkcU.s:13     .text:0000000000000000 u_putchar
-     /tmp/ccCCQkcU.s:35     .text:000000000000000c u_getchar
-     /tmp/ccCCQkcU.s:65     .text:0000000000000022 pPutChar
+     /tmp/ccMHFBXe.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccMHFBXe.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccMHFBXe.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccMHFBXe.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccMHFBXe.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccMHFBXe.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccMHFBXe.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccMHFBXe.s:13     .text:0000000000000000 u_putchar
+     /tmp/ccMHFBXe.s:35     .text:000000000000000c u_getchar
+     /tmp/ccMHFBXe.s:65     .text:0000000000000022 pPutChar
                             *COM*:0000000000000012 hwPort
-     /tmp/ccCCQkcU.s:100    .text:0000000000000046 pGetChar
-     /tmp/ccCCQkcU.s:154    .text:000000000000007a initHWUart
-     /tmp/ccCCQkcU.s:183    .text:0000000000000090 initializeHWPort
-     /tmp/ccCCQkcU.s:212    .text:00000000000000a6 initHWPorts
-     /tmp/ccCCQkcU.s:360    .text:000000000000015a __vector_91
-     /tmp/ccCCQkcU.s:433    .text:00000000000001b2 __vector_93
-     /tmp/ccCCQkcU.s:512    .text:0000000000000212 __vector_28
-     /tmp/ccCCQkcU.s:585    .text:000000000000026a __vector_30
-     /tmp/ccCCQkcU.s:664    .text:00000000000002ca __vector_119
-     /tmp/ccCCQkcU.s:737    .text:0000000000000322 __vector_121
-     /tmp/ccCCQkcU.s:816    .text:0000000000000382 __vector_58
-     /tmp/ccCCQkcU.s:889    .text:00000000000003da __vector_60
-     /tmp/ccCCQkcU.s:968    .text:000000000000043a __vector_25
-     /tmp/ccCCQkcU.s:1041   .text:0000000000000492 __vector_27
-     /tmp/ccCCQkcU.s:1120   .text:00000000000004f2 __vector_88
-     /tmp/ccCCQkcU.s:1193   .text:000000000000054a __vector_90
+     /tmp/ccMHFBXe.s:100    .text:0000000000000046 pGetChar
+     /tmp/ccMHFBXe.s:154    .text:000000000000007a initHWUart
+     /tmp/ccMHFBXe.s:183    .text:0000000000000090 initializeHWPort
+     /tmp/ccMHFBXe.s:212    .text:00000000000000a6 initHWPorts
+     /tmp/ccMHFBXe.s:360    .text:000000000000015a __vector_91
+     /tmp/ccMHFBXe.s:433    .text:00000000000001b2 __vector_93
+     /tmp/ccMHFBXe.s:512    .text:0000000000000212 __vector_28
+     /tmp/ccMHFBXe.s:585    .text:000000000000026a __vector_30
+     /tmp/ccMHFBXe.s:664    .text:00000000000002ca __vector_119
+     /tmp/ccMHFBXe.s:737    .text:0000000000000322 __vector_121
+     /tmp/ccMHFBXe.s:816    .text:0000000000000382 __vector_58
+     /tmp/ccMHFBXe.s:889    .text:00000000000003da __vector_60
+     /tmp/ccMHFBXe.s:968    .text:000000000000043a __vector_25
+     /tmp/ccMHFBXe.s:1041   .text:0000000000000492 __vector_27
+     /tmp/ccMHFBXe.s:1120   .text:00000000000004f2 __vector_88
+     /tmp/ccMHFBXe.s:1193   .text:000000000000054a __vector_90
 
 UNDEFINED SYMBOLS
 port

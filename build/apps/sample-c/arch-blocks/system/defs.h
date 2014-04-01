@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/defs.bbh"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/defs.bbh"
 #ifndef __DEFS_H__
 #define __DEFS_H__
 

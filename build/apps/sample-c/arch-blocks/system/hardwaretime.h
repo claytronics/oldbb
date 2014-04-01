@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/hardwaretime.bbh"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/hardwaretime.bbh"
 #ifndef __HARDWARETIME_H__
 #define __HARDWARETIME_H__
 

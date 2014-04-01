@@ -11,169 +11,169 @@
   11               	.global	EEPROM_WaitForNVM
   13               	EEPROM_WaitForNVM:
   14               	.LFB9:
-  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c"
-   1:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /* This file has been prepared for Doxygen automatic documentation generation.*/
-   2:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \file *********************************************************************
-   3:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-   4:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * \brief  XMEGA EEPROM driver source file.
-   5:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-   6:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      This file contains the function implementations for the XMEGA EEPROM driver.
-   7:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-   8:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      The driver is not intended for size and/or speed critical code, since
-   9:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      most functions are just a few lines of code, and the function call
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      overhead would decrease code performance. The driver is intended for
-  11:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      rapid prototyping and documentation purposes for getting started with
-  12:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      the XMEGA EEPROM module.
-  13:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  14:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      For size and/or speed critical code, it is recommended to copy the
-  15:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      function contents directly into your application instead of making
-  16:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      a function call.
-  17:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  18:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * \par Application note:
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      AVR1315: Accessing the XMEGA EEPROM
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * \par Documentation
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      For comprehensive code documentation, supported compilers, compiler
-  23:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      settings and supported devices see readme.html
-  24:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  25:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * \author
-  26:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      Atmel Corporation: http://www.atmel.com \n
-  27:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *      Support email: avr@atmel.com
-  28:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  29:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * $Revision: 1569 $
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * $Date: 2008-04-22 13:03:43 +0200 (ti, 22 apr 2008) $  \n
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  32:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * Copyright (c) 2008, Atmel Corporation All rights reserved.
-  33:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  34:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * Redistribution and use in source and binary forms, with or without
-  35:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * modification, are permitted provided that the following conditions are met:
-  36:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  37:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * 1. Redistributions of source code must retain the above copyright notice,
-  38:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * this list of conditions and the following disclaimer.
-  39:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  40:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
-  41:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * this list of conditions and the following disclaimer in the documentation
-  42:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * and/or other materials provided with the distribution.
-  43:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  44:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * 3. The name of ATMEL may not be used to endorse or promote products derived
-  45:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * from this software without specific prior written permission.
-  46:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  47:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
-  48:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  49:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE EXPRESSLY AND
-  50:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT,
-  51:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-  52:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  53:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-  54:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-  56:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  57:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *****************************************************************************/
-  58:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
-  59:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** #include "eeprom_driver.h"
-  60:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
-  61:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Write one byte to EEPROM using IO mapping.
-  62:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  63:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function writes one byte to EEPROM using IO-mapped access.
-  64:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  If memory mapped EEPROM is enabled, this function will not work.
-  65:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This functiom will cancel all ongoing EEPROM page buffer loading
-  66:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  operations, if any.
-  67:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
-  68:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  pageAddr  EEPROM Page address, between 0 and EEPROM_SIZE/EEPROM_PAGESIZE
-  69:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  byteAddr  EEPROM Byte address, between 0 and EEPROM_PAGESIZE.
-  70:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  value     Byte value to write to EEPROM.
-  71:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
-  72:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_WriteByte( uint8_t pageAddr, uint8_t byteAddr, uint8_t value )
-  73:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
-  74:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/*  Flush buffer to make sure no unintetional data is written and load
-  75:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	 *  the "Page Load" command into the command register.
-  76:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	 */
-  77:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_FlushBuffer();
-  78:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
-  79:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
-  80:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Calculate address */
-  81:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE)
-  82:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	                            |(byteAddr & (EEPROM_PAGESIZE-1));
-  83:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
-  84:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address to write to. */
-  85:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
-  86:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
-  87:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
-  88:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
-  89:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Load data to write, which triggers the loading of EEPROM page buffer. */
-  90:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.DATA0 = value;
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/*  Issue EEPROM Atomic Write (Erase&Write) command. Load command, write
-  93:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	 *  the protection signature and execute command.
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	 */
-  95:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_ERASE_WRITE_EEPROM_PAGE_gc;
-  96:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
-  97:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
-  98:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
-  99:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 100:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Read one byte from EEPROM using IO mapping.
- 101:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 102:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function reads one byte from EEPROM using IO-mapped access.
- 103:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  If memory mapped EEPROM is enabled, this function will not work.
- 104:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 105:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  pageAddr  EEPROM Page address, between 0 and EEPROM_SIZE/EEPROM_PAGESIZE
- 106:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  byteAddr  EEPROM Byte address, between 0 and EEPROM_PAGESIZE.
- 107:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 108:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \return  Byte value read from EEPROM.
- 109:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
- 110:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** uint8_t EEPROM_ReadByte( uint8_t pageAddr, uint8_t byteAddr )
- 111:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
- 112:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
- 113:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
- 114:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 115:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Calculate address */
- 116:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE)
- 117:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	                            |(byteAddr & (EEPROM_PAGESIZE-1));
- 118:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 119:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address to read from. */
- 120:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
- 121:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
- 122:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
- 123:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 124:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Issue EEPROM Read command. */
- 125:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_READ_EEPROM_gc;
- 126:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
- 127:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 128:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	return NVM.DATA0;
- 129:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
- 130:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 131:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 132:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Wait for any NVM access to finish, including EEPROM.
- 133:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 134:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function is blcoking and waits for any NVM access to finish,
- 135:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  including EEPROM. Use this function before any EEPROM accesses,
- 136:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  if you are not certain that any previous operations are finished yet,
- 137:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  like an EEPROM write.
- 138:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
- 139:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_WaitForNVM( void )
- 140:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c"
+   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /* This file has been prepared for Doxygen automatic documentation generation.*/
+   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \file *********************************************************************
+   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * \brief  XMEGA EEPROM driver source file.
+   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      This file contains the function implementations for the XMEGA EEPROM driver.
+   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      The driver is not intended for size and/or speed critical code, since
+   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      most functions are just a few lines of code, and the function call
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      overhead would decrease code performance. The driver is intended for
+  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      rapid prototyping and documentation purposes for getting started with
+  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      the XMEGA EEPROM module.
+  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      For size and/or speed critical code, it is recommended to copy the
+  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      function contents directly into your application instead of making
+  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      a function call.
+  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * \par Application note:
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      AVR1315: Accessing the XMEGA EEPROM
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * \par Documentation
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      For comprehensive code documentation, supported compilers, compiler
+  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      settings and supported devices see readme.html
+  24:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  25:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * \author
+  26:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      Atmel Corporation: http://www.atmel.com \n
+  27:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *      Support email: avr@atmel.com
+  28:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  29:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * $Revision: 1569 $
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * $Date: 2008-04-22 13:03:43 +0200 (ti, 22 apr 2008) $  \n
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  32:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * Copyright (c) 2008, Atmel Corporation All rights reserved.
+  33:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  34:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * Redistribution and use in source and binary forms, with or without
+  35:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * modification, are permitted provided that the following conditions are met:
+  36:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  37:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  38:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * this list of conditions and the following disclaimer.
+  39:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  40:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * this list of conditions and the following disclaimer in the documentation
+  42:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * and/or other materials provided with the distribution.
+  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  44:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * 3. The name of ATMEL may not be used to endorse or promote products derived
+  45:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * from this software without specific prior written permission.
+  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  47:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  48:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  49:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE EXPRESSLY AND
+  50:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT,
+  51:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  52:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  53:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  54:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *****************************************************************************/
+  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** #include "eeprom_driver.h"
+  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+  61:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Write one byte to EEPROM using IO mapping.
+  62:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  63:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function writes one byte to EEPROM using IO-mapped access.
+  64:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  If memory mapped EEPROM is enabled, this function will not work.
+  65:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This functiom will cancel all ongoing EEPROM page buffer loading
+  66:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  operations, if any.
+  67:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+  68:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  pageAddr  EEPROM Page address, between 0 and EEPROM_SIZE/EEPROM_PAGESIZE
+  69:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  byteAddr  EEPROM Byte address, between 0 and EEPROM_PAGESIZE.
+  70:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  value     Byte value to write to EEPROM.
+  71:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+  72:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_WriteByte( uint8_t pageAddr, uint8_t byteAddr, uint8_t value )
+  73:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
+  74:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/*  Flush buffer to make sure no unintetional data is written and load
+  75:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	 *  the "Page Load" command into the command register.
+  76:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	 */
+  77:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_FlushBuffer();
+  78:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
+  79:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+  80:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Calculate address */
+  81:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE)
+  82:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	                            |(byteAddr & (EEPROM_PAGESIZE-1));
+  83:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+  84:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address to write to. */
+  85:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
+  86:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
+  87:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
+  88:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+  89:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Load data to write, which triggers the loading of EEPROM page buffer. */
+  90:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.DATA0 = value;
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/*  Issue EEPROM Atomic Write (Erase&Write) command. Load command, write
+  93:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	 *  the protection signature and execute command.
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	 */
+  95:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_ERASE_WRITE_EEPROM_PAGE_gc;
+  96:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
+  97:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
+  98:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+  99:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 100:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Read one byte from EEPROM using IO mapping.
+ 101:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 102:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function reads one byte from EEPROM using IO-mapped access.
+ 103:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  If memory mapped EEPROM is enabled, this function will not work.
+ 104:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 105:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  pageAddr  EEPROM Page address, between 0 and EEPROM_SIZE/EEPROM_PAGESIZE
+ 106:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  byteAddr  EEPROM Byte address, between 0 and EEPROM_PAGESIZE.
+ 107:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 108:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \return  Byte value read from EEPROM.
+ 109:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+ 110:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** uint8_t EEPROM_ReadByte( uint8_t pageAddr, uint8_t byteAddr )
+ 111:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
+ 112:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
+ 113:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
+ 114:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 115:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Calculate address */
+ 116:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE)
+ 117:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	                            |(byteAddr & (EEPROM_PAGESIZE-1));
+ 118:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 119:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address to read from. */
+ 120:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
+ 121:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
+ 122:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
+ 123:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 124:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Issue EEPROM Read command. */
+ 125:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_READ_EEPROM_gc;
+ 126:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
+ 127:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 128:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	return NVM.DATA0;
+ 129:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
+ 130:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 131:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 132:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Wait for any NVM access to finish, including EEPROM.
+ 133:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 134:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function is blcoking and waits for any NVM access to finish,
+ 135:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  including EEPROM. Use this function before any EEPROM accesses,
+ 136:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  if you are not certain that any previous operations are finished yet,
+ 137:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  like an EEPROM write.
+ 138:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+ 139:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_WaitForNVM( void )
+ 140:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
   16               		.loc 1 140 0
   17               	/* prologue: function */
   18               	/* frame size = 0 */
   19               	/* stack size = 0 */
   20               	.L__stack_usage = 0
   21               	.L2:
- 141:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	do {
- 142:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 		/* Block execution while waiting for the NVM to be ready. */
- 143:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	} while ((NVM.STATUS & NVM_NVMBUSY_bm) == NVM_NVMBUSY_bm);
+ 141:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	do {
+ 142:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 		/* Block execution while waiting for the NVM to be ready. */
+ 143:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	} while ((NVM.STATUS & NVM_NVMBUSY_bm) == NVM_NVMBUSY_bm);
   22               		.loc 1 143 0 discriminator 1
   23 0000 8091 CF01 		lds r24,463
   24 0004 87FD      		sbrc r24,7
   25 0006 00C0      		rjmp .L2
   26               	/* epilogue start */
- 144:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
+ 144:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
   27               		.loc 1 144 0
   28 0008 0895      		ret
   29               	.LFE9:
   31               	.global	EEPROM_ReadByte
   33               	EEPROM_ReadByte:
   34               	.LFB8:
- 111:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+ 111:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
   35               		.loc 1 111 0
   36               	.LVL0:
   37 000a CF93      		push r28
@@ -190,17 +190,17 @@
   48               	/* frame size = 2 */
   49               	/* stack size = 4 */
   50               	.L__stack_usage = 4
- 113:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
+ 113:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
   51               		.loc 1 113 0
   52 0016 6A83      		std Y+2,r22
   53 0018 8983      		std Y+1,r24
   54 001a 0E94 0000 		call EEPROM_WaitForNVM
   55               	.LVL1:
- 117:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	                            |(byteAddr & (EEPROM_PAGESIZE-1));
+ 117:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	                            |(byteAddr & (EEPROM_PAGESIZE-1));
   56               		.loc 1 117 0
   57 001e 6A81      		ldd r22,Y+2
   58 0020 6F71      		andi r22,lo8(31)
- 116:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE)
+ 116:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE)
   59               		.loc 1 116 0
   60 0022 8981      		ldd r24,Y+1
   61 0024 20E2      		ldi r18,lo8(32)
@@ -209,26 +209,26 @@
   64 002a 1124      		clr __zero_reg__
   65 002c 862B      		or r24,r22
   66               	.LVL2:
- 120:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
+ 120:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
   67               		.loc 1 120 0
   68 002e E0EC      		ldi r30,lo8(-64)
   69 0030 F1E0      		ldi r31,lo8(1)
   70 0032 8083      		st Z,r24
- 121:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
+ 121:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
   71               		.loc 1 121 0
   72 0034 9183      		std Z+1,r25
- 122:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
+ 122:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
   73               		.loc 1 122 0
   74 0036 1282      		std Z+2,__zero_reg__
- 125:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_READ_EEPROM_gc;
+ 125:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_READ_EEPROM_gc;
   75               		.loc 1 125 0
   76 0038 86E0      		ldi r24,lo8(6)
   77               	.LVL3:
   78 003a 8287      		std Z+10,r24
- 126:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
+ 126:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
   79               		.loc 1 126 0
   80               	/* #APP */
-  81               	 ;  126 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c" 1
+  81               	 ;  126 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c" 1
   82 003c EF93      		push r30
   83 003e FF93      		push r31
   84 0040 0F93      		push r16
@@ -245,12 +245,12 @@
   95 0056 EF91      		pop r30
   96               		
   97               	 ;  0 "" 2
- 128:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	return NVM.DATA0;
+ 128:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	return NVM.DATA0;
   98               		.loc 1 128 0
   99               	/* #NOAPP */
  100 0058 8481      		ldd r24,Z+4
  101               	/* epilogue start */
- 129:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
+ 129:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
  102               		.loc 1 129 0
  103 005a 0F90      		pop __tmp_reg__
  104 005c 0F90      		pop __tmp_reg__
@@ -261,43 +261,43 @@
  110               	.global	EEPROM_FlushBuffer
  112               	EEPROM_FlushBuffer:
  113               	.LFB10:
- 145:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 146:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 147:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Flush temporary EEPROM page buffer.
- 148:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 149:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function flushes the EEPROM page buffers. This function will cancel
- 150:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  any ongoing EEPROM page buffer loading operations, if any.
- 151:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function also works for memory mapped EEPROM access.
- 152:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 153:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \note The EEPROM write operations will automatically flush the buffer for you.
- 154:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
- 155:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_FlushBuffer( void )
- 156:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+ 145:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 146:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 147:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Flush temporary EEPROM page buffer.
+ 148:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 149:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function flushes the EEPROM page buffers. This function will cancel
+ 150:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  any ongoing EEPROM page buffer loading operations, if any.
+ 151:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function also works for memory mapped EEPROM access.
+ 152:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 153:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \note The EEPROM write operations will automatically flush the buffer for you.
+ 154:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+ 155:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_FlushBuffer( void )
+ 156:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
  114               		.loc 1 156 0
  115               	/* prologue: function */
  116               	/* frame size = 0 */
  117               	/* stack size = 0 */
  118               	.L__stack_usage = 0
- 157:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
- 158:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
+ 157:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
+ 158:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
  119               		.loc 1 158 0
  120 0064 0E94 0000 		call EEPROM_WaitForNVM
  121               	.LVL4:
- 159:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 160:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Flush EEPROM page buffer if necessary. */
- 161:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	if ((NVM.STATUS & NVM_EELOAD_bm) != 0) {
+ 159:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 160:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Flush EEPROM page buffer if necessary. */
+ 161:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	if ((NVM.STATUS & NVM_EELOAD_bm) != 0) {
  122               		.loc 1 161 0
  123 0068 8091 CF01 		lds r24,463
  124 006c 81FF      		sbrs r24,1
  125 006e 00C0      		rjmp .L5
- 162:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM.CMD = NVM_CMD_ERASE_EEPROM_BUFFER_gc;
+ 162:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM.CMD = NVM_CMD_ERASE_EEPROM_BUFFER_gc;
  126               		.loc 1 162 0
  127 0070 86E3      		ldi r24,lo8(54)
  128 0072 8093 CA01 		sts 458,r24
- 163:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM_EXEC();
+ 163:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM_EXEC();
  129               		.loc 1 163 0
  130               	/* #APP */
- 131               	 ;  163 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c" 1
+ 131               	 ;  163 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c" 1
  132 0076 EF93      		push r30
  133 0078 FF93      		push r31
  134 007a 0F93      		push r16
@@ -321,7 +321,7 @@
  153               	.global	EEPROM_WriteByte
  155               	EEPROM_WriteByte:
  156               	.LFB7:
-  73:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+  73:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
  157               		.loc 1 73 0
  158               	.LVL5:
  159 0094 CF93      		push r28
@@ -337,24 +337,24 @@
  169               	/* frame size = 3 */
  170               	/* stack size = 5 */
  171               	.L__stack_usage = 5
-  77:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_FlushBuffer();
+  77:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_FlushBuffer();
  172               		.loc 1 77 0
  173 009e 4B83      		std Y+3,r20
  174 00a0 6A83      		std Y+2,r22
  175 00a2 8983      		std Y+1,r24
  176 00a4 0E94 0000 		call EEPROM_FlushBuffer
  177               	.LVL6:
-  78:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
+  78:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
  178               		.loc 1 78 0
  179 00a8 E0EC      		ldi r30,lo8(-64)
  180 00aa F1E0      		ldi r31,lo8(1)
  181 00ac 93E3      		ldi r25,lo8(51)
  182 00ae 9287      		std Z+10,r25
-  82:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	                            |(byteAddr & (EEPROM_PAGESIZE-1));
+  82:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	                            |(byteAddr & (EEPROM_PAGESIZE-1));
  183               		.loc 1 82 0
  184 00b0 6A81      		ldd r22,Y+2
  185 00b2 6F71      		andi r22,lo8(31)
-  81:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE)
+  81:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE)
  186               		.loc 1 81 0
  187 00b4 8981      		ldd r24,Y+1
  188 00b6 20E2      		ldi r18,lo8(32)
@@ -363,28 +363,28 @@
  191 00bc 1124      		clr __zero_reg__
  192 00be 862B      		or r24,r22
  193               	.LVL7:
-  85:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
+  85:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
  194               		.loc 1 85 0
  195 00c0 8083      		st Z,r24
-  86:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
+  86:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
  196               		.loc 1 86 0
  197 00c2 9183      		std Z+1,r25
-  87:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
+  87:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
  198               		.loc 1 87 0
  199 00c4 1282      		std Z+2,__zero_reg__
-  90:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.DATA0 = value;
+  90:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.DATA0 = value;
  200               		.loc 1 90 0
  201 00c6 4B81      		ldd r20,Y+3
  202 00c8 4483      		std Z+4,r20
-  95:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_ERASE_WRITE_EEPROM_PAGE_gc;
+  95:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_ERASE_WRITE_EEPROM_PAGE_gc;
  203               		.loc 1 95 0
  204 00ca 85E3      		ldi r24,lo8(53)
  205               	.LVL8:
  206 00cc 8287      		std Z+10,r24
-  96:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
+  96:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
  207               		.loc 1 96 0
  208               	/* #APP */
- 209               	 ;  96 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c" 1
+ 209               	 ;  96 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c" 1
  210 00ce EF93      		push r30
  211 00d0 FF93      		push r31
  212 00d2 0F93      		push r16
@@ -402,7 +402,7 @@
  224               		
  225               	 ;  0 "" 2
  226               	/* epilogue start */
-  97:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
+  97:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
  227               		.loc 1 97 0
  228               	/* #NOAPP */
  229 00ea 2396      		adiw r28,3
@@ -415,27 +415,27 @@
  237               	.global	EEPROM_LoadByte
  239               	EEPROM_LoadByte:
  240               	.LFB11:
- 164:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	}
- 165:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
- 166:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 167:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 168:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Load single byte into temporary page buffer.
- 169:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 170:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function loads one byte into the temporary EEPROM page buffers.
- 171:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  If memory mapped EEPROM is enabled, this function will not work.
- 172:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  Make sure that the buffer is flushed before starting to load bytes.
- 173:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  Also, if multiple bytes are loaded into the same location, they will
- 174:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  be ANDed together, thus 0x55 and 0xAA will result in 0x00 in the buffer.
- 175:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 176:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \note Only one page buffer exist, thus only one page can be loaded with
- 177:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *        data and programmed into one page. If data needs to be written to
- 178:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *        different pages, the loading and writing needs to be repeated.
- 179:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 180:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  byteAddr  EEPROM Byte address, between 0 and EEPROM_PAGESIZE.
- 181:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  value     Byte value to write to buffer.
- 182:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
- 183:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_LoadByte( uint8_t byteAddr, uint8_t value )
- 184:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+ 164:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	}
+ 165:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
+ 166:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 167:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 168:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Load single byte into temporary page buffer.
+ 169:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 170:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function loads one byte into the temporary EEPROM page buffers.
+ 171:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  If memory mapped EEPROM is enabled, this function will not work.
+ 172:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  Make sure that the buffer is flushed before starting to load bytes.
+ 173:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  Also, if multiple bytes are loaded into the same location, they will
+ 174:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  be ANDed together, thus 0x55 and 0xAA will result in 0x00 in the buffer.
+ 175:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 176:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \note Only one page buffer exist, thus only one page can be loaded with
+ 177:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *        data and programmed into one page. If data needs to be written to
+ 178:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *        different pages, the loading and writing needs to be repeated.
+ 179:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 180:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  byteAddr  EEPROM Byte address, between 0 and EEPROM_PAGESIZE.
+ 181:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  value     Byte value to write to buffer.
+ 182:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+ 183:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_LoadByte( uint8_t byteAddr, uint8_t value )
+ 184:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
  241               		.loc 1 184 0
  242               	.LVL9:
  243 00f6 CF93      		push r28
@@ -452,39 +452,39 @@
  254               	/* frame size = 2 */
  255               	/* stack size = 4 */
  256               	.L__stack_usage = 4
- 185:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy and prepare NVM command.*/
- 186:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
+ 185:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy and prepare NVM command.*/
+ 186:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
  257               		.loc 1 186 0
  258 0102 6A83      		std Y+2,r22
  259 0104 8983      		std Y+1,r24
  260 0106 0E94 0000 		call EEPROM_WaitForNVM
  261               	.LVL10:
- 187:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
+ 187:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
  262               		.loc 1 187 0
  263 010a E0EC      		ldi r30,lo8(-64)
  264 010c F1E0      		ldi r31,lo8(1)
  265 010e 93E3      		ldi r25,lo8(51)
  266 0110 9287      		std Z+10,r25
- 188:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 189:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address. */
- 190:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = byteAddr & 0xFF;
+ 188:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 189:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address. */
+ 190:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = byteAddr & 0xFF;
  267               		.loc 1 190 0
  268 0112 8981      		ldd r24,Y+1
  269 0114 8083      		st Z,r24
- 191:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = 0x00;
+ 191:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = 0x00;
  270               		.loc 1 191 0
  271 0116 1182      		std Z+1,__zero_reg__
- 192:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
+ 192:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
  272               		.loc 1 192 0
  273 0118 1282      		std Z+2,__zero_reg__
- 193:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 194:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set data, which triggers loading of EEPROM page buffer. */
- 195:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.DATA0 = value;
+ 193:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 194:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set data, which triggers loading of EEPROM page buffer. */
+ 195:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.DATA0 = value;
  274               		.loc 1 195 0
  275 011a 6A81      		ldd r22,Y+2
  276 011c 6483      		std Z+4,r22
  277               	/* epilogue start */
- 196:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
+ 196:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
  278               		.loc 1 196 0
  279 011e 0F90      		pop __tmp_reg__
  280 0120 0F90      		pop __tmp_reg__
@@ -495,24 +495,24 @@
  286               	.global	EEPROM_LoadPage
  288               	EEPROM_LoadPage:
  289               	.LFB12:
- 197:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 198:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 199:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Load entire page into temporary EEPROM page buffer.
- 200:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 201:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function loads an entire EEPROM page from an SRAM buffer to
- 202:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  the EEPROM page buffers. If memory mapped EEPROM is enabled, this
- 203:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  function will not work. Make sure that the buffer is flushed before
- 204:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  starting to load bytes.
- 205:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 206:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \note Only the lower part of the address is used to address the buffer.
- 207:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *        Therefore, no address parameter is needed. In the end, the data
- 208:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *        is written to the EEPROM page given by the address parameter to the
- 209:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *        EEPROM write page operation.
- 210:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 211:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  values   Pointer to SRAM buffer containing an entire page.
- 212:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
- 213:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_LoadPage( const uint8_t * values )
- 214:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+ 197:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 198:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 199:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Load entire page into temporary EEPROM page buffer.
+ 200:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 201:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function loads an entire EEPROM page from an SRAM buffer to
+ 202:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  the EEPROM page buffers. If memory mapped EEPROM is enabled, this
+ 203:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  function will not work. Make sure that the buffer is flushed before
+ 204:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  starting to load bytes.
+ 205:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 206:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \note Only the lower part of the address is used to address the buffer.
+ 207:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *        Therefore, no address parameter is needed. In the end, the data
+ 208:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *        is written to the EEPROM page given by the address parameter to the
+ 209:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *        EEPROM write page operation.
+ 210:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 211:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  values   Pointer to SRAM buffer containing an entire page.
+ 212:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+ 213:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_LoadPage( const uint8_t * values )
+ 214:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
  290               		.loc 1 214 0
  291               	.LVL11:
  292 0128 CF93      		push r28
@@ -524,44 +524,44 @@
  298               	/* stack size = 2 */
  299               	.L__stack_usage = 2
  300 012c EC01      		movw r28,r24
- 215:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
- 216:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
+ 215:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
+ 216:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
  301               		.loc 1 216 0
  302 012e 0E94 0000 		call EEPROM_WaitForNVM
  303               	.LVL12:
- 217:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
+ 217:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
  304               		.loc 1 217 0
  305 0132 83E3      		ldi r24,lo8(51)
  306 0134 8093 CA01 		sts 458,r24
- 218:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 219:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/*  Set address to zero, as only the lower bits matters. ADDR0 is
- 220:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	 *  maintained inside the loop below.
- 221:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	 */
- 222:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = 0x00;
+ 218:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 219:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/*  Set address to zero, as only the lower bits matters. ADDR0 is
+ 220:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	 *  maintained inside the loop below.
+ 221:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	 */
+ 222:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = 0x00;
  307               		.loc 1 222 0
  308 0138 1092 C101 		sts 449,__zero_reg__
- 223:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
+ 223:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
  309               		.loc 1 223 0
  310 013c 1092 C201 		sts 450,__zero_reg__
  311               	.LVL13:
- 224:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 225:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Load multible bytes into page buffer. */
- 226:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	for (uint8_t i = 0; i < EEPROM_PAGESIZE; ++i) {
+ 224:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 225:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Load multible bytes into page buffer. */
+ 226:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	for (uint8_t i = 0; i < EEPROM_PAGESIZE; ++i) {
  312               		.loc 1 226 0
  313 0140 80E0      		ldi r24,0
  314               	.LVL14:
  315               	.L13:
  316               	.LBB2:
- 227:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM.ADDR0 = i;
+ 227:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM.ADDR0 = i;
  317               		.loc 1 227 0 discriminator 2
  318 0142 8093 C001 		sts 448,r24
- 228:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM.DATA0 = *values;
+ 228:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM.DATA0 = *values;
  319               		.loc 1 228 0 discriminator 2
  320 0146 9991      		ld r25,Y+
  321               	.LVL15:
  322 0148 9093 C401 		sts 452,r25
  323               	.LVL16:
- 226:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	for (uint8_t i = 0; i < EEPROM_PAGESIZE; ++i) {
+ 226:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	for (uint8_t i = 0; i < EEPROM_PAGESIZE; ++i) {
  324               		.loc 1 226 0 discriminator 2
  325 014c 8F5F      		subi r24,lo8(-(1))
  326               	.LVL17:
@@ -569,9 +569,9 @@
  328 0150 01F4      		brne .L13
  329               	/* epilogue start */
  330               	.LBE2:
- 229:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 		++values;
- 230:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	}
- 231:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
+ 229:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 		++values;
+ 230:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	}
+ 231:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
  331               		.loc 1 231 0
  332 0152 DF91      		pop r29
  333 0154 CF91      		pop r28
@@ -581,18 +581,18 @@
  338               	.global	EEPROM_LoadPartialPage
  340               	EEPROM_LoadPartialPage:
  341               	.LFB13:
- 232:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 233:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Load partial page into temporary EEPROM page buffer.
- 234:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *			In theory an atomic write with unmodified buffers won't blast those buffers.  We'll see.
- 235:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 236:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \note Modified version of LoadPage
- 237:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 238:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  values   Pointer to SRAM buffer containing an entire page.
- 239:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *			offset   Offset address to begin from (0-EEPROM_PAGESIZE)
- 240:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *			length	 Number of values to write into EEPROM
- 241:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
- 242:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_LoadPartialPage(const uint8_t * values, uint8_t offset, uint8_t length)
- 243:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+ 232:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 233:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Load partial page into temporary EEPROM page buffer.
+ 234:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *			In theory an atomic write with unmodified buffers won't blast those buffers.  We'll see.
+ 235:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 236:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \note Modified version of LoadPage
+ 237:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 238:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  values   Pointer to SRAM buffer containing an entire page.
+ 239:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *			offset   Offset address to begin from (0-EEPROM_PAGESIZE)
+ 240:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *			length	 Number of values to write into EEPROM
+ 241:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+ 242:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_LoadPartialPage(const uint8_t * values, uint8_t offset, uint8_t length)
+ 243:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
  342               		.loc 1 243 0
  343               	.LVL19:
  344 0158 0F93      		push r16
@@ -614,45 +614,45 @@
  360               	/* stack size = 6 */
  361               	.L__stack_usage = 6
  362 0168 8C01      		movw r16,r24
- 244:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
- 245:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
+ 244:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
+ 245:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
  363               		.loc 1 245 0
  364 016a 4A83      		std Y+2,r20
  365 016c 6983      		std Y+1,r22
  366 016e 0E94 0000 		call EEPROM_WaitForNVM
  367               	.LVL20:
- 246:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
+ 246:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_LOAD_EEPROM_BUFFER_gc;
  368               		.loc 1 246 0
  369 0172 83E3      		ldi r24,lo8(51)
  370 0174 8093 CA01 		sts 458,r24
- 247:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 248:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/*  Set address to zero, as only the lower bits matters. ADDR0 is
- 249:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	 *  maintained inside the loop below.
- 250:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	 */
- 251:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = 0x00;
+ 247:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 248:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/*  Set address to zero, as only the lower bits matters. ADDR0 is
+ 249:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	 *  maintained inside the loop below.
+ 250:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	 */
+ 251:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = 0x00;
  371               		.loc 1 251 0
  372 0178 1092 C101 		sts 449,__zero_reg__
- 252:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
+ 252:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
  373               		.loc 1 252 0
  374 017c 1092 C201 		sts 450,__zero_reg__
  375               	.LVL21:
- 242:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_LoadPartialPage(const uint8_t * values, uint8_t offset, uint8_t length)
+ 242:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_LoadPartialPage(const uint8_t * values, uint8_t offset, uint8_t length)
  376               		.loc 1 242 0
  377 0180 4A81      		ldd r20,Y+2
  378 0182 6981      		ldd r22,Y+1
  379 0184 460F      		add r20,r22
  380               	.LBB3:
- 253:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 254:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Load multible bytes into page buffer. */
- 255:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	for (uint8_t i = offset; length != 0 && i < EEPROM_PAGESIZE; ++i,--length) {
+ 253:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 254:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Load multible bytes into page buffer. */
+ 255:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	for (uint8_t i = offset; length != 0 && i < EEPROM_PAGESIZE; ++i,--length) {
  381               		.loc 1 255 0
  382 0186 00C0      		rjmp .L16
  383               	.LVL22:
  384               	.L18:
- 256:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM.ADDR0 = i;
+ 256:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM.ADDR0 = i;
  385               		.loc 1 256 0 discriminator 1
  386 0188 6093 C001 		sts 448,r22
- 257:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM.DATA0 = *values;
+ 257:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 		NVM.DATA0 = *values;
  387               		.loc 1 257 0 discriminator 1
  388 018c F801      		movw r30,r16
  389 018e 8191      		ld r24,Z+
@@ -660,23 +660,23 @@
  391               	.LVL23:
  392 0192 8093 C401 		sts 452,r24
  393               	.LVL24:
- 255:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	for (uint8_t i = offset; length != 0 && i < EEPROM_PAGESIZE; ++i,--length) {
+ 255:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	for (uint8_t i = offset; length != 0 && i < EEPROM_PAGESIZE; ++i,--length) {
  394               		.loc 1 255 0 discriminator 1
  395 0196 6F5F      		subi r22,lo8(-(1))
  396               	.LVL25:
  397               	.L16:
  398 0198 6417      		cp r22,r20
  399 019a 01F0      		breq .L15
- 255:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	for (uint8_t i = offset; length != 0 && i < EEPROM_PAGESIZE; ++i,--length) {
+ 255:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	for (uint8_t i = offset; length != 0 && i < EEPROM_PAGESIZE; ++i,--length) {
  400               		.loc 1 255 0 is_stmt 0 discriminator 2
  401 019c 6032      		cpi r22,lo8(32)
  402 019e 00F0      		brlo .L18
  403               	.L15:
  404               	/* epilogue start */
  405               	.LBE3:
- 258:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 		++values;
- 259:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	}
- 260:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
+ 258:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 		++values;
+ 259:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	}
+ 260:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
  406               		.loc 1 260 0 is_stmt 1
  407 01a0 0F90      		pop __tmp_reg__
  408 01a2 0F90      		pop __tmp_reg__
@@ -690,21 +690,21 @@
  417               	.global	EEPROM_AtomicWritePage
  419               	EEPROM_AtomicWritePage:
  420               	.LFB14:
- 261:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 262:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Write already loaded page into EEPROM.
- 263:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 264:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function writes the contents of an already loaded EEPROM page
- 265:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  buffer into EEPROM memory.
- 266:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 267:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  As this is an atomic write, the page in EEPROM will be erased
- 268:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  automatically before writing. Note that only the page buffer locations
- 269:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  that have been loaded will be used when writing to EEPROM. Page buffer
- 270:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  locations that have not been loaded will be left untouched in EEPROM.
- 271:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 272:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  pageAddr  EEPROM Page address, between 0 and EEPROM_SIZE/EEPROM_PAGESIZE
- 273:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
- 274:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_AtomicWritePage( uint8_t pageAddr )
- 275:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+ 261:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 262:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Write already loaded page into EEPROM.
+ 263:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 264:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function writes the contents of an already loaded EEPROM page
+ 265:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  buffer into EEPROM memory.
+ 266:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 267:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  As this is an atomic write, the page in EEPROM will be erased
+ 268:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  automatically before writing. Note that only the page buffer locations
+ 269:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  that have been loaded will be used when writing to EEPROM. Page buffer
+ 270:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  locations that have not been loaded will be left untouched in EEPROM.
+ 271:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 272:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  pageAddr  EEPROM Page address, between 0 and EEPROM_SIZE/EEPROM_PAGESIZE
+ 273:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+ 274:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_AtomicWritePage( uint8_t pageAddr )
+ 275:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
  421               		.loc 1 275 0
  422               	.LVL27:
  423 01ae CF93      		push r28
@@ -720,15 +720,15 @@
  433               	/* frame size = 1 */
  434               	/* stack size = 3 */
  435               	.L__stack_usage = 3
- 276:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
- 277:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
+ 276:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
+ 277:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
  436               		.loc 1 277 0
  437 01b8 8983      		std Y+1,r24
  438 01ba 0E94 0000 		call EEPROM_WaitForNVM
  439               	.LVL28:
- 278:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 279:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Calculate page address */
- 280:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE);
+ 278:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 279:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Calculate page address */
+ 280:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE);
  440               		.loc 1 280 0
  441 01be 8981      		ldd r24,Y+1
  442 01c0 20E2      		ldi r18,lo8(32)
@@ -736,30 +736,30 @@
  444 01c4 C001      		movw r24,r0
  445 01c6 1124      		clr __zero_reg__
  446               	.LVL29:
- 281:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 282:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address. */
- 283:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
+ 281:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 282:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address. */
+ 283:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
  447               		.loc 1 283 0
  448 01c8 E0EC      		ldi r30,lo8(-64)
  449 01ca F1E0      		ldi r31,lo8(1)
  450 01cc 8083      		st Z,r24
- 284:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
+ 284:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
  451               		.loc 1 284 0
  452 01ce 9183      		std Z+1,r25
- 285:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
+ 285:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
  453               		.loc 1 285 0
  454 01d0 1282      		std Z+2,__zero_reg__
- 286:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 287:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Issue EEPROM Atomic Write (Erase&Write) command. */
- 288:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_ERASE_WRITE_EEPROM_PAGE_gc;
+ 286:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 287:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Issue EEPROM Atomic Write (Erase&Write) command. */
+ 288:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_ERASE_WRITE_EEPROM_PAGE_gc;
  455               		.loc 1 288 0
  456 01d2 85E3      		ldi r24,lo8(53)
  457               	.LVL30:
  458 01d4 8287      		std Z+10,r24
- 289:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
+ 289:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
  459               		.loc 1 289 0
  460               	/* #APP */
- 461               	 ;  289 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c" 1
+ 461               	 ;  289 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c" 1
  462 01d6 EF93      		push r30
  463 01d8 FF93      		push r31
  464 01da 0F93      		push r16
@@ -777,7 +777,7 @@
  476               		
  477               	 ;  0 "" 2
  478               	/* epilogue start */
- 290:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
+ 290:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
  479               		.loc 1 290 0
  480               	/* #NOAPP */
  481 01f2 0F90      		pop __tmp_reg__
@@ -788,16 +788,16 @@
  487               	.global	EEPROM_ErasePage
  489               	EEPROM_ErasePage:
  490               	.LFB15:
- 291:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 292:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 293:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Erase EEPROM page.
- 294:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 295:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function erases one EEPROM page, so that every location reads 0xFF.
- 296:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 297:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  pageAddr  EEPROM Page address, between 0 and EEPROM_SIZE/EEPROM_PAGESIZE
- 298:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
- 299:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_ErasePage( uint8_t pageAddr )
- 300:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+ 291:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 292:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 293:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Erase EEPROM page.
+ 294:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 295:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function erases one EEPROM page, so that every location reads 0xFF.
+ 296:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 297:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  pageAddr  EEPROM Page address, between 0 and EEPROM_SIZE/EEPROM_PAGESIZE
+ 298:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+ 299:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_ErasePage( uint8_t pageAddr )
+ 300:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
  491               		.loc 1 300 0
  492               	.LVL31:
  493 01fa CF93      		push r28
@@ -813,15 +813,15 @@
  503               	/* frame size = 1 */
  504               	/* stack size = 3 */
  505               	.L__stack_usage = 3
- 301:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
- 302:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
+ 301:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
+ 302:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
  506               		.loc 1 302 0
  507 0204 8983      		std Y+1,r24
  508 0206 0E94 0000 		call EEPROM_WaitForNVM
  509               	.LVL32:
- 303:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 304:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Calculate page address */
- 305:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE);
+ 303:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 304:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Calculate page address */
+ 305:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE);
  510               		.loc 1 305 0
  511 020a 8981      		ldd r24,Y+1
  512 020c 20E2      		ldi r18,lo8(32)
@@ -829,30 +829,30 @@
  514 0210 C001      		movw r24,r0
  515 0212 1124      		clr __zero_reg__
  516               	.LVL33:
- 306:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 307:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address. */
- 308:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
+ 306:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 307:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address. */
+ 308:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
  517               		.loc 1 308 0
  518 0214 E0EC      		ldi r30,lo8(-64)
  519 0216 F1E0      		ldi r31,lo8(1)
  520 0218 8083      		st Z,r24
- 309:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
+ 309:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
  521               		.loc 1 309 0
  522 021a 9183      		std Z+1,r25
- 310:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
+ 310:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
  523               		.loc 1 310 0
  524 021c 1282      		std Z+2,__zero_reg__
- 311:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 312:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Issue EEPROM Erase command. */
- 313:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_ERASE_EEPROM_PAGE_gc;
+ 311:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 312:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Issue EEPROM Erase command. */
+ 313:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_ERASE_EEPROM_PAGE_gc;
  525               		.loc 1 313 0
  526 021e 82E3      		ldi r24,lo8(50)
  527               	.LVL34:
  528 0220 8287      		std Z+10,r24
- 314:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
+ 314:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
  529               		.loc 1 314 0
  530               	/* #APP */
- 531               	 ;  314 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c" 1
+ 531               	 ;  314 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c" 1
  532 0222 EF93      		push r30
  533 0224 FF93      		push r31
  534 0226 0F93      		push r16
@@ -870,7 +870,7 @@
  546               		
  547               	 ;  0 "" 2
  548               	/* epilogue start */
- 315:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
+ 315:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
  549               		.loc 1 315 0
  550               	/* #NOAPP */
  551 023e 0F90      		pop __tmp_reg__
@@ -881,20 +881,20 @@
  557               	.global	EEPROM_SplitWritePage
  559               	EEPROM_SplitWritePage:
  560               	.LFB16:
- 316:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 317:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 318:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Write (without erasing) EEPROM page.
- 319:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 320:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function writes the contents of an already loaded EEPROM page
- 321:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  buffer into EEPROM memory.
- 322:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 323:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  As this is a split write, the page in EEPROM will _not_ be erased
- 324:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  before writing.
- 325:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 326:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  pageAddr  EEPROM Page address, between 0 and EEPROM_SIZE/EEPROM_PAGESIZE
- 327:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
- 328:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_SplitWritePage( uint8_t pageAddr )
- 329:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+ 316:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 317:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 318:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Write (without erasing) EEPROM page.
+ 319:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 320:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function writes the contents of an already loaded EEPROM page
+ 321:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  buffer into EEPROM memory.
+ 322:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 323:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  As this is a split write, the page in EEPROM will _not_ be erased
+ 324:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  before writing.
+ 325:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 326:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  \param  pageAddr  EEPROM Page address, between 0 and EEPROM_SIZE/EEPROM_PAGESIZE
+ 327:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+ 328:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_SplitWritePage( uint8_t pageAddr )
+ 329:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
  561               		.loc 1 329 0
  562               	.LVL35:
  563 0246 CF93      		push r28
@@ -910,15 +910,15 @@
  573               	/* frame size = 1 */
  574               	/* stack size = 3 */
  575               	.L__stack_usage = 3
- 330:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
- 331:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
+ 330:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
+ 331:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
  576               		.loc 1 331 0
  577 0250 8983      		std Y+1,r24
  578 0252 0E94 0000 		call EEPROM_WaitForNVM
  579               	.LVL36:
- 332:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 333:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Calculate page address */
- 334:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE);
+ 332:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 333:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Calculate page address */
+ 334:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	uint16_t address = (uint16_t)(pageAddr*EEPROM_PAGESIZE);
  580               		.loc 1 334 0
  581 0256 8981      		ldd r24,Y+1
  582 0258 20E2      		ldi r18,lo8(32)
@@ -926,30 +926,30 @@
  584 025c C001      		movw r24,r0
  585 025e 1124      		clr __zero_reg__
  586               	.LVL37:
- 335:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 336:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address. */
- 337:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
+ 335:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 336:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Set address. */
+ 337:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR0 = address & 0xFF;
  587               		.loc 1 337 0
  588 0260 E0EC      		ldi r30,lo8(-64)
  589 0262 F1E0      		ldi r31,lo8(1)
  590 0264 8083      		st Z,r24
- 338:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
+ 338:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR1 = (address >> 8) & 0x1F;
  591               		.loc 1 338 0
  592 0266 9183      		std Z+1,r25
- 339:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
+ 339:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.ADDR2 = 0x00;
  593               		.loc 1 339 0
  594 0268 1282      		std Z+2,__zero_reg__
- 340:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 341:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Issue EEPROM Split Write command. */
- 342:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_WRITE_EEPROM_PAGE_gc;
+ 340:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 341:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Issue EEPROM Split Write command. */
+ 342:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_WRITE_EEPROM_PAGE_gc;
  595               		.loc 1 342 0
  596 026a 84E3      		ldi r24,lo8(52)
  597               	.LVL38:
  598 026c 8287      		std Z+10,r24
- 343:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
+ 343:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
  599               		.loc 1 343 0
  600               	/* #APP */
- 601               	 ;  343 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c" 1
+ 601               	 ;  343 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c" 1
  602 026e EF93      		push r30
  603 0270 FF93      		push r31
  604 0272 0F93      		push r16
@@ -967,7 +967,7 @@
  616               		
  617               	 ;  0 "" 2
  618               	/* epilogue start */
- 344:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** }
+ 344:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** }
  619               		.loc 1 344 0
  620               	/* #NOAPP */
  621 028a 0F90      		pop __tmp_reg__
@@ -978,35 +978,35 @@
  627               	.global	EEPROM_EraseAll
  629               	EEPROM_EraseAll:
  630               	.LFB17:
- 345:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 346:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Erase entire EEPROM memory.
- 347:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *
- 348:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function erases the entire EEPROM memory block to 0xFF.
- 349:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c ****  */
- 350:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_EraseAll( void )
- 351:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** {
+ 345:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 346:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** /*! \brief Erase entire EEPROM memory.
+ 347:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *
+ 348:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  *  This function erases the entire EEPROM memory block to 0xFF.
+ 349:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c ****  */
+ 350:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** void EEPROM_EraseAll( void )
+ 351:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** {
  631               		.loc 1 351 0
  632               	/* prologue: function */
  633               	/* frame size = 0 */
  634               	/* stack size = 0 */
  635               	.L__stack_usage = 0
- 352:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
- 353:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
+ 352:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Wait until NVM is not busy. */
+ 353:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	EEPROM_WaitForNVM();
  636               		.loc 1 353 0
  637 0292 0E94 0000 		call EEPROM_WaitForNVM
  638               	.LVL39:
- 354:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 
- 355:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Issue EEPROM Erase All command. */
- 356:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_ERASE_EEPROM_gc;
+ 354:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 
+ 355:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	/* Issue EEPROM Erase All command. */
+ 356:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM.CMD = NVM_CMD_ERASE_EEPROM_gc;
  639               		.loc 1 356 0
  640 0296 80E3      		ldi r24,lo8(48)
  641 0298 E0EC      		ldi r30,lo8(-64)
  642 029a F1E0      		ldi r31,lo8(1)
  643 029c 8287      		std Z+10,r24
- 357:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
+ 357:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c **** 	NVM_EXEC();
  644               		.loc 1 357 0
  645               	/* #APP */
- 646               	 ;  357 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.c" 1
+ 646               	 ;  357 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/eeprom_driver.c" 1
  647 029e EF93      		push r30
  648 02a0 FF93      		push r31
  649 02a2 0F93      		push r16
@@ -1031,23 +1031,23 @@
  939               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 eeprom_driver.c
-     /tmp/ccBGgq6v.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccBGgq6v.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccBGgq6v.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccBGgq6v.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccBGgq6v.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccBGgq6v.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccBGgq6v.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccBGgq6v.s:13     .text:0000000000000000 EEPROM_WaitForNVM
-     /tmp/ccBGgq6v.s:33     .text:000000000000000a EEPROM_ReadByte
-     /tmp/ccBGgq6v.s:112    .text:0000000000000064 EEPROM_FlushBuffer
-     /tmp/ccBGgq6v.s:155    .text:0000000000000094 EEPROM_WriteByte
-     /tmp/ccBGgq6v.s:239    .text:00000000000000f6 EEPROM_LoadByte
-     /tmp/ccBGgq6v.s:288    .text:0000000000000128 EEPROM_LoadPage
-     /tmp/ccBGgq6v.s:340    .text:0000000000000158 EEPROM_LoadPartialPage
-     /tmp/ccBGgq6v.s:419    .text:00000000000001ae EEPROM_AtomicWritePage
-     /tmp/ccBGgq6v.s:489    .text:00000000000001fa EEPROM_ErasePage
-     /tmp/ccBGgq6v.s:559    .text:0000000000000246 EEPROM_SplitWritePage
-     /tmp/ccBGgq6v.s:629    .text:0000000000000292 EEPROM_EraseAll
+     /tmp/ccsxwoEW.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccsxwoEW.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccsxwoEW.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccsxwoEW.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccsxwoEW.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccsxwoEW.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccsxwoEW.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccsxwoEW.s:13     .text:0000000000000000 EEPROM_WaitForNVM
+     /tmp/ccsxwoEW.s:33     .text:000000000000000a EEPROM_ReadByte
+     /tmp/ccsxwoEW.s:112    .text:0000000000000064 EEPROM_FlushBuffer
+     /tmp/ccsxwoEW.s:155    .text:0000000000000094 EEPROM_WriteByte
+     /tmp/ccsxwoEW.s:239    .text:00000000000000f6 EEPROM_LoadByte
+     /tmp/ccsxwoEW.s:288    .text:0000000000000128 EEPROM_LoadPage
+     /tmp/ccsxwoEW.s:340    .text:0000000000000158 EEPROM_LoadPartialPage
+     /tmp/ccsxwoEW.s:419    .text:00000000000001ae EEPROM_AtomicWritePage
+     /tmp/ccsxwoEW.s:489    .text:00000000000001fa EEPROM_ErasePage
+     /tmp/ccsxwoEW.s:559    .text:0000000000000246 EEPROM_SplitWritePage
+     /tmp/ccsxwoEW.s:629    .text:0000000000000292 EEPROM_EraseAll
 
 NO UNDEFINED SYMBOLS

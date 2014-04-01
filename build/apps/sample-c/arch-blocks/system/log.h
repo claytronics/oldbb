@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/log.bbh"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/log.bbh"
 #ifndef __LOG_H__
 #define __LOG_H__
 

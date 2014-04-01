@@ -11,94 +11,94 @@
   11               	.global	TWI_MasterInit
   13               	TWI_MasterInit:
   14               	.LFB7:
-  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c"
-   1:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /* This file has been prepared for Doxygen automatic documentation generation.*/
-   2:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \file *********************************************************************
-   3:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-   4:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * \brief
-   5:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      XMEGA TWI master driver source file.
-   6:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-   7:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      This file contains the function implementations the XMEGA master TWI
-   8:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      driver.
-   9:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      The driver is not intended for size and/or speed critical code, since
-  11:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      most functions are just a few lines of code, and the function call
-  12:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      overhead would decrease code performance. The driver is intended for
-  13:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      rapid prototyping and documentation purposes for getting started with
-  14:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      the XMEGA TWI master module.
-  15:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  16:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      For size and/or speed critical code, it is recommended to copy the
-  17:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      function contents directly into your application instead of making
-  18:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      a function call.
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      Several functions use the following construct:
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *          "some_register = ... | (some_parameter ? SOME_BIT_bm : 0) | ..."
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      Although the use of the ternary operator ( if ? then : else ) is
-  23:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      discouraged, in some occasions the operator makes it possible to write
-  24:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      pretty clean and neat code. In this driver, the construct is used to
-  25:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      set or not set a configuration bit based on a boolean input parameter,
-  26:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      such as the "some_parameter" in the example above.
-  27:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  28:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * \par Application note:
-  29:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      AVR1308: Using the XMEGA TWI
-  30:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  31:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * \par Documentation
-  32:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      For comprehensive code documentation, supported compilers, compiler
-  33:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      settings and supported devices see readme.html
-  34:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  35:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * \author
-  36:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      Atmel Corporation: http://www.atmel.com \n
-  37:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *      Support email: avr@atmel.com
-  38:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  39:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * $Revision: 1569 $
-  40:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * $Date: 2008-04-22 13:03:43 +0200 (ti, 22 apr 2008) $  \n
-  41:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  42:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * Copyright (c) 2008, Atmel Corporation All rights reserved.
-  43:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  44:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * Redistribution and use in source and binary forms, with or without
-  45:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * modification, are permitted provided that the following conditions are met:
-  46:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  47:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * 1. Redistributions of source code must retain the above copyright notice,
-  48:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * this list of conditions and the following disclaimer.
-  49:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  50:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
-  51:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * this list of conditions and the following disclaimer in the documentation
-  52:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * and/or other materials provided with the distribution.
-  53:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  54:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * 3. The name of ATMEL may not be used to endorse or promote products derived
-  55:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * from this software without specific prior written permission.
-  56:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  57:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
-  58:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-  59:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE EXPRESSLY AND
-  60:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT,
-  61:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-  62:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  63:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-  64:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  65:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-  66:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  67:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *****************************************************************************/
-  68:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
-  69:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** #include "twi_master_driver.h"
-  70:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
-  71:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
-  72:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Initialize the TWI module.
-  73:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  74:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  TWI module initialization function.
-  75:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  Enables master read and write interrupts.
-  76:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  Remember to enable interrupts globally from the main application.
-  77:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
-  78:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi                      The TWI_Master_t struct instance.
-  79:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param module                   The TWI module to use.
-  80:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param intLevel                 Master interrupt level.
-  81:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param baudRateRegisterSetting  The baud rate register value.
-  82:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
-  83:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterInit(TWI_Master_t *twi,
-  84:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                     TWI_t *module,
-  85:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                     TWI_MASTER_INTLVL_t intLevel,
-  86:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                     uint8_t baudRateRegisterSetting)
-  87:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c"
+   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /* This file has been prepared for Doxygen automatic documentation generation.*/
+   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \file *********************************************************************
+   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * \brief
+   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      XMEGA TWI master driver source file.
+   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      This file contains the function implementations the XMEGA master TWI
+   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      driver.
+   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      The driver is not intended for size and/or speed critical code, since
+  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      most functions are just a few lines of code, and the function call
+  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      overhead would decrease code performance. The driver is intended for
+  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      rapid prototyping and documentation purposes for getting started with
+  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      the XMEGA TWI master module.
+  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      For size and/or speed critical code, it is recommended to copy the
+  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      function contents directly into your application instead of making
+  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      a function call.
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      Several functions use the following construct:
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *          "some_register = ... | (some_parameter ? SOME_BIT_bm : 0) | ..."
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      Although the use of the ternary operator ( if ? then : else ) is
+  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      discouraged, in some occasions the operator makes it possible to write
+  24:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      pretty clean and neat code. In this driver, the construct is used to
+  25:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      set or not set a configuration bit based on a boolean input parameter,
+  26:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      such as the "some_parameter" in the example above.
+  27:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  28:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * \par Application note:
+  29:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      AVR1308: Using the XMEGA TWI
+  30:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  31:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * \par Documentation
+  32:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      For comprehensive code documentation, supported compilers, compiler
+  33:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      settings and supported devices see readme.html
+  34:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  35:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * \author
+  36:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      Atmel Corporation: http://www.atmel.com \n
+  37:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *      Support email: avr@atmel.com
+  38:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  39:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * $Revision: 1569 $
+  40:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * $Date: 2008-04-22 13:03:43 +0200 (ti, 22 apr 2008) $  \n
+  41:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  42:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * Copyright (c) 2008, Atmel Corporation All rights reserved.
+  43:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  44:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * Redistribution and use in source and binary forms, with or without
+  45:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * modification, are permitted provided that the following conditions are met:
+  46:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  47:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * 1. Redistributions of source code must retain the above copyright notice,
+  48:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * this list of conditions and the following disclaimer.
+  49:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  50:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * 2. Redistributions in binary form must reproduce the above copyright notice,
+  51:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * this list of conditions and the following disclaimer in the documentation
+  52:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * and/or other materials provided with the distribution.
+  53:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  54:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * 3. The name of ATMEL may not be used to endorse or promote products derived
+  55:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * from this software without specific prior written permission.
+  56:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  57:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS OR IMPLIED
+  58:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+  59:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE EXPRESSLY AND
+  60:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * SPECIFICALLY DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR ANY DIRECT,
+  61:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+  62:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+  63:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  64:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  65:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+  66:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  67:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *****************************************************************************/
+  68:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+  69:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** #include "twi_master_driver.h"
+  70:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+  71:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+  72:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Initialize the TWI module.
+  73:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  74:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  TWI module initialization function.
+  75:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  Enables master read and write interrupts.
+  76:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  Remember to enable interrupts globally from the main application.
+  77:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+  78:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi                      The TWI_Master_t struct instance.
+  79:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param module                   The TWI module to use.
+  80:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param intLevel                 Master interrupt level.
+  81:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param baudRateRegisterSetting  The baud rate register value.
+  82:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+  83:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterInit(TWI_Master_t *twi,
+  84:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                     TWI_t *module,
+  85:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                     TWI_MASTER_INTLVL_t intLevel,
+  86:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                     uint8_t baudRateRegisterSetting)
+  87:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
   16               		.loc 1 87 0
   17               	.LVL0:
   18               	/* prologue: function */
@@ -106,27 +106,27 @@
   20               	/* stack size = 0 */
   21               	.L__stack_usage = 0
   22 0000 FC01      		movw r30,r24
-  88:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface = module;
+  88:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface = module;
   23               		.loc 1 88 0
   24 0002 6083      		st Z,r22
   25 0004 7183      		std Z+1,r23
-  89:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.CTRLA = intLevel |
+  89:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.CTRLA = intLevel |
   26               		.loc 1 89 0
   27 0006 4863      		ori r20,lo8(56)
   28               	.LVL1:
   29 0008 DB01      		movw r26,r22
   30 000a 1196      		adiw r26,1
   31 000c 4C93      		st X,r20
-  90:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	                               TWI_MASTER_RIEN_bm |
-  91:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	                               TWI_MASTER_WIEN_bm |
-  92:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	                               TWI_MASTER_ENABLE_bm;
-  93:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.BAUD = baudRateRegisterSetting;
+  90:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	                               TWI_MASTER_RIEN_bm |
+  91:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	                               TWI_MASTER_WIEN_bm |
+  92:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	                               TWI_MASTER_ENABLE_bm;
+  93:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.BAUD = baudRateRegisterSetting;
   32               		.loc 1 93 0
   33 000e A081      		ld r26,Z
   34 0010 B181      		ldd r27,Z+1
   35 0012 1596      		adiw r26,5
   36 0014 2C93      		st X,r18
-  94:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.STATUS = TWI_MASTER_BUSSTATE_IDLE_gc;
+  94:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.STATUS = TWI_MASTER_BUSSTATE_IDLE_gc;
   37               		.loc 1 94 0
   38 0016 0190      		ld __tmp_reg__,Z+
   39 0018 F081      		ld r31,Z
@@ -139,40 +139,40 @@
   47               	.global	TWI_MasterState
   49               	TWI_MasterState:
   50               	.LFB8:
-  95:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
-  96:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
-  97:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
-  98:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Returns the TWI bus state.
-  99:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 100:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  Returns the TWI bus state (type defined in device headerfile),
- 101:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  unknown, idle, owner or busy.
- 102:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 103:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
- 104:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 105:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_UNKNOWN_gc Bus state is unknown.
- 106:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_IDLE_gc    Bus state is idle.
- 107:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_OWNER_gc   Bus state is owned by the master.
- 108:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_BUSY_gc    Bus state is busy.
- 109:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
- 110:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** TWI_MASTER_BUSSTATE_t TWI_MasterState(TWI_Master_t *twi)
- 111:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+  95:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
+  96:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+  97:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+  98:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Returns the TWI bus state.
+  99:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 100:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  Returns the TWI bus state (type defined in device headerfile),
+ 101:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  unknown, idle, owner or busy.
+ 102:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 103:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
+ 104:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 105:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_UNKNOWN_gc Bus state is unknown.
+ 106:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_IDLE_gc    Bus state is idle.
+ 107:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_OWNER_gc   Bus state is owned by the master.
+ 108:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval TWI_MASTER_BUSSTATE_BUSY_gc    Bus state is busy.
+ 109:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 110:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** TWI_MASTER_BUSSTATE_t TWI_MasterState(TWI_Master_t *twi)
+ 111:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
   51               		.loc 1 111 0
   52               	.LVL3:
   53               	/* prologue: function */
   54               	/* frame size = 0 */
   55               	/* stack size = 0 */
   56               	.L__stack_usage = 0
- 112:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	TWI_MASTER_BUSSTATE_t twi_status;
- 113:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi_status = (TWI_MASTER_BUSSTATE_t) (twi->interface->MASTER.STATUS &
+ 112:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	TWI_MASTER_BUSSTATE_t twi_status;
+ 113:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi_status = (TWI_MASTER_BUSSTATE_t) (twi->interface->MASTER.STATUS &
   57               		.loc 1 113 0
   58 0022 DC01      		movw r26,r24
   59 0024 ED91      		ld r30,X+
   60 0026 FC91      		ld r31,X
   61 0028 8481      		ldd r24,Z+4
   62               	.LVL4:
- 114:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	                                      TWI_MASTER_BUSSTATE_gm);
- 115:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
- 116:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 114:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	                                      TWI_MASTER_BUSSTATE_gm);
+ 115:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
+ 116:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
   63               		.loc 1 116 0
   64 002a 8370      		andi r24,lo8(3)
   65               	.LVL5:
@@ -181,33 +181,33 @@
   69               	.global	TWI_MasterReady
   71               	TWI_MasterReady:
   72               	.LFB9:
- 117:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 118:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 119:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Returns true if transaction is ready.
- 120:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 121:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function returns a boolean whether the TWI Master is ready
- 122:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  for a new transaction.
- 123:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 124:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
- 125:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 126:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
- 127:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
- 128:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
- 129:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterReady(TWI_Master_t *twi)
- 130:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 117:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 118:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 119:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Returns true if transaction is ready.
+ 120:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 121:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function returns a boolean whether the TWI Master is ready
+ 122:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  for a new transaction.
+ 123:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 124:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
+ 125:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 126:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
+ 127:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
+ 128:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 129:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterReady(TWI_Master_t *twi)
+ 130:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
   73               		.loc 1 130 0
   74               	.LVL6:
   75               	/* prologue: function */
   76               	/* frame size = 0 */
   77               	/* stack size = 0 */
   78               	.L__stack_usage = 0
- 131:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = (twi->status & TWIM_STATUS_READY);
+ 131:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = (twi->status & TWIM_STATUS_READY);
   79               		.loc 1 131 0
   80 002e FC01      		movw r30,r24
   81 0030 8785      		ldd r24,Z+15
   82               	.LVL7:
- 132:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
- 133:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 132:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
+ 133:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
   83               		.loc 1 133 0
   84 0032 80E0      		ldi r24,0
   85 0034 0895      		ret
@@ -215,71 +215,71 @@
   88               	.global	TWI_MasterWriteRead
   90               	TWI_MasterWriteRead:
   91               	.LFB12:
- 134:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 135:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 136:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI write transaction.
- 137:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 138:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function is TWI Master wrapper for a write-only transaction.
- 139:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 140:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi          The TWI_Master_t struct instance.
- 141:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param address      Slave address.
- 142:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param writeData    Pointer to data to write.
- 143:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToWrite Number of data bytes to write.
- 144:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 145:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
- 146:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
- 147:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
- 148:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterWrite(TWI_Master_t *twi,
- 149:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                      uint8_t address,
- 150:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                      uint8_t *writeData,
- 151:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                      uint8_t bytesToWrite)
- 152:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
- 153:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, writeData, bytesToWrite, 0);
- 154:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
- 155:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
- 156:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 157:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 158:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI read transaction.
- 159:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 160:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function is a TWI Maste wrapper for read-only transaction.
- 161:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 162:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi            The TWI_Master_t struct instance.
- 163:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param address        The slave address.
- 164:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToRead    The number of bytes to read.
- 165:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 166:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
- 167:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
- 168:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
- 169:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterRead(TWI_Master_t *twi,
- 170:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                     uint8_t address,
- 171:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                     uint8_t bytesToRead)
- 172:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
- 173:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, 0, 0, bytesToRead);
- 174:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
- 175:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
- 176:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 177:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 178:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI write and/or read transaction.
- 179:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 180:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function is a TWI Master write and/or read transaction. The function
- 181:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  can be used to both write and/or read bytes to/from the TWI Slave in one
- 182:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  transaction.
- 183:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 184:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi            The TWI_Master_t struct instance.
- 185:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param address        The slave address.
- 186:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param writeData      Pointer to data to write.
- 187:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToWrite   Number of bytes to write.
- 188:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToRead    Number of bytes to read.
- 189:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 190:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
- 191:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
- 192:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
- 193:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterWriteRead(TWI_Master_t *twi,
- 194:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t address,
- 195:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t *writeData,
- 196:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t bytesToWrite,
- 197:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t bytesToRead)
- 198:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 134:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 135:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 136:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI write transaction.
+ 137:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 138:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function is TWI Master wrapper for a write-only transaction.
+ 139:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 140:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi          The TWI_Master_t struct instance.
+ 141:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param address      Slave address.
+ 142:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param writeData    Pointer to data to write.
+ 143:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToWrite Number of data bytes to write.
+ 144:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 145:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
+ 146:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
+ 147:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 148:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterWrite(TWI_Master_t *twi,
+ 149:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                      uint8_t address,
+ 150:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                      uint8_t *writeData,
+ 151:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                      uint8_t bytesToWrite)
+ 152:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 153:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, writeData, bytesToWrite, 0);
+ 154:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
+ 155:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 156:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 157:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 158:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI read transaction.
+ 159:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 160:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function is a TWI Maste wrapper for read-only transaction.
+ 161:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 162:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi            The TWI_Master_t struct instance.
+ 163:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param address        The slave address.
+ 164:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToRead    The number of bytes to read.
+ 165:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 166:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
+ 167:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
+ 168:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 169:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterRead(TWI_Master_t *twi,
+ 170:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                     uint8_t address,
+ 171:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                     uint8_t bytesToRead)
+ 172:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 173:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, 0, 0, bytesToRead);
+ 174:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	return twi_status;
+ 175:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 176:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 177:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 178:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI write and/or read transaction.
+ 179:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 180:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  This function is a TWI Master write and/or read transaction. The function
+ 181:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  can be used to both write and/or read bytes to/from the TWI Slave in one
+ 182:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  transaction.
+ 183:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 184:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi            The TWI_Master_t struct instance.
+ 185:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param address        The slave address.
+ 186:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param writeData      Pointer to data to write.
+ 187:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToWrite   Number of bytes to write.
+ 188:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param bytesToRead    Number of bytes to read.
+ 189:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 190:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval true  If transaction could be started.
+ 191:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \retval false If transaction could not be started.
+ 192:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 193:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** bool TWI_MasterWriteRead(TWI_Master_t *twi,
+ 194:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t address,
+ 195:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t *writeData,
+ 196:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t bytesToWrite,
+ 197:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****                          uint8_t bytesToRead)
+ 198:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
   92               		.loc 1 198 0
   93               	.LVL8:
   94 0036 0F93      		push r16
@@ -293,37 +293,37 @@
  102               	/* stack size = 3 */
  103               	.L__stack_usage = 3
  104 003c FC01      		movw r30,r24
- 199:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/*Parameter sanity check. */
- 200:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if (bytesToWrite > TWIM_WRITE_BUFFER_SIZE) {
+ 199:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/*Parameter sanity check. */
+ 200:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if (bytesToWrite > TWIM_WRITE_BUFFER_SIZE) {
  105               		.loc 1 200 0
  106 003e 2530      		cpi r18,lo8(5)
  107 0040 00F4      		brsh .L11
- 201:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
- 202:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 203:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if (bytesToRead > TWIM_READ_BUFFER_SIZE) {
+ 201:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
+ 202:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 203:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if (bytesToRead > TWIM_READ_BUFFER_SIZE) {
  108               		.loc 1 203 0
  109 0042 0530      		cpi r16,lo8(5)
  110 0044 00F4      		brsh .L11
- 204:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
- 205:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 206:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 207:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/*Initiate transaction if bus is ready. */
- 208:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->status == TWIM_STATUS_READY) {
+ 204:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
+ 205:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 206:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 207:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/*Initiate transaction if bus is ready. */
+ 208:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->status == TWIM_STATUS_READY) {
  111               		.loc 1 208 0
  112 0046 8785      		ldd r24,Z+15
  113               	.LVL9:
  114 0048 8111      		cpse r24,__zero_reg__
  115 004a 00C0      		rjmp .L11
- 209:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 210:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->status = TWIM_STATUS_BUSY;
+ 209:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 210:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->status = TWIM_STATUS_BUSY;
  116               		.loc 1 210 0
  117 004c 81E0      		ldi r24,lo8(1)
  118 004e 8787      		std Z+15,r24
- 211:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_UNKNOWN;
+ 211:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_UNKNOWN;
  119               		.loc 1 211 0
  120 0050 108A      		std Z+16,__zero_reg__
- 212:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 213:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->address = address<<1;
+ 212:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 213:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->address = address<<1;
  121               		.loc 1 213 0
  122 0052 660F      		lsl r22
  123               	.LVL10:
@@ -331,16 +331,16 @@
  125               	.LVL11:
  126 0056 DA01      		movw r26,r20
  127               	.LBB23:
- 214:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 215:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		/* Fill write data buffer. */
- 216:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		for (uint8_t bufferIndex=0; bufferIndex < bytesToWrite; bufferIndex++) {
+ 214:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 215:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		/* Fill write data buffer. */
+ 216:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		for (uint8_t bufferIndex=0; bufferIndex < bytesToWrite; bufferIndex++) {
  128               		.loc 1 216 0
  129 0058 80E0      		ldi r24,0
  130 005a 90E0      		ldi r25,0
  131 005c 00C0      		rjmp .L6
  132               	.LVL12:
  133               	.L7:
- 217:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 			twi->writeData[bufferIndex] = writeData[bufferIndex];
+ 217:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 			twi->writeData[bufferIndex] = writeData[bufferIndex];
  134               		.loc 1 217 0 discriminator 2
  135 005e 3D91      		ld r19,X+
  136 0060 EF01      		movw r28,r30
@@ -349,36 +349,36 @@
  139 0066 3B83      		std Y+3,r19
  140 0068 0196      		adiw r24,1
  141               	.L6:
- 216:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		for (uint8_t bufferIndex=0; bufferIndex < bytesToWrite; bufferIndex++) {
+ 216:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		for (uint8_t bufferIndex=0; bufferIndex < bytesToWrite; bufferIndex++) {
  142               		.loc 1 216 0 discriminator 1
  143 006a 8217      		cp r24,r18
  144 006c 00F0      		brlo .L7
  145               	.LBE23:
- 218:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		}
- 219:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 220:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesToWrite = bytesToWrite;
+ 218:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		}
+ 219:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 220:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesToWrite = bytesToWrite;
  146               		.loc 1 220 0
  147 006e 2387      		std Z+11,r18
- 221:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesToRead = bytesToRead;
+ 221:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesToRead = bytesToRead;
  148               		.loc 1 221 0
  149 0070 0487      		std Z+12,r16
- 222:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesWritten = 0;
+ 222:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesWritten = 0;
  150               		.loc 1 222 0
  151 0072 1586      		std Z+13,__zero_reg__
- 223:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesRead = 0;
+ 223:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesRead = 0;
  152               		.loc 1 223 0
  153 0074 1686      		std Z+14,__zero_reg__
- 224:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 225:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		/* If write command, send the START condition + Address +
- 226:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		 * 'R/_W = 0'
- 227:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		 */
- 228:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		if (twi->bytesToWrite > 0) {
+ 224:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 225:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		/* If write command, send the START condition + Address +
+ 226:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		 * 'R/_W = 0'
+ 227:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		 */
+ 228:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		if (twi->bytesToWrite > 0) {
  154               		.loc 1 228 0
  155 0076 8385      		ldd r24,Z+11
  156 0078 8823      		tst r24
  157 007a 01F0      		breq .L8
  158               	.LBB24:
- 229:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 			uint8_t writeAddress = twi->address & ~0x01;
+ 229:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 			uint8_t writeAddress = twi->address & ~0x01;
  159               		.loc 1 229 0
  160 007c 8281      		ldd r24,Z+2
  161 007e 8E7F      		andi r24,lo8(-2)
@@ -387,13 +387,13 @@
  164               	.LVL14:
  165               	.L8:
  166               	.LBE24:
- 230:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 			twi->interface->MASTER.ADDR = writeAddress;
- 231:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		}
- 232:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 233:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		/* If read command, send the START condition + Address +
- 234:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		 * 'R/_W = 1'
- 235:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		 */
- 236:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		else if (twi->bytesToRead > 0) {
+ 230:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 			twi->interface->MASTER.ADDR = writeAddress;
+ 231:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		}
+ 232:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 233:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		/* If read command, send the START condition + Address +
+ 234:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		 * 'R/_W = 1'
+ 235:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		 */
+ 236:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		else if (twi->bytesToRead > 0) {
  167               		.loc 1 236 0
  168 0082 8485      		ldd r24,Z+12
  169 0084 8823      		tst r24
@@ -402,13 +402,13 @@
  172               	.LBB25:
  173               	.LBB26:
  174               	.LBB27:
- 237:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 			uint8_t readAddress = twi->address | 0x01;
+ 237:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 			uint8_t readAddress = twi->address | 0x01;
  175               		.loc 1 237 0
  176 0088 8281      		ldd r24,Z+2
  177 008a 8160      		ori r24,lo8(1)
  178               	.LVL16:
  179               	.L13:
- 238:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 			twi->interface->MASTER.ADDR = readAddress;
+ 238:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 			twi->interface->MASTER.ADDR = readAddress;
  180               		.loc 1 238 0
  181 008c 0190      		ld __tmp_reg__,Z+
  182 008e F081      		ld r31,Z
@@ -421,22 +421,22 @@
  189               	.LBE27:
  190               	.LBE26:
  191               	.LBE25:
- 201:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
+ 201:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
  192               		.loc 1 201 0
  193 0096 80E0      		ldi r24,0
  194 0098 00C0      		rjmp .L5
  195               	.LVL19:
  196               	.L12:
- 239:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		}
- 240:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		return true;
+ 239:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		}
+ 240:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		return true;
  197               		.loc 1 240 0
  198 009a 81E0      		ldi r24,lo8(1)
  199               	.L5:
  200               	/* epilogue start */
- 241:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	} else {
- 242:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
- 243:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 244:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 241:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	} else {
+ 242:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		return false;
+ 243:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 244:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
  201               		.loc 1 244 0
  202 009c DF91      		pop r29
  203 009e CF91      		pop r28
@@ -447,7 +447,7 @@
  209               	.global	TWI_MasterRead
  211               	TWI_MasterRead:
  212               	.LFB11:
- 172:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 172:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
  213               		.loc 1 172 0
  214               	.LVL21:
  215 00a4 0F93      		push r16
@@ -456,7 +456,7 @@
  218               	/* frame size = 0 */
  219               	/* stack size = 1 */
  220               	.L__stack_usage = 1
- 173:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, 0, 0, bytesToRead);
+ 173:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, 0, 0, bytesToRead);
  221               		.loc 1 173 0
  222 00a6 042F      		mov r16,r20
  223 00a8 20E0      		ldi r18,0
@@ -466,7 +466,7 @@
  227 00ae 0E94 0000 		call TWI_MasterWriteRead
  228               	.LVL23:
  229               	/* epilogue start */
- 175:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 175:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
  230               		.loc 1 175 0
  231 00b2 0F91      		pop r16
  232               	.LVL24:
@@ -475,7 +475,7 @@
  236               	.global	TWI_MasterWrite
  238               	TWI_MasterWrite:
  239               	.LFB10:
- 152:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 152:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
  240               		.loc 1 152 0
  241               	.LVL25:
  242 00b6 0F93      		push r16
@@ -484,13 +484,13 @@
  245               	/* frame size = 0 */
  246               	/* stack size = 1 */
  247               	.L__stack_usage = 1
- 153:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, writeData, bytesToWrite, 0);
+ 153:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	bool twi_status = TWI_MasterWriteRead(twi, address, writeData, bytesToWrite, 0);
  248               		.loc 1 153 0
  249 00b8 00E0      		ldi r16,0
  250 00ba 0E94 0000 		call TWI_MasterWriteRead
  251               	.LVL26:
  252               	/* epilogue start */
- 155:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 155:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
  253               		.loc 1 155 0
  254 00be 0F91      		pop r16
  255 00c0 0895      		ret
@@ -498,50 +498,50 @@
  258               	.global	TWI_MasterArbitrationLostBusErrorHandler
  260               	TWI_MasterArbitrationLostBusErrorHandler:
  261               	.LFB14:
- 245:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 246:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 247:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Common TWI master interrupt service routine.
- 248:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 249:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  Check current status and calls the appropriate handler.
- 250:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 251:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi  The TWI_Master_t struct instance.
- 252:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
- 253:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterInterruptHandler(TWI_Master_t *twi)
- 254:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
- 255:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t currentStatus = twi->interface->MASTER.STATUS;
- 256:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 257:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If arbitration lost or bus error. */
- 258:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if ((currentStatus & TWI_MASTER_ARBLOST_bm) ||
- 259:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	    (currentStatus & TWI_MASTER_BUSERR_bm)) {
- 260:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 261:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterArbitrationLostBusErrorHandler(twi);
- 262:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 263:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 264:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If master write interrupt. */
- 265:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_WIF_bm) {
- 266:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterWriteHandler(twi);
- 267:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 268:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 269:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If master read interrupt. */
- 270:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_RIF_bm) {
- 271:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterReadHandler(twi);
- 272:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 273:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 274:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If unexpected state. */
- 275:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
- 276:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_FAIL);
- 277:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 278:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
- 279:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 280:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 281:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI master arbitration lost and bus error interrupt handler.
- 282:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 283:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  Handles TWI responses to lost arbitration and bus error.
- 284:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 285:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi  The TWI_Master_t struct instance.
- 286:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
- 287:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterArbitrationLostBusErrorHandler(TWI_Master_t *twi)
- 288:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 245:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 246:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 247:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief Common TWI master interrupt service routine.
+ 248:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 249:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  Check current status and calls the appropriate handler.
+ 250:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 251:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi  The TWI_Master_t struct instance.
+ 252:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 253:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterInterruptHandler(TWI_Master_t *twi)
+ 254:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 255:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t currentStatus = twi->interface->MASTER.STATUS;
+ 256:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 257:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If arbitration lost or bus error. */
+ 258:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if ((currentStatus & TWI_MASTER_ARBLOST_bm) ||
+ 259:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	    (currentStatus & TWI_MASTER_BUSERR_bm)) {
+ 260:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 261:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterArbitrationLostBusErrorHandler(twi);
+ 262:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 263:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 264:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If master write interrupt. */
+ 265:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_WIF_bm) {
+ 266:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterWriteHandler(twi);
+ 267:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 268:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 269:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If master read interrupt. */
+ 270:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_RIF_bm) {
+ 271:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterReadHandler(twi);
+ 272:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 273:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 274:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If unexpected state. */
+ 275:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
+ 276:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_FAIL);
+ 277:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 278:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 279:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 280:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 281:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI master arbitration lost and bus error interrupt handler.
+ 282:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 283:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  Handles TWI responses to lost arbitration and bus error.
+ 284:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 285:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi  The TWI_Master_t struct instance.
+ 286:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 287:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterArbitrationLostBusErrorHandler(TWI_Master_t *twi)
+ 288:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
  262               		.loc 1 288 0
  263               	.LVL27:
  264               	/* prologue: function */
@@ -549,7 +549,7 @@
  266               	/* stack size = 0 */
  267               	.L__stack_usage = 0
  268 00c2 FC01      		movw r30,r24
- 289:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t currentStatus = twi->interface->MASTER.STATUS;
+ 289:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t currentStatus = twi->interface->MASTER.STATUS;
  269               		.loc 1 289 0
  270 00c4 A081      		ld r26,Z
  271 00c6 B181      		ldd r27,Z+1
@@ -557,36 +557,36 @@
  273 00ca 8C91      		ld r24,X
  274 00cc 1497      		sbiw r26,4
  275               	.LVL28:
- 290:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 291:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If bus error. */
- 292:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if (currentStatus & TWI_MASTER_BUSERR_bm) {
+ 290:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 291:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If bus error. */
+ 292:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if (currentStatus & TWI_MASTER_BUSERR_bm) {
  276               		.loc 1 292 0
  277 00ce 82FF      		sbrs r24,2
  278 00d0 00C0      		rjmp .L17
- 293:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_BUS_ERROR;
+ 293:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_BUS_ERROR;
  279               		.loc 1 293 0
  280 00d2 94E0      		ldi r25,lo8(4)
  281 00d4 00C0      		rjmp .L19
  282               	.L17:
- 294:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 295:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If arbitration lost. */
- 296:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
- 297:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_ARBITRATION_LOST;
+ 294:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 295:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If arbitration lost. */
+ 296:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
+ 297:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_ARBITRATION_LOST;
  283               		.loc 1 297 0
  284 00d6 93E0      		ldi r25,lo8(3)
  285               	.L19:
  286 00d8 908B      		std Z+16,r25
- 298:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 299:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 300:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Clear interrupt flag. */
- 301:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.STATUS = currentStatus | TWI_MASTER_ARBLOST_bm;
+ 298:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 299:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 300:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Clear interrupt flag. */
+ 301:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->interface->MASTER.STATUS = currentStatus | TWI_MASTER_ARBLOST_bm;
  287               		.loc 1 301 0
  288 00da 8860      		ori r24,lo8(8)
  289               	.LVL29:
  290 00dc 1496      		adiw r26,4
  291 00de 8C93      		st X,r24
- 302:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 303:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->status = TWIM_STATUS_READY;
+ 302:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 303:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->status = TWIM_STATUS_READY;
  292               		.loc 1 303 0
  293 00e0 1786      		std Z+15,__zero_reg__
  294 00e2 0895      		ret
@@ -594,17 +594,17 @@
  297               	.global	TWI_MasterWriteHandler
  299               	TWI_MasterWriteHandler:
  300               	.LFB15:
- 304:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
- 305:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 306:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 307:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI master write interrupt handler.
- 308:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 309:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  Handles TWI transactions (master write) and responses to (N)ACK.
- 310:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 311:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
- 312:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
- 313:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterWriteHandler(TWI_Master_t *twi)
- 314:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 304:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 305:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 306:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 307:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI master write interrupt handler.
+ 308:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 309:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  Handles TWI transactions (master write) and responses to (N)ACK.
+ 310:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 311:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
+ 312:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 313:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterWriteHandler(TWI_Master_t *twi)
+ 314:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
  301               		.loc 1 314 0
  302               	.LVL30:
  303 00e4 CF93      		push r28
@@ -616,18 +616,18 @@
  309               	/* stack size = 2 */
  310               	.L__stack_usage = 2
  311 00e8 FC01      		movw r30,r24
- 315:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Local variables used in if tests to avoid compiler warning. */
- 316:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToWrite  = twi->bytesToWrite;
+ 315:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Local variables used in if tests to avoid compiler warning. */
+ 316:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToWrite  = twi->bytesToWrite;
  312               		.loc 1 316 0
  313 00ea 9385      		ldd r25,Z+11
  314               	.LVL31:
- 317:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToRead   = twi->bytesToRead;
+ 317:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToRead   = twi->bytesToRead;
  315               		.loc 1 317 0
  316 00ec 8485      		ldd r24,Z+12
  317               	.LVL32:
- 318:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 319:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If NOT acknowledged (NACK) by slave cancel the transaction. */
- 320:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->interface->MASTER.STATUS & TWI_MASTER_RXACK_bm) {
+ 318:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 319:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If NOT acknowledged (NACK) by slave cancel the transaction. */
+ 320:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->interface->MASTER.STATUS & TWI_MASTER_RXACK_bm) {
  318               		.loc 1 320 0
  319 00ee A081      		ld r26,Z
  320 00f0 B181      		ldd r27,Z+1
@@ -636,29 +636,29 @@
  323 00f6 1497      		sbiw r26,4
  324 00f8 24FF      		sbrs r18,4
  325 00fa 00C0      		rjmp .L21
- 321:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
+ 321:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
  326               		.loc 1 321 0
  327 00fc 83E0      		ldi r24,lo8(3)
  328               	.LVL33:
  329 00fe 1396      		adiw r26,3
  330 0100 8C93      		st X,r24
- 322:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_NACK_RECEIVED;
+ 322:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->result = TWIM_RESULT_NACK_RECEIVED;
  331               		.loc 1 322 0
  332 0102 85E0      		ldi r24,lo8(5)
  333 0104 00C0      		rjmp .L25
  334               	.LVL34:
  335               	.L21:
- 323:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->status = TWIM_STATUS_READY;
- 324:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 325:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 326:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If more bytes to write, send data. */
- 327:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (twi->bytesWritten < bytesToWrite) {
+ 323:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->status = TWIM_STATUS_READY;
+ 324:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 325:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 326:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If more bytes to write, send data. */
+ 327:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (twi->bytesWritten < bytesToWrite) {
  336               		.loc 1 327 0
  337 0106 2585      		ldd r18,Z+13
  338 0108 2917      		cp r18,r25
  339 010a 00F4      		brsh .L23
  340               	.LBB28:
- 328:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t data = twi->writeData[twi->bytesWritten];
+ 328:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t data = twi->writeData[twi->bytesWritten];
  341               		.loc 1 328 0
  342 010c 8585      		ldd r24,Z+13
  343               	.LVL35:
@@ -667,11 +667,11 @@
  346 0112 D11D      		adc r29,__zero_reg__
  347 0114 8B81      		ldd r24,Y+3
  348               	.LVL36:
- 329:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.DATA = data;
+ 329:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.DATA = data;
  349               		.loc 1 329 0
  350 0116 1796      		adiw r26,7
  351 0118 8C93      		st X,r24
- 330:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		++twi->bytesWritten;
+ 330:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		++twi->bytesWritten;
  352               		.loc 1 330 0
  353 011a 8585      		ldd r24,Z+13
  354               	.LVL37:
@@ -681,25 +681,25 @@
  358               	.LVL38:
  359               	.L23:
  360               	.LBE28:
- 331:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 332:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 333:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If bytes to read, send repeated START condition + Address +
- 334:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	 * 'R/_W = 1'
- 335:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	 */
- 336:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (twi->bytesRead < bytesToRead) {
+ 331:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 332:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 333:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If bytes to read, send repeated START condition + Address +
+ 334:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	 * 'R/_W = 1'
+ 335:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	 */
+ 336:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (twi->bytesRead < bytesToRead) {
  361               		.loc 1 336 0
  362 0122 9685      		ldd r25,Z+14
  363               	.LVL39:
  364 0124 9817      		cp r25,r24
  365 0126 00F4      		brsh .L24
  366               	.LBB29:
- 337:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t readAddress = twi->address | 0x01;
+ 337:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t readAddress = twi->address | 0x01;
  367               		.loc 1 337 0
  368 0128 8281      		ldd r24,Z+2
  369               	.LVL40:
  370 012a 8160      		ori r24,lo8(1)
  371               	.LVL41:
- 338:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.ADDR = readAddress;
+ 338:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.ADDR = readAddress;
  372               		.loc 1 338 0
  373 012c 1696      		adiw r26,6
  374 012e 8C93      		st X,r24
@@ -707,11 +707,11 @@
  376               	.LVL42:
  377               	.L24:
  378               	.LBE29:
- 339:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 340:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 341:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If transaction finished, send STOP condition and set RESULT OK. */
- 342:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
- 343:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
+ 339:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 340:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 341:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If transaction finished, send STOP condition and set RESULT OK. */
+ 342:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
+ 343:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
  379               		.loc 1 343 0
  380 0132 83E0      		ldi r24,lo8(3)
  381               	.LVL43:
@@ -720,73 +720,73 @@
  384               	.LVL44:
  385               	.LBB30:
  386               	.LBB31:
- 344:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_OK);
- 345:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 346:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
- 347:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 348:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 349:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI master read interrupt handler.
- 350:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 351:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  This is the master read interrupt handler that takes care of
- 352:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  reading bytes from the TWI slave.
- 353:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 354:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
- 355:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
- 356:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterReadHandler(TWI_Master_t *twi)
- 357:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
- 358:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Fetch data if bytes to be read. */
- 359:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < TWIM_READ_BUFFER_SIZE) {
- 360:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t data = twi->interface->MASTER.DATA;
- 361:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->readData[twi->bytesRead] = data;
- 362:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesRead++;
- 363:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 364:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 365:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If buffer overflow, issue STOP and BUFFER_OVERFLOW condition. */
- 366:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
- 367:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
- 368:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_BUFFER_OVERFLOW);
- 369:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 370:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 371:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Local variable used in if test to avoid compiler warning. */
- 372:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToRead = twi->bytesToRead;
- 373:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 374:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If more bytes to read, issue ACK and start a byte read. */
- 375:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < bytesToRead) {
- 376:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_RECVTRANS_gc;
- 377:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 378:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 379:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If transaction finished, issue NACK and STOP condition. */
- 380:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
- 381:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_ACKACT_bm |
- 382:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		                               TWI_MASTER_CMD_STOP_gc;
- 383:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_OK);
- 384:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	}
- 385:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
- 386:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 387:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 
- 388:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI transaction finished handler.
- 389:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 390:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  Prepares module for new transaction.
- 391:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *
- 392:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi     The TWI_Master_t struct instance.
- 393:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param result  The result of the operation.
- 394:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c ****  */
- 395:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterTransactionFinished(TWI_Master_t *twi, uint8_t result)
- 396:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
- 397:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
+ 344:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_OK);
+ 345:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 346:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 347:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 348:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 349:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI master read interrupt handler.
+ 350:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 351:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  This is the master read interrupt handler that takes care of
+ 352:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  reading bytes from the TWI slave.
+ 353:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 354:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi The TWI_Master_t struct instance.
+ 355:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 356:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterReadHandler(TWI_Master_t *twi)
+ 357:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 358:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Fetch data if bytes to be read. */
+ 359:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < TWIM_READ_BUFFER_SIZE) {
+ 360:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t data = twi->interface->MASTER.DATA;
+ 361:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->readData[twi->bytesRead] = data;
+ 362:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesRead++;
+ 363:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 364:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 365:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If buffer overflow, issue STOP and BUFFER_OVERFLOW condition. */
+ 366:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
+ 367:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
+ 368:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_BUFFER_OVERFLOW);
+ 369:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 370:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 371:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* Local variable used in if test to avoid compiler warning. */
+ 372:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToRead = twi->bytesToRead;
+ 373:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 374:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If more bytes to read, issue ACK and start a byte read. */
+ 375:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < bytesToRead) {
+ 376:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_RECVTRANS_gc;
+ 377:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 378:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 379:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	/* If transaction finished, issue NACK and STOP condition. */
+ 380:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else {
+ 381:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_ACKACT_bm |
+ 382:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		                               TWI_MASTER_CMD_STOP_gc;
+ 383:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterTransactionFinished(twi, TWIM_RESULT_OK);
+ 384:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	}
+ 385:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 386:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 387:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 
+ 388:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** /*! \brief TWI transaction finished handler.
+ 389:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 390:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  Prepares module for new transaction.
+ 391:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *
+ 392:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param twi     The TWI_Master_t struct instance.
+ 393:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  *  \param result  The result of the operation.
+ 394:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c ****  */
+ 395:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterTransactionFinished(TWI_Master_t *twi, uint8_t result)
+ 396:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 397:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
  387               		.loc 1 397 0
  388 0138 81E0      		ldi r24,lo8(1)
  389               	.LVL45:
  390               	.L25:
  391 013a 808B      		std Z+16,r24
- 398:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->status = TWIM_STATUS_READY;
+ 398:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->status = TWIM_STATUS_READY;
  392               		.loc 1 398 0
  393 013c 1786      		std Z+15,__zero_reg__
  394               	.L20:
  395               	/* epilogue start */
  396               	.LBE31:
  397               	.LBE30:
- 346:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** }
+ 346:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** }
  398               		.loc 1 346 0
  399 013e DF91      		pop r29
  400 0140 CF91      		pop r28
@@ -795,7 +795,7 @@
  404               	.global	TWI_MasterReadHandler
  406               	TWI_MasterReadHandler:
  407               	.LFB16:
- 357:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 357:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
  408               		.loc 1 357 0
  409               	.LVL46:
  410               	/* prologue: function */
@@ -803,7 +803,7 @@
  412               	/* stack size = 0 */
  413               	.L__stack_usage = 0
  414 0144 FC01      		movw r30,r24
- 359:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < TWIM_READ_BUFFER_SIZE) {
+ 359:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < TWIM_READ_BUFFER_SIZE) {
  415               		.loc 1 359 0
  416 0146 8685      		ldd r24,Z+14
  417               	.LVL47:
@@ -812,12 +812,12 @@
  420 014c 8430      		cpi r24,lo8(4)
  421 014e 00F4      		brsh .L27
  422               	.LBB32:
- 360:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t data = twi->interface->MASTER.DATA;
+ 360:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		uint8_t data = twi->interface->MASTER.DATA;
  423               		.loc 1 360 0
  424 0150 1796      		adiw r26,7
  425 0152 8C91      		ld r24,X
  426               	.LVL48:
- 361:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->readData[twi->bytesRead] = data;
+ 361:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->readData[twi->bytesRead] = data;
  427               		.loc 1 361 0
  428 0154 9685      		ldd r25,Z+14
  429 0156 DF01      		movw r26,r30
@@ -825,7 +825,7 @@
  431 015a B11D      		adc r27,__zero_reg__
  432 015c 1796      		adiw r26,7
  433 015e 8C93      		st X,r24
- 362:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesRead++;
+ 362:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->bytesRead++;
  434               		.loc 1 362 0
  435 0160 8685      		ldd r24,Z+14
  436               	.LVL49:
@@ -835,7 +835,7 @@
  440               	.LVL50:
  441               	.L27:
  442               	.LBE32:
- 367:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
+ 367:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
  443               		.loc 1 367 0
  444 0168 83E0      		ldi r24,lo8(3)
  445 016a 1396      		adiw r26,3
@@ -843,7 +843,7 @@
  447               	.LVL51:
  448               	.LBB33:
  449               	.LBB34:
- 397:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
+ 397:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
  450               		.loc 1 397 0
  451 016e 82E0      		ldi r24,lo8(2)
  452 0170 808B      		std Z+16,r24
@@ -853,18 +853,18 @@
  456               	.L28:
  457               	.LBE34:
  458               	.LBE33:
- 372:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToRead = twi->bytesToRead;
+ 372:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t bytesToRead = twi->bytesToRead;
  459               		.loc 1 372 0
  460 0174 8485      		ldd r24,Z+12
  461               	.LVL53:
- 375:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < bytesToRead) {
+ 375:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if (twi->bytesRead < bytesToRead) {
  462               		.loc 1 375 0
  463 0176 9685      		ldd r25,Z+14
  464 0178 A081      		ld r26,Z
  465 017a B181      		ldd r27,Z+1
  466 017c 9817      		cp r25,r24
  467 017e 00F4      		brsh .L29
- 376:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_RECVTRANS_gc;
+ 376:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_CMD_RECVTRANS_gc;
  468               		.loc 1 376 0
  469 0180 82E0      		ldi r24,lo8(2)
  470               	.LVL54:
@@ -873,7 +873,7 @@
  473 0186 0895      		ret
  474               	.LVL55:
  475               	.L29:
- 381:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_ACKACT_bm |
+ 381:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		twi->interface->MASTER.CTRLC = TWI_MASTER_ACKACT_bm |
  476               		.loc 1 381 0
  477 0188 87E0      		ldi r24,lo8(7)
  478               	.LVL56:
@@ -882,7 +882,7 @@
  481               	.LVL57:
  482               	.LBB35:
  483               	.LBB36:
- 397:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
+ 397:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
  484               		.loc 1 397 0
  485 018e 81E0      		ldi r24,lo8(1)
  486 0190 808B      		std Z+16,r24
@@ -895,51 +895,51 @@
  494               	.global	TWI_MasterInterruptHandler
  496               	TWI_MasterInterruptHandler:
  497               	.LFB13:
- 254:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 254:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
  498               		.loc 1 254 0
  499               	.LVL58:
  500               	/* prologue: function */
  501               	/* frame size = 0 */
  502               	/* stack size = 0 */
  503               	.L__stack_usage = 0
- 255:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t currentStatus = twi->interface->MASTER.STATUS;
+ 255:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	uint8_t currentStatus = twi->interface->MASTER.STATUS;
  504               		.loc 1 255 0
  505 0196 DC01      		movw r26,r24
  506 0198 ED91      		ld r30,X+
  507 019a FC91      		ld r31,X
  508 019c 2481      		ldd r18,Z+4
  509               	.LVL59:
- 253:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterInterruptHandler(TWI_Master_t *twi)
+ 253:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** void TWI_MasterInterruptHandler(TWI_Master_t *twi)
  510               		.loc 1 253 0
  511 019e 322F      		mov r19,r18
  512 01a0 3C70      		andi r19,lo8(12)
- 258:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	if ((currentStatus & TWI_MASTER_ARBLOST_bm) ||
+ 258:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	if ((currentStatus & TWI_MASTER_ARBLOST_bm) ||
  513               		.loc 1 258 0
  514 01a2 01F0      		breq .L32
- 261:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterArbitrationLostBusErrorHandler(twi);
+ 261:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterArbitrationLostBusErrorHandler(twi);
  515               		.loc 1 261 0
  516 01a4 0C94 0000 		jmp TWI_MasterArbitrationLostBusErrorHandler
  517               	.LVL60:
  518               	.L32:
- 265:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_WIF_bm) {
+ 265:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_WIF_bm) {
  519               		.loc 1 265 0
  520 01a8 26FD      		sbrc r18,6
- 266:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterWriteHandler(twi);
+ 266:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterWriteHandler(twi);
  521               		.loc 1 266 0
  522 01aa 0C94 0000 		jmp TWI_MasterWriteHandler
  523               	.LVL61:
  524               	.L33:
- 270:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_RIF_bm) {
+ 270:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	else if (currentStatus & TWI_MASTER_RIF_bm) {
  525               		.loc 1 270 0
  526 01ae 27FD      		sbrc r18,7
- 271:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterReadHandler(twi);
+ 271:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 		TWI_MasterReadHandler(twi);
  527               		.loc 1 271 0
  528 01b0 0C94 0000 		jmp TWI_MasterReadHandler
  529               	.LVL62:
  530               	.L34:
  531               	.LBB37:
  532               	.LBB38:
- 397:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
+ 397:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
  533               		.loc 1 397 0
  534 01b4 26E0      		ldi r18,lo8(6)
  535               	.LVL63:
@@ -954,14 +954,14 @@
  545               	.global	TWI_MasterTransactionFinished
  547               	TWI_MasterTransactionFinished:
  548               	.LFB17:
- 396:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** {
+ 396:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** {
  549               		.loc 1 396 0
  550               	.LVL64:
  551               	/* prologue: function */
  552               	/* frame size = 0 */
  553               	/* stack size = 0 */
  554               	.L__stack_usage = 0
- 397:/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
+ 397:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.c **** 	twi->result = result;
  555               		.loc 1 397 0
  556 01be FC01      		movw r30,r24
  557 01c0 608B      		std Z+16,r22
@@ -972,26 +972,26 @@
  711               	.Letext0:
  712               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
  713               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
- 714               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/twi_master_driver.h"
+ 714               		.file 4 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/hw-block/twi_master_driver.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 twi_master_driver.c
-     /tmp/ccSbsTNh.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccSbsTNh.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccSbsTNh.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccSbsTNh.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccSbsTNh.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccSbsTNh.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccSbsTNh.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccSbsTNh.s:13     .text:0000000000000000 TWI_MasterInit
-     /tmp/ccSbsTNh.s:49     .text:0000000000000022 TWI_MasterState
-     /tmp/ccSbsTNh.s:71     .text:000000000000002e TWI_MasterReady
-     /tmp/ccSbsTNh.s:90     .text:0000000000000036 TWI_MasterWriteRead
-     /tmp/ccSbsTNh.s:211    .text:00000000000000a4 TWI_MasterRead
-     /tmp/ccSbsTNh.s:238    .text:00000000000000b6 TWI_MasterWrite
-     /tmp/ccSbsTNh.s:260    .text:00000000000000c2 TWI_MasterArbitrationLostBusErrorHandler
-     /tmp/ccSbsTNh.s:299    .text:00000000000000e4 TWI_MasterWriteHandler
-     /tmp/ccSbsTNh.s:406    .text:0000000000000144 TWI_MasterReadHandler
-     /tmp/ccSbsTNh.s:496    .text:0000000000000196 TWI_MasterInterruptHandler
-     /tmp/ccSbsTNh.s:547    .text:00000000000001be TWI_MasterTransactionFinished
+     /tmp/cca8J1Ur.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cca8J1Ur.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cca8J1Ur.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cca8J1Ur.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cca8J1Ur.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cca8J1Ur.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cca8J1Ur.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cca8J1Ur.s:13     .text:0000000000000000 TWI_MasterInit
+     /tmp/cca8J1Ur.s:49     .text:0000000000000022 TWI_MasterState
+     /tmp/cca8J1Ur.s:71     .text:000000000000002e TWI_MasterReady
+     /tmp/cca8J1Ur.s:90     .text:0000000000000036 TWI_MasterWriteRead
+     /tmp/cca8J1Ur.s:211    .text:00000000000000a4 TWI_MasterRead
+     /tmp/cca8J1Ur.s:238    .text:00000000000000b6 TWI_MasterWrite
+     /tmp/cca8J1Ur.s:260    .text:00000000000000c2 TWI_MasterArbitrationLostBusErrorHandler
+     /tmp/cca8J1Ur.s:299    .text:00000000000000e4 TWI_MasterWriteHandler
+     /tmp/cca8J1Ur.s:406    .text:0000000000000144 TWI_MasterReadHandler
+     /tmp/cca8J1Ur.s:496    .text:0000000000000196 TWI_MasterInterruptHandler
+     /tmp/cca8J1Ur.s:547    .text:00000000000001be TWI_MasterTransactionFinished
 
 NO UNDEFINED SYMBOLS

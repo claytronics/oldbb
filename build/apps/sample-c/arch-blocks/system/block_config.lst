@@ -11,29 +11,29 @@
   11               	.global	setUID
   13               	setUID:
   14               	.LFB6:
-  15               		.file 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb"
-   1:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** // block_config.c
-   2:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** //
-   3:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** // Contains block configuration data
-   4:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** 
-   5:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** #ifndef _BLOCK_CONFIG_C_
-   6:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** #define _BLOCK_CONFIG_C_
-   7:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** 
-   8:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** #include "block_config.bbh"
-   9:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** 
-  10:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** threadextern blockConf EEMEM nv_conf;
-  11:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** threadextern blockConf conf;
-  12:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** 
-  13:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** // sets local copy of UID
-  14:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** void setUID(uint16_t newID)
-  15:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** {
+  15               		.file 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb"
+   1:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** // block_config.c
+   2:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** //
+   3:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** // Contains block configuration data
+   4:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** 
+   5:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** #ifndef _BLOCK_CONFIG_C_
+   6:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** #define _BLOCK_CONFIG_C_
+   7:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** 
+   8:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** #include "block_config.bbh"
+   9:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** 
+  10:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** threadextern blockConf EEMEM nv_conf;
+  11:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** threadextern blockConf conf;
+  12:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** 
+  13:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** // sets local copy of UID
+  14:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** void setUID(uint16_t newID)
+  15:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** {
   16               		.loc 1 15 0
   17               	.LVL0:
   18               	/* prologue: function */
   19               	/* frame size = 0 */
   20               	/* stack size = 0 */
   21               	.L__stack_usage = 0
-  16:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb ****     conf.UID = newID;
+  16:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb ****     conf.UID = newID;
   22               		.loc 1 16 0
   23 0000 8093 0000 		sts conf,r24
   24 0004 9093 0000 		sts conf+1,r25
@@ -42,22 +42,22 @@
   28               	.global	setAndStoreUID
   30               	setAndStoreUID:
   31               	.LFB7:
-  17:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** }
-  18:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** 
-  19:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** // sets local copy of UID and stores in EEPROM
-  20:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** void setAndStoreUID(uint16_t newID)
-  21:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb **** {
+  17:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** }
+  18:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** 
+  19:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** // sets local copy of UID and stores in EEPROM
+  20:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** void setAndStoreUID(uint16_t newID)
+  21:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb **** {
   32               		.loc 1 21 0
   33               	.LVL1:
   34               	/* prologue: function */
   35               	/* frame size = 0 */
   36               	/* stack size = 0 */
   37               	.L__stack_usage = 0
-  22:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb ****     conf.UID = newID;
+  22:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb ****     conf.UID = newID;
   38               		.loc 1 22 0
   39 000a 8093 0000 		sts conf,r24
   40 000e 9093 0000 		sts conf+1,r25
-  23:/home/pthalamy/CMU/oldbb/build/src-bobby/system/block_config.bb ****     store(&nv_conf, &conf, sizeof(blockConf));
+  23:/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/block_config.bb ****     store(&nv_conf, &conf, sizeof(blockConf));
   41               		.loc 1 23 0
   42 0012 44E0      		ldi r20,lo8(4)
   43 0014 50E0      		ldi r21,0
@@ -71,19 +71,19 @@
   51               	.LFE7:
   87               	.Letext0:
   88               		.file 2 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdint.h"
-  89               		.file 3 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/memory.bbh"
-  90               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/../hw-api/hwMemory.h"
+  89               		.file 3 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/memory.bbh"
+  90               		.file 4 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/../hw-api/hwMemory.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 block_config.c
-     /tmp/ccqCifot.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccqCifot.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccqCifot.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccqCifot.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccqCifot.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccqCifot.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccqCifot.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccqCifot.s:13     .text:0000000000000000 setUID
-     /tmp/ccqCifot.s:30     .text:000000000000000a setAndStoreUID
+     /tmp/ccUm8vA2.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccUm8vA2.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccUm8vA2.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccUm8vA2.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccUm8vA2.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccUm8vA2.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccUm8vA2.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccUm8vA2.s:13     .text:0000000000000000 setUID
+     /tmp/ccUm8vA2.s:30     .text:000000000000000a setAndStoreUID
 
 UNDEFINED SYMBOLS
 conf

@@ -1,4 +1,4 @@
-# 1 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/debug.bb"
+# 1 "/home/anaz/Desktop/oldbb-ssh/build/src-bobby/system/debug.bb"
 #include "debug.h"
 #include "../hw-api/hwDebug.h"
 
