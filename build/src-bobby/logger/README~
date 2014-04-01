@@ -1,0 +1,6 @@
+4/1/14
+
+Use the following command to compile:
+
+g++ logger.c hostserial.c logtable.c chunk.c circ_buffer.c -o logtest2 -lpthread
+

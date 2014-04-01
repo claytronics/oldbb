@@ -4,6 +4,7 @@
 #define _HOSTSERIAL_C_
 
 #include "hostserial.h"
+#include <pthread.h>
 
 // formula: (freq/(16*BAUD)) - 1
 // freq = 10 MHz (f_CPU)
