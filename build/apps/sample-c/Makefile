@@ -2,7 +2,9 @@
 # below here should be in an include file
 ##################################################
 
-SOURCE := test.bb
+#SOURCE := test.bb
+SOURCE := comTest.bb
+
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb

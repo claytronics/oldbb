@@ -363,19 +363,19 @@
  292               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/hardwaretime.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwTime.c
-     /tmp/cce5NeMe.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cce5NeMe.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cce5NeMe.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cce5NeMe.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cce5NeMe.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cce5NeMe.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cce5NeMe.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cce5NeMe.s:13     .text:0000000000000000 getHWTime
+     /tmp/cckFbW0Q.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cckFbW0Q.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cckFbW0Q.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cckFbW0Q.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cckFbW0Q.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cckFbW0Q.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cckFbW0Q.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cckFbW0Q.s:13     .text:0000000000000000 getHWTime
                             *COM*:0000000000000002 timeHi
-     /tmp/cce5NeMe.s:82     .text:0000000000000038 initHWClock
-     /tmp/cce5NeMe.s:109    .text:0000000000000056 initHWRTC
-     /tmp/cce5NeMe.s:142    .text:0000000000000084 initHWTime
-     /tmp/cce5NeMe.s:159    .text:000000000000008c __vector_10
+     /tmp/cckFbW0Q.s:82     .text:0000000000000038 initHWClock
+     /tmp/cckFbW0Q.s:109    .text:0000000000000056 initHWRTC
+     /tmp/cckFbW0Q.s:142    .text:0000000000000084 initHWTime
+     /tmp/cckFbW0Q.s:159    .text:000000000000008c __vector_10
 
 UNDEFINED SYMBOLS
 __do_clear_bss

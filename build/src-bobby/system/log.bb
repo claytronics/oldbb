@@ -23,12 +23,12 @@ threadvar PRef toHost = 200; //= NUM_PORT; // UNDEFINED_HOST (compilation error 
 
 int seq = 0; // sequence number for avoiding loops when broadcasting commands
 
-void myMsgHandler(void);
-void freeMyChunk(void);
+void myCmdHandler(void);
+void freeCmdChunk(void);
 void freeLogChunk(void);
-byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh);
+byte sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh);
 
-void freeMyChunk(void)
+void freeCmdChunk(void)
 {
     free(thisChunk);
 }
@@ -48,14 +48,14 @@ void freeLogChunk(void)
 #endif
 }
 
-byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh) 
+byte sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh) 
 {
     Chunk *c=calloc(sizeof(Chunk), 1);
     if (c == NULL)
     {
         return 0;
     }
-    if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeMyChunk) == 0)
+    if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeCmdChunk) == 0)
     {
         free(c);
         return 0;
@@ -69,14 +69,14 @@ void processCmd(void)
     if (seq < thisChunk->data[2]) {
 	  seq = thisChunk->data[2];
 	  for (X = 0 ; X <= 5 ; X++) {
-	    sendMyChunk(X, thisChunk->data, 4, (MsgHandler)myMsgHandler);
+	    sendCmdChunk(X, thisChunk->data, 4, (MsgHandler)myCmdHandler);
 	  }
 	  callHandler(EVENT_COMMAND_RECEIVED);
 	  //triggerHandler(EVENT_COMMAND_RECEIVED);
     }
 }
 
-void myMsgHandler(void)
+void myCmdHandler(void)
 {
   processCmd();
 }

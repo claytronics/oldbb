@@ -757,20 +757,20 @@
  756               		.file 4 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdio.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 ext_memory.c
-     /tmp/cc6Ltf1B.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cc6Ltf1B.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cc6Ltf1B.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cc6Ltf1B.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cc6Ltf1B.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cc6Ltf1B.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cc6Ltf1B.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cc6Ltf1B.s:13     .text:0000000000000000 spiTxRx
-     /tmp/cc6Ltf1B.s:38     .text:0000000000000012 setSS
-     /tmp/cc6Ltf1B.s:86     .text:000000000000003a readExtMem
-     /tmp/cc6Ltf1B.s:254    .text:00000000000000ea writeExtMem
-     /tmp/cc6Ltf1B.s:416    .text:0000000000000190 initFlash
-     /tmp/cc6Ltf1B.s:432    .text:0000000000000192 initSRAM
-     /tmp/cc6Ltf1B.s:532    .text:00000000000001de initExtMem
+     /tmp/ccciBXHh.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccciBXHh.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccciBXHh.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccciBXHh.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccciBXHh.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccciBXHh.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccciBXHh.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccciBXHh.s:13     .text:0000000000000000 spiTxRx
+     /tmp/ccciBXHh.s:38     .text:0000000000000012 setSS
+     /tmp/ccciBXHh.s:86     .text:000000000000003a readExtMem
+     /tmp/ccciBXHh.s:254    .text:00000000000000ea writeExtMem
+     /tmp/ccciBXHh.s:416    .text:0000000000000190 initFlash
+     /tmp/ccciBXHh.s:432    .text:0000000000000192 initSRAM
+     /tmp/ccciBXHh.s:532    .text:00000000000001de initExtMem
 
 UNDEFINED SYMBOLS
 printf

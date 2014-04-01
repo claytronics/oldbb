@@ -8,11 +8,11 @@
 #include "ensemble.bbh"
 #include "clock.bbh"
 #include "block_config.bbh"
-#include "memory.bbh"
   
 void getCmdData(void);
 void blockTap(void);
-void angleChange(void);
+void accelChange();
+void orientationChange(AccelData acc);
 
 int tapCount = 0;
 
@@ -75,7 +75,8 @@ void getCmdData(void)
   #endif
 }
 
-void blockTap(void){
+void blockTap(void)
+{
     setNextColor();
     
     #ifdef LOG_DEBUG
@@ -87,12 +88,46 @@ void blockTap(void){
     tapCount++;
 }
 
-void angleChange(void){
+void accelChange(void)
+{
 	AccelData acc = getAccelData();
-	
+	if ((acc.status & ACC_TAP) == ACC_TAP){
+		blockTap();
+	}
+	else {
+		orientationChange(acc);
+	}
+}
+
+void orientationChange(AccelData acc)
+{
+	/***** SHOULD WORK BUT ALWAYS SENDS ERROR. + INACCURATE.
+	 * switch (acc.status & ACC_O_MASK) {
+		case ACC_FRONT:
+			snprintf(s, 150*sizeof(char), "ACC_FRONT");
+			break;
+		case ACC_BACK:
+			snprintf(s, 150*sizeof(char), "ACC_BACK");
+			break;
+		case ACC_LEFT:
+			snprintf(s, 150*sizeof(char), "ACC_LEFT");
+			break;
+		case ACC_RIGHT:
+			snprintf(s, 150*sizeof(char), "ACC_RIGHT");
+			break;
+		case ACC_DOWN:
+			snprintf(s, 150*sizeof(char), "ACC_DOWN");
+			break;
+		case ACC_UP:
+			snprintf(s, 150*sizeof(char), "ACC_UP");
+			break;
+		default:
+			snprintf(s, 150*sizeof(char), "ERROR");
+			break;
+	}*/
 	#ifdef LOG_DEBUG
 	char s[150];
-	snprintf(s, 150*sizeof(char), "x:%i y:%i z:%i\n", acc.x, acc.y, acc.z);
+	snprintf(s, 150*sizeof(char),"x:%i\ty:%i\tz:%i\n", acc.x, acc.y, acc.z);
 	s[149] = '\0';
 	printDebug(s);
 	#endif
@@ -102,6 +137,5 @@ void userRegistration(void)
 {
 	registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);
 	registerHandler(EVENT_COMMAND_RECEIVED, (GenericHandler)&getCmdData);
-	//registerHandler(EVENT_ACCEL_TAP, (GenericHandler)&blockTap);
-	registerHandler(EVENT_ACCEL_CHANGE, (GenericHandler)&angleChange);
+	registerHandler(EVENT_ACCEL_CHANGE, (GenericHandler)&accelChange);
 }

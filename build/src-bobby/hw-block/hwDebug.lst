@@ -170,17 +170,17 @@
  140               		.file 4 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwDebug.c
-     /tmp/ccyMtoPz.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccyMtoPz.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccyMtoPz.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccyMtoPz.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccyMtoPz.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccyMtoPz.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccyMtoPz.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccyMtoPz.s:13     .text:0000000000000000 initDebugUart
-     /tmp/ccyMtoPz.s:42     .text:0000000000000014 debugPutChar
-     /tmp/ccyMtoPz.s:59     .text:000000000000001a debugGetChar
-     /tmp/ccyMtoPz.s:76     .text:0000000000000020 initHWDebug
+     /tmp/ccEEPct1.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccEEPct1.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccEEPct1.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccEEPct1.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccEEPct1.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccEEPct1.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccEEPct1.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccEEPct1.s:13     .text:0000000000000000 initDebugUart
+     /tmp/ccEEPct1.s:42     .text:0000000000000014 debugPutChar
+     /tmp/ccEEPct1.s:59     .text:000000000000001a debugGetChar
+     /tmp/ccEEPct1.s:76     .text:0000000000000020 initHWDebug
                             *COM*:000000000000000e debug
 
 UNDEFINED SYMBOLS

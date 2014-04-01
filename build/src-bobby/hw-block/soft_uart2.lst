@@ -816,22 +816,22 @@
  816               		.file 6 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/soft_uart2.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 soft_uart2.c
-     /tmp/ccalIpRl.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccalIpRl.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccalIpRl.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccalIpRl.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccalIpRl.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccalIpRl.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccalIpRl.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccalIpRl.s:13     .text:0000000000000000 timer_set
-     /tmp/ccalIpRl.s:122    .text:000000000000008e configure_soft_uart
-     /tmp/ccalIpRl.s:147    .text:00000000000000a0 init_soft_uart
+     /tmp/ccZwrCmZ.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccZwrCmZ.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccZwrCmZ.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccZwrCmZ.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccZwrCmZ.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccZwrCmZ.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccZwrCmZ.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccZwrCmZ.s:13     .text:0000000000000000 timer_set
+     /tmp/ccZwrCmZ.s:122    .text:000000000000008e configure_soft_uart
+     /tmp/ccZwrCmZ.s:147    .text:00000000000000a0 init_soft_uart
                             *COM*:0000000000000014 soft_uart
-     /tmp/ccalIpRl.s:209    .text:00000000000000e4 su_getchar
-     /tmp/ccalIpRl.s:258    .text:0000000000000110 set_tx_char
-     /tmp/ccalIpRl.s:285    .text:0000000000000126 su_putchar
-     /tmp/ccalIpRl.s:308    .text:0000000000000136 kbhit
-     /tmp/ccalIpRl.s:337    .text:0000000000000150 __vector_83
+     /tmp/ccZwrCmZ.s:209    .text:00000000000000e4 su_getchar
+     /tmp/ccZwrCmZ.s:258    .text:0000000000000110 set_tx_char
+     /tmp/ccZwrCmZ.s:285    .text:0000000000000126 su_putchar
+     /tmp/ccZwrCmZ.s:308    .text:0000000000000136 kbhit
+     /tmp/ccZwrCmZ.s:337    .text:0000000000000150 __vector_83
 
 UNDEFINED SYMBOLS
 __udivmodsi4
