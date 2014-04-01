@@ -11,8 +11,9 @@
 #include "time.h"
 #include "chunk.h"
 #include "logtable.h"
-#define LOG_CMD	0x05	
-#define LOG_MSG 0x50
+#define LOG_CMD		0x05	
+#define LOG_MSG 	0x50
+#define NUM_COLORS	9
 // Usage: ./logger -p /dev/ttyUSB0
 
 using namespace std;
@@ -21,8 +22,7 @@ char* portname  = NULL;
 string defaultportname = "/dev/ttyUSB0";
 int baudrate = 38400;
 char* prog = 0;
-int seq = 0;
-enum Color
+int seq = 1;
 
 pthread_mutex_t serialMutex;
 pthread_mutex_t circbuffMutex;
@@ -36,13 +36,14 @@ void usage(void);
 void readParameters(int argc, char** argv);
 void sendIAmHost(void);
 void insertLogChunk(Chunk *c);
-void sendCmd(void);
+void sendCmd(int);
 
 static int kbhit(void);
 
 int main(int argc, char** argv) {
     
     char c = '0';
+    int i;
     readParameters(argc, argv);
     
     if( !Chunk::initSerial(portname, baudrate)  ) {
@@ -51,7 +52,10 @@ int main(int argc, char** argv) {
     
     sendIAmHost();
     while(c != 'q') {
-	/*while(!kbhit()) {
+      i = 0;
+      for(i ; i < NUM_COLORS ; i++){
+	cout << "Press enter to send next color..." << endl;
+	while(!kbhit()) {
 		Chunk *ch = Chunk::read();
 		if ( ch != NULL) {
 			if (ch->data[0] == LOG_MSG) {			
@@ -62,18 +66,17 @@ int main(int argc, char** argv) {
 		//logs.printAll();
 		logs.printCompleted();
 		logs.removeCompleted();
-		
-		//if (kbhit()) {
-		//	cout << "kbhit" << endl;
-			//c = getchar();
-		//}
-	} */
-	c = getchar();
-	sendCmd();
+	} 
+	  getchar();
+	  sendCmd(i);
+	  sleep(1);
+	}
+      cout << "Type 'q' to quit or any other key to start again...";
+      c = getchar();
     }
 	logs.printStats();
     // shutdown everything
-    cout << "Close serial comm...";
+    cout << "Closing serial comm...";
     cout.flush();
     
     Chunk::closeSerial();
@@ -130,32 +133,19 @@ void sendIAmHost(void) {
 		}
 	} while (true);
 }
-void sendCmd(void) {
+void sendCmd(int color) {
 	
 	byte data[4];
 	
 	data[0] = LOG_MSG;
-  	data[1] = LOG_CMD;
+	data[1] = LOG_CMD;
 	data[2] = seq;
-	data[3]	= 0;
-    Chunk c(data, 4);
-    Chunk *ack = NULL; 
+	data[3] = color;
+	Chunk c(data, 4);
 
-    // Try 2 times (parity)
-    do {
-		printf("Sending setColor(RED)\n");
+		printf("Sending setColor(%d)\n", color);
 		c.send();
-		ack = Chunk::read();
-		if (ack == NULL) {
-			return;
-		} else if (ack->data[0] == LOG_MSG) {
-			insertLogChunk(ack);
-			delete ack;
-			logs.printCompleted();
-			logs.removeCompleted();
-		}
 		seq++;
-	} while (true);
 }
 
 void insertLogChunk(Chunk *c) {

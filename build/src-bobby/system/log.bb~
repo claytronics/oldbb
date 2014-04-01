@@ -20,17 +20,7 @@
 threadvar byte PCConnection = 0;
 threadvar PRef toHost = 200; //= NUM_PORT; // UNDEFINED_HOST (compilation error with SIM)
 
-int seq = 0; // sequence number for avoiding loops when broadcasting commands
-
-void myMsgHandler(void);
-void freeMyChunk(void);
-void freeLogChunk(void);
-byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh);
-
-void freeMyChunk(void)
-{
-    free(thisChunk);
-}
+byte sendLogChunk(PRef p, byte *d, byte s);
 
 void freeLogChunk(void)
 {
@@ -45,38 +35,6 @@ void freeLogChunk(void)
 #else
 	free(thisChunk);
 #endif
-}
-
-byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh) 
-{
-    Chunk *c=calloc(sizeof(Chunk), 1);
-    if (c == NULL)
-    {
-        return 0;
-    }
-    if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeMyChunk) == 0)
-    {
-        free(c);
-        return 0;
-    }
-    return 1;
-}
-
-void processCmd(void) 
-{
-   int X = 0;
-    if (seq < thisChunk->data[2]) {
-	  seq = thisChunk->data[2];
-	  for (X ; X <= 5 ; X++) {
-	    sendMyChunk(X, thisChunk->data, 4, (MsgHandler)myMsgHandler);
-	  }
-	  triggerHandler(EVENT_COMMAND_RECEIVED);
-    } 
-}
-
-void myMsgHandler(void)
-{
-  processCmd();
 }
 
 byte isHostPort(PRef p)
@@ -169,6 +127,7 @@ void initLogDebug(void)
 
 byte handleLogMessage(void)
 {
+	
 	if( thisChunk == NULL ) 
 	{
 		return 0;
@@ -179,6 +138,9 @@ byte handleLogMessage(void)
 			toHost = faceNum(thisChunk);			
 			PCConnection = 1;
 			spreadPathToHost(faceNum(thisChunk));
+		break;
+		case LOG_CMD:
+			
 		break;
 		case LOG_PATH_TO_HOST:
 			if (toHost == UNDEFINED_HOST) {
@@ -196,9 +158,6 @@ byte handleLogMessage(void)
 			if(toHost != UNDEFINED_HOST) {
 				forwardToHost(thisChunk);
 			}
-		break;		
-		case LOG_CMD:
-			processCmd();
 		break;
 	}
 	
@@ -325,3 +284,4 @@ byte blockingPrintDebug(char *s)
 	va_end(args);
 	return ret;
 } */
+
