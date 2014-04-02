@@ -3,7 +3,7 @@
 ##################################################
 
 #SOURCE := test.bb
-SOURCE := comTest.bb
+SOURCE := comTest2.bb
 
 
 # add any extra of yours here

@@ -17,11 +17,11 @@ byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh);
 #ifdef LOG_DEBUG
 byte from;
 byte comCount = 0;
-    
+char s[150];    
+
 void myMain(void)
 { 
   byte p;
-  char s[150];
   byte activePort;
   byte msg[17];
  
@@ -47,7 +47,7 @@ void myMain(void)
     msg[0] = ++comCount;
     sendMyChunk(activePort, msg, 1, (MsgHandler)myMsgHandler);
     
-    snprintf(s, 150*sizeof(char), "START");
+    snprintf(s, 150*sizeof(char), "START %d", comCount);
     s[149] = '\0';
     printDebug(s);
     
@@ -63,12 +63,7 @@ void myMain(void)
 
 void myMsgHandler(void)
 {
-  char s[150];
   comCount = thisChunk->data[0];
-  switch (comCount) {
-    case 50: setIntensity(50); break;
-    case 100: setIntensity(100); break;
-  }
   from = faceNum(thisChunk);
   delayMS(500);
   setNextColor();
@@ -78,13 +73,12 @@ void myMsgHandler(void)
 
 byte pong(void)
 { 
-  char s[150];
   byte msg[17];
   msg[0] = ++comCount;
   
-  /*snprintf(s, 150*sizeof(char), "%d", comCount);
+  snprintf(s, 150*sizeof(char), "%d", comCount);
   s[149] = '\0';
-  printDebug(s);*/
+  printDebug(s);
   
   sendMyChunk(from, msg, 1, (MsgHandler)myMsgHandler);
   
