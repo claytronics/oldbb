@@ -2,8 +2,13 @@
 # below here should be in an include file
 ##################################################
 
-#SOURCE := test.bb
-SOURCE := comTest2.bb
+#SOURCE := color_accel_tester.bb
+#SOURCE := communication_tester.bb
+#SOURCE := setID.bb
+#SOURCE := spanningTree.bb
+#SOURCE := network_test_ST.bb
+SOURCE := network_test_ST_slowmo.bb
+
 
 
 # add any extra of yours here
@@ -16,6 +21,6 @@ SOURCE := comTest2.bb
 #MELDO +=
 
 #CFLAGS_OPTIONS = -DCLOCK_SYNC
-CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
+#CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
 
 include Makefile.header

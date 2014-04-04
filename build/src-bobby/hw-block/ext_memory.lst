@@ -757,20 +757,20 @@
  756               		.file 4 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/stdio.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 ext_memory.c
-     /tmp/ccO2D1ZE.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccO2D1ZE.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccO2D1ZE.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccO2D1ZE.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccO2D1ZE.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccO2D1ZE.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccO2D1ZE.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccO2D1ZE.s:13     .text:0000000000000000 spiTxRx
-     /tmp/ccO2D1ZE.s:38     .text:0000000000000012 setSS
-     /tmp/ccO2D1ZE.s:86     .text:000000000000003a readExtMem
-     /tmp/ccO2D1ZE.s:254    .text:00000000000000ea writeExtMem
-     /tmp/ccO2D1ZE.s:416    .text:0000000000000190 initFlash
-     /tmp/ccO2D1ZE.s:432    .text:0000000000000192 initSRAM
-     /tmp/ccO2D1ZE.s:532    .text:00000000000001de initExtMem
+     /tmp/ccq0u2LD.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccq0u2LD.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccq0u2LD.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccq0u2LD.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccq0u2LD.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccq0u2LD.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccq0u2LD.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccq0u2LD.s:13     .text:0000000000000000 spiTxRx
+     /tmp/ccq0u2LD.s:38     .text:0000000000000012 setSS
+     /tmp/ccq0u2LD.s:86     .text:000000000000003a readExtMem
+     /tmp/ccq0u2LD.s:254    .text:00000000000000ea writeExtMem
+     /tmp/ccq0u2LD.s:416    .text:0000000000000190 initFlash
+     /tmp/ccq0u2LD.s:432    .text:0000000000000192 initSRAM
+     /tmp/ccq0u2LD.s:532    .text:00000000000001de initExtMem
 
 UNDEFINED SYMBOLS
 printf

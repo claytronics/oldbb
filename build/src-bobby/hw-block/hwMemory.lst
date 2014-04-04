@@ -291,16 +291,16 @@
  356               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/eeprom_driver.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwMemory.c
-     /tmp/cch7YhDX.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cch7YhDX.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cch7YhDX.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cch7YhDX.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cch7YhDX.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cch7YhDX.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cch7YhDX.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cch7YhDX.s:13     .text:0000000000000000 store
-     /tmp/cch7YhDX.s:117    .text:000000000000006e restore
-     /tmp/cch7YhDX.s:190    .text:00000000000000b8 getGUID
+     /tmp/ccAcW9h4.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccAcW9h4.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccAcW9h4.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccAcW9h4.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccAcW9h4.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccAcW9h4.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccAcW9h4.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccAcW9h4.s:13     .text:0000000000000000 store
+     /tmp/ccAcW9h4.s:117    .text:000000000000006e restore
+     /tmp/ccAcW9h4.s:190    .text:00000000000000b8 getGUID
 
 UNDEFINED SYMBOLS
 EEPROM_LoadPartialPage

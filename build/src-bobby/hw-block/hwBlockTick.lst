@@ -185,16 +185,16 @@
  276               		.file 4 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/block.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwBlockTick.c
-     /tmp/cc22DoqN.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/cc22DoqN.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/cc22DoqN.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/cc22DoqN.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/cc22DoqN.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/cc22DoqN.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/cc22DoqN.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/cc22DoqN.s:13     .text:0000000000000000 scaryBlockTickHack
-     /tmp/cc22DoqN.s:39     .text:0000000000000016 initBlockTick
-     /tmp/cc22DoqN.s:69     .text:0000000000000030 __vector_108
+     /tmp/ccWnl3wN.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccWnl3wN.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccWnl3wN.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccWnl3wN.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccWnl3wN.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccWnl3wN.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccWnl3wN.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccWnl3wN.s:13     .text:0000000000000000 scaryBlockTickHack
+     /tmp/ccWnl3wN.s:39     .text:0000000000000016 initBlockTick
+     /tmp/ccWnl3wN.s:69     .text:0000000000000030 __vector_108
 
 UNDEFINED SYMBOLS
 blockTickRunning

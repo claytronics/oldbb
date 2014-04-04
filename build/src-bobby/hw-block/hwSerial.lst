@@ -1533,33 +1533,33 @@
  2488               		.file 10 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/serial.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwSerial.c
-     /tmp/ccPlLFD0.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccPlLFD0.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccPlLFD0.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccPlLFD0.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccPlLFD0.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccPlLFD0.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccPlLFD0.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccPlLFD0.s:13     .text:0000000000000000 u_putchar
-     /tmp/ccPlLFD0.s:35     .text:000000000000000c u_getchar
-     /tmp/ccPlLFD0.s:65     .text:0000000000000022 pPutChar
+     /tmp/ccWvydI8.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccWvydI8.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccWvydI8.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccWvydI8.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccWvydI8.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccWvydI8.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccWvydI8.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccWvydI8.s:13     .text:0000000000000000 u_putchar
+     /tmp/ccWvydI8.s:35     .text:000000000000000c u_getchar
+     /tmp/ccWvydI8.s:65     .text:0000000000000022 pPutChar
                             *COM*:0000000000000012 hwPort
-     /tmp/ccPlLFD0.s:100    .text:0000000000000046 pGetChar
-     /tmp/ccPlLFD0.s:154    .text:000000000000007a initHWUart
-     /tmp/ccPlLFD0.s:183    .text:0000000000000090 initializeHWPort
-     /tmp/ccPlLFD0.s:212    .text:00000000000000a6 initHWPorts
-     /tmp/ccPlLFD0.s:360    .text:000000000000015a __vector_91
-     /tmp/ccPlLFD0.s:433    .text:00000000000001b2 __vector_93
-     /tmp/ccPlLFD0.s:512    .text:0000000000000212 __vector_28
-     /tmp/ccPlLFD0.s:585    .text:000000000000026a __vector_30
-     /tmp/ccPlLFD0.s:664    .text:00000000000002ca __vector_119
-     /tmp/ccPlLFD0.s:737    .text:0000000000000322 __vector_121
-     /tmp/ccPlLFD0.s:816    .text:0000000000000382 __vector_58
-     /tmp/ccPlLFD0.s:889    .text:00000000000003da __vector_60
-     /tmp/ccPlLFD0.s:968    .text:000000000000043a __vector_25
-     /tmp/ccPlLFD0.s:1041   .text:0000000000000492 __vector_27
-     /tmp/ccPlLFD0.s:1120   .text:00000000000004f2 __vector_88
-     /tmp/ccPlLFD0.s:1193   .text:000000000000054a __vector_90
+     /tmp/ccWvydI8.s:100    .text:0000000000000046 pGetChar
+     /tmp/ccWvydI8.s:154    .text:000000000000007a initHWUart
+     /tmp/ccWvydI8.s:183    .text:0000000000000090 initializeHWPort
+     /tmp/ccWvydI8.s:212    .text:00000000000000a6 initHWPorts
+     /tmp/ccWvydI8.s:360    .text:000000000000015a __vector_91
+     /tmp/ccWvydI8.s:433    .text:00000000000001b2 __vector_93
+     /tmp/ccWvydI8.s:512    .text:0000000000000212 __vector_28
+     /tmp/ccWvydI8.s:585    .text:000000000000026a __vector_30
+     /tmp/ccWvydI8.s:664    .text:00000000000002ca __vector_119
+     /tmp/ccWvydI8.s:737    .text:0000000000000322 __vector_121
+     /tmp/ccWvydI8.s:816    .text:0000000000000382 __vector_58
+     /tmp/ccWvydI8.s:889    .text:00000000000003da __vector_60
+     /tmp/ccWvydI8.s:968    .text:000000000000043a __vector_25
+     /tmp/ccWvydI8.s:1041   .text:0000000000000492 __vector_27
+     /tmp/ccWvydI8.s:1120   .text:00000000000004f2 __vector_88
+     /tmp/ccWvydI8.s:1193   .text:000000000000054a __vector_90
 
 UNDEFINED SYMBOLS
 port

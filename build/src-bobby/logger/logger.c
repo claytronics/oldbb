@@ -64,12 +64,11 @@ int main(int argc, char** argv) {
 	  sendCmd(i);
 	  receiveLogs();
 	}
-	  cout << "Press enter to proceed to next test" << endl;
-	  getchar();
+	  //cout << "Press enter to proceed to next test" << endl;
+	  //getchar();
 	  cout << "Testing accelerometer: Tap Blinky Block and change its orientation" << endl;
-	  receiveLogs();
-	  cout << "Press enter to proceed to next test" << endl;
 	  getchar();
+	  receiveLogs();
 	  cout << "Type 'q' to quit or any other key to start again..." << endl;
 	  c = getchar();
       }
