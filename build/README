@@ -23,6 +23,10 @@ $BBASE/apps/sample-meld to see some sample meld applications and a
 basic Makefile.  Basically, you should only have to change the source
 you want to compile and run make.
 
+If you want to add Log messages to your program you have to uncomment 
+the Log Debug flags into the Makefile. You can find the Logs 
+configurations into /src-bobby/logger.
+
 To run the resulting executable:
 
 arch-$ARCH/source-name.exe will invoke the simulator
