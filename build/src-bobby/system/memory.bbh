@@ -108,6 +108,9 @@ void initializeMemory(void);
 // loops through and frees all connected chunks in list
 void freeChunk(Chunk *);
 
+// check memory consistency
+void checkMemoryConsistency(void);
+
 // finds next free chunk of memory
 // returns: pointer-mem available, null-out of memory
 Chunk* getSystemRXChunk(void);
