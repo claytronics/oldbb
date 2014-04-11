@@ -54,73 +54,74 @@ void sendResetCmd(void);
 
 static int kbhit(void);
 
-int main(int argc, char** argv) {
+int 
+main(int argc, char** argv) 
+{
     
-    int i;
-    char c = '0';
-    readParameters(argc, argv);
+  int i;
+  char c = '0';
+  readParameters(argc, argv);
     
-    if( !Chunk::initSerial(portname, baudrate)  ) {
-		exit(1);
-    }
+  if( !Chunk::initSerial(portname, baudrate)  ) {
+    exit(1);
+  }
     
-    sendIAmHost();
+  sendIAmHost();
     
-    /************************* TEST *****************************/
+  /************************* TEST *****************************/
     
-    if(testMode) 
-    {
+  if(testMode) {
       // Test Menu
       cout << "Choose a test:" << endl;
       cout << "1: Color and accelerometer test" << endl;
       cout << "2: Network test:" << endl;
       
       switch (c = getchar())
-      {
+	{
 	case '1':
 	  while(c != 'q') {
 	    cout << "Press enter to send next color..." << endl;
-	      for(i = 0 ; i < NUM_COLORS ; i++)
+	    for(i = 0 ; i < NUM_COLORS ; i++)
 	      {
 		getchar();
 		sendColorCmd(i);
 		receiveLogs();
 	      }
-	  //cout << "Press enter to proceed to next test" << endl;
-	  //getchar();
-	  cout << "Testing accelerometer: Tap Blinky Block and change its orientation" << endl;
-	  getchar();
-	  receiveLogs();
-	  cout << "Type 'q' to quit or any other key to start again..." << endl;
-	  c = getchar();
-	}
-	break;  
+	    //cout << "Press enter to proceed to next test" << endl;
+	    //getchar();
+	    cout << "Testing accelerometer: Tap Blinky Block and change its orientation" << endl;
+	    getchar();
+	    receiveLogs();
+	    cout << "Type 'q' to quit or any other key to start again..." << endl;
+	    c = getchar();
+	  }
+	  break;  
 	case '2':
 	  giveLeaderStatus();
 	  while(c != 'q') 
-	  { 
+	    { 
 	      receiveLogs();
-	    cout << "Press any key to reset the ensemble or q to quit" << endl;
-	    c = getchar();
-	    sendResetCmd();
-	  }
-	break;
+	      cout << "Press any key to reset the ensemble or q to quit" << endl;
+	      c = getchar();
+	      sendResetCmd();
+	    }
+	  break;
 	default:
 	  cout << "INVALID CHOICE" << endl;
-	break;
-      }
+	  break;
+	}
     }
     
-	receiveLogs();
-	logs.printStats();
-	// shutdown everything
-	cout << "Closing serial comm...";
-	cout.flush();
+  receiveLogs();
+  logs.printStats();
+  // shutdown everything
+  cout << "Closing serial comm...";
+  cout.flush();
 	
-	Chunk::closeSerial();
-	cout << " ok!" << endl;
+  Chunk::closeSerial();
+  cout << " ok!" << endl;
 	
-    return 0;
+  return 0;
 }
 
 /**********************************************************************
@@ -178,18 +179,18 @@ void sendResetCmd(void)
 
 void receiveLogs(void)
 {
-	while(!kbhit()) {
-		Chunk *ch = Chunk::read();
-		if ( ch != NULL) {
-			if (ch->data[0] == LOG_MSG) {			
-				insertLogChunk(ch);
-			}
-			delete ch;
-		}
-		//logs.printAll();
-		logs.printCompleted();
-		logs.removeCompleted();
-	} 
+  while(!kbhit()) {
+    Chunk *ch = Chunk::read();
+    if ( ch != NULL) {
+      if (ch->data[0] == LOG_MSG) {			
+	insertLogChunk(ch);
+      }
+      delete ch;
+    }
+    //logs.printAll();
+    logs.printCompleted();
+    logs.removeCompleted();
+  } 
 }
 
 void usage(void) {
@@ -269,6 +270,13 @@ void insertLogChunk(Chunk *c) {
 			s[DATA_SIZE-offset] = '\0';
 			//cout << (int) fragmentId << " " << s << endl;
 			// insert(uint16_t bId, uint8_t i, uint8_t f, uint8_t s, std::string str);
+			if (c->data[8] == 'M') {
+			  // magic offsets here correspond to code in log.bb in function reportLoggerOutOfMemory
+			  uint16_t bid = *(uint16_t*)((char*)c->data+2);
+			  uint8_t pid = c->data[12];
+
+			  fprintf(stderr, "Maybe out of memory message from %d sending to port %d (%s)\n", (int)bid, (int)pid, c->data+7);
+			}
 			logs.insert(blockId, messageId, fragmentId, size, string(s));
 		}
 	}
