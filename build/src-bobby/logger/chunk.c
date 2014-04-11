@@ -35,92 +35,92 @@ Chunk::Chunk(Chunk &c) {
 
 
 Chunk* Chunk::read() {
-    static uint64_t msgCnt = 0;
-    static byte checksum = 0;
-    static int index = 0;
-    static byte parityNew = 0;
-    static byte parityLast = 0;
-    static byte data[100];
-    static byte wasEscape = 0;
+  static uint64_t msgCnt = 0;
+  static byte checksum = 0;
+  static int index = 0;
+  static byte parityNew = 0;
+  static byte parityLast = 0;
+  static byte data[100];
+  static byte wasEscape = 0;
 
-    byte currByte = 0;
-    byte ack[1];
-    uint64_t time = 0;
+  byte currByte = 0;
+  byte ack[1];
+  uint64_t time = 0;
     
-    while((time/1000000) < 2) {
-        while( !isEmpty(&(serialData)) ) {
-            currByte = (byte)pop(&(serialData));        
-            // is ACK
-            if( (currByte & ACK_MASK) == ACK ) {
-                // we do not care :)
-                //cout << "ACK" << endl;
-                return NULL;
-                //continue;
-		    }
-		    if( (currByte & FD_MASK) == FD ) {
-                //cout << "FD" << endl;
-                parityNew = currByte & 0x01;
-                checksum = 0;
-                index = 0;
-                wasEscape = 0;
-                continue;
-            }
-	        // is an escape char        
-            if( currByte == ESCAPE ) {
-		        //cout << "ESCAPE" << endl;
-                wasEscape = 1;
-                continue;
-            }
-		    if( wasEscape ) {
-                currByte ^= ESCAPE_CHAR;
-		        wasEscape = 0;
-	        }
-            // is transmitted checksum
-            if( index >= (DATA_SIZE + PTR_SIZE) ) {
-                //cout << "MSG COMPLETE" << endl;
-                // checksum matches!
-                if( currByte == checksum ) {
-                    //cout << "CHECKSUM OK" << endl;
-                    // not a duplicate packet		
-                    if((msgCnt == 0) || (parityNew != parityLast)) {  // add to global receive queue
-                        if (data[0] == LOG_MSG) {
-                            //cout << "log " << endl;
-                            //cout << (char*) data+7 << endl;
-                            //cout << (char*) (data) << endl;
-                        } else if (data[0] == 0x01 ) {
-                            cout << "neighbor" << endl;
-                        } else {
-                            cout << "unknown" << endl;
-                        }
-                        // flip the parity
-                        parityLast = parityNew;
-                        msgCnt++;
-                        // SEND ACK
-                        //cout << "parity: " << (int) parityNew << endl;
-                        if (data[0] != 0x01 ) {
-							ack[0] = ACK | parityNew;
-							sendMessage(ack, 1);
-						}
-                        return new Chunk(data, index-PTR_SIZE);
-                    }
-                }	
-                checksum = 0;
-                index = 0;
-            }
-            // message handler
-            if(index < PTR_SIZE ) {
-                //cout << "PTR HANDLER" << endl;
-            } else { // regular byte
-                //cout << "DATA BYTE" << endl;
-                data[index-PTR_SIZE] = currByte;
-            }
-            checksum = crcCalc(checksum, currByte);
-            index++;	
-        }        
+  while((time/1000000) < 2) {
+    while( !isEmpty(&(serialData)) ) {
+      currByte = (byte)pop(&(serialData));        
+      // is ACK
+      if( (currByte & ACK_MASK) == ACK ) {
+	// we do not care :)
+	//cout << "ACK" << endl;
+	return NULL;
+	//continue;
+      }
+      if( (currByte & FD_MASK) == FD ) {
+	//cout << "FD" << endl;
+	parityNew = currByte & 0x01;
+	checksum = 0;
+	index = 0;
+	wasEscape = 0;
+	continue;
+      }
+      // is an escape char        
+      if( currByte == ESCAPE ) {
+	//cout << "ESCAPE" << endl;
+	wasEscape = 1;
+	continue;
+      }
+      if( wasEscape ) {
+	currByte ^= ESCAPE_CHAR;
+	wasEscape = 0;
+      }
+      // is transmitted checksum
+      if( index >= (DATA_SIZE + PTR_SIZE) ) {
+	//cout << "MSG COMPLETE" << endl;
+	// checksum matches!
+	if( currByte == checksum ) {
+	  //cout << "CHECKSUM OK" << endl;
+	  // not a duplicate packet		
+	  if((msgCnt == 0) || (parityNew != parityLast)) {  // add to global receive queue
+	    if (data[0] == LOG_MSG) {
+	      //cout << "log " << endl;
+	      //cout << (char*) data+7 << endl;
+	      //cout << (char*) (data) << endl;
+	    } else if (data[0] == 0x01 ) {
+	      cout << "neighbor" << endl;
+	    } else {
+	      cout << "unknown" << endl;
+	    }
+	    // flip the parity
+	    parityLast = parityNew;
+	    msgCnt++;
+	    // SEND ACK
+	    //cout << "parity: " << (int) parityNew << endl;
+	    if (data[0] != 0x01 ) {
+	      ack[0] = ACK | parityNew;
+	      sendMessage(ack, 1);
+	    }
+	    return new Chunk(data, index-PTR_SIZE);
+	  }
+	}	
+	checksum = 0;
+	index = 0;
+      }
+      // message handler
+      if(index < PTR_SIZE ) {
+	//cout << "PTR HANDLER" << endl;
+      } else { // regular byte
+	//cout << "DATA BYTE" << endl;
+	data[index-PTR_SIZE] = currByte;
+      }
+      checksum = crcCalc(checksum, currByte);
+      index++;	
+    }        
     usleep(500);
     time += 500;
-    }
-    return NULL;
+  }
+  return NULL;
 }
 
 void Chunk::send() {
