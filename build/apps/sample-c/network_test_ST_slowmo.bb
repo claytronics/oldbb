@@ -79,106 +79,116 @@ byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh);
 Time zeroTime;
 Time cycleStartTime;
 
-void myMain(void)
+Timeout tout;
+
+void
+start(void)
 { 
  byte p;
+
+  setColor(AQUA);
+
+  // build spanning tree
+
+  // INIT CHILDREN TABLE
+  for (p = 0 ; p < NUM_PORTS ; p++) {
+      children[p] = 0;
+  }
   
- initClock();
- zeroTime = getClock();
- 
- 
- // INIT CHILDREN TABLE
- for (p = 0 ; p < NUM_PORTS ; p++)
- {
-   children[p] = 0;
- }
+  if (getGUID() == 2) {
+    isSTLeader = 1;
+    isInTree = 1;
+    setColor(BLUE);
+   
+    delayMS(500);
+   
+    for (p = 0 ; p < NUM_PORTS ; p++) {
+      if (thisNeighborhood.n[p] != VACANT) {
+	sendAddYourself(p);
+      }
+    }
+  }
+  else {
+    isSTLeader = 0;
+    setColor(RED);
+  }
   
- if (getGUID() == 2) 
- {
-   isSTLeader = 1;
-   isInTree = 1;
-   setColor(BLUE);
-   
-   delayMS(500);
-   
-   for (p = 0 ; p < NUM_PORTS ; p++)
-   {
-     if (thisNeighborhood.n[p] != VACANT) 
-     {
-       sendAddYourself(p);
-     }
-   }
- }
- else 
- {
-   isSTLeader = 0;
-   setColor(RED);
- }
-  
- while(getClock() < zeroTime + LEAF_CHECK_TIME);
+  while(getClock() < zeroTime + LEAF_CHECK_TIME);
  
- if(numChildren == 0)
- {
-   isLeaf = 1;
- }
+  if(numChildren == 0) {
+      isLeaf = 1;
+  }
  
- if (isSTLeader) 
- {
-   delayMS(1000); // TIME TO VISUALLY CHECK THE LEAVES
-   setColor(RED);
+  if (isSTLeader) {
+      delayMS(1000); // TIME TO VISUALLY CHECK THE LEAVES
+      setColor(RED);
    
-   #ifdef LOG_DEBUG
-   char s[150];
-   snprintf(s, 150*sizeof(char), "C%d STARTS", cycleNum);
-   s[149] = '\0';
-   printDebug(s);
-   #endif
+#ifdef LOG_DEBUG
+      char s[150];
+      snprintf(s, 150*sizeof(char), "C%d STARTS", cycleNum);
+      s[149] = '\0';
+      printDebug(s);
+#endif
        
-   for( p = 0; p < NUM_PORTS; p++) 
-   {
-     if (children[p] == 1)
-     {
-       cycleStartTime = getClock();
-       setColor(BLUE);
-       sendCycle(p);
-     }
-   }    
-   while ( (getClock() < cycleStartTime + CYCLE_TIME_LIMIT) && (cycleNum < 20) );
+      for( p = 0; p < NUM_PORTS; p++) {
+	if (children[p] == 1)
+	  {
+	    cycleStartTime = getClock();
+	    setColor(BLUE);
+	    sendCycle(p);
+	  }
+      }    
+      while ( (getClock() < cycleStartTime + CYCLE_TIME_LIMIT) && (cycleNum < 20) );
    
-   while (getClock() < cycleStartTime + CYCLE_TIME_LIMIT + LAST_CYCLE_WAIT); // USED TO MAKE SURE THAT LEADER WILL SPREAD SUCCESS MESSAGE TO SET EVERYONE GREEN
+      while (getClock() < cycleStartTime + CYCLE_TIME_LIMIT + LAST_CYCLE_WAIT); // USED TO MAKE SURE THAT LEADER WILL SPREAD SUCCESS MESSAGE TO SET EVERYONE GREEN
    
-   if (cycleNum == 20)
-   {
-     #ifdef LOG_DEBUG
-     snprintf(s, 150*sizeof(char), "NETWORK TEST PASSED");
-     s[149] = '\0';
-     printDebug(s);
-     #endif
+      if (cycleNum == 20)
+	{
+#ifdef LOG_DEBUG
+	  snprintf(s, 150*sizeof(char), "NETWORK TEST PASSED");
+	  s[149] = '\0';
+	  printDebug(s);
+#endif
      
-     for (p = 0; p < NUM_PORTS; p++) 
-     {
-       if (children[p] == 1)
-       {
-	 sendSuccessMsg(p);
-       }
-     }    
-   }
-   else
-   {
-     #ifdef LOG_DEBUG
-     snprintf(s, 150*sizeof(char), "C%d TIMEOUT\n", cycleNum);
-     s[149] = '\0';
-     printDebug(s);
-     #endif
+	  for (p = 0; p < NUM_PORTS; p++) 
+	    {
+	      if (children[p] == 1)
+		{
+		  sendSuccessMsg(p);
+		}
+	    }    
+	}
+      else
+	{
+#ifdef LOG_DEBUG
+	  snprintf(s, 150*sizeof(char), "C%d TIMEOUT\n", cycleNum);
+	  s[149] = '\0';
+	  printDebug(s);
+#endif
       
-     setIntensity(0);
-   }
-  setColor(GREEN);
- }
+	  setIntensity(0);
+	}
+      setColor(GREEN);
+    }
   
- while(1);
+  while(1);
  
 }
+
+void myMain(void)
+{ 
+  
+#if 0
+ initClock();
+ zeroTime = getClock();
+#endif 
+ 
+ setColor(GREEN);
+ tout.callback = (GenericHandler)(&start);
+ tout.calltime = getTime() + 3000;
+ registerTimeout(&tout);
+}
+
 
 /**************************************************
  ************* NETWORK TEST FUNCTIONS *************
@@ -208,22 +218,22 @@ void backMsgHandler(void)
       childResponseCount = 0;
       setColor(GREEN);    
       
-      #ifdef LOG_DEBUG
+#ifdef LOG_DEBUG
       char s[150];
       snprintf(s, 150*sizeof(char), "C%d PASSED\n", cycleNum);
       s[149] = '\0';
       printDebug(s);
-      #endif
+#endif
       
       if (cycleNum < 20)
       {
 	cycleNum++; // STARTING A NEW CYCLE
       
-	#ifdef LOG_DEBUG
+#ifdef LOG_DEBUG
 	snprintf(s, 150*sizeof(char), "C%d STARTS", cycleNum);
 	s[149] = '\0';
 	printDebug(s);
-	#endif
+#endif
 	
 	for( p = 0; p < NUM_PORTS; p++) 
 	{
@@ -380,19 +390,19 @@ void sendNACK(PRef p)
 
 void freeMyChunk(void)
 {
-  free(thisChunk);
+  freeChunk(thisChunk);
 }
 
 byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh) 
 { 
-  Chunk *c=calloc(sizeof(Chunk), 1);
+  Chunk *c=getSystemTXChunk();
   if (c == NULL)
   {  
     return 0;
   }
   if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeMyChunk) == 0)
   {
-    free(c);
+    freeChunk(c);
     return 0;
   }
   return 1;
