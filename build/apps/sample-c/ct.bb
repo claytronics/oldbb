@@ -30,7 +30,6 @@ void myMain(void)
     byte p;
     
     snprintf(s, 150*sizeof(char), "INIT");
-    s[149] = '\0';
     printDebug(s);
     
     initClock();
@@ -120,7 +119,7 @@ byte sendACK(void)
   s[149] = '\0';
   printDebug(s);
   
-  Chunk *c = calloc(sizeof(Chunk), 1);
+  Chunk *c = getSystemTXChunk();
   
   c->data[0] = TEST_ACK;
   c->data[1] = seqNum;
@@ -130,7 +129,7 @@ byte sendACK(void)
     return 0;
   }
   if (sendMessageToPort(c, activePort, c->data, 17, (MsgHandler)myMsgHandler, (GenericHandler)&freeMyChunk) == 0) {
-    free(c);
+    freeChunk(c);
     return 0;
   }
   return 1;
@@ -143,7 +142,7 @@ sendCmd(void)
   s[149] = '\0';
   printDebug(s);
   
-  Chunk *c = calloc(sizeof(Chunk), 1);
+  Chunk *c = getSystemTXChunk();
   
   c->data[0] = CMD;
   c->data[1] = seqNum;
@@ -154,7 +153,7 @@ sendCmd(void)
   }
   if (sendMessageToPort(c, activePort, c->data, 17, (MsgHandler)myMsgHandler, (GenericHandler)&freeMyChunk) == 0)
   {
-    free(c);
+    freeChunk(c);
     return 0;
   }
   return 1;
@@ -163,7 +162,7 @@ sendCmd(void)
 void 
 freeMyChunk(void)
 {
-  free(thisChunk);
+  freeChunk(thisChunk);
 }
 
 void 
