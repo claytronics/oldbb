@@ -51,22 +51,10 @@ void initSystemMessage(void);
 
 // ----------- ASSERT
 #ifdef TESTING 
-void assert(byte);
-  #define assert(x) \
-  do \
-  { \
-    if(!(x)) \
-    { \
-      setColor(WHITE); \
-      char s[150]; \
-      snprintf(s, 150*sizeof(char), "F:%d L:%d\n", FILENUM, __LINE__); \
-      s[149] = '\0'; \
-      printDebug(s); \
-      exit(1);\
-    } \
-  }while(0);
+void _assert(byte condition, byte fn, int ln);
+# define assert(x) _assert(x, FILENUM, __LINE__)
 #else
-  #define assert(x);
+# define assert(x);
 #endif
 
 #endif
