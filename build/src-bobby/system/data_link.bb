@@ -162,32 +162,32 @@ void flushSendQueue(PRef p)
 //          0 - inputs contained error, format failed
 byte setupChunk(Chunk* c, PRef p, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
 {
-    // invalid Chunk, invalid port, message too long, or no message
-    if( (c == NULL) || (p >= NUM_PORTS) || (length > DATA_SIZE) || (msg == NULL) )
+  // invalid Chunk, invalid port, message too long, or no message
+  if( (c == NULL) || (p >= NUM_PORTS) || (length > DATA_SIZE) || (msg == NULL) )
     {
-        return 0;
+      // tempted to make this an assert ?????
+      return 0;
     }
 
-    // set the flags
-    c->status = CHUNK_USED | CHUNK_FILLED | MSG_RESP_SENDING | port[p].pnum;
+  // set the flags
+  c->status = CHUNK_USED | CHUNK_FILLED | MSG_RESP_SENDING | port[p].pnum;
     
-    // clear out next pointer
-    c->next = NULL;
+  // clear out next pointer
+  c->next = NULL;
 
-    // set message handler
-    *((MsgHandler*)(c->handler)) = mh;
+  // set message handler
+  *((MsgHandler*)(c->handler)) = mh;
 
-    // setup callback
-    c->callback = cb;
+  // setup callback
+  c->callback = cb;
 
-    // copy message
-    assert(length <= DATA_SIZE); //useless
-    memcpy(c->data, msg, length);
+  // copy message
+  memcpy(c->data, msg, length);
     
-    // 'zero' out extra bytes (use ff's)
-    memset((c->data)+length, 0xFF, DATA_SIZE-length);
+  // 'zero' out extra bytes (use ff's)
+  memset((c->data)+length, 0xFF, DATA_SIZE-length);
     
-    return 1;
+  return 1;
 }
 
 // queues the chunk for sending
