@@ -125,9 +125,9 @@ void _assert(byte condition, byte fn, int ln)
   if (condition) return;
   // failed assert
   setColor(WHITE); 
-  char s[150]; 
-  snprintf(s, 150, "F:%d L:%d\n", (int)FILENUM, (int)__LINE__); 
-  s[149] = '\0'; 		/* this is wierd, why do we need it? */
+  char s[16]; 
+  snprintf(s, 16, "%d %d\n", (int)FILENUM, (int)__LINE__); 
+  s[15] = 0;
   printDebug(s); 
   // should go into a loop sending and recieving msgs only
   exit(1);
