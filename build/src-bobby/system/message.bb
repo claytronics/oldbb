@@ -76,6 +76,7 @@ byte sendSystemMessage(PRef dest, byte * msg, byte length, MsgHandler mh, Generi
             
             if(setupChunk(c,i, msg, length, mh, cb) == 0)
             {
+	      // this may be a bug??
                 freeChunk(c);
                 continue;
             }
@@ -118,3 +119,16 @@ void initSystemMessage()
   //TODO: not enough to represent block id
 
 }
+
+void _assert(byte condition, byte fn, int ln)
+{
+  if (condition) return;
+  // failed assert
+  setColor(WHITE); 
+  char s[150]; 
+  snprintf(s, 150, "F:%d L:%d\n", (int)FILENUM, (int)__LINE__); 
+  s[149] = '\0'; 		/* this is wierd, why do we need it? */
+  printDebug(s); 
+  // should go into a loop sending and recieving msgs only
+  exit(1);
+} 
