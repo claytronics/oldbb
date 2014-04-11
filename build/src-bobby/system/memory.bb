@@ -62,6 +62,7 @@ void freeChunk(Chunk * c)
 {
   Chunk * tmp;	
 
+  checkMemoryConsistency();
   while(c != NULL) {
     if(chunkInUse(c)) {
       c->status = CHUNK_FREE;
@@ -72,10 +73,12 @@ void freeChunk(Chunk * c)
     c->next = NULL;
     c = tmp;
   }
+  checkMemoryConsistency();
 }
 
 Chunk* getSystemChunk(byte which)
 {
+  checkMemoryConsistency();
     int8_t i;
     Chunk*  current;
 
@@ -105,12 +108,14 @@ Chunk* getSystemChunk(byte which)
 	  assert((current[i]).next == NULL);
 	  (current[i]).next = NULL;
 	  allocated++;
+	  checkMemoryConsistency();
 	  return &(current[i]);
         }
         // else, in use (supposedly)
     }
     // this assumes NUM_TXCHUNKS <= NUM_RXCHUNKS
     assert(allocated >= NUM_TXCHUNKS);
+    checkMemoryConsistency();
     return NULL;  
 }
 
@@ -120,13 +125,15 @@ Chunk* getSystemRXChunk()
   return getSystemChunk(RXCHUNK);
 }
 
-Chunk* getSystemTXChunk()
+Chunk* 
+getSystemTXChunk()
 {
   return getSystemChunk(TXCHUNK);
 }
 
 // check a pool for consistency, return number in use
-byte checkMemoryPool(Chunk* pool, byte num)
+static byte 
+checkMemoryPool(Chunk* pool, byte num)
 {
   byte used = 0;
   for(byte i=0; i<num; i++ ) {
@@ -138,7 +145,8 @@ byte checkMemoryPool(Chunk* pool, byte num)
 }
 
 // check function
-void checkMemoryConsistency(void)
+void 
+checkMemoryConsistency(void)
 {
   int used = checkMemoryPool(rxChunks, NUM_RXCHUNKS);
   used += checkMemoryPool(txChunks, NUM_TXCHUNKS);
