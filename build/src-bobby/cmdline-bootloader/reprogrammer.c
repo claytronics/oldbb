@@ -64,6 +64,7 @@ char* hexFilename = NULL;
 FILE* hexFile     = NULL;
 
 int verbose = 0;		/* set to 1 to print out extra info */
+int readverbose = 0;
 char* prog = 0;			/* name of program as called from shell */
 
 int baudrate      = 38400;
@@ -287,7 +288,8 @@ void splitLine(uint16_t orig_addr, byte *orig_data, int orig_len, int page_size,
 }
 
 // read one hex file line
-int getOneLine(uint16_t* addr, byte* data, FILE** f)
+int 
+getOneLine(uint16_t* addr, byte* data, FILE** f)
 {
     byte length   = 0;
     byte checksum = 0;
@@ -295,10 +297,12 @@ int getOneLine(uint16_t* addr, byte* data, FILE** f)
     byte val;
     char c;
     int  i;
+    int offset = 0;
 
     // wait for a newline (":", ignore comment lines ";")
     do {
         c = (char)fgetc(*f);
+	offset++;
 
         if( feof(*f) ) {
             return 0;
@@ -313,6 +317,7 @@ int getOneLine(uint16_t* addr, byte* data, FILE** f)
 
     // check line length
     if( length > PDATA_SIZE ) {
+      fprintf(stderr, "%d > %d @ byte 0x%p+%d\n", length, PDATA_SIZE, addr, offset);
         return -length;
     }
 
@@ -343,6 +348,7 @@ int getOneLine(uint16_t* addr, byte* data, FILE** f)
 
         // checksum error
         if( checksum ) {
+	  fprintf(stderr, "Checksum error @ 0x%p+%d\n", addr, offset);
             return -1;
         }
         // checksum ok
@@ -368,6 +374,7 @@ int getOneLine(uint16_t* addr, byte* data, FILE** f)
 
     // checksum error
     if( checksum ) {
+	  fprintf(stderr, "second Checksum error @ 0x%p+%d\n", addr, offset);
         return -1;
     }
     // checksum ok
@@ -531,7 +538,7 @@ void reprogram()
 
         // read error
         if( length < 0 ) {
-            printf("read line error\n");
+	  printf("read line error: %d\n", length);
             success = 0;
             continue;
         }
@@ -876,6 +883,10 @@ int main(int argc, char** argv)
 	else if (strcmp(argv[1], "-v") == 0 )
 	{
 	    verbose = 1;
+	}
+	else if (strcmp(argv[1], "-x") == 0 )
+	{
+	    readverbose = 1;
 	}
         // invalid switch
         else
