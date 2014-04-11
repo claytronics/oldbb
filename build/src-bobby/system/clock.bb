@@ -630,24 +630,10 @@ void startLeaderElection(void)
  * Chunk Management Functions
  *****************************************************/
 
-void freeClockChunk(void)
+byte 
+sendClockChunk(PRef p, byte *d, byte s)
 {
-	free(thisChunk);
-}
-
-byte sendClockChunk(PRef p, byte *d, byte s)
-{
-	Chunk *c=calloc(sizeof(Chunk), 1);
-	if (c == NULL)
-	{
-		return 0;
-	}
-	if (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeClockChunk) == 0)
-	{
-		free(c);
-		return 0;
-	}
-	return 1;
+  return sendLogChunk(p, d, s);
 }
 
 byte broadcastClockChunk(PRef excludedPort, byte *d, byte s)
