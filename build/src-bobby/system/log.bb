@@ -34,36 +34,52 @@ void freeCmdChunk(void);
 void freeLogChunk(void);
 byte sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh);
 
-void freeCmdChunk(void)
+
+Chunk* getLogChunk(void)
 {
-    free(thisChunk);
+  Chunk *p = getSystemTXChunk();
+  if (p == 0) {
+    setColor(PINK);
+  }
+  return p;
 }
 
-void freeLogChunk(void)
+void 
+freeLogChunk(void)
 {
-#ifdef FORCE_TRANSMISSION
-	 if(chunkResponseType(thisChunk) == MSG_RESP_ACK) {
-		free(thisChunk);
-	} else {
-		// try again
-		sendLogChunk(faceNum(thisChunk), thisChunk->data, DATA_SIZE);
-		free(thisChunk);
-	}
-#else
-	free(thisChunk);
-#endif
+	freeChunk(thisChunk);
 }
 
-byte sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh) 
+Chunk emergencyChunk;
+
+static void
+reportLoggerOutOfMemory(PRef failurePort)
 {
-    Chunk *c=calloc(sizeof(Chunk), 1);
-    if (c == NULL)
-    {
-        return 0;
+  Chunk* c = &emergencyChunk;
+  emergencyChunk.next = NULL;
+  emergencyChunk.status = CHUNK_USED;
+  byte buf[DATA_SIZE];
+  buf[0] = LOG_MSG;
+  buf[1] = LOG_DATA;
+  GUIDIntoChar(getGUID(), &(buf[2]));
+  buf[4] = 0;
+  buf[5] = 0;
+  strcpy((char*)buf+6, "OOUM:");
+  buf[12] = failurePort;
+  sendMessageToPort(c, toHost, buf, 13, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk);
+  return;
+}
+
+byte 
+sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh) 
+{
+    Chunk *c=getLogChunk();
+    if (c == NULL) {
+      reportLoggerOutOfMemory(port);
+      return 0;
     }
-    if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeCmdChunk) == 0)
-    {
-        free(c);
+    if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeLogChunk) == 0) {
+        freeChunk(c);
         return 0;
     }
     return 1;
@@ -103,29 +119,11 @@ byte isHostPort(PRef p)
 	return ((p == toHost) && (PCConnection == 1));
 }
 
+
+// send message in d to port p for logging to host
 byte sendLogChunk(PRef p, byte *d, byte s)
 {
-	Chunk *c=calloc(sizeof(Chunk), 1);
-#ifdef FORCE_TRANSMISSION
-	while (c == NULL)
-	{
-		c=calloc(sizeof(Chunk), 1);
-	}
-	while (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk) == 0);
-	return 1;
-#else
-	if (c == NULL)
-	{
-		return 0;
-	}
-	if (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk) == 0)
-	{
-		free(c);
-		return 0;
-	}
-	return 1;
-#endif
-
+  return sendCmdChunk(p, d, s, (MsgHandler)RES_SYS_HANDLER);
 }
 
 
@@ -155,9 +153,9 @@ void spreadPathToHost(PRef excluded)
 
 void forwardToHost(Chunk *c)
 {
-	if(toHost != UNDEFINED_HOST) {
-		sendLogChunk(toHost, c->data, DATA_SIZE);
-	}
+  if(toHost != UNDEFINED_HOST) {
+    sendLogChunk(toHost, c->data, DATA_SIZE);
+  }
 }
 
 void initLogDebug(void)
