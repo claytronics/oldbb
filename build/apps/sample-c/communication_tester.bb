@@ -77,9 +77,8 @@ void myMain(void)
  
  while(1)
  {
-   if(seqNum == 50) 
-   {
-    setColor(GREEN);
+   if(seqNum == 50) {
+       setColor(GREEN);
    }
  }
  
@@ -130,15 +129,15 @@ byte sendACK(void)
   {  
     return 0;
   }
-  if (sendMessageToPort(c, activePort, c->data, 17, (MsgHandler)myMsgHandler, (GenericHandler)&freeMyChunk) == 0)
-  {
+  if (sendMessageToPort(c, activePort, c->data, 17, (MsgHandler)myMsgHandler, (GenericHandler)&freeMyChunk) == 0) {
     free(c);
     return 0;
   }
   return 1;
 }
 
-byte sendCmd(void)
+byte 
+sendCmd(void)
 {
   snprintf(s, 150*sizeof(char), "CMD %d", seqNum);
   s[149] = '\0';
@@ -161,12 +160,14 @@ byte sendCmd(void)
   return 1;
 }
 
-void freeMyChunk(void)
+void 
+freeMyChunk(void)
 {
   free(thisChunk);
 }
 
-void userRegistration(void)
+void 
+userRegistration(void)
 {
   registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);	
 }
