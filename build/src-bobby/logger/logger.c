@@ -270,7 +270,7 @@ void insertLogChunk(Chunk *c) {
 			s[DATA_SIZE-offset] = '\0';
 			//cout << (int) fragmentId << " " << s << endl;
 			// insert(uint16_t bId, uint8_t i, uint8_t f, uint8_t s, std::string str);
-			if (c->data[8] == 'M') {
+			if (c->data[9] == 'M') {
 			  // magic offsets here correspond to code in log.bb in function reportLoggerOutOfMemory
 			  uint16_t bid = *(uint16_t*)((char*)c->data+2);
 			  uint8_t pid = c->data[12];
