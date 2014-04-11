@@ -7,6 +7,11 @@
 
 #include "memory.bbh"
 
+#ifdef TESTING
+#define FILENUM 1
+#include "message.bbh"
+#endif
+
 threaddef #define NUM_RXCHUNKS 12
 threaddef #define NUM_TXCHUNKS 12
 
@@ -15,6 +20,7 @@ threaddef #define NUM_TXCHUNKS 12
 #define TXCHUNK 1
 
 threadvar byte numFreeChunks;
+threadvar byte allocated = 0;
 threadvar Chunk rxChunks[NUM_RXCHUNKS];
 threadvar Chunk txChunks[NUM_TXCHUNKS];
 
@@ -54,6 +60,8 @@ void freeChunk(Chunk * c)
       if(chunkInUse(c))
         {
 	  c->status = CHUNK_FREE;
+	  allocated--;
+	  assert(allocated >= 0);
         }
       tmp = c->next;
       c->next = NULL;
@@ -90,11 +98,20 @@ Chunk* getSystemChunk(byte which)
           
 	  // clear old next ptr in case non-NULL
 	  (current[i]).next = NULL;
+	  allocated++;
 	  return &(current[i]);
         }
         // else, in use (supposedly)
     }
     // none free!
+    if (which == RXCHUNK)
+    {
+      assert (allocated == NUM_RXCHUNKS);
+    }
+    else
+    {
+      assert (allocated == NUM_TXCHUNKS);
+    }
     return NULL;  
 }
 

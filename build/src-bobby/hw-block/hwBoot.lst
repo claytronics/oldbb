@@ -42,13 +42,13 @@
   63               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwBoot.c
-     /tmp/ccKO7VJN.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccKO7VJN.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccKO7VJN.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccKO7VJN.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccKO7VJN.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccKO7VJN.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccKO7VJN.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccKO7VJN.s:13     .text:0000000000000000 jumpToHWBootSection
+     /tmp/cc7Kb3bE.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc7Kb3bE.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc7Kb3bE.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc7Kb3bE.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc7Kb3bE.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cc7Kb3bE.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc7Kb3bE.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc7Kb3bE.s:13     .text:0000000000000000 jumpToHWBootSection
 
 NO UNDEFINED SYMBOLS

@@ -48,4 +48,25 @@ byte sendMessageToPort(Chunk * c, PRef dest, byte * msg, byte length, MsgHandler
 byte sendSystemMessage(PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb);
 void initSystemMessage(void);
 
+
+// ----------- ASSERT
+#ifdef TESTING 
+void assert(byte);
+  #define assert(x) \
+  do \
+  { \
+    if(!(x)) \
+    { \
+      setColor(WHITE); \
+      char s[150]; \
+      snprintf(s, 150*sizeof(char), "F:%d L:%d\n", FILENUM, __LINE__); \
+      s[149] = '\0'; \
+      printDebug(s); \
+      exit(1);\
+    } \
+  }while(0);
+#else
+  #define assert(x);
+#endif
+
 #endif

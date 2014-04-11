@@ -16,6 +16,12 @@
 #define LOG_DATA			0x04
 #define LOG_CMD				0x05
 
+// CMD TYPES
+#define COLOR_SET	0x11
+#define SET_STLEADER	0x22
+#define ENSEMBLE_RESET	0x33
+
+
 //#define FORCE_TRANSMISSION
 
 threadvar byte PCConnection = 0;
@@ -23,7 +29,7 @@ threadvar PRef toHost = 200; //= NUM_PORT; // UNDEFINED_HOST (compilation error 
 
 int seq = 0; // sequence number for avoiding loops when broadcasting commands
 
-void myCmdHandler(void);
+void commandHandler(void);
 void freeCmdChunk(void);
 void freeLogChunk(void);
 byte sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh);
@@ -63,22 +69,33 @@ byte sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh)
     return 1;
 }
 
-void processCmd(void) 
+void processColorChange(void) // Should not be placed in this file, will correct soon.
 {
    int X;
-    if (seq < thisChunk->data[2]) {
-	  seq = thisChunk->data[2];
+    if (seq < thisChunk->data[3]) {
+	  seq = thisChunk->data[3];
 	  for (X = 0 ; X <= 5 ; X++) {
-	    sendCmdChunk(X, thisChunk->data, 4, (MsgHandler)myCmdHandler);
+	    sendCmdChunk(X, thisChunk->data, 5, (MsgHandler)commandHandler);
 	  }
 	  callHandler(EVENT_COMMAND_RECEIVED);
 	  //triggerHandler(EVENT_COMMAND_RECEIVED);
     }
 }
 
-void myCmdHandler(void)
+void commandHandler(void)
 {
-  processCmd();
+  switch (thisChunk->data[2])
+  {
+    case COLOR_SET:
+	processColorChange();
+    break;
+    case SET_STLEADER:
+	callHandler(EVENT_COMMAND_RECEIVED);
+    break;
+    case ENSEMBLE_RESET:
+	callHandler(EVENT_COMMAND_RECEIVED);
+    break;
+  }
 }
 
 byte isHostPort(PRef p)
@@ -203,7 +220,7 @@ byte handleLogMessage(void)
 			}
 		break;		
 		case LOG_CMD:
-			processCmd();
+			commandHandler();
 		break;
 	}
 	

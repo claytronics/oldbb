@@ -363,19 +363,19 @@
  292               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/hardwaretime.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwTime.c
-     /tmp/ccohWIKf.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccohWIKf.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccohWIKf.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccohWIKf.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccohWIKf.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccohWIKf.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccohWIKf.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccohWIKf.s:13     .text:0000000000000000 getHWTime
+     /tmp/ccPNlk2Y.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccPNlk2Y.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccPNlk2Y.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccPNlk2Y.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccPNlk2Y.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccPNlk2Y.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccPNlk2Y.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccPNlk2Y.s:13     .text:0000000000000000 getHWTime
                             *COM*:0000000000000002 timeHi
-     /tmp/ccohWIKf.s:82     .text:0000000000000038 initHWClock
-     /tmp/ccohWIKf.s:109    .text:0000000000000056 initHWRTC
-     /tmp/ccohWIKf.s:142    .text:0000000000000084 initHWTime
-     /tmp/ccohWIKf.s:159    .text:000000000000008c __vector_10
+     /tmp/ccPNlk2Y.s:82     .text:0000000000000038 initHWClock
+     /tmp/ccPNlk2Y.s:109    .text:0000000000000056 initHWRTC
+     /tmp/ccPNlk2Y.s:142    .text:0000000000000084 initHWTime
+     /tmp/ccPNlk2Y.s:159    .text:000000000000008c __vector_10
 
 UNDEFINED SYMBOLS
 __do_clear_bss

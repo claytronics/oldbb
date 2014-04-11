@@ -222,15 +222,15 @@
  197               		.file 5 "/home/pthalamy/CMU/oldbb/build/src-bobby/system/led.bbh"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 hwLED.c
-     /tmp/ccEIYbyY.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccEIYbyY.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccEIYbyY.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccEIYbyY.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccEIYbyY.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccEIYbyY.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccEIYbyY.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccEIYbyY.s:13     .text:0000000000000000 setHWLED
-     /tmp/ccEIYbyY.s:84     .text:0000000000000050 initHWLED
+     /tmp/ccWJNzDO.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccWJNzDO.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccWJNzDO.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccWJNzDO.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccWJNzDO.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccWJNzDO.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccWJNzDO.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccWJNzDO.s:13     .text:0000000000000000 setHWLED
+     /tmp/ccWJNzDO.s:84     .text:0000000000000050 initHWLED
 
 UNDEFINED SYMBOLS
 currentRGB

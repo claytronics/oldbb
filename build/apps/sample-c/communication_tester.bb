@@ -7,30 +7,28 @@
 #include "clock.bbh"
 #include "block_config.bbh"
 
-void sendCmd(void);
-void sendACK(void);
+byte sendCmd(void);
+byte sendACK(void);
 void myMsgHandler(void);
 void freeMyChunk(void);
-byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh); 
 
-#define ACK		0
+#define TEST_ACK	0
 #define CMD		1
-#define ACK_TIMEOUT	(1000)
+#define ACK_TIMEOUT	500
 
 //#ifdef LOG_DEBUG
-byte activePort;
-byte seqNum = 1;
-byte lastSeq = 0;
-byte ackReceived = 0;
-byte msg[2];
-char s[150];
-    
+threadvar byte activePort;
+threadvar byte seqNum = 1;
+threadvar byte recSeq;	
+threadvar byte ackReceived = 0;
+threadvar char s[150];
+
 Time sendTime;
 
 void myMain(void)
 { 
     byte p;
-  
+    
     snprintf(s, 150*sizeof(char), "INIT");
     s[149] = '\0';
     printDebug(s);
@@ -40,7 +38,7 @@ void myMain(void)
     delayMS(500);
     setIntensity(255);
         
-    if (getGUID() == 2) {						// Master initializes communication
+    if (getGUID() == 2) {				// Master initializes communication
       setColor(RED);
       
       for (p = 0; p < NUM_PORTS; p++) {
@@ -54,7 +52,7 @@ void myMain(void)
       sendTime = getClock();
       while (seqNum < 50) {
 	while (!ackReceived){
-	  if (getClock() > (sendTime + ACK_TIMEOUT)) {			// While an ack has not been received, resend command every ACK_TIMEOUT milliseconds
+	  if (getClock() > (sendTime + ACK_TIMEOUT)) {	// While an ack has not been received, resend command every ACK_TIMEOUT milliseconds
 	    /*snprintf(s, 150*sizeof(char), "CMD %d LOST", seqNum);
 	    s[149] = '\0';
 	    printDebug(s);*/
@@ -62,7 +60,6 @@ void myMain(void)
 	    sendTime = getClock();
 	  }
 	}
-	seqNum++;
 	ackReceived = 0;
 	sendTime = getClock();
 	sendCmd();
@@ -74,89 +71,100 @@ void myMain(void)
       setColor(GREEN);
     } 
     else {
-      setColor(WHITE);							// Slave only get into a loop and process received messages with myMsgHandler
+      seqNum = 0;
+      setColor(WHITE);					// Slave only get into a loop and process received messages with myMsgHandler
     }
  
- while(1);
+ while(1)
+ {
+   if(seqNum == 50) 
+   {
+    setColor(GREEN);
+   }
+ }
  
 }
 
 void myMsgHandler(void)
 {
   activePort = faceNum(thisChunk);
-  
+  recSeq = thisChunk->data[1];
   switch (thisChunk->data[0]) {
     case CMD:
-      seqNum = thisChunk->data[1];
-      if (seqNum == lastSeq) { 						// Check if ACK has been lost, if true: resend ack and ignore command
+      if (recSeq > seqNum)
+      { 						// Check if ACK has been lost, if true: resend ack and ignore command
+	setNextColor();
+	seqNum = recSeq;
+	sendACK();	
+      }
+      else { 						// Default case, execute command, send ACK
 	sendACK();
-	
 	/*snprintf(s, 150*sizeof(char), "ACK %d LOST", lastSeq);
 	s[149] = '\0';
 	printDebug(s);*/
       }
-      else { 								// Default case, execute command, send ACK
-	setNextColor();
-	sendACK();
-      }
     break;
-    case ACK: 								// ACK received, set to 1 so myMain can trigger next command
+    case TEST_ACK: 					// ACK received, set to 1 so myMain can trigger next command
+      if (recSeq = seqNum)
+      {
       ackReceived = 1;
+      seqNum++;
+      }
+      delayMS(200);
     break;
   }
 }
 
-void sendACK(void)
+byte sendACK(void)
 { 
-  msg[0] = ACK;
-  msg[1] = seqNum;
-  
-  sendMyChunk(activePort, msg, 2, (MsgHandler)myMsgHandler);
-  
   snprintf(s, 150*sizeof(char), "ACK %d", seqNum);
   s[149] = '\0';
   printDebug(s);
   
-  lastSeq = seqNum;
+  Chunk *c = calloc(sizeof(Chunk), 1);
   
-  if(seqNum == 50) {
-    setColor(GREEN);
-  }
+  c->data[0] = TEST_ACK;
+  c->data[1] = seqNum;
   
-}
-
-void sendCmd(void)
-{
-  msg[0] = CMD;
-  msg[1] = seqNum;
-  
-  snprintf(s, 150*sizeof(char), "CMD %d", seqNum);
-  s[149] = '\0';
-  printDebug(s);
-  
-  sendMyChunk(activePort, msg, 2, (MsgHandler)myMsgHandler);
-}
-
-void freeMyChunk(void)
-{
-  free(thisChunk);
-}
-
-byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh) 
-{ 
-  Chunk *c=calloc(sizeof(Chunk), 1);
   if (c == NULL)
   {  
     return 0;
   }
-  if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeMyChunk) == 0)
+  if (sendMessageToPort(c, activePort, c->data, 17, (MsgHandler)myMsgHandler, (GenericHandler)&freeMyChunk) == 0)
   {
     free(c);
     return 0;
   }
   return 1;
 }
-//#endif
+
+byte sendCmd(void)
+{
+  snprintf(s, 150*sizeof(char), "CMD %d", seqNum);
+  s[149] = '\0';
+  printDebug(s);
+  
+  Chunk *c = calloc(sizeof(Chunk), 1);
+  
+  c->data[0] = CMD;
+  c->data[1] = seqNum;
+  
+  if (c == NULL)
+  {  
+    return 0;
+  }
+  if (sendMessageToPort(c, activePort, c->data, 17, (MsgHandler)myMsgHandler, (GenericHandler)&freeMyChunk) == 0)
+  {
+    free(c);
+    return 0;
+  }
+  return 1;
+}
+
+void freeMyChunk(void)
+{
+  free(thisChunk);
+}
 
 void userRegistration(void)
 {

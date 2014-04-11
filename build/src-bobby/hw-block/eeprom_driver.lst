@@ -1031,23 +1031,23 @@
  939               		.file 3 "/usr/lib/gcc/avr/4.7.2/../../../avr/include/avr/iox256a3.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 eeprom_driver.c
-     /tmp/ccE9JNMy.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccE9JNMy.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccE9JNMy.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccE9JNMy.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccE9JNMy.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccE9JNMy.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccE9JNMy.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccE9JNMy.s:13     .text:0000000000000000 EEPROM_WaitForNVM
-     /tmp/ccE9JNMy.s:33     .text:000000000000000a EEPROM_ReadByte
-     /tmp/ccE9JNMy.s:112    .text:0000000000000064 EEPROM_FlushBuffer
-     /tmp/ccE9JNMy.s:155    .text:0000000000000094 EEPROM_WriteByte
-     /tmp/ccE9JNMy.s:239    .text:00000000000000f6 EEPROM_LoadByte
-     /tmp/ccE9JNMy.s:288    .text:0000000000000128 EEPROM_LoadPage
-     /tmp/ccE9JNMy.s:340    .text:0000000000000158 EEPROM_LoadPartialPage
-     /tmp/ccE9JNMy.s:419    .text:00000000000001ae EEPROM_AtomicWritePage
-     /tmp/ccE9JNMy.s:489    .text:00000000000001fa EEPROM_ErasePage
-     /tmp/ccE9JNMy.s:559    .text:0000000000000246 EEPROM_SplitWritePage
-     /tmp/ccE9JNMy.s:629    .text:0000000000000292 EEPROM_EraseAll
+     /tmp/cc98ghLh.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/cc98ghLh.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/cc98ghLh.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/cc98ghLh.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/cc98ghLh.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/cc98ghLh.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/cc98ghLh.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/cc98ghLh.s:13     .text:0000000000000000 EEPROM_WaitForNVM
+     /tmp/cc98ghLh.s:33     .text:000000000000000a EEPROM_ReadByte
+     /tmp/cc98ghLh.s:112    .text:0000000000000064 EEPROM_FlushBuffer
+     /tmp/cc98ghLh.s:155    .text:0000000000000094 EEPROM_WriteByte
+     /tmp/cc98ghLh.s:239    .text:00000000000000f6 EEPROM_LoadByte
+     /tmp/cc98ghLh.s:288    .text:0000000000000128 EEPROM_LoadPage
+     /tmp/cc98ghLh.s:340    .text:0000000000000158 EEPROM_LoadPartialPage
+     /tmp/cc98ghLh.s:419    .text:00000000000001ae EEPROM_AtomicWritePage
+     /tmp/cc98ghLh.s:489    .text:00000000000001fa EEPROM_ErasePage
+     /tmp/cc98ghLh.s:559    .text:0000000000000246 EEPROM_SplitWritePage
+     /tmp/cc98ghLh.s:629    .text:0000000000000292 EEPROM_EraseAll
 
 NO UNDEFINED SYMBOLS

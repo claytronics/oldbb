@@ -3,11 +3,11 @@
 ##################################################
 
 #SOURCE := color_accel_tester.bb
-#SOURCE := communication_tester.bb
+SOURCE := communication_tester.bb
 #SOURCE := setID.bb
 #SOURCE := spanningTree.bb
 #SOURCE := network_test_ST.bb
-SOURCE := network_test_ST_slowmo.bb
+#SOURCE := network_test_ST_host_enabled.bb
 
 
 
@@ -21,6 +21,7 @@ SOURCE := network_test_ST_slowmo.bb
 #MELDO +=
 
 #CFLAGS_OPTIONS = -DCLOCK_SYNC
-#CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
+CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
+CFLAGS_OPTIONS += -DTESTING
 
 include Makefile.header

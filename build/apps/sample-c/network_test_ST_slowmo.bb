@@ -24,7 +24,8 @@
  * 	if 100 cycle in a row are completed, the test has succeeded, all blocks turn green.
  *******************************************************************************************************************************/
 
-
+void handleReceivedCommand(void);
+byte resetReceived = 0;
 
 /****************************************
  ************ SPANNING TREE *************
@@ -397,9 +398,18 @@ byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh)
   return 1;
 }
 
-/**/
+void handleReceivedCommand(void)
+{
+  initializeMemory();
+  callHandler(SYSTEM_MAIN);
+}
+
+/************************************************************
+************************COMMAND HANDLING*********************
+************************************************************/
 
 void userRegistration(void)
 {
   registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);	
+  registerHandler(EVENT_COMMAND_RECEIVED, (GenericHandler)&handleReceivedCommand);
 }

@@ -11,9 +11,17 @@
 #include "time.h"
 #include "chunk.h"
 #include "logtable.h"
+
 #define LOG_CMD		0x05	
 #define LOG_MSG 	0x50
+
+//CMD TYPES
+#define COLOR_SET	0x11
+#define SET_STLEADER	0x22
+#define ENSEMBLE_RESET	0x33
+
 #define NUM_COLORS	9
+
 // Usage: ./logger -p /dev/ttyUSB0
 
 using namespace std;
@@ -22,6 +30,7 @@ char* portname  = NULL;
 string defaultportname = "/dev/ttyUSB0";
 int baudrate = 38400;
 char* prog = 0;
+
 byte testMode = 0;
 int seq = 1;
 
@@ -37,8 +46,11 @@ void usage(void);
 void readParameters(int argc, char** argv);
 void sendIAmHost(void);
 void insertLogChunk(Chunk *c);
-void sendCmd(int);
 void receiveLogs(void);
+
+void sendColorCmd(int);
+void giveLeaderStatus(void);
+void sendResetCmd(void);
 
 static int kbhit(void);
 
@@ -54,16 +66,26 @@ int main(int argc, char** argv) {
     
     sendIAmHost();
     
-    if(testMode) {
-    /***** TEST ****/
+    /************************* TEST *****************************/
     
-      while(c != 'q') {
-	cout << "Press enter to send next color..." << endl;
-	for(i = 0 ; i < NUM_COLORS ; i++){
-	  getchar();
-	  sendCmd(i);
-	  receiveLogs();
-	}
+    if(testMode) 
+    {
+      // Test Menu
+      cout << "Choose a test:" << endl;
+      cout << "1: Color and accelerometer test" << endl;
+      cout << "2: Network test:" << endl;
+      
+      switch (c = getchar())
+      {
+	case '1':
+	  while(c != 'q') {
+	    cout << "Press enter to send next color..." << endl;
+	      for(i = 0 ; i < NUM_COLORS ; i++)
+	      {
+		getchar();
+		sendColorCmd(i);
+		receiveLogs();
+	      }
 	  //cout << "Press enter to proceed to next test" << endl;
 	  //getchar();
 	  cout << "Testing accelerometer: Tap Blinky Block and change its orientation" << endl;
@@ -71,6 +93,21 @@ int main(int argc, char** argv) {
 	  receiveLogs();
 	  cout << "Type 'q' to quit or any other key to start again..." << endl;
 	  c = getchar();
+	}
+	break;  
+	case '2':
+	  giveLeaderStatus();
+	  while(c != 'q') 
+	  { 
+	      receiveLogs();
+	    cout << "Press any key to reset the ensemble or q to quit" << endl;
+	    c = getchar();
+	    sendResetCmd();
+	  }
+	break;
+	default:
+	  cout << "INVALID CHOICE" << endl;
+	break;
       }
     }
     
@@ -85,6 +122,59 @@ int main(int argc, char** argv) {
 	
     return 0;
 }
+
+/**********************************************************************
+ ************************ TEST Functions ******************************
+ **********************************************************************/
+
+void sendColorCmd(int color) 
+{
+	
+	byte data[5];
+	
+	data[0] = LOG_MSG;
+	data[1] = LOG_CMD;
+	data[2] = COLOR_SET;
+	data[3] = seq;
+	data[4] = color;
+	Chunk c(data, 5);
+
+		printf("Sending setColor(%d)\n", color);
+		c.send();
+		seq++;
+}
+
+void giveLeaderStatus(void) 
+{
+	
+	byte data[3];
+	
+	data[0] = LOG_MSG;
+	data[1] = LOG_CMD;
+	data[2] = SET_STLEADER;
+	
+	Chunk c(data, 3);
+
+		printf("Giving leader status to connected block and starting Spanning Tree setup...\n");
+		c.send();
+}
+
+void sendResetCmd(void) 
+{
+	
+	byte data[3];
+	
+	data[0] = LOG_MSG;
+	data[1] = LOG_CMD;
+	data[2] = ENSEMBLE_RESET;
+	
+	Chunk c(data, 3);
+
+		printf("Resetting the system\n");
+		c.send();
+}
+
+/*************************************************************************/
 
 void receiveLogs(void)
 {
@@ -155,20 +245,6 @@ void sendIAmHost(void) {
 			logs.removeCompleted();
 		}
 	} while (true);
-}
-void sendCmd(int color) {
-	
-	byte data[4];
-	
-	data[0] = LOG_MSG;
-	data[1] = LOG_CMD;
-	data[2] = seq;
-	data[3] = color;
-	Chunk c(data, 4);
-
-		printf("Sending setColor(%d)\n", color);
-		c.send();
-		seq++;
 }
 
 void insertLogChunk(Chunk *c) {

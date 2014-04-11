@@ -11,12 +11,15 @@
 #include "led.bbh"
 
 #ifdef LOG_DEBUG
-#include "log.bbh"
+  #include "log.bbh"
 #endif
-#ifdef CLOCK_SYNC
-#include "clock.bbh"
+  #ifdef CLOCK_SYNC
+  #include "clock.bbh"
 #endif
-
+#ifdef TESTING
+  #define FILENUM 2
+  #include "message.bbh"
+#endif
 
 // global receive queue for packets
 // move to network layer???
@@ -178,6 +181,7 @@ byte setupChunk(Chunk* c, PRef p, byte * msg, byte length, MsgHandler mh, Generi
     c->callback = cb;
 
     // copy message
+    assert(length <= DATA_SIZE); //useless
     memcpy(c->data, msg, length);
     
     // 'zero' out extra bytes (use ff's)
@@ -193,6 +197,7 @@ byte setupChunk(Chunk* c, PRef p, byte * msg, byte length, MsgHandler mh, Generi
 //          0 - error, chunk was not queued
 byte queueChunk(Chunk* c)
 {
+ 
     // null Chunk
     if(c == NULL)
     {

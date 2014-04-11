@@ -816,22 +816,22 @@
  816               		.file 6 "/home/pthalamy/CMU/oldbb/build/src-bobby/hw-block/soft_uart2.h"
 DEFINED SYMBOLS
                             *ABS*:0000000000000000 soft_uart2.c
-     /tmp/ccEKUNHj.s:2      *ABS*:000000000000003e __SP_H__
-     /tmp/ccEKUNHj.s:3      *ABS*:000000000000003d __SP_L__
-     /tmp/ccEKUNHj.s:4      *ABS*:000000000000003f __SREG__
-     /tmp/ccEKUNHj.s:5      *ABS*:000000000000003b __RAMPZ__
-     /tmp/ccEKUNHj.s:6      *ABS*:0000000000000034 __CCP__
-     /tmp/ccEKUNHj.s:7      *ABS*:0000000000000000 __tmp_reg__
-     /tmp/ccEKUNHj.s:8      *ABS*:0000000000000001 __zero_reg__
-     /tmp/ccEKUNHj.s:13     .text:0000000000000000 timer_set
-     /tmp/ccEKUNHj.s:122    .text:000000000000008e configure_soft_uart
-     /tmp/ccEKUNHj.s:147    .text:00000000000000a0 init_soft_uart
+     /tmp/ccfGcae6.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccfGcae6.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccfGcae6.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccfGcae6.s:5      *ABS*:000000000000003b __RAMPZ__
+     /tmp/ccfGcae6.s:6      *ABS*:0000000000000034 __CCP__
+     /tmp/ccfGcae6.s:7      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccfGcae6.s:8      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccfGcae6.s:13     .text:0000000000000000 timer_set
+     /tmp/ccfGcae6.s:122    .text:000000000000008e configure_soft_uart
+     /tmp/ccfGcae6.s:147    .text:00000000000000a0 init_soft_uart
                             *COM*:0000000000000014 soft_uart
-     /tmp/ccEKUNHj.s:209    .text:00000000000000e4 su_getchar
-     /tmp/ccEKUNHj.s:258    .text:0000000000000110 set_tx_char
-     /tmp/ccEKUNHj.s:285    .text:0000000000000126 su_putchar
-     /tmp/ccEKUNHj.s:308    .text:0000000000000136 kbhit
-     /tmp/ccEKUNHj.s:337    .text:0000000000000150 __vector_83
+     /tmp/ccfGcae6.s:209    .text:00000000000000e4 su_getchar
+     /tmp/ccfGcae6.s:258    .text:0000000000000110 set_tx_char
+     /tmp/ccfGcae6.s:285    .text:0000000000000126 su_putchar
+     /tmp/ccfGcae6.s:308    .text:0000000000000136 kbhit
+     /tmp/ccfGcae6.s:337    .text:0000000000000150 __vector_83
 
 UNDEFINED SYMBOLS
 __udivmodsi4
