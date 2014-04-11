@@ -49,7 +49,7 @@ void myMain(void)
 	}
       }
       sendTime = getClock();
-      while (seqNum < 50) {
+      while (1) {
 	while (!ackReceived){
 	  if (getClock() > (sendTime + ACK_TIMEOUT)) {	// While an ack has not been received, resend command every ACK_TIMEOUT milliseconds
 	    /*snprintf(s, 150*sizeof(char), "CMD %d LOST", seqNum);
@@ -74,12 +74,7 @@ void myMain(void)
       setColor(WHITE);					// Slave only get into a loop and process received messages with myMsgHandler
     }
  
- while(1)
- {
-   if(seqNum == 50) {
-       setColor(GREEN);
-   }
- }
+ while(1);
  
 }
 
@@ -92,6 +87,9 @@ void myMsgHandler(void)
       if (recSeq > seqNum)
       { 						// Check if ACK has been lost, if true: resend ack and ignore command
 	setNextColor();
+	//if(seqNum == 255) {
+	//  setColor(GREEN);
+	//}
 	seqNum = recSeq;
 	sendACK();	
       }
