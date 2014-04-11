@@ -3,7 +3,7 @@
 ##################################################
 
 #SOURCE := color_accel_tester.bb
-SOURCE := communication_tester.bb
+SOURCE := ct.bb
 #SOURCE := setID.bb
 #SOURCE := spanningTree.bb
 #SOURCE := network_test_ST.bb
