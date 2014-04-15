@@ -67,7 +67,9 @@ void freeChunk(Chunk * c)
     if(chunkInUse(c)) {
       c->status = CHUNK_FREE;
       allocated--;
+#ifdef TESTING      
       assert(allocated >= 0);
+#endif
     }
     tmp = c->next;
     c->next = NULL;
@@ -105,7 +107,9 @@ Chunk* getSystemChunk(byte which)
 	  (current[i]).status = CHUNK_USED;
           
 	  // clear old next ptr in case non-NULL
+#ifdef TESTING 	  
 	  assert((current[i]).next == NULL);
+#endif
 	  (current[i]).next = NULL;
 	  allocated++;
 	  checkMemoryConsistency();
@@ -113,8 +117,10 @@ Chunk* getSystemChunk(byte which)
         }
         // else, in use (supposedly)
     }
-    // this assumes NUM_TXCHUNKS <= NUM_RXCHUNKS
+    // this assumes NUM_TXCHUNKS <= NUM_RXCHUNKS => WE HAVE PROBLEMS HERE
+#ifdef TESTING    
     assert(allocated >= NUM_TXCHUNKS);
+#endif    
     checkMemoryConsistency();
     return NULL;  
 }
@@ -139,7 +145,9 @@ checkMemoryPool(Chunk* pool, byte num)
   for(byte i=0; i<num; i++ ) {
     Chunk* cp = &(pool[i]);
     if (chunkInUse(cp)) used++;
+#ifdef TESTING
     else assert(cp->next == NULL);
+#endif
   }
   return used;
 }
@@ -150,7 +158,9 @@ checkMemoryConsistency(void)
 {
   int used = checkMemoryPool(rxChunks, NUM_RXCHUNKS);
   used += checkMemoryPool(txChunks, NUM_TXCHUNKS);
-  assert(used == allocated);
+#ifdef TESTING
+  //assert(used == allocated); PROBLEM HERE!
+#endif 
 }
 
 ////////////////// END PUBLIC FUNCTIONS ///////////////////

@@ -3,6 +3,7 @@
 
 #ifdef TESTING
 #define FILENUM 3
+#include "log.bbh"
 #endif
 
 byte sendMessageToUid(Chunk* c, Uid dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
@@ -29,7 +30,9 @@ byte sendMessageToPort(Chunk* c, PRef dest, byte * msg, byte length, MsgHandler 
 {
     // NOTE: Can no longer support BROADCAST since requires 6 memory chunks passed in
   
+#ifdef TESTING
     assert(c != 0);
+#endif
     
     if(dest == BROADCAST)
     {
@@ -120,15 +123,17 @@ void initSystemMessage()
 
 }
 
-void _assert(byte condition, byte fn, int ln)
+#ifdef TESTING
+void _assert
+(byte condition, byte fn, int ln)
 {
   if (condition) return;
   // failed assert
   setColor(WHITE); 
-  char s[16]; 
-  snprintf(s, 16, "%d %d\n", (int)FILENUM, (int)__LINE__); 
-  s[15] = 0;
-  printDebug(s); 
-  // should go into a loop sending and recieving msgs only
-  exit(1);
+  // should go into a loop sending and receiving msgs only
+  while(1) {
+    reportAssert(fn, ln);
+    delayMS(200);
+  }
 } 
+#endif

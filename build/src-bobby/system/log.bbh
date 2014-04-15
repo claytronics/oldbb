@@ -18,6 +18,16 @@ byte blockingPrintDebug(char *s);
 
 void initLogDebug(void);
 
+byte sendLogChunk(PRef p, byte *d, byte s);
+
+void commandHandler(void);
+
+byte sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh);
+
 byte isHostPort(PRef p);
+
+// ----------- SEND ERROR LOG to HOST
+void reportAssert(byte fn, int ln);
+void reportLoggerOutOfMemory(PRef failurePort);
 
 #endif

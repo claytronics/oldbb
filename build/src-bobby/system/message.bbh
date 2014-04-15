@@ -48,7 +48,6 @@ byte sendMessageToPort(Chunk * c, PRef dest, byte * msg, byte length, MsgHandler
 byte sendSystemMessage(PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb);
 void initSystemMessage(void);
 
-
 // ----------- ASSERT
 #ifdef TESTING 
 void _assert(byte condition, byte fn, int ln);
