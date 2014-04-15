@@ -15,10 +15,11 @@
 #define LOG_CMD		0x05	
 #define LOG_MSG 	0x50
 
+
 //CMD TYPES
-#define COLOR_SET	0x11
-#define SET_STLEADER	0x22
-#define ENSEMBLE_RESET	0x33
+#define COLOR_SET	0x0A
+#define SET_STLEADER	0x0B
+#define ENSEMBLE_RESET	0x0C
 
 #define NUM_COLORS	9
 
@@ -270,28 +271,39 @@ void insertLogChunk(Chunk *c) {
 			s[DATA_SIZE-offset] = '\0';
 			//cout << (int) fragmentId << " " << s << endl;
 			// insert(uint16_t bId, uint8_t i, uint8_t f, uint8_t s, std::string str);
-			if (c->data[9] == 'M') {
-			  // magic offsets here correspond to code in log.bb in function reportLoggerOutOfMemory
-			  uint16_t bid = *(uint16_t*)((char*)c->data+2);
-			  uint8_t pid = c->data[12];
-
-			  fprintf(stderr, "Maybe out of memory message from %d sending to port %d (%s)\n", (int)bid, (int)pid, c->data+7);
-			}
-			logs.insert(blockId, messageId, fragmentId, size, string(s));
+			/*if (c->data[9] == 'M') {
+			// magic offsets here correspond to code in log.bb in function reportLoggerOutOfMemory */
 		}
+		// Message is an emergency chunk to report an out of memory error (No free chunk available)
+		else if (c->data[1] == LOG_OUT_OF_MEMORY) {
+		  blockId = (c->data[3] << 8) | c->data[4];
+		  uint8_t pid = c->data[2];
+		  fprintf(stderr, "Block  %d got out of memory while sending to port %d\n", (int)blockId, (int)pid);
+		  return;
+		}
+		// Message is an assert report, allows us to identify what the location of the triggered assert is
+		else if (c->data[1] == LOG_ASSERT) {
+		  blockId = (c->data[2] << 8) | c->data[3];
+		  uint8_t fileNumber = c->data[4];
+		  uint8_t lineNumber = (c->data[5] << 8) | c->data[6];
+		  fprintf(stderr, "Assert triggered on block %d. File: %d\t Line: %d\n", (int)blockId, (int)fileNumber, (int)lineNumber);
+		  return;
+		}
+		logs.insert(blockId, messageId, fragmentId, size, string(s));
 	}
 }
+
 
 static int kbhit(void){
     struct timeval timeout;
     fd_set read_handles;
     int status;
-
+    
     // check stdin (fd 0) for activity
     FD_ZERO(&read_handles);
     FD_SET(0, &read_handles);
     timeout.tv_sec = timeout.tv_usec = 0;
     status = select(0 + 1, &read_handles, NULL, NULL, &timeout);
-
+    
     return status;
 }
