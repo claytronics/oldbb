@@ -58,6 +58,7 @@ threadvar byte isLeaf = 0;
 #define COM			3
 #define COMBACK			4
 #define SUCCESS			5
+#define MAX_CYCLE               20
 
 void goMsgHandler(void);
 void backMsgHandler(void);
@@ -68,6 +69,7 @@ void cycleFailed(void);
 
 byte childResponseCount;
 byte cycleNum;
+byte failedCycles;
 
 // CHUNCK MANAGEMENT
 void freeMyChunk(void);
@@ -75,8 +77,13 @@ byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh);
 
 
 // TIME MANAGEMENT
+#define CYCLE_EXPIRE_TIME 3000
+#define START_TIME 2000
+#define NUM_TIMEOUT 2
+byte timeoutCount;
+
 Timeout startTest;
-Timeout cycleTimeout;
+Timeout cycleTimeout[NUM_TIMEOUT];
 
 void myMain(void)
 {  
@@ -84,7 +91,9 @@ void myMain(void)
 
   // initialize variables
   childResponseCount = 0;
+  timeoutCount = 0;
   cycleNum = 0;
+  failedCycles = 0;
 
   // build spanning tree
 
@@ -92,7 +101,7 @@ void myMain(void)
   for (p = 0 ; p < NUM_PORTS ; p++) children[p] = 0;
 
   // ID 2 is spanning tree leader and starts the set up
-  if (getGUID() == 20) {
+  if (getGUID() == 2) {
     isSTLeader = 1;
     isInTree = 1;
     setColor(BLUE);
@@ -101,8 +110,7 @@ void myMain(void)
       if (thisNeighborhood.n[p] != VACANT) sendAddYourself(p);
     }
     startTest.callback = (GenericHandler)(&startNextCycle);
-    cycleTimeout.callback = (GenericHandler)(&cycleFailed);
-    startTest.calltime = getTime() + 5000;
+    startTest.calltime = getTime() + START_TIME;
     registerTimeout(&startTest);
   }
   else {
@@ -123,167 +131,166 @@ void myMain(void)
 void 
 cycleFailed(void)
 {
+  if ( cycleNum > (MAX_CYCLE + 1) ) {
   char s[10];
 #ifdef LOG_DEBUG
   snprintf(s, 10*sizeof(char), "FAILED");
   printDebug(s);
 #endif  
+  failedCycles++;
   startNextCycle();
+  }
 }
 
 void 
 startNextCycle(void) 
 {
   char s[10];
-  if (cycleNum++ == 20) {
-#ifdef LOG_DEBUG
-  snprintf(s, 10*sizeof(char), "OK");
-  printDebug(s);
-#endif
-  }
   
 #ifdef LOG_DEBUG
   snprintf(s, 10*sizeof(char), "C%d GO", cycleNum);
   printDebug(s);
 #endif
+
   // Send go message to all children
   for(byte p = 0; p < NUM_PORTS; p++) 
     if (children[p] == 1) sendCycle(p);   
     
-  //set cycle timeout
-  cycleTimeout.calltime = getTime() + 5000;
-  registerTimeout(&cycleTimeout);
+  // Set timeout for next cycle
+  cycleTimeout[timeoutCount].callback = (GenericHandler)(&cycleFailed);
+  cycleTimeout[timeoutCount].calltime = getTime() + CYCLE_EXPIRE_TIME;
+  registerTimeout( &(cycleTimeout[timeoutCount]) );
+  
+  if (timeoutCount++ == NUM_TIMEOUT-1) timeoutCount = 0;
 }
 
- void backMsgHandler(void)
- { 
+void backMsgHandler(void)
+{ 
+  char s[10];
   delayMS(200);
-  
-  byte p;
-  
+
   childResponseCount++;
   
   if(!isSTLeader) {
-  if (childResponseCount == numChildren) {
-  childResponseCount = 0;
-  setColor(BLUE);
-  sendBackCycle(parent);
-  setColor(GREEN);
-}
-}
+    if (childResponseCount == numChildren) {
+      childResponseCount = 0;
+      setColor(BLUE);
+      sendBackCycle(parent);
+      setColor(GREEN);
+    }
+  }
   else {
-  if (childResponseCount == numChildren) {
-  childResponseCount = 0;
-  setColor(BLUE);    
+    if (childResponseCount == numChildren) {
+      childResponseCount = 0;
+      setColor(BLUE);    
       
 #ifdef LOG_DEBUG
-  char s[150];
-  snprintf(s, 150*sizeof(char), "C%d PASSED\n", cycleNum);
-  s[149] = '\0';
-  printDebug(s);
+      snprintf(s, 10*sizeof(char), "C%d PASSED", cycleNum);
+      printDebug(s);
 #endif
 
-  startNextCycle();
+      // Cycle succeeded, cancel last timeout
+      deregisterTimeout( &(cycleTimeout[timeoutCount]) );
 
-}
-}
+      if (cycleNum++ == MAX_CYCLE) {
+#ifdef LOG_DEBUG
+	snprintf(s, 10*sizeof(char), "err: %d/%d", failedCycles, MAX_CYCLE);
+	printDebug(s);
+	snprintf(s, 10*sizeof(char), "Done.");
+	printDebug(s);
+#endif
+	setColor(GREEN);
+	return;
+      }
+      else startNextCycle();
+    }
+  }
 }
 
- void goMsgHandler(void)
- { 
+void goMsgHandler(void)
+{ 
   delayMS(200);
   byte p;
   setColor(RED);
   if (numChildren > 0) {
-  for (p = 0; p < NUM_PORTS; p++) { 
-  if (children[p] == 1) sendCycle(p);
-}    
-}
+    for (p = 0; p < NUM_PORTS; p++) { 
+      if (children[p] == 1) sendCycle(p);
+    }    
+  }
   else sendBackCycle(parent);
 }
 
- void successMsgHandler(void) 
- { 
+void successMsgHandler(void) 
+{ 
   byte p;
   setColor(GREEN);
   if (numChildren > 0) {
-  for (p = 0; p < NUM_PORTS; p++) {
-  if (children[p] == 1) sendSuccessMsg(p);   
-}
-}
+    for (p = 0; p < NUM_PORTS; p++) {
+      if (children[p] == 1) sendSuccessMsg(p);   
+    }
+  }
 }
 
- // Message to send to all children towards the leaves
- void sendCycle(byte child)
- {
+// Message to send to all children towards the leaves
+void sendCycle(byte child)
+{
   byte data[1];
   data[0] = COM;
   sendMyChunk(child, data, 1, (MsgHandler)goMsgHandler);
 }
 
- // Message from the children to the leader to acknowledge reception of the message by the leaves
- void sendBackCycle(byte parent)
- {
+// Message from the children to the leader to acknowledge reception of the message by the leaves
+void sendBackCycle(byte parent)
+{
   byte data[1];
   data[0] = COMBACK;  
   sendMyChunk(parent, data, 1, (MsgHandler)backMsgHandler);
 }
 
- // Once the targeted number of succesful cycles has been hit, spread this message to set everyone green
- void sendSuccessMsg(byte child)
- {
+// Once the targeted number of succesful cycles has been hit, spread this message to set everyone green
+void sendSuccessMsg(byte child)
+{
   byte data[1];
   data[0] = SUCCESS;  
   sendMyChunk(child, data, 1, (MsgHandler)successMsgHandler);
 }
 
- /*********************************************
-  ********** SPANNING TREE FUNCTIONS **********
-  ********************************************/
+/*********************************************
+ ********** SPANNING TREE FUNCTIONS **********
+ ********************************************/
 
- void addYourselfHandler(void)
- {
+void addYourselfHandler(void)
+{
   byte p;
   
-  if (isInTree)
-    {
-  sendNACK(faceNum(thisChunk));
-}
-  else
-    {
-  // NOW IN TREE
-  setColor(BLUE);
-  isInTree  = 1;
+  if (isInTree) sendNACK(faceNum(thisChunk));
+  else {
+      // NOW IN TREE
+      setColor(BLUE);
+      isInTree  = 1;
     
-  // TELLS PARENT
-  parent = faceNum(thisChunk);
-  sendACK(parent);
+      // TELLS PARENT
+      parent = faceNum(thisChunk);
+      sendACK(parent);
    
-  // GETS CHILDREN
-  for (p = 0 ; p < NUM_PORTS ; p++)
-    {
-  if (p == parent || thisNeighborhood.n[p] == VACANT)
-    {
-  continue;
-}
-  else
-    {
-  sendAddYourself(p);
-      }
+      // GETS CHILDREN
+      for (p = 0 ; p < NUM_PORTS ; p++) {
+	  if (p == parent || thisNeighborhood.n[p] == VACANT) continue;
+	  else sendAddYourself(p);
+	}
     }
-  }
 }
 
 void addChildHandler(void)
 {
   switch (thisChunk->data[0]) {
- case ST_ACK:
-   children[faceNum(thisChunk)] = 1;
-   numChildren++;
-   break;
- case ST_NACK:
-   // Just ignore this face.
-   break;
+  case ST_ACK:
+    children[faceNum(thisChunk)] = 1;
+    numChildren++;
+    break;
+  case ST_NACK:
+    // Just ignore this face.
+    break;
   }
 }
 
@@ -314,8 +321,8 @@ void sendNACK(PRef p)
 }
 
 /************************************************************
-***************CHUNCK MANAGEMENT FUNCTIONS*******************
-************************************************************/
+ ***************CHUNCK MANAGEMENT FUNCTIONS*******************
+ ************************************************************/
 
 void freeMyChunk(void)
 {
@@ -334,14 +341,14 @@ byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh)
 }
 
 /*void handleReceivedCommand(void)
-{
+  {
   initializeMemory();
   callHandler(SYSTEM_MAIN);
-}*/
+  }*/
 
 /************************************************************
-************************COMMAND HANDLING*********************
-************************************************************/
+ ************************COMMAND HANDLING*********************
+ ************************************************************/
 
 void userRegistration(void)
 {
