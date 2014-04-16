@@ -9,7 +9,7 @@ threadtype typedef uint8_t Intensity;			// intensity is 0-255.  255 = 100% on, 0
 threaddef #define INTENSITY_MAX	255
 threaddef #define INTENSITY_MIN	0	
 
-enum{RED, ORANGE, YELLOW, GREEN, AQUA, BLUE, WHITE, PURPLE, PINK, NUM_COLORS};		// more colors go here - keep in ROYGBIV if possible
+enum{RED, ORANGE, YELLOW, GREEN, AQUA, BLUE, WHITE, PURPLE, PINK, INDIGO, BROWN, NUM_COLORS};		// more colors go here - keep in ROYGBIV if possible
 
 Color getColor(void);				// returns the current color state variable.
 									// this is NOT guaranteed to be the actual color if your code calls set_led().
