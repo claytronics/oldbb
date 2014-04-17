@@ -41,14 +41,14 @@ void checkTimeout()
 				thisTimeout = timeoutList;
 				timeoutList = timeoutList->next;
 
-				// if timeout was not pre-emptively disable, execute callback();
+				// if timeout was not pre-emptively disabled, disable it, execute callback();
 				if(thisTimeout->state != INACTIVE)
 				  {
+				    // disable callback until reactivated/reinserted into list.
+				    thisTimeout->state = INACTIVE;
+				   
 				    (thisTimeout->callback)();	
 				  }
-
-				// disable callback until reactivated/reinserted into list.
-				thisTimeout->state = INACTIVE;
 			}
 			else
 			{
