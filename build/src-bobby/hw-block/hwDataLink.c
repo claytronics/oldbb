@@ -10,6 +10,8 @@
 #include  "../system/clock.bbh"
 #endif
 
+#define FILENUM 5
+
 #define CRC_POLY        0xA6
 
 // store if received an escape char
