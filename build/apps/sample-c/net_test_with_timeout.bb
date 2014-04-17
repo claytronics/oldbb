@@ -1,9 +1,5 @@
 #include "block.bbh"
 
-#ifdef LOG_DEBUG
-#include "log.bbh"   
-#endif
-
 /********************************************** HOW TO READ BLOCK COLORS ******************************************************
  * 1 - DURING SPANNING TREE SETUP: 
  * 	Leader is blue
@@ -14,8 +10,6 @@
  * 	once the message is received by the leaves, the leaves send back a message to their parent and stay red
  * 	parents turn green when they receive a message from all of their children
  * 	once the leader has received a message from all of its children, the cycle is complete, it turns green and starts a new cycle by turning blue
- * 	if a message has been lost, the leader's lights turn off
- * 	if 100 cycle in a row are completed, the test has succeeded, all blocks turn green.
  *******************************************************************************************************************************/
 
 void handleReceivedCommand(void);
@@ -73,11 +67,11 @@ byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh);
 // TIME MANAGEMENT
 #define CYCLE_EXPIRE_TIME 3000
 #define START_TIME 2000
-#define NUM_TIMEOUT 2
-byte timeoutCount;
 
 Timeout startTest;
-Timeout cycleTimeout[NUM_TIMEOUT];
+Timeout cycleTimeout;
+
+void setNextCycleTimeout(void);
 
 void myMain(void)
 {  
@@ -85,12 +79,14 @@ void myMain(void)
 
   // initialize variables
   childResponseCount = 0;
-  timeoutCount = 0;
   cycleNum = 0;
   failedCycles = 0;
 
-  // build spanning tree
+  // initialize timeouts
+  cycleTimeout.callback = (GenericHandler)(&cycleFailed);
+  startTest.callback = (GenericHandler)(&startNextCycle);
 
+  // build Spanning Tree
   // initialize children table
   for (p = 0 ; p < NUM_PORTS ; p++) children[p] = 0;
 
@@ -103,7 +99,8 @@ void myMain(void)
     for (p = 0 ; p < NUM_PORTS ; p++) { 
       if (thisNeighborhood.n[p] != VACANT) sendAddYourself(p);
     }
-    startTest.callback = (GenericHandler)(&startNextCycle);
+    
+    // Setting test start time
     startTest.calltime = getTime() + START_TIME;
     registerTimeout(&startTest);
   }
@@ -151,14 +148,11 @@ startNextCycle(void)
     if (children[p] == 1) sendCycle(p);   
     
   // Set timeout for next cycle
-  cycleTimeout[timeoutCount].callback = (GenericHandler)(&cycleFailed);
-  cycleTimeout[timeoutCount].calltime = getTime() + CYCLE_EXPIRE_TIME;
-  registerTimeout( &(cycleTimeout[timeoutCount]) );
-  
-  if (timeoutCount++ == NUM_TIMEOUT-1) timeoutCount = 0;
+  setNextCycleTimeout();
 }
 
-void backMsgHandler(void)
+void 
+backMsgHandler(void)
 { 
   char s[10];
   delayMS(200);
@@ -184,7 +178,7 @@ void backMsgHandler(void)
 #endif
 
       // Cycle succeeded, cancel last timeout
-      deregisterTimeout( &(cycleTimeout[timeoutCount]) );
+      deregisterTimeout(&cycleTimeout);
 
       if (cycleNum++ == MAX_CYCLE) {
 #ifdef LOG_DEBUG
@@ -247,6 +241,12 @@ void sendSuccessMsg(byte child)
   byte data[1];
   data[0] = SUCCESS;  
   sendMyChunk(child, data, 1, (MsgHandler)successMsgHandler);
+}
+
+void setNextCycleTimeout(void) 
+{
+  cycleTimeout.calltime = getTime() + CYCLE_EXPIRE_TIME;
+  registerTimeout(&cycleTimeout);
 }
 
 /*********************************************
