@@ -10,6 +10,7 @@
 #ifdef TESTING
 #define FILENUM 1
 #include "message.bbh"
+#include "log.bbh"
 #endif
 
 threaddef #define NUM_RXCHUNKS 12
@@ -34,7 +35,6 @@ void initializeMemory(void)
     uint8_t i;
 
     // clear all status bits and next pointers
-
     // clear all status bits for receive chunks
     for( i=0; i<NUM_RXCHUNKS; i++ )
     {
@@ -42,7 +42,7 @@ void initializeMemory(void)
 	rxChunks[i].next = NULL;
     }
     
-    // clear all status bits for receive chunks
+    // clear all status bits for send chunks
     for( i=0; i<NUM_TXCHUNKS; i++ )
     {
         txChunks[i].status = CHUNK_FREE;
@@ -62,7 +62,7 @@ void freeChunk(Chunk * c)
 {
   Chunk * tmp;	
 
-  checkMemoryConsistency();
+  checkMemoryConsistency(__LINE__);
   while(c != NULL) {
     if(chunkInUse(c)) {
       c->status = CHUNK_FREE;
@@ -75,12 +75,11 @@ void freeChunk(Chunk * c)
     c->next = NULL;
     c = tmp;
   }
-  checkMemoryConsistency();
 }
 
 Chunk* getSystemChunk(byte which)
 {
-  checkMemoryConsistency();
+  //checkMemoryConsistency(__LINE__);
     int8_t i;
     Chunk*  current;
 
@@ -112,16 +111,16 @@ Chunk* getSystemChunk(byte which)
 #endif
 	  (current[i]).next = NULL;
 	  allocated++;
-	  checkMemoryConsistency();
+	  //checkMemoryConsistency(__LINE__);
 	  return &(current[i]);
         }
         // else, in use (supposedly)
     }
-    // this assumes NUM_TXCHUNKS <= NUM_RXCHUNKS => WE HAVE PROBLEMS HERE
+    // this assumes NUM_TXCHUNKS <= NUM_RXCHUNKS
 #ifdef TESTING    
     assert(allocated >= NUM_TXCHUNKS);
 #endif    
-    checkMemoryConsistency();
+    //checkMemoryConsistency(__LINE__);
     return NULL;  
 }
 
@@ -142,7 +141,7 @@ static byte
 checkMemoryPool(Chunk* pool, byte num)
 {
   byte used = 0;
-  for(byte i=0; i<num; i++ ) {
+  for( byte i=0; i<num; i++ ) {
     Chunk* cp = &(pool[i]);
     if (chunkInUse(cp)) used++;
 #ifdef TESTING
@@ -154,15 +153,19 @@ checkMemoryPool(Chunk* pool, byte num)
 
 // check function
 void 
-checkMemoryConsistency(void)
+checkMemoryConsistency(int cln)
 {
   int used = checkMemoryPool(rxChunks, NUM_RXCHUNKS);
   used += checkMemoryPool(txChunks, NUM_TXCHUNKS);
 #ifdef TESTING
-  //assert(used == allocated); PROBLEM HERE!
+  if (used != allocated) 
+    while(1) {
+      reportAssert(FILENUM, cln);
+      delayMS(500);
+    }
+  //assert(used == allocated); //GOT PROBLEM HERE!
 #endif 
 }
-
 ////////////////// END PUBLIC FUNCTIONS ///////////////////
 
 #endif
