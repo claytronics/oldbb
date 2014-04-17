@@ -6,6 +6,8 @@
 #include "clock.bbh"
 #include "block_config.bbh"
 
+#define FILENUM 16
+
 #ifdef LOG_DEBUG
 #include "log.bbh"   
 #endif
