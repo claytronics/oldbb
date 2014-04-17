@@ -80,7 +80,7 @@ void freeChunk(Chunk * c)
 static 
 Chunk* getSystemChunk(byte which, byte fn, int ln)
 {
-    //checkMemoryConsistency(__LINE__);
+    checkMemoryConsistency(__LINE__);
     int8_t i;
     Chunk*  current;
 
@@ -180,11 +180,12 @@ checkMemoryConsistency(int cln)
   int used = checkMemoryPool(rxChunks, NUM_RXCHUNKS);
   used += checkMemoryPool(txChunks, NUM_TXCHUNKS);
 #ifdef TESTING
-  if (used != allocated) 
+  if (used != allocated) {
     while(1) {
       reportAssert(FILENUM, cln);
       delayMS(500);
     }
+  }
   if (used > 12) {
       sendOOM(cln);
   }
