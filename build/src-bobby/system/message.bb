@@ -129,11 +129,11 @@ void _assert
 {
   if (condition) return;
   // failed assert
-  setColor(WHITE); 
+  setColor(BROWN); 
   // should go into a loop sending and receiving msgs only
   while(1) {
     reportAssert(fn, ln);
-    delayMS(200);
+    delayMS(1000);
   }
 } 
 #endif
