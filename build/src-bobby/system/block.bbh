@@ -23,6 +23,10 @@
 #include "data_link.bbh"
 #include "message.bbh"
 
+#ifdef LOG_DEBUG
+#include "log.bbh"   
+#endif
+
 // HARDWARE API INCLUDE SECTION
 #include "../hw-api/hwBlockTick.h"
 #include "../hw-api/hwLED.h"
