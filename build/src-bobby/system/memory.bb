@@ -13,8 +13,8 @@
 #include "log.bbh"
 #endif
 
-threaddef #define NUM_RXCHUNKS 12
-threaddef #define NUM_TXCHUNKS 12
+threaddef #define NUM_RXCHUNKS 24
+threaddef #define NUM_TXCHUNKS 24
 
 // types of chunks to free
 #define RXCHUNK 0
@@ -77,42 +77,40 @@ void freeChunk(Chunk * c)
   }
 }
 
-Chunk* getSystemChunk(byte which)
+static 
+Chunk* getSystemChunk(byte which, byte fn, int ln)
 {
-  //checkMemoryConsistency(__LINE__);
+    //checkMemoryConsistency(__LINE__);
     int8_t i;
     Chunk*  current;
 
-    if(which == RXCHUNK)
-      {
-	current = rxChunks;
-
-	i = NUM_RXCHUNKS-1;
-      }
-    else
-      {
-	current = txChunks;
-
-	i = NUM_TXCHUNKS-1;
-      }
+    if(which == RXCHUNK) {
+        current = rxChunks;
+        
+        i = NUM_RXCHUNKS-1;
+    } else {
+        current = txChunks;
+        
+        i = NUM_TXCHUNKS-1;
+    }
 
     // look for unused Chunk
-    for(; i>=0; i--)
-    {
+    for(; i>=0; i--) {
         // check top bit to indicate usage
-      if( !chunkInUse((&(current[i]))) )
-        {
+        if( !chunkInUse((&(current[i]))) ) {
             // indicate in use
-	  (current[i]).status = CHUNK_USED;
-          
-	  // clear old next ptr in case non-NULL
+            Chunk* cp = &(current[i]);
+            cp->status = CHUNK_USED;
+            cp->fn = fn;
+            cp->ln = ln;
+            // clear old next ptr in case non-NULL
 #ifdef TESTING 	  
-	  assert((current[i]).next == NULL);
+            assert(cp->next == NULL);
 #endif
-	  (current[i]).next = NULL;
-	  allocated++;
-	  //checkMemoryConsistency(__LINE__);
-	  return &(current[i]);
+            cp->next = NULL;
+            allocated++;
+            //checkMemoryConsistency(__LINE__);
+            return cp;
         }
         // else, in use (supposedly)
     }
@@ -125,15 +123,15 @@ Chunk* getSystemChunk(byte which)
 }
 
 // return pointer to free memory Chunk
-Chunk* getSystemRXChunk()
+Chunk* _getSystemRXChunk(byte fn, int ln)
 {
-  return getSystemChunk(RXCHUNK);
+  return getSystemChunk(RXCHUNK, fn, ln);
 }
 
 Chunk* 
-getSystemTXChunk()
+_getSystemTXChunk(byte fn, int ln)
 {
-  return getSystemChunk(TXCHUNK);
+  return getSystemChunk(TXCHUNK, fn, ln);
 }
 
 // check a pool for consistency, return number in use
@@ -151,6 +149,30 @@ checkMemoryPool(Chunk* pool, byte num)
   return used;
 }
 
+static void
+sendOOM(int cln)
+{
+    char buffer[64];
+    buffer[0] = cln;
+    int j=0;
+    for( byte i=0; i<NUM_RXCHUNKS; i++ ) {
+        if (chunkInUse((&(rxChunks[i])))) {
+            buffer[j++] = rxChunks[i].fn;
+            buffer[j++] = rxChunks[i].ln;
+        }
+    }
+    for( byte i=0; i<NUM_TXCHUNKS; i++ ) {
+        if (chunkInUse((&(txChunks[i])))) {
+            buffer[j++] = txChunks[i].fn;
+            buffer[j++] = txChunks[i].ln;
+        }
+    }
+    buffer[j] = 0;
+    printDebug(buffer);
+    setColor(INDIGO);
+    delayMS(500);
+}
+
 // check function
 void 
 checkMemoryConsistency(int cln)
@@ -163,9 +185,19 @@ checkMemoryConsistency(int cln)
       reportAssert(FILENUM, cln);
       delayMS(500);
     }
+  if (used > 12) {
+      sendOOM(cln);
+  }
   //assert(used == allocated); //GOT PROBLEM HERE!
 #endif 
 }
 ////////////////// END PUBLIC FUNCTIONS ///////////////////
 
 #endif
+
+// Local Variables:
+// mode: C
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
+
