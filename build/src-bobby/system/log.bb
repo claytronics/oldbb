@@ -75,7 +75,8 @@ reportAssert(byte fn, int ln)
   buf[1] = LOG_ASSERT; 
   GUIDIntoChar(getGUID(), &(buf[2]));
   buf[4] = fn;
-  buf[5] = ln;
+  buf[5] = 0xff & (ln>>8);
+  buf[6] = ln & 0xff;
   sendMessageToPort(c, toHost, buf, 7, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk);
   return; 
 }
