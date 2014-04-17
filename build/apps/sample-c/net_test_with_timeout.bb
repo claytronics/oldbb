@@ -1,10 +1,4 @@
-#include "handler.bbh"
-#include "data_link.bbh"
-#include "led.bbh"
 #include "block.bbh"
-#include "ensemble.bbh"
-#include "clock.bbh"
-#include "block_config.bbh"
 
 #ifdef LOG_DEBUG
 #include "log.bbh"   
@@ -58,7 +52,7 @@ threadvar byte isLeaf = 0;
 #define COM			3
 #define COMBACK			4
 #define SUCCESS			5
-#define MAX_CYCLE               20
+#define MAX_CYCLE               100
 
 void goMsgHandler(void);
 void backMsgHandler(void);
