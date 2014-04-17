@@ -8,6 +8,8 @@
 #include "data_link.bbh"
 #include "serial.bbh"
 
+#define FILENUM 4
+
 #define UNDEFINED_HOST 200
 
 #define LOG_I_AM_HOST			0x01
