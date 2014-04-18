@@ -31,74 +31,8 @@ threadvar byte PCConnection = 0;
 threadvar PRef toHost = 200; //= NUM_PORT; // UNDEFINED_HOST (compilation error with SIM)
 threadvar byte seq = 0; // sequence number for avoiding loops when broadcasting commands
 
-// -------------- HOST DISCOVERY FUNCTIONS
-
-void initLogDebug(void)
-{
-  //byte buf[2];
-	
-  toHost = UNDEFINED_HOST;
-  PCConnection = 0;
-	
-  /*buf[0] = LOG_MSG;
-  buf[1] = LOG_NEED_PATH_TO_HOST;
-  byte p;*/
-	
-  setColor(ORANGE); // to remember to the user that the block is waiting
-  while(toHost == UNDEFINED_HOST)
-    {
-      /* for( p = 0; p < NUM_PORTS; p++)
-	{
-	  if ((thisNeighborhood.n[p] == VACANT))
-	    {
-	      continue;
-	    }
-	  sendLogChunk(p, buf, 2, __LINE__);
-	  }*/
-      delayMS(500);
-    }
-  srand(getGUID());
-}
-
-byte isHostPort(PRef p)
-{
-  return ((p == toHost) && (PCConnection == 1));
-}
-
-void sendPathToHost(PRef p)
-{
-  byte buf[2];
-	
-  buf[0] = LOG_MSG;
-  buf[1] = LOG_PATH_TO_HOST;
-  sendLogChunk(p, buf, 2);
-}
-
-void spreadPathToHost(PRef excluded)
-{
-  byte p;
-  
-  for( p = 0; p < NUM_PORTS; p++) {
-    if ((p == excluded) || (thisNeighborhood.n[p] == VACANT)) {
-      continue;
-    }
-    sendPathToHost(p);
-  }
-}
-
-void forwardToHost(Chunk *c)
-{
-  if(toHost != UNDEFINED_HOST) {
-    sendLogChunk(toHost, c->data, DATA_SIZE);
-  }
-}
-
-// ------------------- LOG SENDING FUNCTIONS
-//
-// format: <LOG_MSG> <LOG_DATA> <block id (2 bytes) > <message # (1 byte)> 
-// <fragment # (1 byte)> <if fragment # = 1, number of fragments. Otherwise data>
-// <log data: 17 - 7 = 10>.
-
+//////////////////// PUBLIC FUNCTIONS /////////////////////
+// Send a log string to host
 byte printDebug(char* str) {
   byte size = getSize(str);
   static byte mId = 0;
@@ -165,6 +99,74 @@ byte blockingPrintDebug(char *s)
     }
   return printDebug(s);
 }
+////////////////// END PUBLIC FUNCTIONS ///////////////////
+
+//////////////////// SYSTEM FUNCTIONS /////////////////////
+//
+// -------------- HOST DISCOVERY FUNCTIONS
+
+void initLogDebug(void)
+{
+  //byte buf[2];
+	
+  toHost = UNDEFINED_HOST;
+  PCConnection = 0;
+	
+  /*buf[0] = LOG_MSG;
+  buf[1] = LOG_NEED_PATH_TO_HOST;
+  byte p;*/
+	
+  setColor(ORANGE); // to remember to the user that the block is waiting
+  while(toHost == UNDEFINED_HOST)
+    {
+      /* for( p = 0; p < NUM_PORTS; p++)
+	{
+	  if ((thisNeighborhood.n[p] == VACANT))
+	    {
+	      continue;
+	    }
+	  sendLogChunk(p, buf, 2, __LINE__);
+	  }*/
+      delayMS(500);
+    }
+  srand(getGUID());
+}
+
+byte isHostPort(PRef p)
+{
+  return ((p == toHost) && (PCConnection == 1));
+}
+
+static
+void sendPathToHost(PRef p)
+{
+  byte buf[2];
+	
+  buf[0] = LOG_MSG;
+  buf[1] = LOG_PATH_TO_HOST;
+  sendLogChunk(p, buf, 2);
+}
+
+static
+void spreadPathToHost(PRef excluded)
+{
+  byte p;
+  
+  for( p = 0; p < NUM_PORTS; p++) {
+    if ((p == excluded) || (thisNeighborhood.n[p] == VACANT)) {
+      continue;
+    }
+    sendPathToHost(p);
+  }
+}
+
+static
+void forwardToHost(Chunk *c)
+{
+  if(toHost != UNDEFINED_HOST) {
+    sendLogChunk(toHost, c->data, DATA_SIZE);
+  }
+}
 
 // ------------------ CRITICAL DEBUGGING FUNCTIONS
 
@@ -204,7 +206,7 @@ reportAssert(byte fn, int ln)
 
 // --------------- CHUNK SENDING FUNCTIONS
 
-static byte 
+byte 
 sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh) 
 {
   Chunk *c=getLogChunk();
@@ -233,7 +235,6 @@ commandHandler(void)
 {
   switch (thisChunk->data[2]) {
     case COLOR_SET:
-
       callHandler(EVENT_COMMAND_RECEIVED);
       break;
     case SET_STLEADER:
@@ -245,7 +246,7 @@ commandHandler(void)
     }
 }
 
-byte 
+static byte 
 handleLogMessage(void)
 {
   if( thisChunk == NULL ) 
@@ -285,15 +286,27 @@ handleLogMessage(void)
     case LOG_OUT_OF_MEMORY:
       if(toHost != UNDEFINED_HOST) forwardToHost(thisChunk);
       break;
-    }
-	
+    }	
   return 1;
 }
 
+// --------------- CHUNK MANAGEMENT
+
+static Chunk* getLogChunk(void)
+{
+  Chunk *p = getSystemTXChunk();
+  return p;
+}
+
+static void 
+freeLogChunk(void)
+{
+  freeChunk(thisChunk);
+}
 
 // ------------- UTILITY
 
-byte getSize(char* str) {
+static byte getSize(char* str) {
   byte sizeCar = 0;
   byte sizeChunk = 1;
 	
@@ -315,19 +328,9 @@ byte getSize(char* str) {
   return sizeChunk;
 }
 
-// --------------- CHUNK MANAGEMENT
+////////////////// END SYSTEM FUNCTIONS ///////////////////
 
-Chunk* getLogChunk(void)
-{
-  Chunk *p = getSystemTXChunk();
-  return p;
-}
-
-void 
-freeLogChunk(void)
-{
-  freeChunk(thisChunk);
-}
+// CAN THIS BE DELETED? 
 
 /*
 // format: <LOG_MSG> <LOG_DATA> <block id (2 bytes) > <message # (1 byte)> < fragment # (1 byte)> < if fragment # = 1, number of fragments. Otherwise data> < log data: 17 - 7 = 10>.
