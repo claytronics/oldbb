@@ -103,7 +103,7 @@ processColorChange(void) // Should not be placed in this file, will correct soon
   if (seq < thisChunk->data[3]) {
     seq = thisChunk->data[3];
     for (X = 0 ; X <= 5 ; X++) {
-      //    sendCmdChunk(X, thisChunk->data, 5, (MsgHandler)commandHandler, __LINE__);
+      sendCmdChunk(X, thisChunk->data, 5, (MsgHandler)commandHandler);
     }
     callHandler(EVENT_COMMAND_RECEIVED);
     //triggerHandler(EVENT_COMMAND_RECEIVED);
