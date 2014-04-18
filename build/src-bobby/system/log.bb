@@ -14,7 +14,7 @@
 
 #define LOG_I_AM_HOST			0x01
 #define LOG_PATH_TO_HOST		0x02
-#define LOG_NEED_PATH_TO_HOST		0x03
+#define LOG_NEED_PATH_TO_HOST		0x03 // UNNECESSARY AND CAUSING MEMORY ISSUES
 #define LOG_DATA			0x04
 #define LOG_CMD			        0x05
 #define LOG_OUT_OF_MEMORY               0x06
@@ -103,7 +103,7 @@ processColorChange(void) // Should not be placed in this file, will correct soon
   if (seq < thisChunk->data[3]) {
     seq = thisChunk->data[3];
     for (X = 0 ; X <= 5 ; X++) {
-      sendCmdChunk(X, thisChunk->data, 5, (MsgHandler)commandHandler);
+      //    sendCmdChunk(X, thisChunk->data, 5, (MsgHandler)commandHandler, __LINE__);
     }
     callHandler(EVENT_COMMAND_RECEIVED);
     //triggerHandler(EVENT_COMMAND_RECEIVED);
@@ -147,21 +147,18 @@ void sendPathToHost(PRef p)
   buf[0] = LOG_MSG;
   buf[1] = LOG_PATH_TO_HOST;
   sendLogChunk(p, buf, 2);
-	
 }
 
 void spreadPathToHost(PRef excluded)
 {
   byte p;
-
-  for( p = 0; p < NUM_PORTS; p++)
-    {
-      if ((p == excluded) || (thisNeighborhood.n[p] == VACANT))
-	{
-	  continue;
-	}
-      sendPathToHost(p);
+  
+  for( p = 0; p < NUM_PORTS; p++) {
+    if ((p == excluded) || (thisNeighborhood.n[p] == VACANT)) {
+      continue;
     }
+    sendPathToHost(p);
+  }
 }
 
 void forwardToHost(Chunk *c)
@@ -173,27 +170,27 @@ void forwardToHost(Chunk *c)
 
 void initLogDebug(void)
 {
-  byte buf[2];
+  //byte buf[2];
 	
   toHost = UNDEFINED_HOST;
   PCConnection = 0;
 	
-  buf[0] = LOG_MSG;
+  /*buf[0] = LOG_MSG;
   buf[1] = LOG_NEED_PATH_TO_HOST;
-  byte p;
+  byte p;*/
 	
   setColor(ORANGE); // to remember to the user that the block is waiting
   while(toHost == UNDEFINED_HOST)
     {
-      for( p = 0; p < NUM_PORTS; p++)
+      /* for( p = 0; p < NUM_PORTS; p++)
 	{
 	  if ((thisNeighborhood.n[p] == VACANT))
 	    {
 	      continue;
 	    }
-	  sendLogChunk(p, buf, 2);
-	}
-      delayMS(200);
+	  sendLogChunk(p, buf, 2, __LINE__);
+	  }*/
+      delayMS(500);
     }
   srand(getGUID());
 }
@@ -217,15 +214,14 @@ handleLogMessage(void)
     case LOG_PATH_TO_HOST:
       if (toHost == UNDEFINED_HOST) {
 	toHost = faceNum(thisChunk);
-	PCConnection = 0;
 	spreadPathToHost(faceNum(thisChunk));
       }
       break;
-    case LOG_NEED_PATH_TO_HOST:
+      /*case LOG_NEED_PATH_TO_HOST:
       if (toHost != UNDEFINED_HOST) {
 	sendPathToHost(faceNum(thisChunk));
       }
-      break;
+      break;*/
     case LOG_DATA:
       if(toHost != UNDEFINED_HOST) {
 	forwardToHost(thisChunk);
