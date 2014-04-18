@@ -2,13 +2,12 @@
 # below here should be in an include file
 ##################################################
 
+#SOURCE := ct.bb
 #SOURCE := color_accel_tester.bb
-SOURCE := ct.bb
 #SOURCE := setID.bb
 #SOURCE := spanningTree.bb
-#SOURCE := network_test_ST.bb
-#SOURCE := network_test_ST_host_enabled.bb
-
+SOURCE := net_test_with_timeout.bb
+#SOURCE := timeout_readme.bb
 
 
 # add any extra of yours here
