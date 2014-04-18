@@ -13,8 +13,8 @@
 #include "log.bbh"
 #endif
 
-threaddef #define NUM_RXCHUNKS 24
-threaddef #define NUM_TXCHUNKS 24
+threaddef #define NUM_RXCHUNKS 12
+threaddef #define NUM_TXCHUNKS 12
 
 // types of chunks to free
 #define RXCHUNK 0
@@ -62,7 +62,7 @@ void freeChunk(Chunk * c)
 {
   Chunk * tmp;	
 
-  checkMemoryConsistency(__LINE__);
+  checkMemoryConsistency();
   while(c != NULL) {
     if(chunkInUse(c)) {
       c->status = CHUNK_FREE;
@@ -77,10 +77,10 @@ void freeChunk(Chunk * c)
   }
 }
 
-static 
-Chunk* getSystemChunk(byte which, byte fn, int ln)
+//static 
+Chunk* getSystemChunk(byte which)
 {
-    checkMemoryConsistency(__LINE__);
+    checkMemoryConsistency();
     int8_t i;
     Chunk*  current;
 
@@ -101,15 +101,13 @@ Chunk* getSystemChunk(byte which, byte fn, int ln)
             // indicate in use
             Chunk* cp = &(current[i]);
             cp->status = CHUNK_USED;
-            cp->fn = fn;
-            cp->ln = ln;
             // clear old next ptr in case non-NULL
 #ifdef TESTING 	  
             assert(cp->next == NULL);
 #endif
             cp->next = NULL;
             allocated++;
-            //checkMemoryConsistency(__LINE__);
+            checkMemoryConsistency();
             return cp;
         }
         // else, in use (supposedly)
@@ -118,20 +116,20 @@ Chunk* getSystemChunk(byte which, byte fn, int ln)
 #ifdef TESTING    
     assert(allocated >= NUM_TXCHUNKS);
 #endif    
-    //checkMemoryConsistency(__LINE__);
+    checkMemoryConsistency();
     return NULL;  
 }
 
 // return pointer to free memory Chunk
-Chunk* _getSystemRXChunk(byte fn, int ln)
+Chunk* getSystemRXChunk(void)
 {
-  return getSystemChunk(RXCHUNK, fn, ln);
+  return getSystemChunk(RXCHUNK);
 }
 
 Chunk* 
-_getSystemTXChunk(byte fn, int ln)
+getSystemTXChunk(void)
 {
-  return getSystemChunk(TXCHUNK, fn, ln);
+  return getSystemChunk(TXCHUNK);
 }
 
 // check a pool for consistency, return number in use
@@ -149,7 +147,9 @@ checkMemoryPool(Chunk* pool, byte num)
   return used;
 }
 
-static void
+
+// Can be used for further debugging if blocks often get out of memory
+/*static void
 sendOOM(int cln)
 {
     char buffer[64];
@@ -171,25 +171,23 @@ sendOOM(int cln)
     printDebug(buffer);
     setColor(INDIGO);
     delayMS(500);
-}
+    }*/
 
-// check function
+// Memory check function, in case check fails, sends log to host with file and line of failed check
 void 
-checkMemoryConsistency(int cln)
+_checkMemoryConsistency(byte cfn, int cln)
 {
   int used = checkMemoryPool(rxChunks, NUM_RXCHUNKS);
   used += checkMemoryPool(txChunks, NUM_TXCHUNKS);
 #ifdef TESTING
   if (used != allocated) {
-    while(1) {
-      reportAssert(FILENUM, cln);
-      delayMS(500);
-    }
+      setColor(BROWN);
+      while (1) {
+          reportAssert(cfn, cln);
+          delayMS(1000);
+      }
   }
-  if (used > 12) {
-      sendOOM(cln);
-  }
-  //assert(used == allocated); //GOT PROBLEM HERE!
+  //if (used > 12) sendOOM(cln);
 #endif 
 }
 ////////////////// END PUBLIC FUNCTIONS ///////////////////
