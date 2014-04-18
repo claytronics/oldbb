@@ -42,7 +42,10 @@ byte sendLogChunk(PRef p, byte *d, byte s);
 byte sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh);
 
 // Handler for log commands, to be specified as handler in sendCmdChunk(x)
-byte commandHandler(void);
+void commandHandler(void);
+
+// Detect type of log message and execute the corresponding callback
+byte handleLogMessage(void);
 
 // Checks if port p is connected to host
 // Returns 1 if true, 0 otherwise

@@ -25,6 +25,10 @@
 #define SET_STLEADER	0x0B
 #define ENSEMBLE_RESET	0x0C
 
+static byte getSize(char* str);
+static void freeLogChunk(void);
+static Chunk* getLogChunk(void);
+
 //#define FORCE_TRANSMISSION
 
 threadvar byte PCConnection = 0;
@@ -246,7 +250,7 @@ commandHandler(void)
     }
 }
 
-static byte 
+byte 
 handleLogMessage(void)
 {
   if( thisChunk == NULL ) 
