@@ -115,7 +115,7 @@ main(int argc, char** argv)
 	scanf("%hu", &idToSet);
 	sendIDToSet(idToSet);
 	break;
-      case '3':
+      case '4':
 	uint16_t firstBlockID;
 	cout << "Please line up all the blocks, then type the id of the first block (The one attached to the host) and press return" << endl;
 	scanf("%hu", &firstBlockID);
