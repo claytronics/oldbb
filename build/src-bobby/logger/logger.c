@@ -77,8 +77,9 @@ main(int argc, char** argv)
     cout << "Choose a test:" << endl;
     cout << "1: Color and accelerometer test" << endl;
     cout << "2: Network test" << endl;
-    cout << "3: Set block id" << endl;
-      
+    cout << "3: Set block id of a single block" << endl;
+    cout << "4: Set id of an ensemble" << endl;    
+  
     switch (c = getchar())
       {
       case '1':
@@ -113,6 +114,12 @@ main(int argc, char** argv)
 	cout << "Please type the ID you want to set on the block and press return" << endl;
 	scanf("%hu", &idToSet);
 	sendIDToSet(idToSet);
+	break;
+      case '3':
+	uint16_t firstBlockID;
+	cout << "Please line up all the blocks, then type the id of the first block (The one attached to the host) and press return" << endl;
+	scanf("%hu", &firstBlockID);
+	sendIDToSet(firstBlockID);
 	break;
       default:
 	cout << "INVALID CHOICE" << endl;
