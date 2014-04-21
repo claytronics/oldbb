@@ -17,13 +17,14 @@
 
 
 //CMD TYPES
-#define COLOR_SET	0x0A
-#define SET_STLEADER	0x0B
-#define ENSEMBLE_RESET	0x0C
+#define COLOR_SET	0x10
+#define ENSEMBLE_RESET	0x11
+#define SET_ID	        0x12
+
 
 #define NUM_COLORS	9
 
-// Usage: ./logger -p /dev/ttyUSB0
+// Usage: ./logger -p /dev/ttyUSB0 [-t]
 
 using namespace std;
 
@@ -50,7 +51,7 @@ void insertLogChunk(Chunk *c);
 void receiveLogs(void);
 
 void sendColorCmd(int);
-void giveLeaderStatus(void);
+void sendIDToSet(uint16_t idToSet);
 void sendResetCmd(void);
 
 static int kbhit(void);
@@ -75,7 +76,8 @@ main(int argc, char** argv)
     // Test Menu
     cout << "Choose a test:" << endl;
     cout << "1: Color and accelerometer test" << endl;
-    cout << "2: Network test:" << endl;
+    cout << "2: Network test" << endl;
+    cout << "3: Set block id" << endl;
       
     switch (c = getchar())
       {
@@ -98,7 +100,6 @@ main(int argc, char** argv)
 	}
 	break;  
       case '2':
-	giveLeaderStatus();
 	while(c != 'q') 
 	  { 
 	    receiveLogs();
@@ -106,6 +107,12 @@ main(int argc, char** argv)
 	    c = getchar();
 	    sendResetCmd();
 	  }
+	break;
+      case '3':
+	uint16_t idToSet;
+	cout << "Please type the ID you want to set on the block and press return" << endl;
+	scanf("%hu", &idToSet);
+	sendIDToSet(idToSet);
 	break;
       default:
 	cout << "INVALID CHOICE" << endl;
@@ -146,18 +153,20 @@ void sendColorCmd(int color)
   seq++;
 }
 
-void giveLeaderStatus(void) 
+void sendIDToSet(uint16_t idToSet) 
 {
 	
-  byte data[3];
+  byte data[5];
 	
   data[0] = LOG_MSG;
   data[1] = LOG_CMD;
-  data[2] = SET_STLEADER;
+  data[2] = SET_ID;
+  data[3] = (idToSet >> 8) & 0x00FF;
+  data[4] = (idToSet & 0x00FF); 
 	
-  Chunk c(data, 3);
+  Chunk c(data, 5);
 	
-  printf("Giving leader status to connected block and starting Spanning Tree setup...\n");
+  printf("Setting ID %u on block...\n", idToSet);
   c.send();
 }
 
