@@ -21,9 +21,9 @@
 #define LOG_ASSERT                      0x07 
 
 //CMD TYPES
-#define COLOR_SET	0x0A
-#define SET_STLEADER	0x0B
-#define ENSEMBLE_RESET	0x0C
+#define COLOR_SET	0x10
+#define ENSEMBLE_RESET	0x11
+#define SET_ID          0x12
 
 static byte getSize(char* str);
 static void freeLogChunk(void);
@@ -241,7 +241,7 @@ commandHandler(void)
     case COLOR_SET:
       callHandler(EVENT_COMMAND_RECEIVED);
       break;
-    case SET_STLEADER:
+    case SET_ID:
       callHandler(EVENT_COMMAND_RECEIVED);
       break;
     case ENSEMBLE_RESET:
