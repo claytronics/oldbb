@@ -39,7 +39,7 @@ void initLogDebug(void);
 byte sendLogChunk(PRef p, byte *d, byte s);
 
 // Same as sendLogChunk but allows us to specify the message handler
-byte sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh);
+byte sendCmdChunk(PRef p, byte *d, byte s, MsgHandler mh);
 
 // Handler for log commands, to be specified as handler in sendCmdChunk(x)
 void commandHandler(void);

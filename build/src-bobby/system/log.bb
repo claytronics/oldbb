@@ -40,7 +40,7 @@ threadvar byte seq = 0; // sequence number for avoiding loops when broadcasting 
 byte printDebug(char* str) {
   byte size = getSize(str);
   static byte mId = 0;
-  uint8_t index = 0;
+  byte index = 0;
   byte buf[DATA_SIZE];
   byte s = 0;	
   byte fId = 0;
@@ -211,15 +211,15 @@ reportAssert(byte fn, int ln)
 // --------------- CHUNK SENDING FUNCTIONS
 
 byte 
-sendCmdChunk(PRef port, byte *data, byte size, MsgHandler mh) 
+sendCmdChunk(PRef p, byte *d, byte s, MsgHandler mh) 
 {
   Chunk *c=getLogChunk();
   if (c == NULL) {
-    reportLoggerOutOfMemory(port);
+    reportLoggerOutOfMemory(p);
     setColor(PINK);
     return 0;
   }
-  if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeLogChunk) == 0) {
+  if (sendMessageToPort(c, p, d, s, mh, (GenericHandler)&freeLogChunk) == 0) {
     freeChunk(c);
     return 0;
   }
@@ -333,37 +333,3 @@ static byte getSize(char* str) {
 }
 
 ////////////////// END SYSTEM FUNCTIONS ///////////////////
-
-// CAN THIS BE DELETED? 
-
-/*
-// format: <LOG_MSG> <LOG_DATA> <block id (2 bytes) > <message # (1 byte)> < fragment # (1 byte)> < if fragment # = 1, number of fragments. Otherwise data> < log data: 17 - 7 = 10>.
-byte print(char* str) {
-
-}
-
-byte printDebug(char *s, ...) 
-{
-char buffer[251];
-va_list args;
-va_start (args,s);
-vsprintf(buffer, s, args);
-va_end(args);
-buffer[250] = '\0';
-return print(buffer);
-}
-
-byte blockingPrintDebug(char *s)
-{
-va_list args;
-byte ret = 0;
-	
-while(toHost == UNDEFINED_HOST)
-{
-delayMS(1);
-}	
-va_start (args,s);
-ret = printDebug(s);
-va_end(args);
-return ret;
-} */

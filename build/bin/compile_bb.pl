@@ -218,8 +218,8 @@ while ($#ARGV >= 0) {
 	    }
 	}
     }
-    #"s: %lu, r: %lu, c: %lu, sp: %f", estimatedGlobalTime, receiveTime, getClockForTime(receiveTime), speedAvg
-    #open(F, "<$infile") || die("$prog: Can't open $infile\n");
+    
+    open(F, "<$infile") || die("$prog: Can't open $infile\n");
 
     while (<F>) {
 	s/[ \r\n\t]*$//;
