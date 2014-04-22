@@ -18,7 +18,7 @@ byte resetReceived = 0;
 /****************************************
  ************ SPANNING TREE *************
  ***************************************/
-
+#define FILENUM 20
 #define ST_NACK		0
 #define ST_ACK		1
 #define ADD_YOURSELF	2
@@ -34,7 +34,6 @@ void successMsgHandler(void);
 threadvar PRef children[NUM_PORTS];
 threadvar PRef parent;
 threadvar byte numChildren = 0;
-
 threadvar byte isSTLeader = 0;
 threadvar byte isInTree = 0;
 threadvar byte isLeaf = 0;
@@ -46,7 +45,9 @@ threadvar byte isLeaf = 0;
 #define COM			3
 #define COMBACK			4
 #define SUCCESS			5
-#define MAX_CYCLE               100
+#define MAX_CYCLE               20
+// #define ROOT_ID 		20
+
 
 void goMsgHandler(void);
 void backMsgHandler(void);
@@ -62,11 +63,12 @@ byte failedCycles;
 // CHUNCK MANAGEMENT
 void freeMyChunk(void);
 byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh); 
-
+byte id;
 
 // TIME MANAGEMENT
 #define CYCLE_EXPIRE_TIME 3000
 #define START_TIME 2000
+
 
 Timeout startTest;
 Timeout cycleTimeout;
@@ -89,9 +91,18 @@ void myMain(void)
   // build Spanning Tree
   // initialize children table
   for (p = 0 ; p < NUM_PORTS ; p++) children[p] = 0;
-
+  
+  //choosing the leader of the Spanning Tree
+ for(p = 0; p < NUM_PORTS ; p++)
+ {
+   if(isHostPort(p))
+   {
+     id = getGUID();
+   }
+ }
+  
   // ID 2 is spanning tree leader and starts the set up
-  if (getGUID() == 2) {
+  if (getGUID() == id) {
     isSTLeader = 1;
     isInTree = 1;
     setColor(BLUE);
@@ -122,12 +133,14 @@ void myMain(void)
 void 
 cycleFailed(void)
 {
-  if ( cycleNum > (MAX_CYCLE + 1) ) {
-  char s[10];
+  if ( cycleNum < (MAX_CYCLE + 1) ) {
+  char s[15];
 #ifdef LOG_DEBUG
-  snprintf(s, 10*sizeof(char), "FAILED");
+  snprintf(s, 15*sizeof(char), "FAILED");
   printDebug(s);
 #endif  
+  setColor(RED);
+  
   failedCycles++;
   startNextCycle();
   }
@@ -136,10 +149,10 @@ cycleFailed(void)
 void 
 startNextCycle(void) 
 {
-  char s[10];
+  char s[15];
   
 #ifdef LOG_DEBUG
-  snprintf(s, 10*sizeof(char), "C%d GO", cycleNum);
+  snprintf(s, 15*sizeof(char), "C%d GO", cycleNum);
   printDebug(s);
 #endif
 
@@ -154,7 +167,7 @@ startNextCycle(void)
 void 
 backMsgHandler(void)
 { 
-  char s[10];
+  char s[15];
   delayMS(200);
 
   childResponseCount++;
@@ -164,7 +177,9 @@ backMsgHandler(void)
       childResponseCount = 0;
       setColor(BLUE);
       sendBackCycle(parent);
-      setColor(GREEN);
+    }
+    else{
+    setColor(AQUA);
     }
   }
   else {
@@ -182,15 +197,24 @@ backMsgHandler(void)
 
       if (cycleNum++ == MAX_CYCLE) {
 #ifdef LOG_DEBUG
-	snprintf(s, 10*sizeof(char), "err: %d/%d", failedCycles, MAX_CYCLE);
+	snprintf(s, 15*sizeof(char), "err: %d/%d", failedCycles, MAX_CYCLE);
 	printDebug(s);
-	snprintf(s, 10*sizeof(char), "Done.");
+	snprintf(s, 15*sizeof(char), "Done.");
 	printDebug(s);
 #endif
+	byte p;
 	setColor(GREEN);
+	   for (p = 0; p < NUM_PORTS; p++) { 
+      if (children[p] == 1) sendSuccessMsg(p);
+    }  
+	
 	return;
       }
       else startNextCycle();
+    }
+    else
+    {
+      setColor(AQUA);
     }
   }
 }
