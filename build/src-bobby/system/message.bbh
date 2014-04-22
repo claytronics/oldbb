@@ -6,8 +6,6 @@
 #include "ensemble.bbh"
 #include "memory.bbh"
 #include "../hw-api/hwDataLink.h"
-//#include "data_link.bbh"
-
 
 //-------- RESERVED MESSAGE TYPES
 //

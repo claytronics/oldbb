@@ -57,7 +57,7 @@ byte sendMessageToPort(Chunk* c, PRef dest, byte * msg, byte length, MsgHandler 
 
 // ----------- SEND SYSTEM MESSAGE to PORT
 //
-// Probably shouldn't be used by a user, but needed by various sytem routines.
+// Probably shouldn't be used by a user, but needed by various system routines.
 byte sendSystemMessage(PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
 {
     Chunk* c;
