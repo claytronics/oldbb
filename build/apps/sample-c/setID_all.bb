@@ -1,116 +1,141 @@
 #include "block.bbh"
 
-#define COM			2
+threadvar hasMoreThanTwoNeighbors;
 
-
-
-threadvar byte i = 1;
-byte activePort;
-byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh); 
-void startChangingId(void);
-void checkId(byte cId);
+byte sendNextID(PRef nextBlock, uint16_t nextID);
+void setFirstBlockID(void);
+void processIDChange(void);
+void checkId(uint16_t cId);
 void freeMyChunk(void);
 
 void myMain(void)
-
 { 
-  byte  host_id;
-  byte p;
-  uint16_t id = 256*i; 
-  setColor(WHITE);
- 
-  for(p = 0; p < NUM_PORTS ; p++)
- {
-   if(isHostPort(p))
-   {
-     host_id = getGUID();
-   }
- }
-
- if (getGUID() == host_id) {
-  setAndStoreUID(id);
-  checkId(i);
- 
-  for (p = 0 ; p < NUM_PORTS ; p++) {
-	  if (p == faceNum(thisChunk) || thisNeighborhood.n[p] == VACANT) continue;
-	  else {
-	    activePort = p;
-	    break;
-	  }
-	}
-	
-  byte data[2];
-  data[0] = COM;
-  data[1] = i;
-  sendMyChunk(activePort, data, 2, (MsgHandler)startChangingId);
-    }
+  hasMoreThanTwoNeighbors = 0;
+  byte neighborCount = 0;
+  byte p; 
   
+  setColor(WHITE);
+
+  // Make sure that block has not more than 2 neighbors
+  for (p = 0 ; p < NUM_PORTS ; p++) {
+    if (!thisNeighborhood.n[p] == VACANT) neighborCount++;
+    else continue; 
+  }
+
+  if (neighborCount > 2) {
+      setColor(RED);
+      hasMoreThanTwoNeighbors = 1;
+  }
+ 
+  // Wait for an ID message
   while(1);
 }
 
 void 
-startChangingId(void) 
+setFirstBlockID(void)
 {
+  // Set ID received from logger to first block
+  uint16_t firstBlockID;
+  firstBlockID = (uint16_t)(thisChunk->data[3]) << 8;
+  firstBlockID |= thisChunk->data[4];
+
+  // Avoid sending message back to sender
+  PRef excluded = faceNum(thisChunk);
+
+  // Store ID on EEPROM and checked that it has been set properly
+  setAndStoreUID(firstBlockID);
+  checkId(firstBlockID);
+ 
+  // Send next ID to next block 
+  PRef nextBlock;
   byte p;
-  byte i = (thisChunk->data[1]) + 1;
-  uint16_t id = 256*i;
-  setAndStoreUID(id);
-  byte data[2];
-  byte neighbournum = 6;
-  checkId(i);
-  
-  
-
   for (p = 0 ; p < NUM_PORTS ; p++) {
-	  if (p == faceNum(thisChunk) || thisNeighborhood.n[p] == VACANT){
-	    neighbournum--;
-	  }
-	  else {
-	    activePort = p;
-	    break;
-	  }
-	}
-  if( neighbournum != 0)
-  {
-  data[0] = COM;
-  data[1] = i;
-  sendMyChunk(activePort, data, 2, (MsgHandler)startChangingId);  
+    if (p == excluded || thisNeighborhood.n[p] == VACANT) continue;
+    else {
+      nextBlock = p;
+      break;
+    }
   }
-  
+  sendNextID(nextBlock, ++firstBlockID);
 }
 
-void checkId(byte cId)
+// Set received ID to block and propagate setID message
+void 
+processIDChange(void) 
 {
-  if(getGUID() == cId)
-  {
-    setColor(GREEN);
-      char s[15];
+  // Make sure that block does not have more than two neighbors 
+  if (!hasMoreThanTwoNeighbors) {
+    // Set ID received from logger to first block
+    uint16_t idToSet;
+    idToSet = (uint16_t)(thisChunk->data[0]) << 8;
+    idToSet |= thisChunk->data[1];
+    
+    // Avoid sending message back to sender
+    PRef excluded = faceNum(thisChunk);
+    
+    // Store ID on EEPROM and checked that it has been set properly
+    setAndStoreUID(idToSet);
+    checkId(idToSet);
+    
+    // Send next ID to next block 
+    PRef nextBlock;
+    byte p;
+    for (p = 0 ; p < NUM_PORTS ; p++) {
+      if (p == excluded || thisNeighborhood.n[p] == VACANT) continue;
+      else {
+	nextBlock = p;
+	break;
+      }
+    }
+    sendNextID(nextBlock, ++idToSet);
+  }
+  else { // Do nothing, warn the user!
 #ifdef LOG_DEBUG
-  snprintf(s, 15*sizeof(char), "Id changed");
-  printDebug(s);
-#endif  
-
+    char s[15];
+    snprintf(s, 15*sizeof(char), "err: 2+ neighbors!");
+    printDebug(s);
+#endif
   }
 }
 
-byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh) 
+void checkId(uint16_t cId)
+{
+  if (getGUID() == cId) {
+    setColor(GREEN); 
+  }
+  else {
+    setColor(RED);
+  }
+#ifdef LOG_DEBUG
+  char s[15];
+  snprintf(s, 15*sizeof(char), "id: %u", getGUID());
+  printDebug(s);
+#endif 
+}
+
+byte sendNextID(PRef nextBlock, uint16_t nextID) 
 { 
-  Chunk *c=getSystemTXChunk();
+  Chunk *c = getSystemTXChunk();  
+  byte data[2];
+  data[0] = (nextID >> 8) & 0x00FF;
+  data[1] = (nextID & 0x00FF); 
+    
   if (c == NULL) return 0;
-  if (sendMessageToPort(c, port, data, size, mh, (GenericHandler)&freeMyChunk) == 0) {
+  if (sendMessageToPort(c, nextBlock, data, 2, (MsgHandler)&processIDChange, (GenericHandler)&freeMyChunk) == 0) {
     freeChunk(c);
     return 0;
   }
   return 1;
 }
 
-void freeMyChunk(void)
+void 
+freeMyChunk(void)
 {
   freeChunk(thisChunk);
 }
 
-
 void userRegistration(void)
 {
   registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);	
+  registerHandler(EVENT_COMMAND_RECEIVED, (GenericHandler)&setFirstBlockID);
 }
