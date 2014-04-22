@@ -1,17 +1,21 @@
 How to use the Test programs:
 
+SET ID:
+setID_all.bb and setID.bb are the programs for changing the blinky blocks id.setID.bb is for only one block and setID_all.bb is for
+several blocks. When you use setID_all.bb you have to line up every block so that you can set their id depending on the first block
+id connected to the host.Both of the program use the logger so add the LOG_DEBUG flags into the Makefile.
+you can enable this test mode by adding "-t"when starting the logger, run the bblogger after the program will guide you.
+
 COLOR AND ACCELEROMETER:
 color_accel_tester.bb is the program used for testing color and accelerometer.To see the result you have to use the logger,
-so uncommenting the LOG_DEBUG flags into the makefile before compiling the program. You can enable this test mode by adding "-t"
-when starting the logger, run the bblogger after the program will guide you.
+so don't forget to uncomment the LOG_DEBUG flags into the makefile before compiling the program. You can enable this test 
+mode by adding "-t" when starting the logger, run the bblogger after the program will guide you.
 
 NETWORK:
 net_test_with_timeout.bb is the program for testing the blinky block networks. This program will create a spanning tree,
-when the spanning tree is set up, all the blocks will turn Blue. The root block will send a message to all the spanning tree leaves 
+when the spanning tree is set up, all the blocks will turn Blue. The root block is the one connected to the host, it will send a message to all the spanning tree leaves 
 and the leaves will send back the message to the root. Once the root receives all the message from the leaves, one cycle is complete.
 The test suceed if we reach 100 (you can change this number by changing MAX_CYCLE).
-
-You will have to choose a root block otherwise the program won't work, change ROOT_ID in the program by using the Id you want.
 
 
 
