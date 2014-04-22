@@ -117,7 +117,9 @@ main(int argc, char** argv)
 	break;
       case '4':
 	uint16_t firstBlockID;
-	cout << "Please line up all the blocks, then type the id of the first block (The one attached to the host) and press return" << endl;
+	cout << "Please line up all the blocks, and check that no blocks are red. If there is a red block, then make sure that all blocks have no more than 2 neighbors." << endl;
+cout << "Now, type the id of the first block (The one attached to the host) and press return" << endl;
+	cout << "First block ID: "; 
 	scanf("%hu", &firstBlockID);
 	sendIDToSet(firstBlockID);
 	break;
