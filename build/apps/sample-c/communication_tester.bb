@@ -37,8 +37,16 @@ void myMain(void)
     setIntensity(0); 
     delayMS(500);
     setIntensity(255);
+  
+    for(p = 0; p < NUM_PORTS ; p++)
+ {
+   if(isHostPort(p))
+   {
+     id = getGUID();
+   }
+ }
         
-    if (getGUID() == 2) {				// Master initializes communication
+    if (getGUID() == id) {				// Master initializes communication
       setColor(RED);
       
       for (p = 0; p < NUM_PORTS; p++) {
@@ -143,7 +151,7 @@ sendCmd(void)
   s[149] = '\0';
   printDebug(s);
   
-  Chunk *c = calloc(sizeof(Chunk), 1);
+  Chunk *c = getSystemTXChunk();
   
   c->data[0] = CMD;
   c->data[1] = seqNum;
