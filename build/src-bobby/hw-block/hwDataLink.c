@@ -10,7 +10,9 @@
 #include  "../system/clock.bbh"
 #endif
 
+#ifdef TESTING
 #define FILENUM 5
+#endif
 
 #define CRC_POLY        0xA6
 
