@@ -63,7 +63,7 @@ byte failedCycles;
 // CHUNCK MANAGEMENT
 void freeMyChunk(void);
 byte sendMyChunk(PRef port, byte *data, byte size, MsgHandler mh); 
-byte id;
+uint16_t id;
 
 // TIME MANAGEMENT
 #define CYCLE_EXPIRE_TIME 3000
@@ -93,10 +93,8 @@ void myMain(void)
   for (p = 0 ; p < NUM_PORTS ; p++) children[p] = 0;
   
   //choosing the leader of the Spanning Tree
- for(p = 0; p < NUM_PORTS ; p++)
- {
-   if(isHostPort(p))
-   {
+ for(p = 0; p < NUM_PORTS ; p++) {
+   if(isHostPort(p)) {
      id = getGUID();
    }
  }

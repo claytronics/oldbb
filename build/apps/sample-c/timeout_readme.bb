@@ -20,7 +20,9 @@ nextColor(void)
 // Re-enable timeout
 void setNextTimeout(void)
 {
+  // set calltime
   tout.calltime = getTime() + COLOR_CHANGE_TIME;
+  // start countdown
   registerTimeout( &tout );
 }
 
@@ -29,7 +31,7 @@ myMain(void)
 {
   setColor(RED);
 
-  // initialize timeout
+  // initialize timeout - set its callback function
   tout.callback = (GenericHandler)(&nextColor);
 
   setNextTimeout();

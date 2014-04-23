@@ -2,13 +2,13 @@
 # below here should be in an include file
 ##################################################
 
-#SOURCE := ct.bb
+#SOURCE := network_test_single.bb
 #SOURCE := color_accel_tester.bb
-#SOURCE := setID.bb
+#SOURCE := setID_single.bb
 #SOURCE := spanningTree.bb
-#SOURCE := net_test_with_timeout.bb
+SOURCE := network_test_ensemble.bb
 #SOURCE := timeout_readme.bb
-SOURCE := neighbor_count.bb
+#SOURCE := neighbor_count.bb
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
