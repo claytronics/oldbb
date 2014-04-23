@@ -9,8 +9,11 @@
 
 #ifdef TESTING
 #define FILENUM 1
+#define checkMemoryConsistency() _checkMemoryConsistency(FILENUM, __LINE__)
 #include "message.bbh"
 #include "log.bbh"
+#else
+#define checkMemoryConsistency()
 #endif
 
 threaddef #define NUM_RXCHUNKS 12
@@ -137,7 +140,8 @@ static byte
 checkMemoryPool(Chunk* pool, byte num)
 {
   byte used = 0;
-  for( byte i=0; i<num; i++ ) {
+  byte i = 0;
+  for( i=0; i<num; i++ ) {
     Chunk* cp = &(pool[i]);
     if (chunkInUse(cp)) used++;
 #ifdef TESTING
