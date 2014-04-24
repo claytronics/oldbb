@@ -1,13 +1,4 @@
-#include "handler.bbh"
-#include "data_link.bbh"
-#include "led.bbh"
-#include "log.bbh"
-#include "accelerometer.bbh"
-#include "handler.bbh"
 #include "block.bbh"
-#include "ensemble.bbh"
-#include "clock.bbh"
-#include "block_config.bbh"
   
 void getCmdData(void);
 void blockTap(void);
