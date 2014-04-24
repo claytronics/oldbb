@@ -32,15 +32,15 @@ AccelData 	getAccelData(void);	// returns a copy of the raw accel data for user 
 //
 //	Note: Front/Back/Left/Right are based on accelerometer orientation, not block orientation.
 //	Futhermore, some can only be determined after several orientation transitions, so this data may not be useful at all.
-#define CheckTap(x)			(x->status & ACC_TAP)
-#define CheckShake(x)			(x->status & ACC_SHAKE)
-#define GetOrientation(x)		(x->status & ACC_O_MASK)
-#define isOrientationFront(x)		((x->status & ACC_O_MASK) == ACC_FRONT)
-#define isOrientationBack(x)		((x->status & ACC_O_MASK) == ACC_BACK)
-#define isOrientationLeft(x)		((x->status & ACC_O_MASK) == ACC_LEFT)
-#define isOrientationRight(x)		((x->status & ACC_O_MASK) == ACC_RIGHT)
-#define isOrientationDown(x)		((x->status & ACC_O_MASK) == ACC_DOWN)
-#define isOrientationUp(x)		((x->status & ACC_O_MASK) == ACC_UP)
+#define CheckTap(x)			(x.status & ACC_TAP)
+#define CheckShake(x)			(x.status & ACC_SHAKE)
+#define GetOrientation(x)		(x.status & ACC_O_MASK)
+#define isOrientationFront(x)		((x.status & ACC_O_MASK) == ACC_FRONT)
+#define isOrientationBack(x)		((x.status & ACC_O_MASK) == ACC_BACK)
+#define isOrientationLeft(x)		((x.status & ACC_O_MASK) == ACC_LEFT)
+#define isOrientationRight(x)		((x.status & ACC_O_MASK) == ACC_RIGHT)
+#define isOrientationDown(x)		((x.status & ACC_O_MASK) == ACC_DOWN)
+#define isOrientationUp(x)		((x.status & ACC_O_MASK) == ACC_UP)
 
 //------------ Handler Side Effects
 //	The following handlers may be called by the accelerometer:
