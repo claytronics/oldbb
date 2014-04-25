@@ -1,4 +1,5 @@
 accelerometer.bb
+audio.bb
 block.bb
 block_config.bb
 boot.bb
@@ -16,6 +17,7 @@ system.bb
 hardwaretime.bb
 microphone.bb
 accelerometer.bbh
+audio.bbh
 block.bbh
 block_config.bbh
 boot.bbh

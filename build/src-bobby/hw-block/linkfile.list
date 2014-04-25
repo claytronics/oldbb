@@ -4,6 +4,7 @@ eeprom_driver.h
 ext_memory.c
 ext_memory.h
 hwAccelerometer.c
+hwAudio.c
 hwBlockTick.c
 hwBoot.c
 hwDataLink.c
