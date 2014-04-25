@@ -4,24 +4,24 @@ threadvar byte hasBottomNeighbor;
 threadvar byte hasTopNeighbor;
 threadvar PRef sideNeighbors[4];
 threadvar byte numSideNeighbors;
-threadvar byte currentLevel;  
-threadvar byte iAmOnLowestLevel;
+threadvar byte currentLayer;  
+threadvar byte iAmOnLowestLayer;
 
 byte sendCustomChunk(byte messageType, PRef p);
-byte sendLevelUpdate(byte newLevel, PRef p);
+byte sendLayerUpdate(byte newLayer, PRef p);
 byte customMessageHandler(void);
-void spreadLevelInfo(void);
+void spreadLayerInfo(void);
 Chunk* getFreeUserChunk(void);
 
 // Message types
-#define LEVEL_UPDATE 0x01
+#define LAYER_UPDATE 0x01
 #define I_HAVE_BOTTOM_NEIGHBOR 0x02
   
 // Time management
-#define LOWEST_LEVEL_CHECK_TIME 200
-Timeout lowestLevelCheck;
+#define LOWEST_LAYER_CHECK_TIME 200
+Timeout lowestLayerCheck;
 #define SET_COLOR_TIME 500
-Timeout waitForLevelSetup;
+Timeout waitForLayerSetup;
 
 #define MYCHUNKS 12
 extern Chunk* thisChunk;
@@ -61,14 +61,14 @@ sendCustomChunk(byte messageType, PRef p)
   return 1;
 }
 
-// Send a level update chunk
+// Send a layer update chunk
 byte 
-sendLevelUpdate(byte newLevel, PRef p)
+sendLayerUpdate(byte newLayer, PRef p)
 {
   Chunk *c = getFreeUserChunk();
  
-  c->data[0] = LEVEL_UPDATE;
-  c->data[1] = newLevel;
+  c->data[0] = LAYER_UPDATE;
+  c->data[1] = newLayer;
 
   if (c != NULL) {      
     if ( sendMessageToPort(c, p, c->data, 2, customMessageHandler, NULL) == 0 ) {
@@ -83,26 +83,26 @@ sendLevelUpdate(byte newLevel, PRef p)
 byte
 customMessageHandler(void)
 {
-  byte newLevel;
+  byte newLayer;
   if (thisChunk == NULL) return 0;
   byte messageType = thisChunk->data[0];
   byte chunkSource = faceNum(thisChunk);
   switch (messageType) {
-  case LEVEL_UPDATE: 
-    newLevel = thisChunk->data[1];
-    if (newLevel > currentLevel) {
-      currentLevel = newLevel;
+  case LAYER_UPDATE: 
+    newLayer = thisChunk->data[1];
+    if (newLayer > currentLayer) {
+      currentLayer = newLayer;
       for (byte i=0; i < numSideNeighbors; i++) {
-	sendLevelUpdate(newLevel, sideNeighbors[i]);
+	sendLayerUpdate(newLayer, sideNeighbors[i]);
       }
-      if (hasTopNeighbor) sendLevelUpdate((currentLevel+1), UP);
-      if (hasBottomNeighbor && (chunkSource != DOWN) ) sendLevelUpdate((newLevel-1), DOWN);
+      if (hasTopNeighbor) sendLayerUpdate((currentLayer+1), UP);
+      if (hasBottomNeighbor && (chunkSource != DOWN) ) sendLayerUpdate((newLayer-1), DOWN);
     }
     // else ignore message.
     break;
   case I_HAVE_BOTTOM_NEIGHBOR:
-    if (iAmOnLowestLevel) {
-      iAmOnLowestLevel = 0;
+    if (iAmOnLowestLayer) {
+      iAmOnLowestLayer = 0;
       for (byte i=0; i < numSideNeighbors; i++) {
 	sendCustomChunk(I_HAVE_BOTTOM_NEIGHBOR, sideNeighbors[i]);
       }
@@ -113,13 +113,13 @@ customMessageHandler(void)
   return 1;
 }
 
-// Spread level info from the base to the top, incrementing sent number on each level.
+// Spread layer info from the base to the top, incrementing sent number on each layer.
 void
-spreadLevelInfo(void)
+spreadLayerInfo(void)
 {
-  if (iAmOnLowestLevel) {
-    // Send new level to next level
-    if (hasTopNeighbor) sendLevelUpdate((currentLevel+1), 5);
+  if (iAmOnLowestLayer) {
+    // Send new layer to next layer
+    if (hasTopNeighbor) sendLayerUpdate((currentLayer+1), 5);
   }
   // else do nothing, keep on waiting.
 }
@@ -127,7 +127,7 @@ spreadLevelInfo(void)
 void
 setupRainbow(void)
 {
-  setColor(currentLevel % NUM_COLORS);
+  setColor(currentLayer % NUM_COLORS);
 }
 
 void 
@@ -138,13 +138,13 @@ myMain(void)
   delayMS(200);
 
   // Initialize Timeouts
-  lowestLevelCheck.callback = (GenericHandler)(&spreadLevelInfo);
-  lowestLevelCheck.calltime = getTime() + LOWEST_LEVEL_CHECK_TIME;
-  registerTimeout(&lowestLevelCheck);
+  lowestLayerCheck.callback = (GenericHandler)(&spreadLayerInfo);
+  lowestLayerCheck.calltime = getTime() + LOWEST_LAYER_CHECK_TIME;
+  registerTimeout(&lowestLayerCheck);
 
-  waitForLevelSetup.callback = (GenericHandler)(&setupRainbow);
-  waitForLevelSetup.calltime = getTime() + SET_COLOR_TIME;
-  registerTimeout(&waitForLevelSetup);
+  waitForLayerSetup.callback = (GenericHandler)(&setupRainbow);
+  waitForLayerSetup.calltime = getTime() + SET_COLOR_TIME;
+  registerTimeout(&waitForLayerSetup);
 
   // Initialize chunks
   for(byte x=0; x < MYCHUNKS; x++) {
@@ -161,16 +161,16 @@ myMain(void)
     if (thisNeighborhood.n[p] != VACANT) sideNeighbors[numSideNeighbors++] = p;
   }
 
-  //------- Determine level of each block
-  // A block will assume it is on the ensemble's lowest level until it receives a I_HAVE_BOTTOM_NEIGHBOR message from its side neighbors. 
-  currentLevel = 0;
-  iAmOnLowestLevel = 1;
+  //------- Determine layer of each block
+  // A block will assume it is on the ensemble's lowest layer until it receives a I_HAVE_BOTTOM_NEIGHBOR message from its side neighbors. 
+  currentLayer = 0;
+  iAmOnLowestLayer = 1;
   if (hasBottomNeighbor) {
     for (byte i=0; i < numSideNeighbors; i++) {
       sendCustomChunk(I_HAVE_BOTTOM_NEIGHBOR, sideNeighbors[i]); 
     }
   }
-  // Then, they all wait for the level below them to provide them with their level.
+  // Then, they all wait for the layer below them to provide them with their layer.
   while(1);
 }
 
