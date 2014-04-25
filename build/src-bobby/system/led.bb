@@ -3,7 +3,7 @@
 
 // stolen from: http://www.free-webmaster-tools.com/colorpicker.htm
 //enum {RED, ORANGE, YELLOW, GREEN, BLUE, INDIGO, VIOLET, WHITE, AQUA, FUCHSIA, LAWNGREEN, LIGHTPINK, LIGHTSLATEGRAY, SADDLEBROWN, GOLD, NUM_COLORS};
-uint8_t colors[NUM_COLORS][3] = {
+uint8_t colors[NUM_COLORS+2][3] = {
 #ifdef BBSIM
 {0xFF, 0x00, 0x00}, // red
 {0xFF, 0xA5, 0x00}, // orange
@@ -24,7 +24,9 @@ uint8_t colors[NUM_COLORS][3] = {
 {0xFF, 0xFF, 0xFF}, // white
 {0xFF, 0x00, 0xFF}, // purple
 {0xFF, 0x00, 0x2D}, // pink
+//--> new user colors here
 // System reserved colors, should not be used by users. (asserts, debug, memoryCheck colors)
+// PUT ALL USER COLORS BEFORE THESE ONES.
 {0x4B, 0x00, 0xB0}, // indigo
 {0x8B, 0x45, 0x13}, // saddlebrown
 #endif

@@ -1,5 +1,5 @@
-audio.h
 hwAccelerometer.h
+hwAudio.h
 hwBlockTick.h
 hwBoot.h
 hwLED.h
