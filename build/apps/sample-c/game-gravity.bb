@@ -69,7 +69,7 @@ myMain(void)
 {
   //setColor(WHITE);
   // We are forced to use a small delay before program execution, otherwise neighborhood may not be initialized yet
-  delayMS(200);
+  delayMS(1000);
 
   // Initialize Timeouts
   lowestLayerCheck.callback = (GenericHandler)(&spreadLayerInfo);
@@ -87,7 +87,7 @@ myMain(void)
 
   // Initialize spanning tree variables
   isInATree = 0;
-  //setColor(RED);
+  setColor(RED);
   numChildren = 0;
   leaderID = 0;
   numExpectedChildrenAnswers = 0;
@@ -170,7 +170,6 @@ setUpSpanningTree(void)
   if (isOnTopLayer) {
     topLayer = currentLayer;
     isInATree = 1;   
-    //setColor(YELLOW);
     for (byte p = 0 ; p < NUM_PORTS ; p++) {
       if (thisNeighborhood.n[p] != VACANT) sendSpanningTreeMessage(p, ADD_YOURSELF, getGUID(), topLayer);
     }
@@ -276,7 +275,7 @@ layerMessageHandler(void)
   case ADD_YOURSELF: {
     uint16_t potentialLeaderID = charToGUID(&(thisChunk->data[2]));
     uint16_t potentialTopLayer = thisChunk->data[3];
-    //setColor(BLUE);
+    setColor(BLUE);
     if (!isInATree) {
       isInATree = 1;
       addYourselfToSpanningTree(chunkSource, potentialLeaderID, potentialTopLayer);
@@ -305,9 +304,9 @@ layerMessageHandler(void)
     if (--numExpectedBwdMessages == 0) {
       if (getGUID() != leaderID) {
       sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
-      //setColor(GREEN);
+      setColor(GREEN);
       }
-      //else setColor(ORANGE);
+      else setColor(ORANGE);
     }
     // else continue waiting for other children's response
   }
@@ -338,7 +337,7 @@ addYourselfToSpanningTree(byte parentPort ,uint16_t newLeaderID, byte newTopLaye
     while (numExpectedChildrenAnswers != 0);
     // If is a leaf: send back message
     if (numChildren == 0) 
-      //setColor(AQUA);
+      setColor(AQUA);
       sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
   }
   // Get ready to receive back message
