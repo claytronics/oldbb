@@ -6,9 +6,10 @@
 #SOURCE := color_accel_tester.bb
 #SOURCE := setID_single.bb
 #SOURCE := spanningTree.bb
-SOURCE := network_test_ensemble.bb
+#SOURCE := network_test_ensemble.bb
 #SOURCE := timeout_readme.bb
-#SOURCE := neighbor_count.bb
+SOURCE := neighbor_count.bb
+
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
@@ -19,8 +20,8 @@ SOURCE := network_test_ensemble.bb
 #ALLO +=
 #MELDO +=
 
-#CFLAGS_OPTIONS = -DCLOCK_SYNC
-CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
-CFLAGS_OPTIONS += -DTESTING
+CFLAGS_OPTIONS = -DCLOCK_SYNC
+#CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
+#CFLAGS_OPTIONS += -DTESTING
 
 include Makefile.header

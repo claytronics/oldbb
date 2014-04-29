@@ -1,4 +1,4 @@
-audio.c
+hwAudio.c
 hwAccelerometer.c
 hwBlockTick.c
 hwBoot.c

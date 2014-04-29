@@ -1,28 +1,21 @@
 #include "clock.bbh"
 #include "ensemble.bbh"
 #include "data_link.bbh"
-
+#include "log.bbh"
 #include <math.h>
 
-#ifdef LOG_DEBUG
-#include "log.bbh"
-#endif
 
-#define PRINT_BBSIM(...) //printf(__VA_ARGS__)
-#define PRINT_BBSIM2(...) //printf(__VA_ARGS__)
+#define PRINT_BBSIM(...) printf(__VA_ARGS__)
 
-//#define DO_NOT_START_BEFORE_BEING_SYNCHRONIZED
-
-//#define STATIC_TIME_LEADER
 #define MIN_ID_TIME_LEADER
 
-//#define TEST_LINEAR_CORRECTION
-//#define	IGNORE_AFTER 10
-#define LINEAR_CORRECTION
-#define RESET_SLOPE_AFTER 5
-//#define REAL_LINEAR_MODEL
+#define SPEED_ESTIMATION
 
-#define SYNC_PERIOD	(3000)
+
+#define NUM_CALIBRATION	15
+#define CALIBRATION_PERIOD (2000)
+#define SYNC_PERIOD	(10000)
+
 #define CLOCK_VALIDITY_PERIOD (5*1000)
 #define ESTIMATED_TRANSMISSION_DELAY 6
 
@@ -34,72 +27,53 @@
 void timeLeaderSubRoutine(void);
 void setLeader(void);
 void setSlave(void);
-
-#ifdef STATIC_TIME_LEADER
-	#define WAVE
-#ifdef BBSIM
-	#define TIME_LEADER_ID 2
-#else
-	#define TIME_LEADER_ID 257
-#endif
 	
-#elif defined MIN_ID_TIME_LEADER
-	// 	Parameters <id (2 bytes)>
-	#define MIN_ID_TIME_LEADER_ELECTION_GO_MSG 1
-	// 	Parameters <id (2 bytes)> <answer (1 byte)>
-	#define MIN_ID_TIME_LEADER_ELECTION_BACK_MSG 2
-	#define LEADER_ELECTION_TIMEOUT 500
+// 	Parameters <id (2 bytes)>
+#define MIN_ID_TIME_LEADER_ELECTION_GO_MSG 1
+// 	Parameters <id (2 bytes)> <answer (1 byte)>
+#define MIN_ID_TIME_LEADER_ELECTION_BACK_MSG 2
+#define LEADER_ELECTION_TIMEOUT 500
 	
-	#define SPANNING_TREE
+threadvar byte isLeader = 0;
+threadvar byte electing = 0;
+threadvar uint16_t STlevel = 0;
 	
-	threadvar byte isLeader = 0;
-	threadvar byte electing = 0;
+threadvar PRef minIdSender;
+threadvar uint16_t minId;
+threadvar byte nbNeededAnswers;
+threadvar Timeout leaderElectionTimeOut;
 	
-	threadvar PRef minIdSender;
-	threadvar uint16_t minId;
-	threadvar byte nbNeededAnswers;
-	threadvar Timeout leaderElectionTimeOut;
-	
-	byte sendBackMsg(PRef p, byte a);
-	byte sendGoMsg(PRef p, uint16_t id);
-	byte broadcastGoMsg(PRef p, uint16_t id);
-	void startLeaderElection(void);
-	void scheduleLeaderElection(void);
-#endif
+byte sendBackMsg(PRef p, byte a);
+byte sendGoMsg(PRef p, uint16_t id);
+byte broadcastGoMsg(PRef p, uint16_t id, uint16_t l);
+void startLeaderElection(void);
+void scheduleLeaderElection(void);
 
 // CLOCK/SYNCHRONIZATION MANAGEMENT:
 #define CLOCK_INFO 3
 // 	Parameters [<wave id (2 bytes) >] <send time (4 bytes) > <receive time (4 bytes)>
 #define REQUEST_CLOCK_SYNC 4
 
-#ifdef WAVE
-	#define WAVE_ID_INDEX 2
-	#define SEND_TIME_INDEX 4
-	#define RECEIVE_TIME_INDEX (SEND_TIME_INDEX+sizeof(Time))
-#else	
-	#define SEND_TIME_INDEX 2
-	#define RECEIVE_TIME_INDEX (SEND_TIME_INDEX+sizeof(Time))
-#endif
+#define SEND_TIME_INDEX 2
+#define RECEIVE_TIME_INDEX (SEND_TIME_INDEX+sizeof(Time))
 
-#ifdef LINEAR_CORRECTION
-	threadvar double speedAvg = 0.0;
+#ifdef SPEED_ESTIMATION
+	//#define NUM_SYNC_DATA 6
+	//threadtype typedef struct _syncData {Time globalTime; Time localTime} syncData_t;
+	threadvar double speedAvg = 1.0;
 	threadvar Time firstCalibSend = 0;
 	threadvar unsigned int nbSync = 0;
+	//threadvar syncData_t syncData[NUM_SYNC_DATA];
 #endif
 
 threadvar int32_t offset = 0;
 threadvar Time firstCalibRec = 0;
 threadvar Time localClockMaxReach = 0;
 threadvar Timer syncTimer;
+threadvar uint16_t syncRound = 0;
 
-#ifdef WAVE
-threadvar uint16_t lastWaveId = 0;
-threadvar byte syncBy = NUM_PORTS;
-byte launchSynchronizationWave(void);
-#elif defined SPANNING_TREE
 threadvar PRef syncChildren[NUM_PORTS];
 void initSTChildren(void);
-#endif
 
 void freeClockChunk(void);
 byte broadcastClockChunk(PRef excludedPort, byte *d, byte s);
@@ -111,59 +85,25 @@ void initClock(void)
 	offset = 0;
 	firstCalibRec = 0;
 	localClockMaxReach = 0;
-
-#ifdef LINEAR_CORRECTION
+	syncRound = 0;
+	
+#ifdef SPEED_ESTIMATION
 	speedAvg = 1.0;
 	firstCalibSend = 0;
 	nbSync = 0;
 #endif
 
-#ifdef WAVE
-	lastWaveId = 0;
-	syncBy = NUM_PORTS;
-#elif defined SPANNING_TREE
-	initSTChildren();
-#endif
-	
-#ifdef STATIC_TIME_LEADER
-	if (isTimeLeader()) {
-		setLeader();
-	}
-#elif defined MIN_ID_TIME_LEADER
 	minIdSender = 255;
 	minId = getGUID();
 	electing = 0;
+	STlevel = 0;
 	setSlave();
 	scheduleLeaderElection();
-#endif
-/*
-#ifdef DO_NOT_START_BEFORE_BEING_SYNCHRONIZED
-	setColor(WHITE);
-	byte data[2];
-	
-	data[0] = CLOCK_SYNC_MSG;
-	data[1] = REQUEST_CLOCK_SYNC;
-	
-	while (!isSynchronized()) {
-		broadcastClockChunk(255, data, 2);
-		delayMS(6);
-	}
-#endif */
-}
-
-void printSlope(void)
-{
-/*#ifdef LOG_DEBUG
-	char s[150];
-	snprintf(s, 150*sizeof(char), "speedAvg: %f", speedAvg);
-	s[149] = '\0';
-	printDebug(s);
-#endif*/
 }
 
 Time getClockForTime(Time t)
 {
-#ifdef LINEAR_CORRECTION
+#ifdef SPEED_ESTIMATION
 	return ((double)t*speedAvg) + offset;
 #else
 	return t + offset;
@@ -172,7 +112,7 @@ Time getClockForTime(Time t)
 
 Time getEstimatedGlobalClock(void)
 {
-#ifdef LINEAR_CORRECTION
+#ifdef SPEED_ESTIMATION
 	return ((double)getTime()*speedAvg) + offset;
 #else
 	return getTime() + offset;
@@ -180,25 +120,20 @@ Time getEstimatedGlobalClock(void)
 }
 
 Time getClock(void) {
+#ifdef CLOCK_SYNC
 	return fmax(getEstimatedGlobalClock(), localClockMaxReach);
+#else
+	return getTime();
+#endif
 }
 
 byte isTimeLeader(void)
 {
-
-#ifdef STATIC_TIME_LEADER
-	return (getGUID() == TIME_LEADER_ID);
-#elif defined MIN_ID_TIME_LEADER
 	return isLeader;
-#endif
 }
 
 byte isElecting(void) {
-#ifdef MIN_ID_TIME_LEADER
 	return electing;
-#else
-	return 0;
-#endif
 }
 
 byte handleClockSyncMessage(void)
@@ -216,19 +151,7 @@ byte handleClockSyncMessage(void)
 			Time receiveTime;
 			Time estimatedGlobalTime;
 
-			PRINT_BBSIM("block %u: clock info\n", getGUID()); 
-#ifdef WAVE
-			uint16_t waveId = 0;
-			waveId  = (uint16_t)(thisChunk->data[WAVE_ID_INDEX+1]) & 0xFF;
-			waveId |= ((uint16_t)(thisChunk->data[WAVE_ID_INDEX]) << 8) & 0xFF00;
-			
-			if (lastWaveId >= waveId) {
-				PRINT_BBSIM("ko1 %d < %d\n", (int) lastWaveId, (int) waveId);
-				return 1;
-			}
-			lastWaveId = waveId;
-			syncBy = faceNum(thisChunk);
-#endif		
+			//PRINT_BBSIM("block %u: clock info\n", getGUID()); 
 			
 			sendTime  = (Time)(thisChunk->data[SEND_TIME_INDEX+3]) & 0xFF;
 			sendTime |= ((Time)(thisChunk->data[SEND_TIME_INDEX+2]) << 8) & 0xFF00;
@@ -244,84 +167,68 @@ byte handleClockSyncMessage(void)
 			estimatedGlobalTime = sendTime + ESTIMATED_TRANSMISSION_DELAY;
 
 #ifdef LOG_DEBUG
-			char s[150];
-			snprintf(s, 150*sizeof(char), "s: %lu, r: %lu, c: %lu, sp: %f", estimatedGlobalTime, receiveTime, getClockForTime(receiveTime), speedAvg);
-			s[149] = '\0';
-			printDebug(s);
+			char s[70];
+			snprintf(s, 70*sizeof(char), "s:%lu,r:%lu,c:%lu,l:%u", estimatedGlobalTime, receiveTime, getClockForTime(receiveTime), STlevel);
+			s[69] = '\0';
 #endif
 
-#ifdef LINEAR_CORRECTION
-	#ifdef TEST_LINEAR_CORRECTION
-		if(nbSync < IGNORE_AFTER) {
-	#endif
+#ifdef SPEED_ESTIMATION
 			nbSync++;
-			if ((nbSync == 1) || ( (getTime() - firstCalibRec) < (SYNC_PERIOD/2))) {
+			if (nbSync == 1) {
 				offset = estimatedGlobalTime - receiveTime;
-				firstCalibSend = estimatedGlobalTime;
-				firstCalibRec = receiveTime;
+				//syncData[0].globalTime = estimatedGlobalTime;
+				//syncData[0].localTime = receiveTime;
 			} else {
-				//double n = (double) nbSync;
-				//speedAvg = (speedAvg*(n-1) + observedSpeed) / n;
 				speedAvg = ((double) (estimatedGlobalTime - firstCalibSend))/ ((double) (receiveTime - firstCalibRec));
 				offset = round(estimatedGlobalTime - (speedAvg*((double)getTime())));
-				#ifdef RESET_SLOPE_AFTER
-				if ((nbSync % RESET_SLOPE_AFTER) == 0 ) 
-				{
-					firstCalibSend = estimatedGlobalTime;
-					firstCalibRec = receiveTime;
-				}
-				#endif
 			}
 						
-			PRINT_BBSIM("block %u: clock info at time %lu (clock %lu), speed average %f, off %d\n", getGUID(), getTime(), getClock(), speedAvg, offset);
-			
-	#ifdef TEST_LINEAR_CORRECTION
-		}
-	#endif
+			//PRINT_BBSIM("block %u: clock info at time %lu (clock %lu), speed average %f, off %d\n", getGUID(), getTime(), getClock(), speedAvg, offset);
 #else
 			offset = estimatedGlobalTime - receiveTime;
 #endif
-/*#ifdef LOG_DEBUG
-			char s[150];
-			snprintf(s, 150*sizeof(char), "s: %lu, r: %lu, o: %d, t: %lu, c: %lu", sendTime, receiveTime, offset, getTime(), getClock());
-			s[149] = '\0';
-			printDebug(s);
-#endif*/
 			synchronizeNeighbors();
+			#ifdef LOG_DEBUG
+			if ( (rand() % 4) == 0) {
+				printDebug(s);
+			}
+			#endif				
 			break;
 		}
 		
 		case REQUEST_CLOCK_SYNC :
-		{	PRINT_BBSIM("block %u: sync request from %u\n", getGUID(), thisNeighborhood.n[faceNum(thisChunk)]);
+		{	
+			// PRINT_BBSIM("block %u: sync request from %u\n", getGUID(), thisNeighborhood.n[faceNum(thisChunk)]);
 			if(isSynchronized())
 			{
 				synchronizeNeighbor(faceNum(thisChunk));
 			}
 			break;
 		}
-#ifdef MIN_ID_TIME_LEADER
 		case MIN_ID_TIME_LEADER_ELECTION_GO_MSG :
 		{
 			uint16_t id = charToGUID(&(thisChunk->data[2]));
+			uint16_t l = charToGUID(&(thisChunk->data[4]));
 			
 			if (!electing)
 			{
-				PRINT_BBSIM("block %u: go msg - election\n", getGUID()); 
+				//PRINT_BBSIM("block %u: go msg - election\n", getGUID()); 
 				deregisterTimeout(&leaderElectionTimeOut);
 				startLeaderElection();
 			}
 			
-			if (id == minId)
+			if ((id == minId) && (l >= STlevel))
 			{
 				sendBackMsg(faceNum(thisChunk), 0);
 			}
-			if (id < minId)
+			if ((id < minId) || ((id == minId) && (l < STlevel)))
 			{
 				minId = id;
 				minIdSender = faceNum(thisChunk);
 				initSTChildren();
-				nbNeededAnswers = broadcastGoMsg(faceNum(thisChunk), id);
-				
+				STlevel = l;
+				nbNeededAnswers = broadcastGoMsg(faceNum(thisChunk), id, l);
+				setColor(l);
 				if (nbNeededAnswers == 0) 
 				{
 					electing = 0;
@@ -360,7 +267,6 @@ byte handleClockSyncMessage(void)
 			}
 			break;
 		}
-#endif
 	}
 	return 1;
 }
@@ -368,29 +274,11 @@ byte handleClockSyncMessage(void)
 byte handleNeighborChange(PRef p)
 {
 	PRINT_BBSIM("Neighbor change at Time %u\n", getTime());
-#ifdef MIN_ID_TIME_LEADER
 	electing = 0;
 	if (!electing)
 	{
 		scheduleLeaderElection();
 	}
-#endif
-
-#ifdef WAVE
-	if (thisNeighborhood.n[p] == PRESENT)
-	{
-		
-		PRINT_BBSIM("block %u: isSynchronized? = %u\n", getGUID(), isSynchronized());
-		if (isSynchronized()) {
-			PRINT_BBSIM("block %u: sync new neighbor %u\n", getGUID(), thisNeighborhood.n[p]);
-			//synchronizeNeighbor(p);
-		}
-		 else {
-			PRINT_BBSIM("block %u: request sync %u\n", getGUID(), thisNeighborhood.n[p]);
-			requestSync(p);
-		}
-	}
-#endif
 	return 0;
 }
 
@@ -411,7 +299,6 @@ void insertReceiveTime(Chunk *c)
 {
 	Time t = getTime();
 	
-	//PRINT_BBSIM("insert receive time: %u\n", t);
 	c->data[RECEIVE_TIME_INDEX+3] = (byte) (t & 0xFF);
 	c->data[RECEIVE_TIME_INDEX+2] = (byte) ((t >>  8) & 0xFF);
 	c->data[RECEIVE_TIME_INDEX+1] = (byte) ((t >> 16) & 0xFF);
@@ -421,8 +308,7 @@ void insertReceiveTime(Chunk *c)
 void insertSendTime(Chunk *c)
 {
 	Time t = getEstimatedGlobalClock(); // Global Clock
-	
-	//PRINT_BBSIM("insert send time: %u\n", t);
+
 	c->data[SEND_TIME_INDEX+3] = (byte) (t & 0xFF);
 	c->data[SEND_TIME_INDEX+2] = (byte) ((t >>  8) & 0xFF);
 	c->data[SEND_TIME_INDEX+1] = (byte) ((t >> 16) & 0xFF);
@@ -436,7 +322,6 @@ byte requestSync(PRef p)
 	data[0] = CLOCK_SYNC_MSG;
 	data[1] = REQUEST_CLOCK_SYNC;
 	
-	//return 1;
 	return sendClockChunk(p, data, 2);
 }
 
@@ -446,13 +331,7 @@ byte synchronizeNeighbor(PRef p)
 	
 	data[0] = CLOCK_SYNC_MSG;
 	data[1] = CLOCK_INFO;
-#ifdef WAVE
-	data[WAVE_ID_INDEX+1] = (byte) (lastWaveId & 0xFF);
-	data[WAVE_ID_INDEX] = (byte) ((lastWaveId >>  8) & 0xFF);
-	return sendClockChunk(p, data, 4);
-#elif defined SPANNING_TREE
 	return sendClockChunk(p, data, 2);
-#endif
 }
 
 byte synchronizeNeighbors(void)
@@ -460,19 +339,18 @@ byte synchronizeNeighbors(void)
 	byte p;
 	byte n = 0;
 	
-	PRINT_BBSIM("block %u: synchronizes its neighbors\n", getGUID());
-	
-#ifndef SPANNING_TREE
-	for( p = 0; p < NUM_PORTS; p++)
-	{
-		if ((p == syncBy) || (thisNeighborhood.n[p] == VACANT))
-		{
-			continue;
+	if (isTimeLeader()) {
+		syncRound++;
+		if(syncRound == NUM_CALIBRATION) {
+			syncTimer.period = SYNC_PERIOD;
+#ifdef LOG_DEBUG
+			char s[10];
+			snprintf(s, 10*sizeof(char), "calibOk");
+			s[9] = '\0';
+			printDebug(s);
+#endif
 		}
-		synchronizeNeighbor(p);
-		n++;
 	}
-#else
 	for( p = 0; p < NUM_PORTS; p++)
 	{
 		if ((syncChildren[p] == 0) || (thisNeighborhood.n[p] == VACANT))
@@ -482,7 +360,6 @@ byte synchronizeNeighbors(void)
 		synchronizeNeighbor(p);
 		n++;
 	}
-#endif
 	return n;
 }
 
@@ -491,15 +368,6 @@ byte isSynchronized(void)
 	return (isTimeLeader() || (firstCalibRec > 0));
 	//return (isTimeLeader() || ( (firstCalibRec != 0) && ((getEstimatedLocalClock() - firstCalibRec) < CLOCK_VALIDITY_PERIOD )));
 }
-
-#ifdef WAVE
-byte launchSynchronizationWave(void)
-{
-	lastWaveId++;
-	return synchronizeNeighbors();
-}
-
-#elif defined SPANNING_TREE
 
 void initSTChildren(void)
 {
@@ -510,35 +378,38 @@ void initSTChildren(void)
 		syncChildren[p] = 0;
 	}
 }
-#endif
+
+void initSyncPoints(void)
+{
+	byte p;
+	
+	for (p = 0; p < 6; p++)
+	{
+		//syncPoints[p] = 0;
+	}
+}
 
 /******************************************************
  * Time Leader Election Functions
  *****************************************************/
 
 void setLeader(void) {
-
-	PRINT_BBSIM2("block %u: leader!\n", getGUID());
-#ifdef MIN_ID_TIME_LEADER
+	#ifdef LOG_DEBUG
+	char s[15];
+	snprintf(s, 15*sizeof(char), "leader");
+	s[14] = '\0';
+	printDebug(s);
+	#endif
 	isLeader = 1;
-#endif
-	syncTimer.period = SYNC_PERIOD;
-#ifdef WAVE
-	syncTimer.t.callback = (GenericHandler)&launchSynchronizationWave;
-	launchSynchronizationWave();
-#elif defined SPANNING_TREE
 	syncTimer.t.callback = (GenericHandler)&synchronizeNeighbors;
-	synchronizeNeighbors();
-#endif
-	registerTimer(&(syncTimer));
-	enableTimer(syncTimer);
+	PRINT_BBSIM("block %u: Leader\n", getGUID()); 
+	//synchronizeNeighbors();
+	//registerTimer(&(syncTimer));
+	//enableTimer(syncTimer);
 }
 
 void setSlave(void) {
-	//PRINT_BBSIM("block %u: de-elected!\n", getGUID());
-#ifdef MIN_ID_TIME_LEADER
 	isLeader = 0;
-#endif
 	disableTimer(syncTimer);
 	deregisterTimer(&syncTimer);
 	deregisterTimeout(&(syncTimer.t));
@@ -568,15 +439,15 @@ byte sendGoMsg(PRef p, uint16_t id)
 	return sendClockChunk(p, data, 4);
 }
 
-byte broadcastGoMsg(PRef p, uint16_t id)
+byte broadcastGoMsg(PRef p, uint16_t id, uint16_t l)
 {
-	byte data[4];
+	byte data[6];
 	
 	data[0] = CLOCK_SYNC_MSG;
 	data[1] = MIN_ID_TIME_LEADER_ELECTION_GO_MSG;
 	GUIDIntoChar(id, &(data[2]));
-	
-	return broadcastClockChunk(p, data, 4);
+	GUIDIntoChar(l+1, &(data[4]));
+	return broadcastClockChunk(p, data, 6);
 }
 
 void scheduleLeaderElection(void)
@@ -596,29 +467,25 @@ void scheduleLeaderElection(void)
 
 void startLeaderElection(void)
 {
-	//static int i = 0;
-	//i++;
-	//printf("block %u: start election function at %u\n", getGUID(), getTime());
-	//printf("%d election\n", i);
 	if (!electing) {
-	//	printf("block %u: start - election\n", getGUID()); 
 		setSlave();
 		minId = getGUID();
 		minIdSender = 255;
 		electing = 1;
+		STlevel = 0;
 		initSTChildren();
-		nbNeededAnswers = broadcastGoMsg(255, getGUID());
+		initSyncPoints();
+		nbNeededAnswers = broadcastGoMsg(255, getGUID(),0);
 		if (nbNeededAnswers == 0) 
 		{
 			electing = 0;
 			if (minId == getGUID())
 			{
-				//printf("block %u: direct win\n", getGUID());
 				setLeader();
 			}
 			else 
 			{
-				sendBackMsg(minIdSender, 1);
+				//sendBackMsg(minIdSender, 1);
 			}
 		}
 	}
