@@ -69,7 +69,13 @@ myMain(void)
 {
   //setColor(WHITE);
   // We are forced to use a small delay before program execution, otherwise neighborhood may not be initialized yet
-  delayMS(1000);
+  delayMS(200);
+
+  // Initialize layer variables
+  currentLayer = 0;
+  topLayer = 0;
+  isOnBottomLayer = 1;
+  isOnTopLayer = 1;
 
   // Initialize Timeouts
   lowestLayerCheck.callback = (GenericHandler)(&spreadLayerInfo);
@@ -110,10 +116,6 @@ myMain(void)
   //------- Determine layer of each block
   // A block will assume it is on the ensemble's lowest layer until it receives a I_HAVE_BOTTOM_NEIGHBOR message from its side neighbors. 
   // Same goes with highest layer and I_HAVE_TOP_NEIGHBOR.
-  currentLayer = 0;
-  topLayer = 0;
-  isOnBottomLayer = 1;
-  isOnTopLayer = 1;
   if (hasFaceNeighbor[DOWN]) {
     for (byte i=0; i < numSideNeighbors; i++) {
       sendCustomLayerChunk(I_HAVE_BOTTOM_NEIGHBOR, sideNeighbors[i]); 
@@ -168,6 +170,7 @@ void
 setUpSpanningTree(void)
 {
   if (isOnTopLayer) {
+    setColor(RED);
     topLayer = currentLayer;
     isInATree = 1;   
     for (byte p = 0 ; p < NUM_PORTS ; p++) {
@@ -187,7 +190,7 @@ sendSpanningTreeMessage(PRef p, byte messageType, uint16_t id, byte layer)
   buf[3] = layer;
   
   if (c != NULL) {      
-    if ( sendMessageToPort(c, p, c->data, 4, layerMessageHandler, NULL) == 0 ) {
+    if ( sendMessageToPort(c, p, buf, 4, layerMessageHandler, NULL) == 0 ) {
       freeChunk(c);
       return 0;
     }
@@ -274,9 +277,9 @@ layerMessageHandler(void)
     break; 
   case ADD_YOURSELF: {
     uint16_t potentialLeaderID = charToGUID(&(thisChunk->data[2]));
-    uint16_t potentialTopLayer = thisChunk->data[3];
-    setColor(BLUE);
+    byte potentialTopLayer = thisChunk->data[3];
     if (!isInATree) {
+      setColor(BLUE);
       isInATree = 1;
       addYourselfToSpanningTree(chunkSource, potentialLeaderID, potentialTopLayer);
     }
@@ -295,10 +298,18 @@ layerMessageHandler(void)
     // Add sender as children
     children[numChildren++] = chunkSource;
     numExpectedChildrenAnswers--;
+    if(numExpectedChildrenAnswers == 0) {
+      // Get ready to receive back message
+      numExpectedBwdMessages = numChildren;
+    }  
   }
     break;
   case ST_NACK: {
     numExpectedChildrenAnswers--;
+    if(numExpectedChildrenAnswers == 0) {
+      // Get ready to receive back message
+      numExpectedBwdMessages = numChildren;
+    }
   }
   case ST_OK: {
     if (--numExpectedBwdMessages == 0) {
@@ -333,15 +344,12 @@ addYourselfToSpanningTree(byte parentPort ,uint16_t newLeaderID, byte newTopLaye
       numExpectedChildrenAnswers++;
 	  sendSpanningTreeMessage(p, ADD_YOURSELF, leaderID, topLayer);
     }
-    // Wait for answer from children, ACK or NACK
-    while (numExpectedChildrenAnswers != 0);
-    // If is a leaf: send back message
-    if (numChildren == 0) 
-      setColor(AQUA);
-      sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
   }
-  // Get ready to receive back message
-  numExpectedBwdMessages = numChildren;
+  // If is a leaf: send back message
+  if (numExpectedChildrenAnswers == 0) {
+    setColor(AQUA);
+    sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
+  }
 }
 
 // Spreads layer info from the base to the top, incrementing sent number on each layer.
