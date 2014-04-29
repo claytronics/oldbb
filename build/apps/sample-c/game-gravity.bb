@@ -165,7 +165,7 @@ setUpSpanningTree(void)
     for (byte p = 0 ; p < NUM_PORTS ; p++) {
       if (thisNeighborhood.n[p] != VACANT) {
 	numExpectedChildrenAnswers++;	
-	sendSpanningTreeMessage(p, ADD_YOURSELF, getGUID(), topLayer);
+	sendSpanningTreeMessage(p, ADD_YOURSELF, leaderID, topLayer);
       }
     }
   }
@@ -182,7 +182,7 @@ sendSpanningTreeMessage(PRef p, byte messageType, uint16_t id, byte layer)
   
   byte buf[4];
   buf[0] = messageType;
-  GUIDIntoChar(id, &(buf[2]));
+  GUIDIntoChar(id, &(buf[1]));
   buf[3] = layer;
   
   if (c != NULL) {      
@@ -272,7 +272,7 @@ layerMessageHandler(void)
   }
     break; 
   case ADD_YOURSELF: {
-    uint16_t potentialLeaderID = charToGUID(&(thisChunk->data[2]));
+    uint16_t potentialLeaderID = charToGUID(&(thisChunk->data[1]));
     byte potentialTopLayer = thisChunk->data[3];
     if (!isInATree) {
       setColor(BLUE);
@@ -308,7 +308,7 @@ layerMessageHandler(void)
     }
   }
   case ST_OK: {
-    uint16_t agreedLeaderID = charToGUID(&(thisChunk->data[2]));
+    uint16_t agreedLeaderID = charToGUID(&(thisChunk->data[1]));
     byte agreedTopLayer = thisChunk->data[3];
     numExpectedBwdMessages--;
     if (numExpectedBwdMessages == 0) {
