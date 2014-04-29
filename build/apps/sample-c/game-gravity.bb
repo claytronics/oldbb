@@ -161,6 +161,7 @@ setUpSpanningTree(void)
     setColor(GREEN);
     topLayer = currentLayer;
     isInATree = 1;   
+    leaderID = getGUID();
     for (byte p = 0 ; p < NUM_PORTS ; p++) {
       if (thisNeighborhood.n[p] != VACANT) {
 	numExpectedChildrenAnswers++;	
@@ -307,12 +308,17 @@ layerMessageHandler(void)
     }
   }
   case ST_OK: {
-    if (--numExpectedBwdMessages == 0) {
-      if (getGUID() != leaderID) {
-      sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
-      setColor(AQUA);
+    uint16_t agreedLeaderID = charToGUID(&(thisChunk->data[2]));
+    byte agreedTopLayer = thisChunk->data[3];
+    numExpectedBwdMessages--;
+    if (numExpectedBwdMessages == 0) {
+      if ( (getGUID() == agreedLeaderID)&&(currentLayer == agreedTopLayer) ) {
+	setColor(GREEN);
       }
-      else setColor(GREEN);
+      else {
+	sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
+	setColor(AQUA);
+      }
     }
     // else continue waiting for other children's response
   }
@@ -337,7 +343,7 @@ addYourselfToSpanningTree(byte parentPort ,uint16_t newLeaderID, byte newTopLaye
     if (p == parent || thisNeighborhood.n[p] == VACANT) continue;
     else {
       numExpectedChildrenAnswers++;
-	  sendSpanningTreeMessage(p, ADD_YOURSELF, leaderID, topLayer);
+      sendSpanningTreeMessage(p, ADD_YOURSELF, leaderID, topLayer);
     }
   }
   // If is a leaf: send back message
