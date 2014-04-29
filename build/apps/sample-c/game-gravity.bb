@@ -89,9 +89,7 @@ myMain(void)
 
   // Initialize spanning tree variables
   isInATree = 0;
-  numChildren = 0;
   leaderID = 0;
-  numExpectedChildrenAnswers = 0;
   for (byte p = 0 ; p < NUM_PORTS ; p++) children[p] = 0;  
 
   // Initialize neighbor variables
@@ -313,7 +311,7 @@ layerMessageHandler(void)
     numExpectedBwdMessages--;
     if (numExpectedBwdMessages == 0) {
       if ( (getGUID() == agreedLeaderID)&&(currentLayer == agreedTopLayer) ) {
-	setColor(GREEN);
+	setColor(ORANGE);
       }
       else {
 	sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
@@ -331,6 +329,10 @@ layerMessageHandler(void)
 void
 addYourselfToSpanningTree(byte parentPort ,uint16_t newLeaderID, byte newTopLayer)
 {
+  // Init / Re-init Current ST variables
+  numChildren = 0;
+  numExpectedChildrenAnswers = 0;
+  numExpectedBwdMessages == 0;
   // Updates known top layer and known leaderID
   leaderID = newLeaderID;
   topLayer = newTopLayer;
