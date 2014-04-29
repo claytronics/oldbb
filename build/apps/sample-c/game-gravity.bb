@@ -38,10 +38,6 @@ void addYourselfToSpanningTree(byte parentPort ,uint16_t newLeaderID, byte newTo
 // Game related variables and functions
 void startGame(void);
 
-// Choose ID of start and finish blocks
-#define START_BLOCK  4
-#define FINISH_BLOCK 3
-
 // Message types
 #define LAYER_UPDATE 0x01
 #define I_HAVE_BOTTOM_NEIGHBOR 0x02
@@ -67,7 +63,7 @@ Chunk* getFreeUserChunk(void);
 void 
 myMain(void)
 {
-  //setColor(WHITE);
+  setColor(WHITE);
   // We are forced to use a small delay before program execution, otherwise neighborhood may not be initialized yet
   delayMS(200);
 
@@ -93,7 +89,6 @@ myMain(void)
 
   // Initialize spanning tree variables
   isInATree = 0;
-  //setColor(RED);
   numChildren = 0;
   leaderID = 0;
   numExpectedChildrenAnswers = 0;
@@ -136,16 +131,7 @@ myMain(void)
 void
 startGame(void)
 {
-  /*if (getGUID() == START_BLOCK) {
-    setColor(BLUE);
-    // Start Timeout before next move
-    lowestLayerCheck.callback = (GenericHandler)(&spreadLayerInfo);
-    lowestLayerCheck.calltime = getTime() + LOWEST_LAYER_CHECK_TIME;
-    registerTimeout(&lowestLayerCheck);
-    }
-    else if (getGUID() == FINISH_BLOCK) setColor(RED);
-    // else do nothing and wait.
-    while(1); */
+  //some stuff...
 }  
 
 // find a useable chunk
@@ -172,7 +158,7 @@ void
 setUpSpanningTree(void)
 {
   if (isOnTopLayer) {
-    setColor(RED);
+    setColor(GREEN);
     topLayer = currentLayer;
     isInATree = 1;   
     for (byte p = 0 ; p < NUM_PORTS ; p++) {
@@ -184,7 +170,7 @@ setUpSpanningTree(void)
   }
   else 
   {
-    setColor(GREEN);
+    setColor(RED);
   }
 }
 
@@ -195,7 +181,7 @@ sendSpanningTreeMessage(PRef p, byte messageType, uint16_t id, byte layer)
   
   byte buf[4];
   buf[0] = messageType;
-  GUIDIntoChar(getGUID(), &(buf[2]));
+  GUIDIntoChar(id, &(buf[2]));
   buf[3] = layer;
   
   if (c != NULL) {      
@@ -324,9 +310,9 @@ layerMessageHandler(void)
     if (--numExpectedBwdMessages == 0) {
       if (getGUID() != leaderID) {
       sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
-      setColor(PURPLE);
+      setColor(AQUA);
       }
-      else setColor(ORANGE);
+      else setColor(GREEN);
     }
     // else continue waiting for other children's response
   }
@@ -356,7 +342,7 @@ addYourselfToSpanningTree(byte parentPort ,uint16_t newLeaderID, byte newTopLaye
   }
   // If is a leaf: send back message
   if (numExpectedChildrenAnswers == 0) {
-    setColor(AQUA);
+    setColor(YELLOW);
     sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
   }
 }
