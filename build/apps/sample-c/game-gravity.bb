@@ -53,7 +53,7 @@ void startGame(void);
 Timeout lowestLayerCheck;
 /*#define POLLING_DURATION 200
   Timeout waitForLeaderElection;*/
-#define SPECIAL_BLOCKS_ELECTION_TIME 1000
+#define SPECIAL_BLOCKS_ELECTION_TIME 2000
 Timeout leaderElectionTimeout;
 #define GAMEPLAY_SPEED_RATE 2000 // Time in second between each turn.
 Timeout gameTurnTimeout;
@@ -93,7 +93,7 @@ myMain(void)
 
   // Initialize spanning tree variables
   isInATree = 0;
-  setColor(RED);
+  //setColor(RED);
   numChildren = 0;
   leaderID = 0;
   numExpectedChildrenAnswers = 0;
@@ -106,7 +106,7 @@ myMain(void)
   if (thisNeighborhood.n[UP] != VACANT) hasFaceNeighbor[UP] = 1;
   else hasFaceNeighbor[UP] = 0;
   for (byte p = 1; p < 5; p++) {
-    if (hasFaceNeighbor[p] != VACANT) {
+    if (thisNeighborhood.n[p] != VACANT) {
       hasFaceNeighbor[p] = 1;
       sideNeighbors[numSideNeighbors++] = p;
     }
@@ -117,11 +117,13 @@ myMain(void)
   // A block will assume it is on the ensemble's lowest layer until it receives a I_HAVE_BOTTOM_NEIGHBOR message from its side neighbors. 
   // Same goes with highest layer and I_HAVE_TOP_NEIGHBOR.
   if (hasFaceNeighbor[DOWN]) {
+    isOnBottomLayer = 0;
     for (byte i=0; i < numSideNeighbors; i++) {
       sendCustomLayerChunk(I_HAVE_BOTTOM_NEIGHBOR, sideNeighbors[i]); 
     }
   }
   if (hasFaceNeighbor[UP]) {
+    isOnTopLayer = 0;
     for (byte i=0; i < numSideNeighbors; i++) {
       sendCustomLayerChunk(I_HAVE_TOP_NEIGHBOR, sideNeighbors[i]); 
     }
@@ -174,9 +176,16 @@ setUpSpanningTree(void)
     topLayer = currentLayer;
     isInATree = 1;   
     for (byte p = 0 ; p < NUM_PORTS ; p++) {
-      if (thisNeighborhood.n[p] != VACANT) sendSpanningTreeMessage(p, ADD_YOURSELF, getGUID(), topLayer);
+      if (thisNeighborhood.n[p] != VACANT) {
+	numExpectedChildrenAnswers++;	
+	sendSpanningTreeMessage(p, ADD_YOURSELF, getGUID(), topLayer);
+      }
     }
-  } 
+  }
+  else 
+  {
+    setColor(GREEN);
+  }
 }
 
 byte
@@ -315,7 +324,7 @@ layerMessageHandler(void)
     if (--numExpectedBwdMessages == 0) {
       if (getGUID() != leaderID) {
       sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
-      setColor(GREEN);
+      setColor(PURPLE);
       }
       else setColor(ORANGE);
     }
