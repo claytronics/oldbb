@@ -15,33 +15,40 @@
 #define PERIOD (3000)
 
 // enum{RED, ORANGE, YELLOW, GREEN, AQUA, BLUE, WHITE, PURPLE, PINK, NUM_COLORS};	
+Color myColors[4];
 
-Color nextColor() {
-	Color c = 0;
-	c = (getClock()/PERIOD)%NUM_COLORS;
-	if ((c == AQUA) || (c == WHITE))
-	{
-		c = ORANGE;
-	}
-	return c;
+Color nextColor(void) {
+	unsigned int c = 0;
+	c = (getClock()/PERIOD)%4;
+	return myColors[c];
 }
 
 void myMain(void)
 {
 	Time changeT = PERIOD;
 	
+	myColors[0] = YELLOW;
+	myColors[1] = GREEN;
+	myColors[2] = BLUE;
+	myColors[3] = RED;
+	
 	while(getNeighborCount() == 0)
 	{
 		setColor(WHITE);
 	}
-	
+#ifdef CLOCK_SYNC
 	while (!isSynchronized())
 	{
 		setColor(AQUA);
 		delayMS(6);
 	}
-	
-	setColor(nextColor());
+#endif	
+
+	if (isTimeLeader()) {
+			setColor(RED);
+	} else {
+		setColor(nextColor());
+	}
 	changeT = (getClock()/PERIOD)*PERIOD + PERIOD;
 
 	while (1) {
