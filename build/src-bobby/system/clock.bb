@@ -4,7 +4,7 @@
 #include "log.bbh"
 #include <math.h>
 
-#define PRINT_BBSIM(...) //printf(__VA_ARGS__)
+#define PRINT_BBSIM(...) printf(__VA_ARGS__)
 
 threadtype typedef struct _syncData {	Time globalTime;	Time localTime;} syncData_t;
 
@@ -430,6 +430,17 @@ insertSyncData(Time gl, Time ll)
 	}
 }
 
+static void
+printTable()
+{
+	byte i = 0;
+	PRINT_BBSIM("\n");
+	for(i=0;i<NUM_SYNC_DATA; i++) {
+		PRINT_BBSIM("%u, %u\n", syncData[i].localTime, syncData[i].globalTime);
+	}
+	PRINT_BBSIM("\n");
+}
+
 static double
 computeSpeedAvg(Time gl, Time ll)
 {
@@ -466,6 +477,8 @@ computeSpeedAvg(Time gl, Time ll)
 		sum1 += (ll- xAvg) * (gl - yAvg);
 		sum2 += powf(ll - xAvg,2);
 	}
+	printTable();
+	PRINT_BBSIM("%g, %g, %u, %u, %u\n", sum1, sum2, (unsigned)inserted, gl, ll);
 	return sum1/sum2;
 }
 
