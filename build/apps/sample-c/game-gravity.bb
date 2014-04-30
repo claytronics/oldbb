@@ -38,10 +38,6 @@ void addYourselfToSpanningTree(byte parentPort ,uint16_t newLeaderID, byte newTo
 // Game related variables and functions
 void startGame(void);
 
-// Choose ID of start and finish blocks
-#define START_BLOCK  4
-#define FINISH_BLOCK 3
-
 // Message types
 #define LAYER_UPDATE 0x01
 #define I_HAVE_BOTTOM_NEIGHBOR 0x02
@@ -53,7 +49,7 @@ void startGame(void);
 Timeout lowestLayerCheck;
 /*#define POLLING_DURATION 200
   Timeout waitForLeaderElection;*/
-#define SPECIAL_BLOCKS_ELECTION_TIME 1000
+#define SPECIAL_BLOCKS_ELECTION_TIME 2000
 Timeout leaderElectionTimeout;
 #define GAMEPLAY_SPEED_RATE 2000 // Time in second between each turn.
 Timeout gameTurnTimeout;
@@ -67,9 +63,15 @@ Chunk* getFreeUserChunk(void);
 void 
 myMain(void)
 {
-  //setColor(WHITE);
+  setColor(WHITE);
   // We are forced to use a small delay before program execution, otherwise neighborhood may not be initialized yet
-  delayMS(1000);
+  delayMS(200);
+
+  // Initialize layer variables
+  currentLayer = 0;
+  topLayer = 0;
+  isOnBottomLayer = 1;
+  isOnTopLayer = 1;
 
   // Initialize Timeouts
   lowestLayerCheck.callback = (GenericHandler)(&spreadLayerInfo);
@@ -87,10 +89,7 @@ myMain(void)
 
   // Initialize spanning tree variables
   isInATree = 0;
-  setColor(RED);
-  numChildren = 0;
   leaderID = 0;
-  numExpectedChildrenAnswers = 0;
   for (byte p = 0 ; p < NUM_PORTS ; p++) children[p] = 0;  
 
   // Initialize neighbor variables
@@ -100,7 +99,7 @@ myMain(void)
   if (thisNeighborhood.n[UP] != VACANT) hasFaceNeighbor[UP] = 1;
   else hasFaceNeighbor[UP] = 0;
   for (byte p = 1; p < 5; p++) {
-    if (hasFaceNeighbor[p] != VACANT) {
+    if (thisNeighborhood.n[p] != VACANT) {
       hasFaceNeighbor[p] = 1;
       sideNeighbors[numSideNeighbors++] = p;
     }
@@ -110,16 +109,14 @@ myMain(void)
   //------- Determine layer of each block
   // A block will assume it is on the ensemble's lowest layer until it receives a I_HAVE_BOTTOM_NEIGHBOR message from its side neighbors. 
   // Same goes with highest layer and I_HAVE_TOP_NEIGHBOR.
-  currentLayer = 0;
-  topLayer = 0;
-  isOnBottomLayer = 1;
-  isOnTopLayer = 1;
   if (hasFaceNeighbor[DOWN]) {
+    isOnBottomLayer = 0;
     for (byte i=0; i < numSideNeighbors; i++) {
       sendCustomLayerChunk(I_HAVE_BOTTOM_NEIGHBOR, sideNeighbors[i]); 
     }
   }
   if (hasFaceNeighbor[UP]) {
+    isOnTopLayer = 0;
     for (byte i=0; i < numSideNeighbors; i++) {
       sendCustomLayerChunk(I_HAVE_TOP_NEIGHBOR, sideNeighbors[i]); 
     }
@@ -132,16 +129,7 @@ myMain(void)
 void
 startGame(void)
 {
-  /*if (getGUID() == START_BLOCK) {
-    setColor(BLUE);
-    // Start Timeout before next move
-    lowestLayerCheck.callback = (GenericHandler)(&spreadLayerInfo);
-    lowestLayerCheck.calltime = getTime() + LOWEST_LAYER_CHECK_TIME;
-    registerTimeout(&lowestLayerCheck);
-    }
-    else if (getGUID() == FINISH_BLOCK) setColor(RED);
-    // else do nothing and wait.
-    while(1); */
+  //some stuff...
 }  
 
 // find a useable chunk
@@ -168,12 +156,21 @@ void
 setUpSpanningTree(void)
 {
   if (isOnTopLayer) {
+    setColor(GREEN);
     topLayer = currentLayer;
     isInATree = 1;   
+    leaderID = getGUID();
     for (byte p = 0 ; p < NUM_PORTS ; p++) {
-      if (thisNeighborhood.n[p] != VACANT) sendSpanningTreeMessage(p, ADD_YOURSELF, getGUID(), topLayer);
+      if (thisNeighborhood.n[p] != VACANT) {
+	numExpectedChildrenAnswers++;	
+	sendSpanningTreeMessage(p, ADD_YOURSELF, leaderID, topLayer);
+      }
     }
-  } 
+  }
+  else 
+  {
+    setColor(RED);
+  }
 }
 
 byte
@@ -183,11 +180,11 @@ sendSpanningTreeMessage(PRef p, byte messageType, uint16_t id, byte layer)
   
   byte buf[4];
   buf[0] = messageType;
-  GUIDIntoChar(getGUID(), &(buf[2]));
+  GUIDIntoChar(id, &(buf[1]));
   buf[3] = layer;
   
   if (c != NULL) {      
-    if ( sendMessageToPort(c, p, c->data, 4, layerMessageHandler, NULL) == 0 ) {
+    if ( sendMessageToPort(c, p, buf, 4, layerMessageHandler, NULL) == 0 ) {
       freeChunk(c);
       return 0;
     }
@@ -273,10 +270,10 @@ layerMessageHandler(void)
   }
     break; 
   case ADD_YOURSELF: {
-    uint16_t potentialLeaderID = charToGUID(&(thisChunk->data[2]));
-    uint16_t potentialTopLayer = thisChunk->data[3];
-    setColor(BLUE);
+    uint16_t potentialLeaderID = charToGUID(&(thisChunk->data[1]));
+    byte potentialTopLayer = thisChunk->data[3];
     if (!isInATree) {
+      setColor(BLUE);
       isInATree = 1;
       addYourselfToSpanningTree(chunkSource, potentialLeaderID, potentialTopLayer);
     }
@@ -295,18 +292,31 @@ layerMessageHandler(void)
     // Add sender as children
     children[numChildren++] = chunkSource;
     numExpectedChildrenAnswers--;
+    if(numExpectedChildrenAnswers == 0) {
+      // Get ready to receive back message
+      numExpectedBwdMessages = numChildren;
+    }  
   }
     break;
   case ST_NACK: {
     numExpectedChildrenAnswers--;
+    if(numExpectedChildrenAnswers == 0) {
+      // Get ready to receive back message
+      numExpectedBwdMessages = numChildren;
+    }
   }
   case ST_OK: {
-    if (--numExpectedBwdMessages == 0) {
-      if (getGUID() != leaderID) {
-      sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
-      setColor(GREEN);
+    uint16_t agreedLeaderID = charToGUID(&(thisChunk->data[1]));
+    byte agreedTopLayer = thisChunk->data[3];
+    numExpectedBwdMessages--;
+    if (numExpectedBwdMessages == 0) {
+      if ( (getGUID() == agreedLeaderID)&&(currentLayer == agreedTopLayer) ) {
+	setColor(ORANGE);
       }
-      else setColor(ORANGE);
+      else {
+	sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
+	setColor(AQUA);
+      }
     }
     // else continue waiting for other children's response
   }
@@ -319,6 +329,10 @@ layerMessageHandler(void)
 void
 addYourselfToSpanningTree(byte parentPort ,uint16_t newLeaderID, byte newTopLayer)
 {
+  // Init / Re-init Current ST variables
+  numChildren = 0;
+  numExpectedChildrenAnswers = 0;
+  numExpectedBwdMessages == 0;
   // Updates known top layer and known leaderID
   leaderID = newLeaderID;
   topLayer = newTopLayer;
@@ -331,17 +345,14 @@ addYourselfToSpanningTree(byte parentPort ,uint16_t newLeaderID, byte newTopLaye
     if (p == parent || thisNeighborhood.n[p] == VACANT) continue;
     else {
       numExpectedChildrenAnswers++;
-	  sendSpanningTreeMessage(p, ADD_YOURSELF, leaderID, topLayer);
+      sendSpanningTreeMessage(p, ADD_YOURSELF, leaderID, topLayer);
     }
-    // Wait for answer from children, ACK or NACK
-    while (numExpectedChildrenAnswers != 0);
-    // If is a leaf: send back message
-    if (numChildren == 0) 
-      setColor(AQUA);
-      sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
   }
-  // Get ready to receive back message
-  numExpectedBwdMessages = numChildren;
+  // If is a leaf: send back message
+  if (numExpectedChildrenAnswers == 0) {
+    setColor(YELLOW);
+    sendSpanningTreeMessage(parent, ST_OK, leaderID, topLayer);
+  }
 }
 
 // Spreads layer info from the base to the top, incrementing sent number on each layer.
