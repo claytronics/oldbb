@@ -5,6 +5,28 @@
 #include "serial.bbh"
 #include "hardwaretime.bbh"
 
+#define SPEED_ESTIMATION
+#define NUM_CALIBRATION	15
+#define CALIBRATION_PERIOD (2000)
+#define SYNC_PERIOD	(10000)
+#define CLOCK_VALIDITY_PERIOD (5*1000)
+#define ESTIMATED_TRANSMISSION_DELAY 6
+#define LEADER_ELECTION_TIMEOUT 500
+
+// clock message format: <CLOCK_SYNC_MSG> <TYPE> <Send Time> <Receive Time> <parameters ... >
+#define SEND_TIME_INDEX 2
+#define RECEIVE_TIME_INDEX (SEND_TIME_INDEX+sizeof(Time))
+// 	Parameters: <id (2 bytes)> <level (2 bytes)>
+#define MIN_ID_TIME_LEADER_ELECTION_GO_MSG 1
+#define ID_INDEX  (RECEIVE_TIME_INDEX+sizeof(Time))
+#define LEVEL_INDEX (ID_INDEX+sizeof(uint16_t))
+#define MAX_CLOCK_INDEX (LEVEL_INDEX+sizeof(uint16_t))
+// 	Parameters: <id (2 bytes)> <answer (1 byte)>
+#define MIN_ID_TIME_LEADER_ELECTION_BACK_MSG 2
+#define ANSWER_INDEX (ID_INDEX+sizeof(uint16_t))
+#define CLOCK_INFO 3
+#define REQUEST_CLOCK_SYNC 4
+
 void initClock(void);
 
 Time getClock(void);
@@ -18,10 +40,6 @@ byte isAClockSyncMessage(Chunk *c);
 void insertReceiveTime(Chunk *c);
 
 void insertSendTime(Chunk *c);
-
-byte synchronizeNeighbor(PRef p);
-
-byte synchronizeNeighbors(void);
 
 byte isTimeLeader(void);
 
