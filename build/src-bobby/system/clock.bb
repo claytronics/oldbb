@@ -151,8 +151,8 @@ handleClockSyncMessage(void)
 				syncData[0].globalTime = estimatedGlobalTime;
 				syncData[0].localTime = receiveTime;
 			} else {
-				//speedAvg = ((double) (estimatedGlobalTime - syncData[0].globalTime))/ ((double) (receiveTime - syncData[0].localTime));
-				speedAvg = computeSpeedAvg(estimatedGlobalTime, receiveTime);
+				speedAvg = ((double) (estimatedGlobalTime - syncData[0].globalTime))/ ((double) (receiveTime - syncData[0].localTime));
+				//speedAvg = computeSpeedAvg(estimatedGlobalTime, receiveTime);
 				offset = round(estimatedGlobalTime - (speedAvg*((double)getTime())));
 			}
 						
@@ -191,11 +191,13 @@ handleClockSyncMessage(void)
 				startLeaderElection();
 			}
 			
-			if ((id == minId) && (l >= STlevel))
+			//if ((id == minId) && (l >= STlevel))
+			if (id == minId)
 			{
 				sendBackMsg(faceNum(thisChunk), 0, maxSystemClock);
 			}
-			if ((id < minId) || ((id == minId) && (l < STlevel)))
+			//if ((id < minId) || ((id == minId) && (l < STlevel)))
+			if (id < minId)
 			{
 				minId = id;
 				minIdSender = faceNum(thisChunk);
