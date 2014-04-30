@@ -67,6 +67,9 @@ myMain(void)
   // We are forced to use a small delay before program execution, otherwise neighborhood may not be initialized yet
   delayMS(200);
 
+  // Initialize random delay generator
+  srand(getGUID());
+
   // Initialize layer variables
   currentLayer = 0;
   topLayer = 0;
@@ -329,6 +332,7 @@ layerMessageHandler(void)
 void
 addYourselfToSpanningTree(byte parentPort ,uint16_t newLeaderID, byte newTopLayer)
 {
+  delayMS(rand());
   // Init / Re-init Current ST variables
   numChildren = 0;
   numExpectedChildrenAnswers = 0;
