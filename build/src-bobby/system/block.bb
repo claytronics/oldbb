@@ -54,6 +54,12 @@ void blockTick()
     }
   
   executeHandlers();	
+  if(accelReady){
+    if(newAccelData()){
+      updateAccel();
+    }
+  }
+  executeHandlers();	
   blockTickRunning = 0;
   
 }

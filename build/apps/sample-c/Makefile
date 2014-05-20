@@ -4,7 +4,7 @@
 
 #SOURCE := network_test_single.bb
 #SOURCE := color_accel_tester.bb
-#SOURCE := setID_single.bb
+#SOURCE := setID_ensemble.bb
 #SOURCE := spanningTree.bb
 #SOURCE := network_test_ensemble.bb
 #SOURCE := timeout_readme.bb
@@ -12,7 +12,10 @@
 #SOURCE := empty.bb
 #SOURCE := leaderRed.bb
 #SOURCE := color_change_v2.bb
-SOURCE := leader_election_test.bb
+#SOURCE := leader_election_test.bb
+#SOURCE := game_with_coord.bb
+#SOURCE := layer_final.bb
+SOURCE := timeout_test.bb
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
