@@ -147,12 +147,12 @@ handleClockSyncMessage(void)
 #ifdef SPEED_ESTIMATION
 			if (numSync == 1) {
 				offset = estimatedGlobalTime - receiveTime;
+				speedAvg = 1.0;
 				syncData[0].globalTime = estimatedGlobalTime;
 				syncData[0].localTime = receiveTime;
 			} else {
-				//speedAvg = ((double) (estimatedGlobalTime - firstCalibSend))/ ((double) (receiveTime - firstCalibRec));
-				//insertData(estimatedGlobalTime, receiveTime);
-				speedAvg = computeSpeedAvg(estimatedGlobalTime, receiveTime);
+				speedAvg = ((double) (estimatedGlobalTime - syncData[0].globalTime))/ ((double) (receiveTime - syncData[0].localTime));
+				//speedAvg = computeSpeedAvg(estimatedGlobalTime, receiveTime);
 				offset = round(estimatedGlobalTime - (speedAvg*((double)getTime())));
 			}
 						
@@ -162,9 +162,9 @@ handleClockSyncMessage(void)
 #endif
 			synchronizeNeighbors();
 #ifdef LOG_DEBUG
-			//if ( (rand() % 4) == 0) {
+			if ((rand() % 4) == 0) {
 				printDebug(s);
-			//}			
+			}			
 #endif
 			break;
 		}		
@@ -183,8 +183,7 @@ handleClockSyncMessage(void)
 			uint16_t l = charToGUID(&(thisChunk->data[LEVEL_INDEX]));
 			
 			maxSystemClock = setMaxSystemClock(thisChunk, maxSystemClock);
-			
-			PRINT_BBSIM("block %u: go msg , maxsystemClock: %u\n", getGUID(), getMaxSystemClock());
+			//PRINT_BBSIM("block %u: go msg , maxsystemClock: %u\n", getGUID(), getMaxSystemClock());
 			if (!electing)
 			{
 				//PRINT_BBSIM("block %u: go msg - election\n", getGUID()); 
@@ -192,11 +191,13 @@ handleClockSyncMessage(void)
 				startLeaderElection();
 			}
 			
-			if ((id == minId) && (l >= STlevel))
+			//if ((id == minId) && (l >= STlevel))
+			if (id == minId)
 			{
 				sendBackMsg(faceNum(thisChunk), 0, maxSystemClock);
 			}
-			if ((id < minId) || ((id == minId) && (l < STlevel)))
+			//if ((id < minId) || ((id == minId) && (l < STlevel)))
+			if (id < minId)
 			{
 				minId = id;
 				minIdSender = faceNum(thisChunk);
@@ -418,7 +419,7 @@ insertSyncData(Time gl, Time ll)
 		// The oldest one was inserted about SYNC_DATA_PERIOD ago
 		// Sum will not overflow (TODO)
 	
-	for (i=1; i<NUM_SYNC_DATA; i++) { // we keep the first point
+	for (i=0; i<NUM_SYNC_DATA; i++) {
 		if  (syncData[i].globalTime < syncData[iMin].globalTime) {
 			iMin = i;
 		}
@@ -432,6 +433,23 @@ insertSyncData(Time gl, Time ll)
 	}
 }
 
+static void
+printTable(void)
+{
+	byte i = 0;
+	PRINT_BBSIM("\n");
+	for(i=0;i<NUM_SYNC_DATA; i++) {
+	#ifdef LOG_DEBUG
+			char s[100];
+			snprintf(s, 100*sizeof(char),"%lu, %lu\n", syncData[i].localTime, syncData[i].globalTime);
+			s[99] = '\0';
+			printDebug(s);
+	#endif
+		PRINT_BBSIM("%u, %u\n", syncData[i].localTime, syncData[i].globalTime);
+	}
+	PRINT_BBSIM("\n");
+}
+
 static double
 computeSpeedAvg(Time gl, Time ll)
 {
@@ -443,11 +461,14 @@ computeSpeedAvg(Time gl, Time ll)
 	double sum1 = 0, sum2 = 0;
 	byte inserted = insertSyncData(gl, ll);
 	
-	for (i=0;i<NUM_SYNC_DATA; i++) {
+	for(i=0;i<NUM_SYNC_DATA; i++) {
+		if (syncData[i].localTime == 0) {
+			break;
+		}
 		xAvg += syncData[i].localTime;
 		yAvg += syncData[i].globalTime;
 	}
-	if (inserted == 1) {
+	if (inserted == 0) {
 		xAvg += ll;
 		yAvg += gl;
 		i++;
@@ -455,9 +476,24 @@ computeSpeedAvg(Time gl, Time ll)
 	xAvg = xAvg/i;
 	yAvg = yAvg/i;
 	for (i=0;i<NUM_SYNC_DATA; i++) {
+		if (syncData[i].localTime == 0) {
+			break;
+		}
 		sum1 += (syncData[i].localTime - xAvg) * (syncData[i].globalTime - yAvg);
 		sum2 += powf(syncData[i].localTime - xAvg,2);
 	}
+	if (inserted == 0) {
+		sum1 += (ll- xAvg) * (gl - yAvg);
+		sum2 += powf(ll - xAvg,2);
+	}
+	/*printTable();
+	//PRINT_BBSIM("%g, %g, %u, %u, %u\n", sum1, sum2, (unsigned)inserted, gl, ll);
+	#ifdef LOG_DEBUG
+			char s[100];
+			snprintf(s, 100*sizeof(char),"%g, %g, %u, %lu, %lu\n", sum1, sum2, (unsigned)inserted, gl, ll);
+			s[99] = '\0';
+			printDebug(s);
+	#endif*/
 	return sum1/sum2;
 }
 
@@ -469,20 +505,22 @@ static void
 setLeader(void) {
 
 	// Just in case, but should be the max value of the system (so the local max as well)
-	localClockMaxReach = fmax(getMaxSystemClock(maxSystemClock), localClockMaxReach);
-	offset =  getMaxSystemClock(maxSystemClock) - getTime();
-
-#ifdef LOG_DEBUG
-	char s[25];
-	snprintf(s, 15*sizeof(char), "leader: max %lu", getMaxSystemClock(maxSystemClock));
-	s[24] = '\0';
-	printDebug(s);
-#endif
+	localClockMaxReach = fmax(getMaxSystemClock(maxSystemClock), getClock());
+	offset =  fmax(getMaxSystemClock(maxSystemClock), getClock()) - getTime();
+	speedAvg = 1.0;
+	
 	isLeader = 1;
 	syncRound = 0;
 	syncTimer.t.callback = (GenericHandler)&synchronizeNeighbors;
 	syncTimer.period = CALIBRATION_PERIOD;
-		
+	
+	#ifdef LOG_DEBUG
+			char s[10];
+			snprintf(s, 10*sizeof(char), "Leader");
+			s[9] = '\0';
+			printDebug(s);
+	#endif
+	
 	PRINT_BBSIM("block %u: Leader\n", getGUID()); 
 	synchronizeNeighbors();
 	registerTimer(&(syncTimer));
@@ -494,13 +532,14 @@ setSlave(void) {
 	isLeader = 0;
 	disableTimer(syncTimer);
 	deregisterTimer(&syncTimer);
+	deregisterTimer(&syncTimer);
 	deregisterTimeout(&(syncTimer.t));
 }
 
 static Time
 getMaxSystemClock(syncData_t m)
 {
-	Time off = getTime() - m.localTime;
+	int32_t off = getTime() - m.localTime;
 	return m.globalTime + off;
 }
 
@@ -588,7 +627,7 @@ startLeaderElection(void)
 		
 		maxSystemClock.localTime = getTime();
 		maxSystemClock.globalTime = getEstimatedGlobalClock();
-		
+
 		nbNeededAnswers = broadcastGoMsg(255, getGUID(),0, maxSystemClock);
 		if (nbNeededAnswers == 0) 
 		{
