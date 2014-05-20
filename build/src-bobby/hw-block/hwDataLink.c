@@ -328,9 +328,11 @@ void processBuffer(PRef p)
 #endif
                     // add to global receive queue
                     addToGlobalRq(currChunk);
-		
+					
                     // flip the parity
                     flipParityLast(port[p].rq);
+                    
+                    //port[faceNum(currChunk)].sq.flags |= setAck(currChunk);
                 }
                 // free the chunk
                 else 
@@ -436,6 +438,7 @@ void sendOnSerial(PRef p)
 
                 // flush the queue
                 flushSendQueue(p);
+                //removeFromSq(p, MSG_RESP_NOREPLY);
                         
                 // reset the flags
                 port[p].sq.retry    = NUM_RETRIES;

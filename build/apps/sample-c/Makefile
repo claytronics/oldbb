@@ -11,7 +11,8 @@
 #SOURCE := neighbor_count.bb
 #SOURCE := empty.bb
 #SOURCE := leaderRed.bb
-SOURCE := color_change_v2.bb
+#SOURCE := color_change_v2.bb
+SOURCE := leader_election_test.bb
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
@@ -22,7 +23,7 @@ SOURCE := color_change_v2.bb
 #ALLO +=
 #MELDO +=
 
-CFLAGS_OPTIONS = -DCLOCK_SYNC
+#CFLAGS_OPTIONS = -DCLOCK_SYNC
 #CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
 #CFLAGS_OPTIONS += -DTESTING
 

@@ -16,8 +16,8 @@
 #define checkMemoryConsistency()
 #endif
 
-threaddef #define NUM_RXCHUNKS 12
-threaddef #define NUM_TXCHUNKS 12
+threaddef #define NUM_RXCHUNKS 24
+threaddef #define NUM_TXCHUNKS 24
 
 // types of chunks to free
 #define RXCHUNK 0

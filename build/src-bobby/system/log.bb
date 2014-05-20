@@ -45,7 +45,7 @@ byte printDebug(char* str) {
   byte s = 0;	
   byte fId = 0;
   byte off = 6;
-  byte random =  rand() % 45 + 1; 
+  //byte random =  rand() % 45 + 1; 
   if (toHost == UNDEFINED_HOST)
     {
       return 0;
@@ -86,7 +86,7 @@ byte printDebug(char* str) {
 	    }
 	  memcpy(buf+off, str+index, s);
 	  index += s;
-	  delayMS(random);
+	  //delayMS(random);
 	  sendLogChunk(toHost, buf, s+off);
 	  off = 6;
 	}
@@ -216,7 +216,7 @@ sendCmdChunk(PRef p, byte *d, byte s, MsgHandler mh)
   Chunk *c=getLogChunk();
   if (c == NULL) {
     reportLoggerOutOfMemory(p);
-    setColor(PINK);
+    //setColor(PINK);
     return 0;
   }
   if (sendMessageToPort(c, p, d, s, mh, (GenericHandler)&freeLogChunk) == 0) {
@@ -261,12 +261,14 @@ handleLogMessage(void)
   switch(thisChunk->data[1])
     {
     case LOG_I_AM_HOST:
+	  setColor(WHITE);
       toHost = faceNum(thisChunk);			
       PCConnection = 1;
       spreadPathToHost(faceNum(thisChunk));
       break;
     case LOG_PATH_TO_HOST:
       if (toHost == UNDEFINED_HOST) {
+      setColor(WHITE);
 	toHost = faceNum(thisChunk);
 	spreadPathToHost(faceNum(thisChunk));
       }
@@ -296,16 +298,33 @@ handleLogMessage(void)
 
 // --------------- CHUNK MANAGEMENT
 
+threaddef #define NUM_LOG_CHUNK 35
+threadvar Chunk logChunkPool[NUM_LOG_CHUNK];
+
 static Chunk* getLogChunk(void)
 {
-  Chunk *p = getSystemTXChunk();
-  return p;
+  //Chunk *p = getSystemTXChunk();
+  //return p;
+  byte i = 0;
+  Chunk *cp = NULL;
+  for(i = 0; i < NUM_LOG_CHUNK ; i++) {
+     // check top bit to indicate usage
+     cp = &logChunkPool[i];
+     if(!chunkInUse(cp) ) {
+		// indicate in use
+        cp->status = CHUNK_USED;
+        cp->next = NULL;
+        return cp;
+     }
+  }
+  return NULL;
 }
 
 static void 
 freeLogChunk(void)
 {
   freeChunk(thisChunk);
+  thisChunk->status = CHUNK_FREE;
 }
 
 // ------------- UTILITY

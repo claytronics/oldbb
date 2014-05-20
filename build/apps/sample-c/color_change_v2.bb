@@ -52,10 +52,6 @@ void myMain(void)
 	changeT = (getClock()/PERIOD)*PERIOD + PERIOD;
 
 	while (1) {
-		while(getClock() < changeT)
-		{
-			delayMS(1);
-		}
 		/*#ifdef LOG_DEBUG
 			char s[150];
 			snprintf(s, 150*sizeof(char), "color change: t: %lu, c: %lu", getTime(), getClock());
