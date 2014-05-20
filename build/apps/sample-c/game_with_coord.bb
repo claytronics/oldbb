@@ -188,7 +188,7 @@ myMain(void)
   checkLeafTimeout.callback = (GenericHandler)(&checkLeaf);
   checkLeafTimeout.calltime = getTime() + CHECK_LEAF_TIME;
   registerTimeout(&checkLeafTimeout);
-  //Look for the blue block Timeout
+  
   
   
   
@@ -265,7 +265,8 @@ startGame(void)
 void 
 setUpSpanningTree(void)
 {
-  restartSpanningTreeTimeout.calltime = getTime() + 1000;
+  
+  restartSpanningTreeTimeout.calltime = getTime() + 2000;//after 2 seconds check if the spanning tree is finished, if not restart it
     registerTimeout(&restartSpanningTreeTimeout);
   
   if (isOnTopLayer) {
@@ -288,6 +289,7 @@ setUpSpanningTree(void)
   }
 }
 
+//start the creation of the blue block
 void
 blueBlock (void)
 {
@@ -634,6 +636,7 @@ void propagateUsedLayer(byte chunkSource)
     if(checkneighbor(NORTH) == 1 && chunkSource != NORTH)sendMyChunk(NORTH, data, 1, (MsgHandler)&layerMessageHandler);else if(chunkSource != NORTH) checkVirtualLayerNeighbor(SOUTH,x,y,z+1);
     if(checkneighbor(SOUTH) == 1 && chunkSource != SOUTH)sendMyChunk(SOUTH, data, 1, (MsgHandler)&layerMessageHandler);else if(chunkSource != SOUTH) checkVirtualLayerNeighbor(NORTH,x,y,z-1);
   }
+  //if it is not the blue block change it into YELLOW
   if(highestNumber != number){
 	setColor(YELLOW);
 	usedLayerTimeout.calltime = getTime() + 900;
@@ -642,7 +645,7 @@ void propagateUsedLayer(byte chunkSource)
   }
 }
 
-
+//In case the spanning tree is not properly done it will restart
 void restartSpanningTree(void)
 {
   if(stpFinished == 0){
@@ -663,6 +666,7 @@ void stopUsedLayer(void)
   setColor(WHITE);
 }
 
+//check if virtual neighbor exist into the block coordinates tables, if not i block has no neighbor 
 void checkVirtualLayerNeighbor(byte p,signed char cx,signed char cy,signed char cz)
 {
     if( x == cx && y == cy && z == cz)
@@ -698,12 +702,12 @@ void sendToVirtualLayerNeighbor(PRef p, byte chunkSource, signed char cx, signed
 //check the Leaves and send back message to the leader
  void checkLeaf(void)
  {
-   
+   //Look for the blue block Timeout
    blueBlockTimeout.callback = (GenericHandler)(&blueBlock);
   blueBlockTimeout.calltime = getTime() + 7000;
   registerTimeout(&blueBlockTimeout);
   
-  //Coordination timeout
+  //create Coordinates timeout
   coordTimeout.callback = (GenericHandler)(&startCoordination);
   coordTimeout.calltime = getTime() + 2000;
   registerTimeout(&coordTimeout);
@@ -798,6 +802,7 @@ void sendToVirtualNeighbor(PRef p, signed char cx,signed char cy,signed char cz)
 }
 
 
+//Propagate message to the layer of the red block 
 void sendUsedLayer(void)
 {
    AccelData acc = getAccelData();
@@ -1082,6 +1087,7 @@ void sendMsg(PRef p, signed char x, signed char y, signed char z)
     
 }
 
+//start giving coordinates to all the block beginning from the leader
 void startCoordination(void)
 {
   if(getGUID() == isInATree)
