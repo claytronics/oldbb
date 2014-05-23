@@ -12,6 +12,7 @@
 #SOURCE := empty.bb
 #SOURCE := leaderRed.bb
 #SOURCE := color_change_v2.bb
+#SOURCE := leader_election_test.bb
 #SOURCE := game_with_coord.bb
 #SOURCE := layer_final.bb
 SOURCE := timeout_test.bb

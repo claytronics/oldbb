@@ -96,11 +96,13 @@ void initBlock()
 	initHWAccel();
 	accelReady=1;
 
-#ifdef CLOCK_SYNC
-	initClock();
-#endif
 #ifdef LOG_DEBUG
 	initLogDebug();
+#endif
+
+	delayMS(50);
+#ifdef CLOCK_SYNC
+	initClock();
 #endif
 
 #ifndef BBSIM
