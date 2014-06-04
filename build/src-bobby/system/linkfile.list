@@ -13,6 +13,7 @@ memory.bb
 message.bb
 queues.bb
 serial.bb
+span.bb
 system.bb
 hardwaretime.bb
 microphone.bb
@@ -32,6 +33,7 @@ memory.bbh
 message.bbh
 queues.bbh
 serial.bbh
+span.bbh
 system.bbh
 hardwaretime.bbh
 myassert.h

@@ -1,14 +1,16 @@
 #ifndef __SPAN_H__
-#define ___SPAN_
+#define ___SPAN_H__
 // spanning tree api
 #include "block.bbh"
 
 typedef enum { STARTED, DONE, HAVEPARENT, WAITING } SpanTreeState;
-typedef enum { COMPLETED, TIMEDOUT } SpanningTreeStatus;
-typedef void (*SpanningTreeHandler)(int id, SpanningTreeStatus status);
-threadtype typedef struct _spanningtree{
+typedef enum { COMPLETED, TIMEDOUT, WAIT } SpanningTreeStatus;
+threadtype typedef struct _spanningtree SpanningTree;
+typedef void (*SpanningTreeHandler)(SpanningTree* tree, SpanningTreeStatus status);
+
+struct _spanningtree{
   PRef parent;			/* port for my parent if there is on, else 255 == I am root  */
-  int numchildren;		/* number of children I have */
+  byte numchildren;		/* number of children I have */
   PRef children[NUM_PORTS];	/* ports for my children, if there are any */
   byte spantreeid;		/* the id of this spanning tree */
   SpanTreeState state;			/* state i am in in forming the spanning tree */
@@ -16,9 +18,12 @@ threadtype typedef struct _spanningtree{
   int outstanding;			/* used to count messages */
   SpanningTreeHandler mydonefunc;
   SpanningTreeStatus status;
-} SpanningTree;
+  MsgHandler broadcasthandler;
+  Timeout spantimeout;
+}; 
 
-typedef void (*SpanningTreeHandler)(int id, SpanningTreeStatus status);
+
+
 
 
 // for debugging to have some determinism
@@ -50,9 +55,9 @@ void treeBroadcast(SpanningTree* tree, byte* data, byte size, MsgHandler handler
 // tree calls this function with the same id.  Will not return until
 // done or timeout secs have elapsed.  If timeout is 0, never timeout.
 // return 1 if timedout, 0 if ok.
-int treeBarrier(SpanningTree* tree, int id, int timeout);
+int treeBarrier(SpanningTree* tree, byte id, int timeout);
 
 // find out if I am root
-int isSpanningTreeRoot(SpanningTree* tree);
+byte isSpanningTreeRoot(SpanningTree* tree);
 
 #endif
