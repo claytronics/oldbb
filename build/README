@@ -1,4 +1,10 @@
-9/29/10
+9/29/10 --- updated on 06/09/14
+
+First, if running on linux, make sure that you have the following tools and librairies installed on your system:
+- sudo apt-get update avr-libc gcc-avr g++ avrdude
+
+if you will be working with the meld-compiler, you may also need these packages:
+- sudo apt-get bison mlton ml-yacc ml-lex flex
 
 This directory tree contains the code used to develop applications for
 the blinkyblocks.  At this point it has a reasonable makefile for meld
