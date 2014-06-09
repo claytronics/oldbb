@@ -15,64 +15,65 @@
 #define PERIOD (3000)
 
 // enum{RED, ORANGE, YELLOW, GREEN, AQUA, BLUE, WHITE, PURPLE, PINK, NUM_COLORS};	
-Color myColors[4];
+Color myColors[3];
 
 Color nextColor(void) {
-	unsigned int c = 0;
-	c = (getClock()/PERIOD)%4;
-	return myColors[c];
+  unsigned int c = 0;
+  c = (getClock()/PERIOD)%3;
+  return myColors[c];
 }
 
 void myMain(void)
 {
-	Time changeT = PERIOD;
+  Time changeT = PERIOD;
 	
-	myColors[0] = YELLOW;
-	myColors[1] = GREEN;
-	myColors[2] = BLUE;
-	myColors[3] = RED;
+  //myColors[0] = YELLOW;
+  myColors[0] = GREEN;
+  myColors[1] = BLUE;
+  myColors[2] = RED;
 	
-	while(getNeighborCount() == 0)
-	{
-		setColor(WHITE);
-	}
+  while(getNeighborCount() == 0)
+    {
+      setColor(WHITE);
+    }
 #ifdef CLOCK_SYNC
-	while (!isSynchronized())
-	{
-		setColor(AQUA);
-		delayMS(6);
-	}
+  setColor(AQUA);
+  while (!isSynchronized())
+    {
+      //setColor(AQUA);
+      delayMS(6);
+    }
 #endif	
 
-	if (isTimeLeader()) {
-			setColor(RED);
-	} else {
-		setColor(nextColor());
-	}
-	changeT = (getClock()/PERIOD)*PERIOD + PERIOD;
+  if (isTimeLeader()) {
+    setColor(RED);
+  } else {
+    setColor(nextColor());
+  }
+  changeT = (getClock()/PERIOD)*PERIOD + PERIOD;
 
-	while (1) {
-		/*#ifdef LOG_DEBUG
-			char s[150];
-			snprintf(s, 150*sizeof(char), "color change: t: %lu, c: %lu", getTime(), getClock());
-			s[149] = '\0';
-			printDebug(s);
-		#endif*/
-		//printf("clock %u\n", getClock());
-		if (isTimeLeader()) {
-			setColor(RED);
-		} else {
-			setColor(nextColor());
-		}
-		delayMS(1);
-		changeT = (getClock()/PERIOD)*PERIOD + PERIOD;
-		//changeT += PERIOD;
-	}
-	//printf("Color Change Clock %u\n", getClock());
+  while (1) {
+    /*#ifdef LOG_DEBUG
+      char s[150];
+      snprintf(s, 150*sizeof(char), "color change: t: %lu, c: %lu", getTime(), getClock());
+      s[149] = '\0';
+      printDebug(s);
+      #endif*/
+    //printf("clock %u\n", getClock());
+    if (isTimeLeader()) {
+      setColor(RED);
+    } else {
+      setColor(nextColor());
+    }
+    delayMS(1);
+    changeT = (getClock()/PERIOD)*PERIOD + PERIOD;
+    //changeT += PERIOD;
+  }
+  //printf("Color Change Clock %u\n", getClock());
 	
-	while(1);
+  while(1);
 }
 void userRegistration(void)
 {
-	registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);	
+  registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);	
 }
