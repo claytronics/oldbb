@@ -20,6 +20,7 @@ struct _spanningtree{
   SpanningTreeStatus status;
   MsgHandler broadcasthandler;
   Timeout spantimeout;
+  PRef barrierack[NUM_PORTS];
 }; 
 
 
@@ -60,7 +61,7 @@ int treeBarrier(SpanningTree* tree, byte id, int timeout);
 // find out if I am root
 byte isSpanningTreeRoot(SpanningTree* tree);
 
-//return a tree updated 
+//return an updated tree 
 SpanningTree* get(SpanningTree* tree,byte id);
 
 #endif
