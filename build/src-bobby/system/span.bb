@@ -25,7 +25,7 @@ static int logDebug = 0;
 
 
 //private functions
-byte sendMySpChunk(byte port, byte *data, byte size, MsgHandler mh);
+byte sendMySpChunk(byte myport, byte *data, byte size, MsgHandler mh);
 void screwyou(void);
 void iamyourchild(void);
 void spComplete( void);
@@ -42,7 +42,7 @@ void barrierAck(void);
 Timeout barrierTimeout;
 Timeout finishTimeout;
 
-// this is sent by a potential parent trying to make me a child
+// this is sent by a potential myParent trying to make me a child
 // 0: id
 // 1: value
 void cstHelper(void)
@@ -60,25 +60,26 @@ void cstHelper(void)
        sendMySpChunk(faceNum(thisChunk), data, 3, (MsgHandler)&screwyou); 
       }
        // otherwise recursively start process for all my other ports (meaning, send a cstHelper msg)
-       // when recusrive procedure is done, make sender my parent and send back an ACK (iamyourchild)
+       // when recusrive procedure is done, make sender my myParent and send back an ACK (iamyourchild)
       else
       {
        trees[potentialID]->outstanding = 0;
        trees[potentialID]->value = potentialValue;
-       trees[potentialID]->parent = faceNum(thisChunk);
+       trees[potentialID]->myParent = faceNum(thisChunk);
        trees[potentialID]->state = HAVEPARENT;
-        for( int i = 0; i<NUM_PORTS; i++)
+       byte i = 0;
+        for( i; i<NUM_PORTS; i++)
 	{
-	  trees[potentialID]->children[i] = 0;
+	  trees[potentialID]->myChildren[i] = 0;
 	}
        trees[potentialID]->numchildren = countChildren(potentialID);
        trees[potentialID]->state = WAITING;
        byte data[3];
        data[0] = potentialID;
        GUIDIntoChar(trees[potentialID]->value, &(data[1]));
-       
-	for( byte p = 0; p < NUM_PORTS;p++){
-	  if (thisNeighborhood.n[p] != VACANT && p != (trees[potentialID]->parent)) {	
+       byte p = 0;
+	for( p ; p < NUM_PORTS;p++){
+	  if (thisNeighborhood.n[p] != VACANT && p != (trees[potentialID]->myParent)) {	
 	  trees[potentialID]->outstanding++;
 	  sendMySpChunk(p, data,3, (MsgHandler)&cstHelper); 
 	  }
@@ -86,7 +87,7 @@ void cstHelper(void)
        byte buf[3];
        buf[0] = trees[potentialID]->spantreeid;
        GUIDIntoChar(trees[potentialID]->value, &(buf[1]));
-       sendMySpChunk((trees[potentialID]->parent), buf, 3, (MsgHandler)&iamyourchild); 
+       sendMySpChunk((trees[potentialID]->myParent), buf, 3, (MsgHandler)&iamyourchild); 
        
        //if has no children send a back message with the value to the root to tell the spanning tree is completed
         if( trees[potentialID]->numchildren == 0)
@@ -94,8 +95,8 @@ void cstHelper(void)
        byte data[3];
        data[0] = trees[potentialID]->spantreeid;
        GUIDIntoChar(trees[potentialID]->value, &(data[1]));
-       if( trees[potentialID]->parent != 255 ){
-       sendMySpChunk( trees[potentialID]->parent, data, 3, (MsgHandler)&spComplete);   
+       if( trees[potentialID]->myParent != 255 ){
+       sendMySpChunk( trees[potentialID]->myParent, data, 3, (MsgHandler)&spComplete);   
        }
 	}
       }
@@ -110,7 +111,7 @@ void spComplete( void)
   if( trees[potentialID]->outstanding != 0){
 	trees[potentialID]->outstanding--;
 	}
-//when received all the messages from the children execute donefunc and send spComplete to parent
+//when received all the messages from the children execute donefunc and send spComplete to myParent
   if(trees[potentialID]->outstanding == 0){
   if(  trees[potentialID]->state == DONE )
   {
@@ -118,14 +119,15 @@ void spComplete( void)
     byte data[3];
     data[0] = trees[potentialID]->spantreeid;
     GUIDIntoChar(trees[potentialID]->value, &(data[1]));
-    if( (trees[potentialID]->parent) != 255){
-    sendMySpChunk( trees[potentialID]->parent, data, 3, (MsgHandler)&spComplete);   
+    if( (trees[potentialID]->myParent) != 255){
+    sendMySpChunk( trees[potentialID]->myParent, data, 3, (MsgHandler)&spComplete);   
     }
     else
     {
       //if the root receive the spComplete send message to the leaves to tell them to execute their done function
-      for(byte i; i<NUM_PORTS; i++){
-	if(trees[potentialID]->children[i] == 1){
+      byte i=0;
+      for(i; i<NUM_PORTS; i++){
+	if(trees[potentialID]->myChildren[i] == 1){
       sendMySpChunk(i , data, 3, (MsgHandler)&sendToLeaf);   
 	}
       }
@@ -147,7 +149,7 @@ void sendToLeaf(void)
   byte data[3];
   data[0] = trees[potentialID]->spantreeid;
   GUIDIntoChar(trees[potentialID]->value, &(data[1]));
-sendMySpChunk(trees[potentialID]->parent , data, 3, (MsgHandler)&finishingSpan);    //send an ack to the parent and parent will execute their mydonefunc
+sendMySpChunk(trees[potentialID]->myParent , data, 3, (MsgHandler)&finishingSpan);    //send an ack to the myParent and myParent will execute their mydonefunc
 if(trees[potentialID]->value == potentialValue){
   deregisterTimeout(&trees[potentialID]->spantimeout);
   if( trees[potentialID]->numchildren == 0){
@@ -156,8 +158,9 @@ if(trees[potentialID]->value == potentialValue){
     //return ;
   } 
 }
-  for(byte i; i<NUM_PORTS; i++){
-      if(trees[potentialID]->children[i] == 1){
+  byte i = 0;
+  for( i; i<NUM_PORTS; i++){
+      if(trees[potentialID]->myChildren[i] == 1){
       sendMySpChunk(i , data, 3, (MsgHandler)&sendToLeaf);   
       }
     }  
@@ -186,7 +189,7 @@ void screwyou(void)
 	if( trees[potentialID]->outstanding != 0){
 	trees[potentialID]->outstanding--;
 	}
-	trees[potentialID]->children[faceNum(thisChunk)] = 0;
+	trees[potentialID]->myChildren[faceNum(thisChunk)] = 0;
 	trees[potentialID]->numchildren = countChildren(potentialID);
 	if( trees[potentialID]->outstanding == 0)
 	{
@@ -206,7 +209,7 @@ void iamyourchild(void)
 	if( trees[potentialID]->outstanding != 0){
 	trees[potentialID]->outstanding--;
 	}
-	trees[potentialID]->children[faceNum(thisChunk)] = 1;
+	trees[potentialID]->myChildren[faceNum(thisChunk)] = 1;
 	trees[potentialID]->numchildren = countChildren(potentialID);
 	
 	if( trees[potentialID]->outstanding == 0)
@@ -220,9 +223,10 @@ void iamyourchild(void)
 byte countChildren(byte id)
 {
   byte count = 0;
-  for( int i = 0; i<NUM_PORTS; i++)
+  byte i = 0;
+  for(i ; i<NUM_PORTS; i++)
   {
-    if(trees[id]->children[i] == 1)
+    if(trees[id]->myChildren[i] == 1)
     {
       count++;
     }
@@ -230,11 +234,11 @@ byte countChildren(byte id)
   return count;
 }
 
-byte sendMySpChunk(byte port, byte *data, byte size, MsgHandler mh) 
+byte sendMySpChunk(byte myport, byte *data, byte size, MsgHandler mh) 
 { 
   Chunk *c=getSystemTXChunk();
  
-  if (sendMessageToPort(c, port, data, size, mh, NULL) == 0) {
+  if (sendMessageToPort(c, myport, data, size, mh, NULL) == 0) {
     freeChunk(c);
     return 0;
   }
@@ -249,7 +253,7 @@ void spCreation(void)
   trees[id]->status = TIMEDOUT;
 }
 
-//message send to parent if only all the children get into a barrier 
+//message send to myParent if only all the children get into a barrier 
 void barrierMsg(void){
   byte  spID = thisChunk->data[0];
   check:
@@ -269,7 +273,7 @@ void barrierMsg(void){
       trees[spID]->status = COMPLETED;  
       }
       else{
-    sendMySpChunk(trees[spID]->parent, buf, 1, (MsgHandler)&barrierMsg); // send message to parent to make their status COMPLETED
+    sendMySpChunk(trees[spID]->myParent, buf, 1, (MsgHandler)&barrierMsg); // send message to myParent to make their status COMPLETED
       }
   }
   }
@@ -293,9 +297,9 @@ void allHaveBarrierMsg(void)
   byte  spID = thisChunk->data[0];
   byte buf[1];
   buf[0] = spID;
-  
-  for(byte p = 0; p < NUM_PORTS ; p++){
-      if (trees[spID]->children[p] == 1){
+  byte p = 0;
+  for( p ; p < NUM_PORTS ; p++){
+      if ((trees[spID]->myChildren[p]) == 1){
       sendMySpChunk(p, buf, 1, (MsgHandler)&allHaveBarrierMsg);   //this message will change the status of the tree into completed
       }}
   sendMySpChunk(faceNum(thisChunk), buf, 1, (MsgHandler)&barrierAck);
@@ -310,7 +314,8 @@ void barrierAck(void)
   buf[0] = spID;
   byte p = faceNum(thisChunk);
   trees[spID]->barrierack[p] = 0;
-  for( byte i; i<NUM_PORTS ; i++)
+  byte i = 0;
+  for( i; i<NUM_PORTS ; i++)
   {
     if( trees[spID]->barrierack[i] == 1)
     {
@@ -327,15 +332,16 @@ void treeBroadcastMsg(void){
   buf[0] = spID;
   buf[1] = size;
   memcpy(buf+2, thisChunk->data+2, size*sizeof(byte));//the data will start from buf[2] if users want to use it
-    for( byte p = 0; p < NUM_PORTS;p++){ //send data to all the children
-       if (trees[spID]->children[p] == 1) {	
+  byte p = 0; 
+    for( p; p < NUM_PORTS;p++){ //send data to all the children
+       if (trees[spID]->myChildren[p] == 1) {	
       sendMySpChunk(p, buf, size + 2, (MsgHandler)&treeBroadcastMsg); 
        }
        }
    if( trees[spID]->numchildren == 0 ){
 	byte data[1];
 	data[0] = spID;
-	sendMySpChunk(trees[spID]->parent, data, 1, (MsgHandler)&treeBroadcastBackMsg); 
+	sendMySpChunk(trees[spID]->myParent, data, 1, (MsgHandler)&treeBroadcastBackMsg); 
 	trees[spID]->broadcasthandler();
        } 
 }
@@ -351,7 +357,7 @@ void treeBroadcastBackMsg(void){
       if(isSpanningTreeRoot(trees[spID]) != 1){
 	  byte data[1];
 	  data[0] = spID;
-	  sendMySpChunk(trees[spID]->parent, data, 1, (MsgHandler)&treeBroadcastBackMsg); 
+	  sendMySpChunk(trees[spID]->myParent, data, 1, (MsgHandler)&treeBroadcastBackMsg); 
 	  trees[spID]->broadcasthandler();
 	}
       else
@@ -389,7 +395,8 @@ int initSpanningTrees(int num)
 {
   if((maxSpanId + num) < MaxSpanTreeId)
   {
-    for(int i = 0; i<num ;i++)
+    int i = 0; 
+    for( i ; i<num ;i++)
     {
       trees[maxSpanId] = allocateSpanningTree(0);
     }
@@ -456,13 +463,14 @@ void createSpanningTree(SpanningTree* tree, SpanningTreeHandler donefunc, int ti
 	trees[id]->status = WAIT;
 	//done function for the spanning tree
 	trees[id]->mydonefunc = donefunc;
-	//initialize parent, every blocks thinks they are root at the beginning 
-	trees[id]->parent = 255;
+	//initialize myParent, every blocks thinks they are root at the beginning 
+	trees[id]->myParent = 255;
 	//initialize children number
 	trees[id]->numchildren = 0;
-	for( int i = 0; i<NUM_PORTS; i++)
+	int i = 0; 
+	for(  i; i<NUM_PORTS; i++)
 	{
-	  trees[id]->children[i] = 0;
+	  trees[id]->myChildren[i] = 0;
 	}
 	
 	// pick a tree->value = rand()<<8|myid (unless debug mode, then it is just id)
@@ -485,7 +493,8 @@ void createSpanningTree(SpanningTree* tree, SpanningTreeHandler donefunc, int ti
 	}
        
        //send message to add children
-	for( byte p = 0; p < NUM_PORTS;p++){
+       byte p = 0;
+	for( p; p < NUM_PORTS;p++){
 	  if (thisNeighborhood.n[p] != VACANT) {	
 	  trees[id]->outstanding++;
 	  sendMySpChunk(p, data, 3, (MsgHandler)&cstHelper); 
@@ -511,8 +520,9 @@ void treeBroadcast(SpanningTree* tree, byte* data, byte size, MsgHandler handler
   buf[0] = id;
   buf[1] = size;
   memcpy(buf+2, data, size*sizeof(byte));
- for( byte p = 0; p < NUM_PORTS;p++){
-   if (trees[id]->children[p] == 1) {
+ byte p = 0;
+ for( p; p < NUM_PORTS;p++){
+   if (trees[id]->myChildren[p] == 1) {
    sendMySpChunk(p, buf, size + 2 , (MsgHandler)&treeBroadcastMsg); 
    }
    }
@@ -539,14 +549,14 @@ int treeBarrier(SpanningTree* tree, byte id, int timeout)
   }
   byte buf[1];
   buf[0] = spID;
-  trees[spID]->barrierack[NUM_PORTS] =  trees[spID]->children[NUM_PORTS];
+  trees[spID]->barrierack[NUM_PORTS] =  trees[spID]->myChildren[NUM_PORTS];
   trees[spID]->outstanding = trees[spID]->numchildren;
   //the treeBarrier start with the leaves 
   if( trees[spID]->numchildren == 0)
    {
       byte buf[1];
       buf[0] = spID;
-      sendMySpChunk(trees[spID]->parent, buf, 1, (MsgHandler)&barrierMsg); // send message to parent to make their status COMPLETED
+      sendMySpChunk(trees[spID]->myParent, buf, 1, (MsgHandler)&barrierMsg); // send message to myParent to make their status COMPLETED
    }
    allHaveBarrier = 1; 
   //while( trees[spID]->status == WAIT ) {setColor(INDIGO);}   //while the blocks doesn't receive barrier message from all the children do nothing
@@ -562,8 +572,9 @@ int treeBarrier(SpanningTree* tree, byte id, int timeout)
       deregisterTimeout(&barrierTimeout); 
       }
       if( isSpanningTreeRoot(trees[spID]) == 1){
-      for(byte p = 0; p < NUM_PORTS ; p++){
-	if (trees[spID]->children[p] == 1){
+	byte p = 0;
+      for(p; p < NUM_PORTS ; p++){
+	if (trees[spID]->myChildren[p] == 1){
       sendMySpChunk(p, buf, 1, (MsgHandler)&allHaveBarrierMsg);   // send messages to all the tree to tell that all the block get to a barrier
       }}
       }
@@ -582,7 +593,7 @@ int treeBarrier(SpanningTree* tree, byte id, int timeout)
 byte isSpanningTreeRoot(SpanningTree* tree)
 {
   byte id = tree->spantreeid;
-  if(trees[id]->parent == 255)
+  if(trees[id]->myParent == 255)
   {
     return 1;
   }

@@ -9,9 +9,9 @@ threadtype typedef struct _spanningtree SpanningTree;
 typedef void (*SpanningTreeHandler)(SpanningTree* tree, SpanningTreeStatus status);
 
 struct _spanningtree{
-  PRef parent;			/* port for my parent if there is on, else 255 == I am root  */
+  PRef myParent;			/* port for my parent if there is on, else 255 == I am root  */
   byte numchildren;		/* number of children I have */
-  PRef children[NUM_PORTS];	/* ports for my children, if there are any */
+  PRef myChildren[NUM_PORTS];	/* ports for my children, if there are any */
   byte spantreeid;		/* the id of this spanning tree */
   SpanTreeState state;			/* state i am in in forming the spanning tree */
   uint16_t value;				/* used in the creation of spanning trees, the name of the root */
