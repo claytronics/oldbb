@@ -90,16 +90,3 @@ void sendDataToVirtualNeighbor(PRef port,byte *data, byte size);
 //send a data to a virtual neighbor to the port where the real neighbor should have been detected.
 
 There is a lot of broadcast message during the step of sharing the coordinates so an ensemble with several blocks may have some bugs.
-
-
-
-
-
-
-
-
-
-
-
-
-
