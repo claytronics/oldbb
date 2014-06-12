@@ -20,7 +20,6 @@ struct _spanningtree{
   SpanningTreeStatus status;
   MsgHandler broadcasthandler;
   Timeout spantimeout;
-  PRef barrierack[NUM_PORTS];
 }; 
 
 
@@ -47,6 +46,7 @@ void startTreeByParent(SpanningTree* tree,int id, SpanningTreeHandler donefunc, 
 
 // start a spanning tree with a random root, more than one node can initiate this.  
 // if timeout == 0, never time out
+// have to use a while loop inside the user program to wait for a spanning tree to be finished
 void createSpanningTree(SpanningTree* tree, SpanningTreeHandler donefunc, int timeout);
 
 // send msg in data to everyone in the spanning tree, call handler when everyone has gotten the msg

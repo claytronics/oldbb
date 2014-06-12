@@ -4,7 +4,7 @@
 #include "audio.bbh"
 #include <stdlib.h>
 #include "span.bbh"
-void launchTimeout(void);
+
 void handler(void);
 void donefunc(SpanningTree* tree, SpanningTreeStatus status);
 
@@ -17,28 +17,19 @@ SpanningTree* tree;
 
 void myMain(void)
 {
+ // setSpanningTreeDebug(1);
   initSpanningTrees(1);
   tree = allocateSpanningTree(1);
-  
- /*
-  get(tree,id); qui retourne un *tree et égalise tree avec trees[id]
-  get(*SpanningTree tree,byte id)
-  {
-    tree = trees[id];
-    return tree;
-  }
-  */
   spFinished = 0;
-  createSpanningTree(tree, donefunc, 2000);
+  createSpanningTree(tree, donefunc, 0);
   
-  byte data[1];  
-  data[0] = 2;
-  get(tree,1);
-  start :
-  while( spFinished != 1){
+  //byte data[1];  
+ // data[0] = 2;
+  
+
+  while( spFinished != 1){ //wait for the tree to be created  and updated the tree every time
     setColor(AQUA);
     get(tree,1); 
-    
   }
   
   //treeBroadcast(tree,data, 1, handler );
@@ -50,13 +41,7 @@ void myMain(void)
   {
     setColor(INDIGO);
   }
-  
   while(1);
-}
-
-void launchTimeout(void)
-{
-
 }
 
 
@@ -69,7 +54,8 @@ void handler(void)
 
 void donefunc(SpanningTree* tree, SpanningTreeStatus status)
 { 
-  if( spFinished != 1 ){   
+   
+
   if(status == COMPLETED)
   {
    if (isSpanningTreeRoot(tree) == 1)
@@ -90,8 +76,7 @@ void donefunc(SpanningTree* tree, SpanningTreeStatus status)
   { 
     setColor(RED);
   }
-   spFinished = 1;
-    }
+
 }
 
 
