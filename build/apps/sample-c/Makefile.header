@@ -412,7 +412,12 @@ $(TARCH)/Makefile.externs:
 	mkdir -p $(FULLDIRS)
 	create-extern-makefile.sh $(TARCH)/Makefile.externs $(DIRS) 
 
+# Change sim flags if making for Mac OS X
+ifeq ($(TARCH), arch-x86_64-Darwin)
+SIMLIB=-L. -framework GLUT -framework OpenGL -lpthread
+else
 SIMLIB=-L. -lm -lglut -lGLU -lGL -lpthread
+endif
 
 $(TARCH)/system/%.o:	$(BBASE)/src-bobby/system/%.c 
 	$(CC) -c $(ALL_CFLAGS)  -I$(dir $@) -Isim   -I$(TARCH) -I$(dir $<) -o $@ $<
