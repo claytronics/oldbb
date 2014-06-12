@@ -4,6 +4,7 @@ block.bb
 block_config.bb
 boot.bb
 circ_buffer.bb
+coordinate.bb
 data_link.bb
 debug.bb
 ensemble.bb
@@ -23,6 +24,7 @@ block.bbh
 block_config.bbh
 boot.bbh
 circ_buffer.bbh
+coordinate.bbh
 data_link.bbh
 debug.bbh
 defs.bbh
