@@ -1,6 +1,9 @@
+
+// SPANNING TREE API
+
 #ifndef __SPAN_H__
-#define ___SPAN_H__
-// spanning tree api
+#define __SPAN_H__
+
 #include "block.bbh"
 
 typedef enum { STARTED, DONE, HAVEPARENT, WAITING } SpanTreeState;
@@ -21,10 +24,6 @@ struct _spanningtree{
   MsgHandler broadcasthandler;
   Timeout spantimeout;
 }; 
-
-
-
-
 
 // for debugging to have some determinism
 // 0 -> no debugging, random ids

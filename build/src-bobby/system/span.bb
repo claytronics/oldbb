@@ -33,7 +33,7 @@ void spComplete( void);
 void treeBroadcastMsg(void);
 void treeBroadcastBackMsg(void);
 void cstHelper(void);
-byte countChildren(byte id);
+byte countSPChildren(byte id);
 void sendToLeaf(void);
 void allHaveBarrierMsg(void);
 void finishingSpan(void) ;
@@ -73,7 +73,7 @@ void cstHelper(void)
 	{
 	  trees[potentialID]->myChildren[i] = 0;
 	}
-       trees[potentialID]->numchildren = countChildren(potentialID);
+       trees[potentialID]->numchildren = countSPChildren(potentialID);
        trees[potentialID]->state = WAITING;
        byte data[3];
        data[0] = potentialID;
@@ -200,7 +200,7 @@ void screwyou(void)
 	trees[potentialID]->outstanding--;
 	}
 	trees[potentialID]->myChildren[faceNum(thisChunk)] = 0;
-	trees[potentialID]->numchildren = countChildren(potentialID);
+	trees[potentialID]->numchildren = countSPChildren(potentialID);
 	if( trees[potentialID]->outstanding == 0)
 	{
 	  trees[potentialID]->state = DONE;
@@ -220,7 +220,7 @@ void iamyourchild(void)
 	trees[potentialID]->outstanding--;
 	}
 	trees[potentialID]->myChildren[faceNum(thisChunk)] = 1;
-	trees[potentialID]->numchildren = countChildren(potentialID);
+	trees[potentialID]->numchildren = countSPChildren(potentialID);
 
 	if( trees[potentialID]->outstanding == 0)
 	{
@@ -230,7 +230,7 @@ void iamyourchild(void)
 	}
 }
 
-byte countChildren(byte id)
+byte countSPChildren(byte id)
 {
   byte count = 0;
   byte i;
