@@ -26,10 +26,12 @@ In case of success or failure, a log message is sent to the host, the user can t
 
 
 ADDED THE VERSION 10 INSIDE THE LINKER 
+/meldtools /test/fstream/linker.cpp looked for the structure of the meld version used inside the VM of visibleSim and found that the difference of the version 10 of meld from the others is the type added to the header of the structure.
+So added interpretation of type inside linker.cpp
 
 
 THE GAME 
-apps/sample-c/game_with_coord.bb is a game. In the game,there is an ensemble of block where you have a red and blue block. The goal of the game is to get the
+apps/sample-c/gravity.bb is a game. In the game,there is an ensemble of block where you have a red and blue block. The goal of the game is to get the
 red block to the blue block with the help of the accelerometer. The red block movement depends on the orientation of block relative to the ground.
 In the game we have 3 steps : elaboration of layer, red block election, blue block election, coordination system and the start of the game.
 
@@ -56,12 +58,15 @@ We use a lot of timeout in the game and since the timeout still has problems whe
 
 SPANNINGTREE LIBRARY  
 src-bobby/system/span.bb and src-bobby/system/span.bbh, all the informations about the function are on the span.bbh 
-we have the createSpanningTree which create spanning tree, but still can't find why we can't create 2 successives spanning tree after adding the timeout into the structure of the spanning tree.
+we have the createSpanningTree which create spanning tree. In this function all the blocks in the ensemble will start a spanning tree and create a radom value depending on their ID and send it while the spanning tree creation. A block will enter
+a tree only when the value of the tree it is trying to enter is higher than what it has. The problem is when sending the message back to the root,which has to be send by the leaves, but we have to wait for the screwyou message and iamyourchild message from 
+ all the potential children to know if a block is a leaf or not. We tried to use a while loop to wait for a block to have all its neighbors answer before checking if it is a leaf or not, and if it is send a message back to the root. But the block goes into bootloader 
+ because of this loop .All the message used will be sent with the value of tree to know if it is the good tree that they are trying to create. 
 
-Also when creating the spanning tree in some case the handler mydonefunc that should be called at the end of the spanning tree is called several times before the spanning tree end. And it we don't know exactly when 
-the spanning tree is finished so we can use the function like treeBroadcast and treeBarrier.
-
-If the spanning tree is well done and that the mydonefunc is executed only one time in each block it. The treeBroadcast and treeBarrier run without a problem. 
+ Normaly, when the root receives the message from the leaves, it sends message to the leaves again and after the leaves send the real back message where the donfunc handler will be executed.
+Also when creating the spanning tree in some case the handler mydonefunc that should be called at the end of the spanning tree is called several times before the spanning tree end. Because there is no way on knowingwe don't know exactly when 
+the spanning tree is finished so we can't use the function like treeBroadcast and treeBarrier. The only way I found is to put in the user program a while loop which check a variable and do nothing until this variable turn to 1. This variable is set to
+1 when the donefunc is executed. So if the donefunc is executed several times we don't when exctly the spanning tree will be finished.
 
 apps/sample-c/spTest.bb is the test program used to test the library of spanning tree where we use a while loop which check a variable spFinished. spFinished is initialized to 0 and
 when mydonefunc is executed it is set to 1. And it is the problem why when mydonefunc is executed several times, it creates a bug.
@@ -73,7 +78,7 @@ First important thing is that if you use this system all the blocks in the ensem
 src-bobby/system/coordinate.bb and src-bobby/system/coordinate.bbh this library use the same coordinate system in the game. 
 
 apps/sample-c/testCoordinate.bb is the test program for using the library. We have to wait for the coordinate to be placed before sending any data so, there is a timeout in the program which wait for 2 seconds the initCoordination to be complete.
-this timeout depend on the number of block.
+this timeout depends on the number of block.
 
 
 These are the function used for the library:
@@ -90,3 +95,16 @@ void sendDataToVirtualNeighbor(PRef port,byte *data, byte size);
 //send a data to a virtual neighbor to the port where the real neighbor should have been detected.
 
 There is a lot of broadcast message during the step of sharing the coordinates so an ensemble with several blocks may have some bugs.
+
+
+
+
+
+
+
+
+
+
+
+
+
