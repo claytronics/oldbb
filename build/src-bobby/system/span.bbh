@@ -37,7 +37,7 @@ int initSpanningTrees(int num);
 
 // get a new spanning tree structure for tree with id, id.
 // if id == 0 -> get me next legal spanning tree
-SpanningTree* allocateSpanningTree(int id);
+SpanningTree* allocateSpanningTree(int newId);
 
 // start a spanning tree with id#, id, where I am the root.  Must be starte by only one node.
 // if timeout == 0, never time out
@@ -55,12 +55,9 @@ void treeBroadcast(SpanningTree* tree, byte* data, byte size, MsgHandler handler
 // tree calls this function with the same id.  Will not return until
 // done or timeout secs have elapsed.  If timeout is 0, never timeout.
 // return 1 if timedout, 0 if ok.
-int treeBarrier(SpanningTree* tree, byte id, int timeout);
+int treeBarrier(SpanningTree* tree, byte spId, int timeout);
 
 // find out if I am root
 byte isSpanningTreeRoot(SpanningTree* tree);
-
-//return an updated tree 
-SpanningTree* get(SpanningTree* tree,byte id);
 
 #endif
