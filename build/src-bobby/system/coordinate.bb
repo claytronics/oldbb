@@ -2,71 +2,66 @@
 #include "block.bbh"
 
 //PRIVATE VARIABLES
-uint16_t id;
-byte countChildren;
-byte numCoord = 1;
+threadvar byte countChildren;
+threadvar byte numCoord = 1;
 
 //coordination fuction
-signed char coord[30][4];
+threadvar signed char coord[30][4];
 
-signed char x = 0; 
-signed char y = 0;
-signed char z = 0;
+threadvar signed char xCoord = 0; 
+threadvar signed char yCoord = 0;
+threadvar signed char zCoord = 0;
 
-byte haveCoor = 0;
-byte alreadyShared = 0;
-void startCoordination(void);
-void buildNeighbor(void);
-byte countNeighbor(void);
-Timeout propagateCoord;
-Timeout logTimeout;
-int numMsg = 0;
+threadvar byte haveCoor = 0;
+threadvar byte alreadyShared = 0;
+threadvar Timeout propagateCoord;
+threadvar Timeout logTimeout;
+threadvar int numMsg = 0;
 
 #define MSG	    0x15
 #define COOR	    0x16
-#define SEND_COOR	    0x17
-#define VIRTUAL 0x18
+#define SEND_COOR   0x17
+#define VIRTUAL     0x18
 
+#define ROUTE_NOT_DEFINED_YET 6
 
 // Chunk management
-#define MYCHUNKS 12
-extern Chunk* thisChunk;
-Chunk myChunks[MYCHUNKS];
-Chunk* getFreeUserChunk(void);
-
-
-
+threaddef #define NUM_COORD_CHUNKS 12
+threadvar Chunk coordChunks[NUM_COORD_CHUNKS];
+static Chunk* getFreeCoordChunk(void);
 
 //PRIVATE FUNCTIONS
-void startCoordination (void); //start giving the coordinates to the ensemble
-void sendCoordination (void);// start sharing the coordinates to each other
-void sendMsg(PRef p, signed char x, signed char y, signed char z);// message sent when giving coordinates
-void sendCoord(PRef p, signed char cx, signed char cy, signed char cz); // message sent during the exchange of coordinates
-byte checkneighbor(byte p); //check the neighbor on the port p if it exists
-byte coordinateHandler(void); //handler for all the coordinate system
-void sendToVirtualNeighbor(PRef p, byte *data,byte size, signed char cx, signed char cy, signed char cz); //message sent to the virtual neighbor
-byte sendMyChunk(byte port, byte *data, byte size, MsgHandler mh);
+static void startCoordination(void);
+static void buildNeighbor(void);
+static byte countNeighbor(void);
+static void startCoordination (void); //start giving the coordinates to the ensemble
+static void sendCoordination (void);// start sharing the coordinates to each other
+static void sendMsg(PRef p, signed char x, signed char y, signed char z);// message sent when giving coordinates
+static void sendCoord(PRef p, signed char cx, signed char cy, signed char cz); // message sent during the exchange of coordinates
+static byte checkneighbor(PRef p); //check the neighbor on the port p if it exists
+static byte coordinateHandler(void); //handler for all the coordinate system
+static void sendToVirtualNeighbor(PRef p, byte *data,byte size, signed char cx, signed char cy, signed char cz); //message sent to the virtual neighbor
+static byte sendCoordChunk(PRef p, byte *data, byte size, MsgHandler mh);
 MsgHandler vhandler;
 
 void sendCoord(PRef p, signed char cx, signed char cy, signed char cz)
 {
-   byte data[4];
+  byte data[4];
   
   data[0] = SEND_COOR;
   data[1] = cx;
   data[2] = cy;
   data[3] = cz;
-  sendMyChunk(p, data, 4, (MsgHandler)&coordinateHandler);
+  sendCoordChunk(p, data, 4, (MsgHandler)&coordinateHandler);
 }
-
 
 void sendLog(void)
 {
-  #ifdef LOG_DEBUG
-  signed char s[15];
-  snprintf(s, 15*sizeof(signed char), "%d",numCoord);
+#ifdef LOG_DEBUG
+  signed char s[10];
+  snprintf(s, 10*sizeof(signed char), "%d",numCoord);
   printDebug(s);
-  #endif 
+#endif 
 }
 
 void sendMsg(PRef p, signed char x, signed char y, signed char z)
@@ -77,7 +72,7 @@ void sendMsg(PRef p, signed char x, signed char y, signed char z)
   data[1] = x;
   data[2] = y;
   data[3] = z;
-  sendMyChunk(p, data, 4, (MsgHandler)&coordinateHandler); 
+  sendCoordChunk(p, data, 4, (MsgHandler)&coordinateHandler); 
 }
 
 void sendToVirtualNeighbor(PRef p,byte *data, byte size, signed char cx, signed char cy, signed char cz)
@@ -89,64 +84,58 @@ void sendToVirtualNeighbor(PRef p,byte *data, byte size, signed char cx, signed 
   buf[3] = cz;
   buf[4] = size;
   memcpy(buf + 5, data, size*sizeof(byte));
-  sendMyChunk(p, buf, size + 5, (MsgHandler)&coordinateHandler);
+  sendCoordChunk(p, buf, size + 5, (MsgHandler)&coordinateHandler);
 }
-
 
 void startCoordination(void)
 {
-    coord[0][0] = x;
-    coord[0][1] = y;
-    coord[0][2] = z;
-    coord[0][3] = 6;
+  coord[0][0] = xCoord;
+  coord[0][1] = yCoord;
+  coord[0][2] = zCoord;
+  coord[0][3] = ROUTE_NOT_DEFINED_YET;
   haveCoor = 1;
   setColor(RED);
   if( checkneighbor(UP) == 1){
-  sendMsg(UP,x,y+1,z);
+    sendMsg(UP,xCoord,yCoord+1,zCoord);
   }
   if( checkneighbor(DOWN) == 1){
-  sendMsg(DOWN,x,y-1,z);
+    sendMsg(DOWN,xCoord,yCoord-1,zCoord);
   }
   if( checkneighbor(WEST) == 1){
-  sendMsg(WEST,x+1,y,z);
+    sendMsg(WEST,xCoord+1,yCoord,zCoord);
   }
   if( checkneighbor(EAST) == 1){
-  sendMsg(EAST,x-1,y,z);
+    sendMsg(EAST,xCoord-1,yCoord,zCoord);
   }
   if( checkneighbor(NORTH) == 1){
-  sendMsg(NORTH,x,y,z+1);
+    sendMsg(NORTH,xCoord,yCoord,zCoord+1);
   }
   if( checkneighbor(SOUTH) == 1){
-  sendMsg(SOUTH,x,y,z-1);
+    sendMsg(SOUTH,xCoord,yCoord,zCoord-1);
   }
- //Share his coordinates after 1 second
-   propagateCoord.calltime = getTime() + 500;
-   registerTimeout(&propagateCoord);
+  //Share his coordinates after 1 second
+  propagateCoord.calltime = getTime() + 500;
+  registerTimeout(&propagateCoord);
 }
-
 
 void sendCoordination(void)
 {
-    alreadyShared = 1;
-      for (byte p = 0; p < NUM_PORTS; p++) {
+  alreadyShared = 1;
+  for (byte p = 0; p < NUM_PORTS; p++) {
     if (thisNeighborhood.n[p] != VACANT) {
-    sendCoord(p, x, y, z);
+      sendCoord(p, xCoord, yCoord, zCoord);
     }
-    }    
+  }    
 }
 
-
-byte checkneighbor(byte p)
+byte checkneighbor(PRef p)
 {
   if (thisNeighborhood.n[p] != VACANT)
-      {
-	return 1;
-      }
+    {
+      return 1;
+    }
   return 0;
 }
-
-
-
 
 byte
 coordinateHandler(void)
@@ -155,126 +144,123 @@ coordinateHandler(void)
   byte messageType = thisChunk->data[0];
   byte chunkSource = faceNum(thisChunk);
   switch (messageType) {
-    case COOR:
+  case COOR:
     {
-    if (haveCoor == 0)
-    {
-       x = thisChunk->data[1];
-       y = thisChunk->data[2];
-       z = thisChunk->data[3];
+      if (haveCoor == 0)
+	{
+	  xCoord = thisChunk->data[1];
+	  yCoord = thisChunk->data[2];
+	  zCoord = thisChunk->data[3];
   
-       for( byte p = 0; p < NUM_PORTS;p++){
-       if (thisNeighborhood.n[p] != VACANT &&  p != chunkSource) {	
-       if( UP == p){
-       sendMsg(p,x,y+1,z);
+	  for( byte p = 0; p < NUM_PORTS;p++){
+	    if (thisNeighborhood.n[p] != VACANT &&  p != chunkSource) {	
+	      if( UP == p){
+		sendMsg(p,xCoord,yCoord+1,zCoord);
        
-       }
-       if( DOWN == p ){
-       sendMsg(p,x,y-1,z);
-       }
-       if(WEST == p) 
-       {
-       sendMsg(p,x+1,y,z);
-       }
-       if(EAST == p) 
-       {
-       sendMsg(p,x-1,y,z);
-       }
-       if(NORTH == p)
-       {
-	sendMsg(NORTH,x,y,z+1);
-       }
-       if(SOUTH == p)
-       {
-	sendMsg(NORTH,x,y,z-1);
-       }
-       }
-    }
-    haveCoor = 1;
-    setColor(AQUA);
-   }
-  }
-  break;
-  case SEND_COOR:
-  {
-   signed char cx = thisChunk->data[1];
-   signed char cy = thisChunk->data[2];
-   signed char cz = thisChunk->data[3];
-   coord[0][0] = x;
-   coord[0][1] = y;
-   coord[0][2] = z;
-   coord[0][3] = 6;
-  
-   
-   for(byte i=1; i<numCoord; i++)
-   {
-     if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
-     {
-	return 0;
-     }
-     else continue;
-   }
-  
-   
-   coord[numCoord][0] = cx;
-   coord[numCoord][1] = cy;
-   coord[numCoord][2] = cz;
-   coord[numCoord++][3] = faceNum(thisChunk);
-    for( byte p = 0; p < NUM_PORTS;p++){
-       if (thisNeighborhood.n[p] != VACANT &&  p != chunkSource) {	
-       sendCoord(p, cx, cy,cz);
-       }
-       } 
-       if(alreadyShared == 0)
-       {
-    setColor(YELLOW);
-    sendCoordination();
-  /* propagateCoord.calltime = getTime() + 1000;
-   registerTimeout(&propagateCoord); */
-	alreadyShared = 1;
+	      }
+	      if( DOWN == p ){
+		sendMsg(p,xCoord,yCoord-1,zCoord);
+	      }
+	      if(WEST == p) 
+		{
+		  sendMsg(p,xCoord+1,yCoord,zCoord);
+		}
+	      if(EAST == p) 
+		{
+		  sendMsg(p,xCoord-1,yCoord,zCoord);
+		}
+	      if(NORTH == p)
+		{
+		  sendMsg(NORTH,xCoord,yCoord,zCoord+1);
+		}
+	      if(SOUTH == p)
+		{
+		  sendMsg(NORTH,xCoord,yCoord,zCoord-1);
+		}
+	    }
+	  }
+	  haveCoor = 1;
+	  setColor(AQUA);
 	}
-  }
-  break;
-   case VIRTUAL:
-  {
-    setColor(AQUA);
-   signed char cx = thisChunk->data[1];
-   signed char cy = thisChunk->data[2];
-   signed char cz = thisChunk->data[3];
-   byte size = thisChunk->data[4];
-   byte buf[size];
-   memcpy(buf, thisChunk->data + 5, size*sizeof(byte));
-     if( x == cx && y == cy && z == cz)
-    {
-      vhandler();
-      return 0;
     }
+    break;
+  case SEND_COOR:
+    {
+      signed char cx = thisChunk->data[1];
+      signed char cy = thisChunk->data[2];
+      signed char cz = thisChunk->data[3];
+      coord[0][0] = xCoord;
+      coord[0][1] = yCoord;
+      coord[0][2] = zCoord;
+      coord[0][3] = 6;
   
-   for(byte i=0; i<numCoord; i++)
-   {
-     if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
-     {
-	sendToVirtualNeighbor(coord[i][3],buf,size, cx, cy, cz);
-	return 0;
-     }
-     else continue;
-   }
+      for(byte i=1; i<numCoord; i++)
+	{
+	  if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
+	    {
+	      return 0;
+	    }
+	  else continue;
+	}
+   
+      coord[numCoord][0] = cx;
+      coord[numCoord][1] = cy;
+      coord[numCoord][2] = cz;
+      coord[numCoord++][3] = faceNum(thisChunk);
+      for( byte p = 0; p < NUM_PORTS;p++){
+	if (thisNeighborhood.n[p] != VACANT &&  p != chunkSource) {	
+	  sendCoord(p, cx, cy,cz);
+	}
+      } 
+      if(alreadyShared == 0)
+	{
+	  setColor(YELLOW);
+	  sendCoordination();
+	  /* propagateCoord.calltime = getTime() + 1000;
+	     registerTimeout(&propagateCoord); */
+	  alreadyShared = 1;
+	}
+    }
+    break;
+  case VIRTUAL:
+    {
+      setColor(AQUA);
+      signed char cx = thisChunk->data[1];
+      signed char cy = thisChunk->data[2];
+      signed char cz = thisChunk->data[3];
+      byte size = thisChunk->data[4];
+      byte buf[size];
+      memcpy(buf, thisChunk->data + 5, size*sizeof(byte));
+      if( xCoord == cx && yCoord == cy && zCoord == cz)
+	{
+	  vhandler();
+	  return 0;
+	}
+  
+      for(byte i=0; i<numCoord; i++)
+	{
+	  if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
+	    {
+	      sendToVirtualNeighbor(coord[i][3],buf,size, cx, cy, cz);
+	      return 1;
+	    }
+	  else continue;
+	}
+    }
+    break;
   }
-  break;
-  return 1;
+  return 0;
 }
-}
-
  
 // find a useable chunk
 Chunk* 
-getFreeUserChunk(void)
+getFreeCoordChunk(void)
 {
   Chunk* c;
   byte i;
 
-  for(i=0; i<MYCHUNKS; i++) {
-    c = &(myChunks[i]);
+  for(i=0; i<NUM_COORD_CHUNKS; i++) {
+    c = &(coordChunks[i]);
 
     if( !chunkInUse(c) ) {
       return c;
@@ -283,32 +269,23 @@ getFreeUserChunk(void)
   return NULL;
 }
 
-
-
-
-
-byte sendMyChunk(byte port, byte *data, byte size, MsgHandler mh) 
+byte sendCoordChunk(PRef p, byte *data, byte size, MsgHandler mh) 
 { 
   numMsg++;
-  Chunk *c=getFreeUserChunk();
+  Chunk *c=getFreeCoordChunk();
   if (c == NULL) 
-  {
-  c = getSystemTXChunk();
-  if(c == NULL){
-  return 0;
-  }
-  }
-  if (sendMessageToPort(c, port, data, size, mh, NULL) == 0) {
+    {
+      c = getSystemTXChunk();
+      if(c == NULL){
+	return 0;
+      }
+    }
+  if (sendMessageToPort(c, p, data, size, mh, NULL) == 0) {
     freeChunk(c);
     return 0;
   }
   return 1;
 }
-
-
-
-
-
 
 //PUBLIC FUNCTIONS
 
@@ -321,75 +298,74 @@ void  initCoordination(uint16_t id, MsgHandler donefunc)
   // We are forced to use a small delay before program execution, otherwise neighborhood may not be initialized yet
   delayMS(300);
   vhandler = donefunc;
-    // Initialize chunks
-  for(byte x=0; x < MYCHUNKS; x++) {
-    myChunks[x].status = CHUNK_FREE;
+  // Initialize chunks
+  for(byte i=0; i < NUM_COORD_CHUNKS; i++) {
+    coordChunks[i].status = CHUNK_FREE;
   }
   propagateCoord.callback = (GenericHandler)(&sendCoordination);
   logTimeout.callback = (GenericHandler)(&sendLog);
   logTimeout.calltime = getTime() + 5000;
   registerTimeout(&logTimeout); 
   
- if(getGUID() == id)
- {
-   startCoordination();
- }
+  if(getGUID() == id)
+    {
+      startCoordination();
+    }
 }
 
 //check if a virtual neighbor exist somewhere, if yes return 1 and if no return 0
-byte checkVirtualNeighbor(PRef port)
+byte checkVirtualNeighbor(PRef p)
 {
-  signed char cx = x;
-  signed char cy = y;
-  signed char cz = z;
-  if (port == UP){ cy = y + 1 ;}
-  if (port == DOWN){ cy = y - 1 ;}
-  if (port == EAST){ cx = x - 1 ;}
-  if (port == WEST){ cx = x + 1 ;}
-  if (port == NORTH){ cz = z + 1 ;}
-  if (port == SOUTH){ cz = z - 1 ;}
-    
+  signed char cx = xCoord;
+  signed char cy = yCoord;
+  signed char cz = zCoord;
+  if (p == UP){ cy = yCoord + 1 ;}
+  if (p == DOWN){ cy = yCoord - 1 ;}
+  if (p == EAST){ cx = xCoord - 1 ;}
+  if (p == WEST){ cx = xCoord + 1 ;}
+  if (p == NORTH){ cz = zCoord + 1 ;}
+  if (p == SOUTH){ cz = zCoord - 1 ;}
   
-   for(byte i=0; i<numCoord; i++)
-   {
-     if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
-     {
-       return 1;
-     }
-   }
-   return 0;
+  for(byte i=0; i<numCoord; i++)
+    {
+      if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
+	{
+	  return 1;
+	}
+    }
+  return 0;
 }
 
 
 //send a data to a virtual neighbor
-void sendDataToVirtualNeighbor(PRef port,byte *data, byte size)
+void sendDataToVirtualNeighbor(PRef p, byte *data, byte size)
 {
-  if (checkVirtualNeighbor(port) == 0)
-  {
-    return ;
-  }
+  if (checkVirtualNeighbor(p) == 0)
+    {
+      return ;
+    }
   
-  signed char cx = x;
-  signed char cy = y;
-  signed char cz = z;
-  if (port == UP){ cy = y + 1 ;}
-  if (port == DOWN){ cy = y - 1 ;}
-  if (port == EAST){ cx = x - 1 ;}
-  if (port == WEST){ cx = x + 1 ;}
-  if (port == NORTH){ cz = z + 1 ;}
-  if (port == SOUTH){ cz = z - 1 ;}
+  signed char cx = xCoord;
+  signed char cy = yCoord;
+  signed char cz = zCoord;
+  if (p == UP){ cy = yCoord + 1 ;}
+  if (p == DOWN){ cy = yCoord - 1 ;}
+  if (p == EAST){ cx = xCoord - 1 ;}
+  if (p == WEST){ cx = xCoord + 1 ;}
+  if (p == NORTH){ cz = zCoord + 1 ;}
+  if (p == SOUTH){ cz = zCoord - 1 ;}
     
   
   
-   for(byte i=0; i<numCoord; i++)
-   {
-     if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
-     {
-       	sendToVirtualNeighbor(coord[i][3], data,size, cx, cy, cz);
-	return;
-     }
+  for(byte i=0; i<numCoord; i++)
+    {
+      if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
+	{
+	  sendToVirtualNeighbor(coord[i][3], data,size, cx, cy, cz);
+	  return;
+	}
       else continue;
-   }
+    }
 }
 
 
