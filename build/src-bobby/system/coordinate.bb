@@ -32,8 +32,6 @@ static Chunk* getFreeCoordChunk(void);
 
 //PRIVATE FUNCTIONS
 static void startCoordination(void);
-static void buildNeighbor(void);
-static byte countNeighbor(void);
 static void startCoordination (void); //start giving the coordinates to the ensemble
 static void sendCoordination (void);// start sharing the coordinates to each other
 static void sendMsg(PRef p, signed char x, signed char y, signed char z);// message sent when giving coordinates
