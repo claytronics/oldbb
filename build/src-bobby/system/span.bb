@@ -92,7 +92,7 @@ void cstHelper(void)
        
       /* Wait until answer from all children has been received */
       /* Save current ST value */
-      uint16_tloopValue = trees[potentialID]->value;
+      uint16_t loopValue = trees[potentialID]->value;
       setColor(BROWN);
       while ((trees[potentialID]->state) != DONE && 
 	     (trees[potentialID]->value == loopValue));
@@ -274,9 +274,9 @@ byte sendMySpChunk(byte myport, byte *data, byte size, MsgHandler mh)
 // called when spanning tree times out 
 void spCreation(void)
 {
-  byte Sd = trees[id]->spantimeout.arg;
-  trees[targetid]->mydonefunc(trees[id],TIMEDOUT);
-  trees[id]->status = TIMEDOUT;
+  /* byte d = trees[id]->spantimeout.arg; */
+  /* trees[targetid]->mydonefunc(trees[id],TIMEDOUT); */
+  /* trees[id]->status = TIMEDOUT; */
 }
 
 //message send to myParent if only all the children get into a barrier 
@@ -307,8 +307,8 @@ void barrierMsg(void){
 //timeout for checking if all the blocks get into a barrier
 void checkBarrier(void)
 {
-  byte id = barrierTimeout.arg;
-  trees[id]->status = TIMEDOUT;
+  /* byte id = barrierTimeout.arg; */
+  /* trees[id]->status = TIMEDOUT; */
 }
 
 //message sent from the root to the leaves to say that all the blocks get into a barrier 
@@ -411,11 +411,11 @@ int initSpanningTrees(int num)
 SpanningTree* allocateSpanningTree(int newId)
 {
   if( !newId ){ // if newId = 0 return a spanning tree structure with the newId of maxSpanid
-    if( maxSpanNewId < MAX_SPANTREE_ID ){
+    if( maxSpanId < MAX_SPANTREE_ID ){
       SpanningTree* ret = (SpanningTree*)malloc(sizeof(SpanningTree));
-      ret->spantreeid = maxSpanNewId;		/* the newId of this spanning tree */
+      ret->spantreeid = maxSpanId;		/* the newId of this spanning tree */
       ret->state= WAITING;			/* state i am in forming the spanning tree */
-      maxSpanNewId ++;
+      maxSpanId ++;
     
       return ret;
     }
@@ -429,7 +429,7 @@ SpanningTree* allocateSpanningTree(int newId)
       if( trees[newId] == NULL)
 	{
 	  SpanningTree* ret = (SpanningTree*)malloc(sizeof(SpanningTree));
-	  ret->spantreenewId = newId;		
+	  ret->spantreeid = newId;		
 	  ret->state= WAITING;
 	  return ret;
 	}
@@ -442,7 +442,7 @@ SpanningTree* allocateSpanningTree(int newId)
 
 // start a spanning tree with id#, id, where I am the root.  Must be starte by only one node.
 // if timeout == 0, never time out
-void startTreeByParent(SpanningTree* tree, int id, SpanningTreeHandler donefunc, int timeout)
+void startTreeByParent(SpanningTree* tree, byte spID, SpanningTreeHandler donefunc, int timeout)
 {
   //  niy("startTreeByParent");
 }
@@ -497,7 +497,7 @@ void createSpanningTree(SpanningTree* tree, SpanningTreeHandler donefunc, int ti
     }
     // all done
   }
-
+}
 
   // send msg in data to everyone in the spanning tree, call handler when everyone has gotten the msg
   void treeBroadcast(SpanningTree* tree, byte* data, byte size, MsgHandler handler)
@@ -581,8 +581,8 @@ void createSpanningTree(SpanningTree* tree, SpanningTreeHandler donefunc, int ti
   // find out if I am root
   byte isSpanningTreeRoot(SpanningTree* tree)
   {
-    byte id = tree->spantreeid;
-    if(trees[id]->myParent == 255)
+    byte stId = tree->spantreeid;
+    if(trees[stId]->myParent == 255)
       {
 	return 1;
       }

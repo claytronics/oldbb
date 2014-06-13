@@ -41,7 +41,7 @@ SpanningTree* allocateSpanningTree(int newId);
 
 // start a spanning tree with id#, id, where I am the root.  Must be starte by only one node.
 // if timeout == 0, never time out
-void startTreeByParent(SpanningTree* tree,int id, SpanningTreeHandler donefunc, int timeout);
+void startTreeByParent(SpanningTree* tree, byte id, SpanningTreeHandler donefunc, int timeout);
 
 // start a spanning tree with a random root, more than one node can initiate this.  
 // if timeout == 0, never time out
