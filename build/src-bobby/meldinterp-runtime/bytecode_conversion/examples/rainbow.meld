@@ -1,0 +1,20 @@
+type route neighbor(node, node, int).
+type level(node, max int).
+type route bottomNeighbor(node, node).
+type noBottomNeighbor(node).
+type route topNeighbor(node, node).
+type route sideNeighbor(node, node).
+type vacant(node, int).
+
+!neighbor(N, X, 5) -o !bottomNeighbor(N, X).
+!vacant(N, 5) -o !noBottomNeighbor(N).
+!neighbor(N, X, 0) -o !topNeighbor(N, X).
+!neighbor(N, X, P), P <> 0, P <> 5
+   -o !sideNeighbor(N, X).
+
+!noBottomNeighbor(N) -o !level(N, 0).
+!sideNeighbor(N, X), !level(X, H) -o !level(N, H).
+!bottomNeighbor(N, X), level(X, BH) -o !level(N, BH + 1).
+!topNeighbor(N, X), level(X, TH) -o !level(N, TH - 1).
+
+!level(N, Color) -o !setColor2(N, Color % 9).

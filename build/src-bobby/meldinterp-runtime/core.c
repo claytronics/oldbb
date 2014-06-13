@@ -16,23 +16,32 @@
 //#define DEBUG_ALLOCS
 //#define DEBUG_PROVED_TUPLES
 
+/* Pierre: WHAT ARE DELTAS? */
 static unsigned char **deltas = NULL;
 int *delta_sizes = NULL;
+/* Pierre: Predicate arguments */
 unsigned char *arguments = NULL;
+/* Pierre: All known predicate IDs are set to -1 until they are initialized 
+   in init_types */
 tuple_type TYPE_EDGE = -1;
 tuple_type TYPE_INIT = -1;
 tuple_type TYPE_COLOCATED = -1;
 tuple_type TYPE_PROVED = -1;
 tuple_type TYPE_TERMINATE = -1;
 
+/* Pierre: Array of arrays containing persistent tuples and indexed by typeID */
 extern persistent_set *persistent;
 
+/* Pierre
+   Checks if execution queue is empty */
 bool
 queue_is_empty(tuple_queue *queue)
 {
   return queue->head == NULL;
 }
 
+/* Pierre 
+   Add tuple to execution queue */
 void
 queue_push_tuple(tuple_queue *queue, tuple_entry *entry)
 {
@@ -44,6 +53,8 @@ queue_push_tuple(tuple_queue *queue, tuple_entry *entry)
   }
 }
 
+/* Pierre
+   Returns oldest tuple entry from the execution queue */
 tuple_t
 queue_pop_tuple(tuple_queue *queue)
 {
@@ -60,6 +71,8 @@ queue_pop_tuple(tuple_queue *queue)
   return entry;
 }
 
+/* Pierre
+   Dequeue a specific tuple from the execution queue */
 static tuple_t
 queue_dequeue_pos(tuple_queue *queue, tuple_entry **pos)
 {
@@ -81,6 +94,8 @@ queue_dequeue_pos(tuple_queue *queue, tuple_entry **pos)
   return tuple;
 }
 
+/* Pierre
+   Add a tuple_entry to tuple execution queue and set its attributes */
 tuple_entry*
 queue_enqueue(tuple_queue *queue, tuple_t tuple, record_type isNew)
 {
@@ -95,6 +110,8 @@ queue_enqueue(tuple_queue *queue, tuple_t tuple, record_type isNew)
   return entry;
 }
 
+/* Pierre
+   Pop oldest tuple from execution queue and update count */
 tuple_t
 queue_dequeue(tuple_queue *queue, int *isNew)
 {
@@ -110,6 +127,8 @@ queue_dequeue(tuple_queue *queue, int *isNew)
   return tuple;
 }
 
+/* Pierre
+   Pop oldest tuple from delayed send queue or stratified tuple queue */
 tuple_pentry*
 p_dequeue(tuple_pqueue *q)
 {
@@ -121,6 +140,8 @@ p_dequeue(tuple_pqueue *q)
   return ret;
 }
 
+/* Pierre
+   Add tuple to delayed send queue or stratified tuple queue */
 void
 p_enqueue(tuple_pqueue *queue, meld_int priority, tuple_t tuple,
 	  void *rt, record_type isNew)
@@ -134,14 +155,15 @@ p_enqueue(tuple_pqueue *queue, meld_int priority, tuple_t tuple,
 
   tuple_pentry **spot;
   for (spot = &(queue->queue);
-       *spot != NULL &&
-         (*spot)->priority < priority;
+       *spot != NULL && (*spot)->priority < priority;
        spot = &((*spot)->next));
 
   entry->next = *spot;
   *spot = entry;
 }
-    
+
+/* Pierre */
+/* What are deltas? */
 void
 init_deltas(void)
 {
@@ -156,6 +178,8 @@ init_deltas(void)
   }
 }
 
+// Pierre
+// Allocate for every predicate field number and type.
 static int type;
 void
 init_fields(void)
@@ -216,6 +240,8 @@ init_fields(void)
   }
 }
 
+// Pierre
+// Initializes predicate ids, in other words set a number to every predicates
 void init_consts(void)
 {
   tuple_type i;
@@ -233,6 +259,8 @@ void init_consts(void)
   }	
 }
 
+/* Pierre
+   Returns pointer to destination register for MOVE instruction */
 static inline
 void *eval_dst(const unsigned char value,
 	       const unsigned char **pc, Register *reg, size_t *size)
@@ -267,6 +295,8 @@ void *eval_dst(const unsigned char value,
   return NULL;
 }
 
+/* Pierre
+   evaluate type of value stored on pc position, returns pointer to the value, and tuple. Also increments pc */
 static inline
 void* eval(const unsigned char value, tuple_t tuple,
 	   const unsigned char **pc, Register *reg)
@@ -344,6 +374,8 @@ void* eval(const unsigned char value, tuple_t tuple,
   return NULL;
 }
 
+/* Pierre
+   Add a new aggregate value to existing aggregate type */
 static inline
 bool aggregate_accumulate(int agg_type, void *acc, void *obj, int count)
 {
@@ -354,6 +386,7 @@ bool aggregate_accumulate(int agg_type, void *acc, void *obj, int count)
     set_print(set);
     return false;
   }
+
   case AGG_SET_UNION_FLOAT: {
     Set *set = MELD_SET(acc);
     set_float_insert(set, MELD_FLOAT(obj));
@@ -451,6 +484,8 @@ bool aggregate_accumulate(int agg_type, void *acc, void *obj, int count)
   while(1);
 }
 
+/* Pierre
+   Checks if aggregate value has changed, if true, execute tuple to which it belongs */
 static inline bool
 aggregate_changed(int agg_type, void *v1, void *v2)
 {
@@ -505,6 +540,8 @@ aggregate_changed(int agg_type, void *v1, void *v2)
   while(1);
 }
 
+/* Pierre
+   Initialize new aggregate type */
 static inline void
 aggregate_seed(int agg_type, void *acc, void *start, int count, size_t size)
 {
@@ -578,6 +615,8 @@ aggregate_seed(int agg_type, void *acc, void *start, int count, size_t size)
   while(1);
 }
 
+/* Pierre
+   Delete all aggregate values of field field_aggregate */
 static inline void
 aggregate_free(tuple_t tuple, unsigned char field_aggregate,
 	       unsigned char type_aggregate)
@@ -609,6 +648,8 @@ aggregate_free(tuple_t tuple, unsigned char field_aggregate,
   }
 }
 
+/* Pierre
+   Need to look further into this. */
 static inline
 void aggregate_recalc(tuple_entry *agg, Register *reg,
 		      bool first_run)
@@ -661,6 +702,8 @@ void aggregate_recalc(tuple_entry *agg, Register *reg,
   free(accumulator);
 }
 
+/* Pierre
+   Again, what are DELTAS? WHAT IS THIS FOR???? */
 static inline
 void process_deltas(tuple_t tuple, tuple_type type, Register *reg)
 {
@@ -702,6 +745,10 @@ void process_deltas(tuple_t tuple, tuple_type type, Register *reg)
   FREE_TUPLE(old);
 }
 
+/* Pierre
+   Does proved means that it belongs to the head of a matched rule?
+   => No, it seems that it means that a certain predicate has been derived enough times to    stop the program/
+   ex: proved(pred_name) > MAX_ITERATIONS -o terminate().*/
 static inline tuple_t
 tuple_build_proved(tuple_type type, meld_int total)
 {
@@ -714,7 +761,7 @@ tuple_build_proved(tuple_type type, meld_int total)
   return tuple;
 }
 
-void tuple_do_handle(tuple_type type,	tuple_t tuple, int isNew, Register *reg)
+void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 {
   if(TYPE_IS_PROVED(type)) {
     PROVED[type] += (meld_int)isNew;
@@ -930,7 +977,6 @@ void tuple_do_handle(tuple_type type,	tuple_t tuple, int isNew, Register *reg)
   queue_enqueue(agg_queue, tuple, (record_type) isNew);
   tuple_entry *entry =
     queue_enqueue(&TUPLES[type], tuple_cpy, (record_type)agg_queue);
-
   aggregate_recalc(entry, reg, true);
   tuple_process(tuple, TYPE_START(type), isNew, reg);
 }
@@ -983,21 +1029,21 @@ int tuple_process(tuple_t tuple, const unsigned char *pc,
       case 0x0a: // SEND
       case 0x0b: // SEND
 	{
-	const unsigned char *new_pc = pc+3;
-	Register send_reg = reg[SEND_MSG(pc)];
-	Register send_rt = reg[SEND_RT(pc)];
+	  const unsigned char *new_pc = pc+3;
+	  Register send_reg = reg[SEND_MSG(pc)];
+	  Register send_rt = reg[SEND_RT(pc)];
 
 #ifdef DEBUG_INSTRS
-	printf("SEND\n");
+	  printf("SEND\n");
 #endif
 
-	tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg),
-		   MELD_CONVERT_REG_TO_PTR(send_rt),
-		   MELD_INT(eval(SEND_DELAY(pc), &tuple, &new_pc, reg)), isNew);
+	  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg),
+		     MELD_CONVERT_REG_TO_PTR(send_rt),
+		     MELD_INT(eval(SEND_DELAY(pc), &tuple, &new_pc, reg)), isNew);
 
-	// Advance the program counter past the send instruction
-	pc = new_pc;
-	break;
+	  // Advance the program counter past the send instruction
+	  pc = new_pc;
+	  break;
 	}
 
       default:
@@ -1009,48 +1055,48 @@ int tuple_process(tuple_t tuple, const unsigned char *pc,
 
     case 0x20: // CALL
       {
-      Register *dst = &reg[CALL_DST(pc)];
-      Register args[CALL_ARGS(pc)];
+	Register *dst = &reg[CALL_DST(pc)];
+	Register args[CALL_ARGS(pc)];
 
-      assert(CALL_ARGS(pc) <= 5);
+	assert(CALL_ARGS(pc) <= 5);
 
 #ifdef DEBUG_INSTRS
-      printf("CALL %d (%d)\n", CALL_ID(pc), CALL_ARGS(pc));
+	printf("CALL %d (%d)\n", CALL_ID(pc), CALL_ARGS(pc));
 #endif
         
-      int i;
-      const unsigned char *new_pc = pc+2;
-      for (i = 0; i < CALL_ARGS(pc); i++) {
-	unsigned char value = CALL_VAL(new_pc);
-	new_pc++;
-	args[i] = MELD_CONVERT_PTR_TO_REG(eval(value, &tuple, &new_pc, reg));
-      }
+	int i;
+	const unsigned char *new_pc = pc+2;
+	for (i = 0; i < CALL_ARGS(pc); i++) {
+	  unsigned char value = CALL_VAL(new_pc);
+	  new_pc++;
+	  args[i] = MELD_CONVERT_PTR_TO_REG(eval(value, &tuple, &new_pc, reg));
+	}
 
-      switch (CALL_ARGS(pc)) {
-      default:
+	switch (CALL_ARGS(pc)) {
+	default:
+	  break;
+	case 0:
+	  *dst = CALL_FUNC(pc)();
+	  break;
+	case 1:
+	  *dst = CALL_FUNC(pc)(args[0]);
+	  break;
+	case 2:
+	  *dst = CALL_FUNC(pc)(args[0], args[1]);
+	  break;
+	case 3:
+	  *dst = CALL_FUNC(pc)(args[0], args[1], args[2]);
+	  break;
+	case 4:
+	  *dst = CALL_FUNC(pc)(args[0], args[1], args[2], args[3]);
+	  break;
+	case 5:
+	  *dst = CALL_FUNC(pc)(args[0], args[1], args[2], args[3], args[4]);
+	  break;
+	}
+	// Advance the program counter past the instruction
+	pc = new_pc;
 	break;
-      case 0:
-	*dst = CALL_FUNC(pc)();
-	break;
-      case 1:
-	*dst = CALL_FUNC(pc)(args[0]);
-	break;
-      case 2:
-	*dst = CALL_FUNC(pc)(args[0], args[1]);
-	break;
-      case 3:
-	*dst = CALL_FUNC(pc)(args[0], args[1], args[2]);
-	break;
-      case 4:
-	*dst = CALL_FUNC(pc)(args[0], args[1], args[2], args[3]);
-	break;
-      case 5:
-	*dst = CALL_FUNC(pc)(args[0], args[1], args[2], args[3], args[4]);
-	break;
-      }
-      // Advance the program counter past the instruction
-      pc = new_pc;
-      break;
       }
 
     case 0x30: // MOVE
@@ -1169,130 +1215,130 @@ int tuple_process(tuple_t tuple, const unsigned char *pc,
 
     case 0xa0: // ITER
       {
-      const tuple_type type = ITER_TYPE(pc);
-      int i, length;
-      void **list;
-      const unsigned char *jump = pc + ITER_JUMP(pc);
-      int size = TYPE_SIZE(type);
+	const tuple_type type = ITER_TYPE(pc);
+	int i, length;
+	void **list;
+	const unsigned char *jump = pc + ITER_JUMP(pc);
+	int size = TYPE_SIZE(type);
 			
-      /* produce a random ordering for all tuples of the appropriate type */
+	/* produce a random ordering for all tuples of the appropriate type */
 			
-      if(TYPE_IS_PERSISTENT(type) && !TYPE_IS_AGG(type)) {
-	/* persistent aggregate types not supported */
-        persistent_set *persistents = &PERSISTENT[type];
+	if(TYPE_IS_PERSISTENT(type) && !TYPE_IS_AGG(type)) {
+	  /* persistent aggregate types not supported */
+	  persistent_set *persistents = &PERSISTENT[type];
         
-        length = persistents->current;
-        list = malloc(sizeof(tuple_t) * length);
+	  length = persistents->current;
+	  list = malloc(sizeof(tuple_t) * length);
 
-        for(i = 0; i < length; i++) {
-          int j = random() % (i + 1);
+	  for(i = 0; i < length; i++) {
+	    int j = random() % (i + 1);
           
-          list[i] = list[j];
-          list[j] = persistents->array + i * size;
-        }
-      } else {
-	/* non-persistent type */
-	tuple_entry *entry = TUPLES[type].head;
+	    list[i] = list[j];
+	    list[j] = persistents->array + i * size;
+	  }
+	} else {
+	  /* non-persistent type */
+	  tuple_entry *entry = TUPLES[type].head;
 		    
-	length = queue_length(&TUPLES[ITER_TYPE(pc)]);
-	list = malloc(sizeof(tuple_t) * length);
+	  length = queue_length(&TUPLES[ITER_TYPE(pc)]);
+	  list = malloc(sizeof(tuple_t) * length);
 		    
-	for (i = 0; i < length; i++) {
-	  int j = random() % (i+1);
+	  for (i = 0; i < length; i++) {
+	    int j = random() % (i+1);
 
-	  list[i] = list[j];
-	  list[j] = entry->tuple;
+	    list[i] = list[j];
+	    list[j] = entry->tuple;
 
-	  entry = entry->next;
+	    entry = entry->next;
+	  }
 	}
-      }
 			
 #ifdef DEBUG_INSTRS
-      printf("ITER %s len=%d\n", tuple_names[type], length);
+	printf("ITER %s len=%d\n", tuple_names[type], length);
 #endif
 
-      if(length == 0) {
-        /* no need to execute any further code, just jump! */
-        pc = jump;
-	break;
-      }
-
-      /* iterate over all tuples of the appropriate type */
-      void *next_tuple;
-      
-      for (i = 0; i < length; i++) {
-	next_tuple = list[i];
-
-	unsigned char matched = 1;
-	const unsigned char *tmppc;
-
-        tmppc = pc + ITER_BASE;
-
-        if(!ITER_MATCH_NONE(tmppc)) {
-	  /* check to see if it matches */
-          while (1) {
-            const unsigned char *new_pc = tmppc + 2;
-	    const unsigned char fieldnum = ITER_MATCH_FIELD(tmppc);
-	    const unsigned char type_size = TYPE_ARG_SIZE(type, fieldnum);
-
-            Register *field = GET_TUPLE_FIELD(next_tuple, fieldnum);
-            Register *val = eval(ITER_MATCH_VAL(tmppc), &tuple, &new_pc, reg);
-            
-            matched = matched && (memcmp(field, val, type_size) == 0);
-
-            if(ITER_MATCH_END(tmppc))
-              break;
-
-            tmppc = new_pc;
-          }
+	if(length == 0) {
+	  /* no need to execute any further code, just jump! */
+	  pc = jump;
+	  break;
 	}
 
-#ifdef DEBUG_INSTRS
-	printf("MATCHED: %d %d\n", matched, length);
-#endif
-          
-	if (matched) {
-	  const unsigned char* iter_pc = pc + ITER_BASE;
-    
-	  if(ITER_MATCH_NONE(iter_pc))
-	    iter_pc += 2;
-	  else {
-	    const unsigned char *old;
-	    while(1) {
-	      old = iter_pc;
-	      
-	      if (VAL_IS_FLOAT(ITER_MATCH_VAL(iter_pc)))
-		iter_pc += sizeof(meld_float);
-	      else if (VAL_IS_INT(ITER_MATCH_VAL(iter_pc)))
-		iter_pc += sizeof(meld_int);
-	      else if (VAL_IS_FIELD(ITER_MATCH_VAL(iter_pc)))
-		iter_pc += 2;
-	      else if (VAL_IS_REVERSE(ITER_MATCH_VAL(iter_pc)))
-		iter_pc += 2;
-	      else {
-		assert(0);
-		exit(1);
-	      }
+	/* iterate over all tuples of the appropriate type */
+	void *next_tuple;
+      
+	for (i = 0; i < length; i++) {
+	  next_tuple = list[i];
 
-	      iter_pc += 2;
+	  unsigned char matched = 1;
+	  const unsigned char *tmppc;
 
-	      if(ITER_MATCH_END(old))
+	  tmppc = pc + ITER_BASE;
+
+	  if(!ITER_MATCH_NONE(tmppc)) {
+	    /* check to see if it matches */
+	    while (1) {
+	      const unsigned char *new_pc = tmppc + 2;
+	      const unsigned char fieldnum = ITER_MATCH_FIELD(tmppc);
+	      const unsigned char type_size = TYPE_ARG_SIZE(type, fieldnum);
+
+	      Register *field = GET_TUPLE_FIELD(next_tuple, fieldnum);
+	      Register *val = eval(ITER_MATCH_VAL(tmppc), &tuple, &new_pc, reg);
+            
+	      matched = matched && (memcmp(field, val, type_size) == 0);
+
+	      if(ITER_MATCH_END(tmppc))
 		break;
+
+	      tmppc = new_pc;
 	    }
 	  }
 
-	  if (RET_RET == tuple_process(next_tuple, iter_pc, isNew, reg)) {
-	    free(list);
-	    return RET_RET;
+#ifdef DEBUG_INSTRS
+	  printf("MATCHED: %d %d\n", matched, length);
+#endif
+          
+	  if (matched) {
+	    const unsigned char* iter_pc = pc + ITER_BASE;
+    
+	    if(ITER_MATCH_NONE(iter_pc))
+	      iter_pc += 2;
+	    else {
+	      const unsigned char *old;
+	      while(1) {
+		old = iter_pc;
+	      
+		if (VAL_IS_FLOAT(ITER_MATCH_VAL(iter_pc)))
+		  iter_pc += sizeof(meld_float);
+		else if (VAL_IS_INT(ITER_MATCH_VAL(iter_pc)))
+		  iter_pc += sizeof(meld_int);
+		else if (VAL_IS_FIELD(ITER_MATCH_VAL(iter_pc)))
+		  iter_pc += 2;
+		else if (VAL_IS_REVERSE(ITER_MATCH_VAL(iter_pc)))
+		  iter_pc += 2;
+		else {
+		  assert(0);
+		  exit(1);
+		}
+
+		iter_pc += 2;
+
+		if(ITER_MATCH_END(old))
+		  break;
+	      }
+	    }
+
+	    if (RET_RET == tuple_process(next_tuple, iter_pc, isNew, reg)) {
+	      free(list);
+	      return RET_RET;
+	    }
 	  }
 	}
-      }
 
-      free(list);
+	free(list);
 
-      /* advance the pc to the end of the loop */
-      pc = jump;
-      break;
+	/* advance the pc to the end of the loop */
+	pc = jump;
+	break;
       }
 
     case 0xc0: // OP
@@ -1429,29 +1475,29 @@ void facts_dump(void)
 
     // don't print artificial tuple types
     /*
-    if (tuple_names[i][0] == '_')
+      if (tuple_names[i][0] == '_')
       continue;
     */
 
     fprintf(stderr, "tuple %s (type %d)\n", tuple_names[i], i);
     tuple_entry *tupleEntry;
     for (tupleEntry = TUPLES[i].head; tupleEntry != NULL; tupleEntry = tupleEntry->next) {
-			fprintf(stderr, "  ");
-			tuple_print(tupleEntry->tuple, stderr);
-			if (TYPE_IS_AGG(i)) {
-				fprintf(stderr, "\n    [[[");
-				tuple_entry *tpE;
-				for (tpE = tupleEntry->records.agg_queue->head;
-						 tpE != NULL;
-						 tpE = tpE->next) {
-					tuple_print(tpE->tuple, stderr);
-					fprintf(stderr, "x%d\n       ", tpE->records.count);
-				}
-				fprintf(stderr, "\b\b\b]]]\n");
-			}
-			else {
-				fprintf(stderr, "x%d\n", tupleEntry->records.count);
-			}
+      fprintf(stderr, "  ");
+      tuple_print(tupleEntry->tuple, stderr);
+      if (TYPE_IS_AGG(i)) {
+	fprintf(stderr, "\n    [[[");
+	tuple_entry *tpE;
+	for (tpE = tupleEntry->records.agg_queue->head;
+	     tpE != NULL;
+	     tpE = tpE->next) {
+	  tuple_print(tpE->tuple, stderr);
+	  fprintf(stderr, "x%d\n       ", tpE->records.count);
+	}
+	fprintf(stderr, "\b\b\b]]]\n");
+      }
+      else {
+	fprintf(stderr, "x%d\n", tupleEntry->records.count);
+      }
     }
   }
 }
@@ -1460,30 +1506,231 @@ void
 print_program_info(void)
 {
   /* print program info */
-  int i;
+  int i, j, k;
+
+  /* print header */
+  printf("Number of types: %d\n", NUM_TYPES);
+
+  /* print tuple info */
+
+  /* Predicate property */
   for(i = 0; i < NUM_TYPES; ++i) {
-    printf("Tuple (%s:%d:%d) ", tuple_names[i], i, TYPE_SIZE(i));
-    
-    printf("[");
+    printf("\n[");
     if(TYPE_IS_AGG(i))
       printf("agg");
-    if(TYPE_IS_PERSISTENT(i))
+    else if(TYPE_IS_PERSISTENT(i))
       printf("per");
-    if(TYPE_IS_LINEAR(i))
+    else if(TYPE_IS_LINEAR(i))
       printf("linear");
-    if(TYPE_IS_ROUTING(i))
+    else if(TYPE_IS_ROUTING(i))
       printf("route");
-    if(TYPE_IS_PROVED(i))
+    else if(TYPE_IS_PROVED(i))
       printf("proved");
-    printf("] ");
-    
-    printf("num_args:%d deltas:%d off:%d ; args(offset, arg_size): ",
-	   TYPE_NOARGS(i), TYPE_NODELTAS(i), TYPE_OFFSET(i));
-		
-    int j;
-    for (j = 0; j < TYPE_NOARGS(i); ++j) {
-      printf(" %d:%d", TYPE_ARG_OFFSET(i, j), TYPE_ARG_SIZE(i, j));
+    else 
+      printf("unknown");
+    printf("] ID: %d\n", i);
+   
+    /* Arguments and types */
+    printf("Predicate %s(", tuple_names[i]);
+    for(j = 0; j < TYPE_NOARGS(i); ++j) {
+      if (j > 0) printf(" ,");
+      type = TYPE_ARG_TYPE(i, j);
+      switch (type) {
+      case (int)FIELD_INT: printf("INT"); break;
+      case (int)FIELD_TYPE: printf("FTYPE"); break;
+      case (int)FIELD_FLOAT: printf("FLOAT"); break;
+      case (int)FIELD_ADDR: printf("NODE"); break;
+      case (int)FIELD_LIST_INT: printf("INT_LIST"); break;
+      case (int)FIELD_LIST_FLOAT: printf("FLOAT_LIST"); break;
+      case (int)FIELD_LIST_ADDR: printf("NODE_LIST"); break;
+      case (int)FIELD_SET_INT: printf("INT_SET"); break;
+      case (int)FIELD_SET_FLOAT: printf("FLOAT_SET"); break;
+      default: assert(0); break;
+      }
+    }
+    /* Main characteristics */
+    printf(") size:%d / offset: %d\n", TYPE_SIZE(i), TYPE_OFFSET(i));
+
+    /* Description */
+    printf("num_deltas: %d / num_args: %d / args(offset, arg_size): ",
+	   TYPE_NODELTAS(i), TYPE_NOARGS(i));	
+    for (k = 0; k < TYPE_NOARGS(i); ++k) {
+      printf(" %d:%d", TYPE_ARG_OFFSET(i, k), TYPE_ARG_SIZE(i, k));
     }
     printf("\n");
+
+    /* Bytecode instructions */
+    printf("TYPE_START = %u\n", TYPE_START_CHECK(i));
+    /* print_process(TYPE_START(type)); */
   }
 }
+
+/* void print_process(const unsigned char *pc) */
+/* { */
+/*   for (;;) { */
+/*     switch (0xf0 & *(const unsigned char*)pc) { */
+
+/*     case 0x00: // some '8-bit' instruction */
+/*       switch (0x0f & *(const unsigned char*)pc) { */
+
+/*       case 0x00: // RETURN */
+/* 	printf("RETURN\n"); */
+/* 	return; */
+/* 	break; */
+
+/*       case 0x01: // NEXT */
+/* 	printf("NEXT\n"); */
+/* 	return; */
+/* 	break; */
+
+/*       case 0x02: // ELSE */
+/* 	fprintf(stderr, "ELSE NOT IMPLEMENTED YET!\n"); */
+/* 	assert(0); */
+/* 	break; */
+
+/*       case 0x03: // NOP */
+/* 	printf("NOP\n"); */
+/* 	pc++; */
+/* 	break; */
+
+/*       case 0x08: // SEND */
+/*       case 0x09: // SEND */
+/*       case 0x0a: // SEND */
+/*       case 0x0b: // SEND */
+/* 	{ */
+/* 	  const unsigned char *new_pc = pc+3; */
+/* 	  printf("SEND\n"); */
+
+/* 	  // Advance the program counter past the send instruction */
+/* 	  pc = new_pc; */
+/* 	  break; */
+/* 	} */
+
+/*       default: */
+/* 	fprintf(stderr, "INVALID INSTRUCTION %u", *pc); */
+/* 	assert(0); */
+/* 	break; */
+/*       } */
+/*       break; */
+
+/*     case 0x20: // CALL */
+/*       { */
+/* 	assert(CALL_ARGS(pc) <= 5); */
+/* 	const unsigned char *new_pc = pc+2; */
+/* 	printf("CALL %d (%d)\n", CALL_ID(pc), CALL_ARGS(pc)); */
+	  
+/* 	// Advance the program counter past the instruction */
+/* 	pc = new_pc; */
+/* 	break; */
+/*       } */
+	  
+/*     case 0x30: // MOVE */
+/*       { */
+/* 	const unsigned char *new_pc = pc+2; */
+
+/* 	char src = MOVE_SRC(pc); */
+/* 	char dst = MOVE_DST(pc); */
+	  
+/* 	printf("MOVE "); */
+/* 	if(VAL_IS_TUPLE(src)) */
+/* 	  printf("tuple"); */
+/* 	else if(VAL_IS_REG(src)) */
+/* 	  printf("reg %d", VAL_REG(src)); */
+/* 	else if(VAL_IS_HOST(src)) */
+/* 	  printf("host"); */
+/* 	else if(VAL_IS_FIELD(src)) */
+/* 	  printf("FIELD"); */
+/* 	else if(VAL_IS_INT(src)) */
+/* 	  printf("INT"); */
+/* 	else if(VAL_IS_FLOAT(src)) */
+/* 	  printf("float"); */
+/* 	else if(VAL_IS_REVERSE(src)) */
+/* 	  printf("reverse"); */
+/* 	else printf("??"); */
+
+/* 	printf(" "); */
+	  
+/* 	if(VAL_IS_TUPLE(dst)) */
+/* 	  printf("tuple"); */
+/* 	else if(VAL_IS_REG(dst)) */
+/* 	  printf("reg %d", VAL_REG(dst)); */
+/* 	else if(VAL_IS_HOST(dst)) */
+/* 	  printf("host"); */
+/* 	else if(VAL_IS_FIELD(dst)) */
+/* 	  printf("FIELD"); */
+/* 	else if(VAL_IS_INT(dst)) */
+/* 	  printf("INT"); */
+/* 	else if(VAL_IS_FLOAT(dst)) */
+/* 	  printf("float"); */
+/* 	else if(VAL_IS_REVERSE(dst)) */
+/* 	  printf("reverse"); */
+/* 	else printf("??"); */
+
+/* 	printf("\n"); */
+
+/* 	// Advance the program counter past the instruction */
+/* 	pc = new_pc; */
+/* 	break; */
+/*       } */
+
+/*     case 0x40: // ALLOC */
+/*     case 0x50: // ALLOC */
+/*       { */
+/* 	const unsigned char *new_pc = pc+2; */
+      
+/* 	printf("ALLOC %s\n", tuple_names[type]); */
+/* 	// Advance the program counter past the instruction */
+/* 	pc = new_pc; */
+/* 	break; */
+/*       } */
+
+/*     case 0x60: // IF */
+/*     case 0x70: // IF */
+/*       printf("IF reg %d ", IF_REG(pc)); */
+/*       // Advance the program counter past the instruction */
+/*       pc += IF_BASE; */
+/*       break; */
+
+/*     case 0x80: // REMOVE */
+/*     case 0x90: // REMOVE */
+/*       { */
+/* 	int reg_remove = REMOVE_REG(pc); */
+/* 	printf("REMOVE reg%d\n", reg_remove); */
+/* 	// Advance the program counter past the instruction */
+/* 	pc += 1; */
+/* 	break; */
+/*       } */
+
+/*     case 0xa0: // ITER */
+/*       { */
+/* 	const tuple_type type = ITER_TYPE(pc); */
+/* 	const unsigned char *jump = pc + ITER_JUMP(pc); */
+      			
+/* 	printf("ITER %s \n", tuple_names[type]); */
+
+/* 	/\* advance the pc to the end of the loop *\/ */
+/* 	pc = jump; */
+/* 	break; */
+/*       } */
+
+/*     case 0xc0: // OP */
+/*     case 0xd0: // OP */
+/*     case 0xe0: // OP */
+/*     case 0xf0: // OP */
+/*       { */
+/* 	const unsigned char *new_pc = pc+3; */
+			
+/* 	printf("OP to %d\n", OP_DST(pc)); */
+      
+/* 	// Advance the program counter past the send instruction */
+/* 	pc = new_pc; */
+/* 	break; */
+/*       } */
+	  
+/*     default: */
+/*       fprintf(stderr, "INVALID INSTRUCTION %u", *pc); */
+/*       assert(0); */
+/*       break; */
+/*     } */
+/*   } */
+/* } */

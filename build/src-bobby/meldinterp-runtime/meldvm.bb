@@ -360,11 +360,11 @@ void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
 
 void tuple_handle(tuple_t tuple, int isNew, Register *registers)
 {
-#if DEBUG
-	printf ("handling: ");
-	tuple_print(tuple, stdout);
-	printf ("\n");
-#endif
+/* #if DEBUG */
+/* 	printf ("handling: "); */
+/* 	tuple_print(tuple, stdout); */
+/* 	printf ("\n"); */
+/* #endif */
 
 
 		tuple_type type = TUPLE_TYPE(tuple);
