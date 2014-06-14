@@ -10,7 +10,6 @@ void donefunc(SpanningTree* tree, SpanningTreeStatus status);
 
 byte spFinished;
 
-Timeout tout;
           
 SpanningTree* tree;
 
@@ -29,7 +28,6 @@ void myMain(void)
 
   while( spFinished != 1){ //wait for the tree to be created  and updated the tree every time
     setColor(AQUA);
-    get(tree,1); 
   }
   
   //treeBroadcast(tree,data, 1, handler );
