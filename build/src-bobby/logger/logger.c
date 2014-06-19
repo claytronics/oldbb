@@ -112,7 +112,10 @@ main(int argc, char** argv)
       case '3':
 	uint16_t idToSet;
 	cout << "Please type the ID you want to set on the block and press return" << endl;
-	scanf("%hu", &idToSet);
+	if (scanf("%hu", &idToSet) != 1) {
+	  cerr << "Illegal entry" << endl;
+	  exit(-1);
+	}
 	sendIDToSet(idToSet);
 	break;
       case '4':
@@ -120,7 +123,10 @@ main(int argc, char** argv)
 	cout << "Please line up all the blocks, and check that no blocks are red. If there is a red block, then make sure that all blocks have no more than 2 neighbors." << endl;
 cout << "Now, type the id of the first block (The one attached to the host) and press return" << endl;
 	cout << "First block ID: "; 
-	scanf("%hu", &firstBlockID);
+	if (scanf("%hu", &firstBlockID) != 1) {
+	  cerr << "Illegal entry" << endl;
+	  exit(-1);
+	}
 	sendIDToSet(firstBlockID);
 	break;
       default:
