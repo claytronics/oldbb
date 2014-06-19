@@ -142,11 +142,12 @@ void shutdownSerial()
 // just grab bytes
 void process()
 {
-    byte curr;
+  //SCG (unused) byte curr;
 
     while( !isEmpty(&(serialData)) )
     {
-        curr = (byte)pop(&(serialData));
+      //SCG (unused) curr = (byte)
+      pop(&(serialData));
 
         // store last received byte
 //        pthread_mutex_lock(&responseMutex);
@@ -179,3 +180,8 @@ int sendMessage(byte* data, byte size)
 
 #endif
 
+// Local Variables:
+// mode: C
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
