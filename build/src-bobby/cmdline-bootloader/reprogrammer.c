@@ -462,7 +462,8 @@ maybeprintdot(int len)
 // send with retries
 int bootloaderSend(byte* data, byte length)
 {
-    int    i, count;
+  int    i;
+  //SCG (unused) int count;
     byte   recdByte = 0;
 
     // send a couple of times
@@ -473,7 +474,7 @@ int bootloaderSend(byte* data, byte length)
         //usleep(SEND_DELAY);
         
         // wait for a confirmation or 1 second
-        count = 0;
+        //SCG (unused) count = 0;
         time_t endTime = time(NULL) + WAIT_DELAY;
 
         while( isEmpty(&(serialData)) && (time(NULL) < endTime) );
@@ -726,7 +727,8 @@ char getVersion(void)
 // create a spanning tree
 void createSpan(void)
 {
-    int    i, count;
+  int    i;
+  //SCG (unused) int count;
     int    success = 0;
     byte   recdByte;
     byte   data[2] = SPAN_MSG;
@@ -747,7 +749,7 @@ void createSpan(void)
 	}
 
         // wait for data
-        count = 0;       
+        //SCG (unused) count = 0;       
         endTime = time(NULL) + WAIT_DELAY;
 
         while( isEmpty(&(serialData)) && (time(NULL) < endTime) );
@@ -777,7 +779,7 @@ void createSpan(void)
         }
 
         // wait for data
-        count = 0;       
+        //SCG (unused) count = 0;       
         endTime = time(NULL) + WAIT_DELAY;
 
         while( isEmpty(&(serialData)) && (time(NULL) < endTime) );
@@ -1020,3 +1022,8 @@ int main(int argc, char** argv)
 
 #endif
 
+// Local Variables:
+// mode: C
+// indent-tabs-mode: nil
+// c-basic-offset: 4
+// End:
