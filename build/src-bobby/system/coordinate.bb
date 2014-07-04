@@ -119,7 +119,8 @@ void startCoordination(void)
 void sendCoordination(void)
 {
   alreadyShared = 1;
-  for (byte p = 0; p < NUM_PORTS; p++) {
+  byte p;
+  for (p = 0; p < NUM_PORTS; p++) {
     if (thisNeighborhood.n[p] != VACANT) {
       sendCoord(p, xCoord, yCoord, zCoord);
     }
@@ -150,7 +151,8 @@ coordinateHandler(void)
 	  yCoord = thisChunk->data[2];
 	  zCoord = thisChunk->data[3];
   
-	  for( byte p = 0; p < NUM_PORTS;p++){
+	  byte p;
+	  for(p = 0; p < NUM_PORTS;p++){
 	    if (thisNeighborhood.n[p] != VACANT &&  p != chunkSource) {	
 	      if( UP == p){
 		sendMsg(p,xCoord,yCoord+1,zCoord);
@@ -192,7 +194,8 @@ coordinateHandler(void)
       coord[0][2] = zCoord;
       coord[0][3] = 6;
   
-      for(byte i=1; i<numCoord; i++)
+      byte i;
+      for(i = 1; i<numCoord; i++)
 	{
 	  if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
 	    {
@@ -205,7 +208,8 @@ coordinateHandler(void)
       coord[numCoord][1] = cy;
       coord[numCoord][2] = cz;
       coord[numCoord++][3] = faceNum(thisChunk);
-      for( byte p = 0; p < NUM_PORTS;p++){
+      byte p;
+      for (p = 0; p < NUM_PORTS;p++){
 	if (thisNeighborhood.n[p] != VACANT &&  p != chunkSource) {	
 	  sendCoord(p, cx, cy,cz);
 	}
@@ -235,7 +239,8 @@ coordinateHandler(void)
 	  return 0;
 	}
   
-      for(byte i=0; i<numCoord; i++)
+      byte i;
+      for(i=0; i<numCoord; i++)
 	{
 	  if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
 	    {
@@ -297,7 +302,8 @@ void  initCoordination(uint16_t id, MsgHandler donefunc)
   delayMS(300);
   vhandler = donefunc;
   // Initialize chunks
-  for(byte i=0; i < NUM_COORD_CHUNKS; i++) {
+  byte i;
+  for(i=0; i < NUM_COORD_CHUNKS; i++) {
     coordChunks[i].status = CHUNK_FREE;
   }
   propagateCoord.callback = (GenericHandler)(&sendCoordination);
@@ -324,7 +330,8 @@ byte checkVirtualNeighbor(PRef p)
   if (p == NORTH){ cz = zCoord + 1 ;}
   if (p == SOUTH){ cz = zCoord - 1 ;}
   
-  for(byte i=0; i<numCoord; i++)
+  byte i;
+  for(i=0; i<numCoord; i++)
     {
       if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
 	{
@@ -353,9 +360,8 @@ void sendDataToVirtualNeighbor(PRef p, byte *data, byte size)
   if (p == NORTH){ cz = zCoord + 1 ;}
   if (p == SOUTH){ cz = zCoord - 1 ;}
     
-  
-  
-  for(byte i=0; i<numCoord; i++)
+  byte i;
+  for(i=0; i<numCoord; i++)
     {
       if( coord[i][0] == cx && coord[i][1] == cy && coord[i][2] == cz)
 	{
