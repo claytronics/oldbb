@@ -6,10 +6,11 @@
 
 #include "api.h"
 #ifndef IGNORE_IN_PASS1_OFF_COMPILE_BB
-#include "model.h"
+/* #include "model.h" */
+#include "model.bbh"
 #endif
 
-/* print tuple allocations */
+/* print tuple allocations
 //#define TUPLE_ALLOC_DEBUG 1
 /* tuple allocation checks */
 #define TUPLE_ALLOC_CHECKS 1
@@ -42,17 +43,17 @@
 #define SEND_MSG(x)   ((((*(const unsigned char*)(x))&0x3) << 3) | \
                       (((*(const unsigned char*)((x)+1))&0xe0) >> 5))
 #define SEND_RT(x)    ((*(const unsigned char*)((x)+1))&0x1f)
-#define SEND_DELAY(x) (*(const unsigned char *)((x)+2))
-#define REMOVE_REG(x) ((*(const unsigned char*)(x))&0x1f)
-
 #define SEND_ARG1(x)  ((*((const unsigned char*)(x)+2)) & 0x3f)
+#define SEND_DELAY(x) (*(const unsigned char *)((x)+2))
+
+#define REMOVE_REG(x) ((*(const unsigned char*)(x))&0x1f)
 
 #define OP_ARG1(x)    (((*(const unsigned char*)(x)) & 0x3f))
 #define OP_ARG2(x)    (((*(const unsigned char*)((x)+1)) & 0xfc) >> 2)
 #define OP_OP(x)      ((*(const unsigned char*)((x)+2)) & 0x1f)
 #define OP_DST(x)     ((((*(const unsigned char*)((x)+1)) & 0x03) << 3) | \
                       (((*(const unsigned char*)((x)+2)) & 0xe0) >> 5))
-
+ 
 #define MOVE_SRC(x)   ((((*(const unsigned char*)(x))&0xf) << 2) | \
 					   (((*(const unsigned char*)((x)+1))&0xc0) >> 6))
 #define MOVE_DST(x)   (((*(const unsigned char*)((x)+1))&0x3f))
@@ -120,20 +121,46 @@
 #define TUPLE_TYPE(x)   (*(TYPE_FIELD_TYPE *)(x))
 #define TUPLE_FIELD(x,off)  ((void *)(((unsigned char*)(x)) + TYPE_FIELD_SIZE + (off)))
 
-#define TYPE_OFFSET(x)     (meld_prog[1 + (x)])
-#define TYPE_DESCRIPTOR(x) ((unsigned char *)(meld_prog + TYPE_OFFSET(x)))
+#define NUM_TYPES  (meld_prog[0])
+#define NUM_RULES  (meld_prog[1])
+#define TYPE_OFFSET(x)     (meld_prog[2 + (x)])
 
+/* First 2 bytes contain offset to type's bytecode */
+#define TYPE_DESCRIPTOR(x) ((unsigned char *)(meld_prog + TYPE_OFFSET(x)))
+/* Contain tuple's type (linear/persistent...)*/
 #define TYPE_PROPERTIES(x) (*(TYPE_DESCRIPTOR(x) + 2))
+/* If tuple is aggregate, contains its type, 0 otherwise */
 #define TYPE_AGGREGATE(x)  (*(TYPE_DESCRIPTOR(x) + 3))
+/* Stratification round ..?*/
+#define TYPE_STRATIFICATION_ROUND(x) (*(TYPE_DESCRIPTOR(x) + 4))
+/* Number of arguments */
 #define TYPE_NOARGS(x)     (*(TYPE_DESCRIPTOR(x) + 5))
-#define TYPE_STRATIFICATION_ROUND(x) (*(TYPE_DESCRIPTOR(x)+5))
-#define TYPE_IS_STRATIFIED(x) (TYPE_STRATIFICATION_ROUND(x) > 0)
-#define TYPE_ARGS_DESC(x)  ((unsigned char*)(TYPE_DESCRIPTOR(x)+TYPE_DESCRIPTOR_SIZE))
+/* Number of deltas ..? */
 #define TYPE_NODELTAS(x)   (*(TYPE_DESCRIPTOR(x) + 6))
-#define TYPE_DELTAS(x)     (TYPE_ARGS_DESC(x) + 1*TYPE_NOARGS(x))
-#define TYPE_START(x)      ((unsigned char*)(meld_prog + *(unsigned short *)TYPE_DESCRIPTOR(x)))
-#define TYPE_NAME(x)       (tuple_names[x])
+/* Argument descriptor */
+#define TYPE_ARGS_DESC(x)  ((unsigned char*)(TYPE_DESCRIPTOR(x)+TYPE_DESCRIPTOR_SIZE))
+/* Returns type of argument number f for type x */
 #define TYPE_ARG_DESC(x, f) ((unsigned char *)(TYPE_ARGS_DESC(x)+1*(f)))
+/* Returns type of deltas for type x */
+#define TYPE_DELTAS(x)     (TYPE_ARGS_DESC(x) + 1*TYPE_NOARGS(x))
+
+/* Returns address of bytecode for type x */
+#define TYPE_START(x)							\
+  ((unsigned char*)(meld_prog + *(unsigned short *)TYPE_DESCRIPTOR(x)))
+#define TYPE_START_CHECK(x)			\
+  (*(unsigned short *)TYPE_DESCRIPTOR(x))
+
+/* Offset to rule byte code, pred 0 byte code start is reference */
+#define RULE_START(x)							\
+  ((unsigned char*)(meld_prog + *(unsigned short*)			\
+		    ((TYPE_START(0) - NUM_RULES * sizeof(unsigned short)) + x)))
+#define RULE_START_CHECK(x)						\
+  (*(unsigned short*)							\
+   ((TYPE_START(0) - NUM_RULES * sizeof(unsigned short))) + x)
+
+#define TYPE_IS_STRATIFIED(x) (TYPE_STRATIFICATION_ROUND(x) > 0)
+
+#define TYPE_NAME(x)       (tuple_names[x])
 #define TYPE_ARG_TYPE(x, f) ((unsigned char)(*TYPE_ARG_DESC(x, f)))
 
 #define TYPE_SIZE(x)       (arguments[(x) * 2 + 1])
@@ -185,15 +212,13 @@
 #define FIELD_SET_INT 0x6
 #define FIELD_SET_FLOAT 0x7
 #define FIELD_TYPE 0x8
+#define FIELD_STRING 0x9
 
 #define TYPE_NEIGHBOR		0
 #define TYPE_NEIGHBORCOUNT	1
-#define TYPE_VACANT			2
+#define TYPE_VACANT		2
 #define TYPE_SETCOLOR		3
 #define TYPE_SETCOLOR2		4
-
-
-#define NUM_TYPES  (meld_prog[0])
 
 #define DELTA_TYPE(ori, id) (*(unsigned char*)(deltas[ori] + (id)*DELTA_SIZE))
 #define DELTA_POSITION(ori, id) (*(unsigned char*)(deltas[ori] + (id)*DELTA_SIZE + 1))
@@ -237,7 +262,7 @@ void tuple_handle(tuple_t tuple, int isNew, Register *reg);
 void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew);
 void tuple_do_handle(tuple_type type,	void *tuple, int isNew, Register *reg);
 int tuple_process(tuple_t tuple, const unsigned char *pc,
-	int isNew, Register *reg);
+		  int isNew, Register *reg);
 void tuple_print(tuple_t tuple, FILE *fp);
 
 
@@ -288,6 +313,8 @@ extern tuple_type TYPE_EDGE;
 extern tuple_type TYPE_COLOCATED;
 extern tuple_type TYPE_PROVED;
 extern tuple_type TYPE_TERMINATE;
+
+/* void print_process(const unsigned char *pc); */
 
 #endif
 
