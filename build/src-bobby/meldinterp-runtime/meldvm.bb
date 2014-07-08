@@ -44,6 +44,10 @@ threadvar persistent_set *persistent;
 threadvar Register reg[32];
 
 static tuple_type TYPE_TAP = -1;
+static tuple_type TYPE_NEIGHBOR = -1;
+static tuple_type TYPE_NEIGHBORCOUNT = -1;
+static tuple_type TYPE_VACANT = -1;
+
 
 //#define DEBUG
 
@@ -88,17 +92,15 @@ void enqueue_face(NodeID neighbor, meld_int face, int isNew)
 
 		if (neighbor <= 0) {
 				tuple = tuple_alloc(TYPE_VACANT);
-				SET_TUPLE_FIELD(tuple, 0, &blockId);
-				SET_TUPLE_FIELD(tuple, 1, &face);
+				SET_TUPLE_FIELD(tuple, 0, &face);
 		}
 		else {
 		  void *null = NULL;
 
 				tuple = tuple_alloc(TYPE_NEIGHBOR);
-				SET_TUPLE_FIELD(tuple, 0, &blockId);
-				SET_TUPLE_FIELD(tuple, 1, &neighbor);
-				SET_TUPLE_FIELD(tuple, 2, &face);
-				SET_TUPLE_FIELD(tuple, 3, &null);
+				SET_TUPLE_FIELD(tuple, 0, &neighbor);
+				SET_TUPLE_FIELD(tuple, 1, &face);
+				SET_TUPLE_FIELD(tuple, 2, &null);
 		}
 
 		enqueueNewTuple(tuple, (record_type) isNew);
@@ -109,8 +111,7 @@ void enqueue_count(meld_int count, int isNew)
 {
 		tuple_t tuple = tuple_alloc(TYPE_NEIGHBORCOUNT);
 
-		SET_TUPLE_FIELD(tuple, 0, &blockId);
-		SET_TUPLE_FIELD(tuple, 1, &count);
+		SET_TUPLE_FIELD(tuple, 0, &count);
 
 		enqueueNewTuple(tuple, (record_type) isNew);
 }
@@ -119,8 +120,6 @@ static
 void enqueue_tap(void)
 {
 		tuple_t tuple = tuple_alloc(TYPE_TAP);
-
-		SET_TUPLE_FIELD(tuple, 0, &blockId);
 
 		enqueueNewTuple(tuple, (record_type) 1);
 
@@ -137,8 +136,6 @@ void enqueue_init(void)
 
 		tuple_t tuple = tuple_alloc(TYPE_INIT);
 
-		SET_TUPLE_FIELD(tuple, 0, &blockId);
-
 		enqueueNewTuple(tuple, (record_type) 1);
 }
 
@@ -151,8 +148,10 @@ void init_all_consts(void)
 		for (i = 0; i < NUM_TYPES; i++) {
 				if (strcmp(TYPE_NAME(i), "tap") == 0)
 						TYPE_TAP = i;
-				else if (strcmp(TYPE_NAME(i), "_init") == 0)
-						TYPE_INIT = i;
+				else if (strcmp(TYPE_NAME(i), "neighbor") == 0)
+						TYPE_NEIGHBOR = i;
+				else if (strcmp(TYPE_NAME(i), "neighborCount") == 0)
+						TYPE_NEIGHBORCOUNT = i;
 		}	
 }
 

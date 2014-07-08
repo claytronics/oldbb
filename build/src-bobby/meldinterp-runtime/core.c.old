@@ -27,74 +27,6 @@ tuple_type TYPE_TERMINATE = -1;
 
 extern persistent_set *persistent;
 
-/* INSTR EXECUTION FUNCTIONS */
-
-inline void
-execute_alloc (tuple_t tuple, const unsigned char *pc, Register *reg) 
-{
-  (void)tuple;
-  (void)pc;
-  (void)reg;
-}
-
-inline void
-execute_rule (tuple_t tuple, const unsigned char *pc, Register *reg) 
-{
-  (void)tuple;
-  (void)pc;
-  (void)reg;
-}
-
-inline void
-execute_rule_done (tuple_t tuple, const unsigned char *pc, Register *reg) 
-{
-  (void)tuple;
-  (void)pc;
-  (void)reg;
-}
-
-inline void
-execute_mvintfield (tuple_t tuple, const unsigned char *pc, Register *reg) 
-{
-  (void)tuple;
-  (void)pc;
-  (void)reg;
-}
-
-inline void
-execute_mvintreg (tuple_t tuple, const unsigned char *pc, Register *reg) 
-{
-  (void)tuple;
-  (void)pc;
-  (void)reg;
-}
-
-inline void
-execute_mvfieldreg (tuple_t tuple, const unsigned char *pc, Register *reg) 
-{
-  (void)tuple;
-  (void)pc;
-  (void)reg;
-}
-
-inline void
-execute_intequal (tuple_t tuple, const unsigned char *pc, Register *reg) 
-{
-  (void)tuple;
-  (void)pc;
-  (void)reg;
-}
-
-inline void
-execute_run_action (tuple_t tuple, const unsigned char *pc, Register *reg) 
-{
-  (void)tuple;
-  (void)pc;
-  (void)reg;
-}
-
-/* END OF INSTR EXECUTION FUNCTIONS */
-
 bool
 queue_is_empty(tuple_queue *queue)
 {
@@ -1012,124 +944,419 @@ queue_length (tuple_queue *queue)
   return i;
 }
 
-int 
-tuple_process(tuple_t tuple, const unsigned char *pc,
-	      int isNew, Register *reg)
+int tuple_process(tuple_t tuple, const unsigned char *pc,
+		  int isNew, Register *reg)
 {
   for (;;) {
-  evalLoop:
-    switch (fetch (pc)) {
-    case RETURN_INSTR: 		/* 0x0 */
-      {
+    switch (0xf0 & *(const unsigned char*)pc) {
+
+    case 0x00: // some '8-bit' instruction
+      switch (0x0f & *(const unsigned char*)pc) {
+
+      case 0x00: // RETURN
 #ifdef DEBUG_INSTRS
-	printf ("RETURN\n");
+	printf("RETURN\n");
 #endif
-	return;
+	return RET_RET;
+	break;
+
+      case 0x01: // NEXT
+#ifdef DEBUG_INSTRS
+	printf("NEXT\n");
+#endif
+	return RET_NEXT;
+	break;
+
+      case 0x02: // ELSE
+	fprintf(stderr, "ELSE NOT IMPLEMENTED YET!\n");
+	assert(0);
+	break;
+
+      case 0x03: // NOP
+	pc++;
+	break;
+
+      case 0x08: // SEND
+      case 0x09: // SEND
+      case 0x0a: // SEND
+      case 0x0b: // SEND
+	{
+	const unsigned char *new_pc = pc+3;
+	Register send_reg = reg[SEND_MSG(pc)];
+	Register send_rt = reg[SEND_RT(pc)];
+
+#ifdef DEBUG_INSTRS
+	printf("SEND\n");
+#endif
+
+	tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg),
+		   MELD_CONVERT_REG_TO_PTR(send_rt),
+		   MELD_INT(eval(SEND_DELAY(pc), &tuple, &new_pc, reg)), isNew);
+
+	// Advance the program counter past the send instruction
+	pc = new_pc;
+	break;
+	}
+
+      default:
+	fprintf(stderr, "INVALID INSTRUCTION %u", *pc);
+	assert(0);
+	break;
       }
+      break;
+
+    case 0x20: // CALL
+      {
+      Register *dst = &reg[CALL_DST(pc)];
+      Register args[CALL_ARGS(pc)];
+
+      assert(CALL_ARGS(pc) <= 5);
+
+#ifdef DEBUG_INSTRS
+      printf("CALL %d (%d)\n", CALL_ID(pc), CALL_ARGS(pc));
+#endif
+        
+      int i;
+      const unsigned char *new_pc = pc+2;
+      for (i = 0; i < CALL_ARGS(pc); i++) {
+	unsigned char value = CALL_VAL(new_pc);
+	new_pc++;
+	args[i] = MELD_CONVERT_PTR_TO_REG(eval(value, &tuple, &new_pc, reg));
+      }
+
+      switch (CALL_ARGS(pc)) {
+      default:
+	break;
+      case 0:
+	*dst = CALL_FUNC(pc)();
+	break;
+      case 1:
+	*dst = CALL_FUNC(pc)(args[0]);
+	break;
+      case 2:
+	*dst = CALL_FUNC(pc)(args[0], args[1]);
+	break;
+      case 3:
+	*dst = CALL_FUNC(pc)(args[0], args[1], args[2]);
+	break;
+      case 4:
+	*dst = CALL_FUNC(pc)(args[0], args[1], args[2], args[3]);
+	break;
+      case 5:
+	*dst = CALL_FUNC(pc)(args[0], args[1], args[2], args[3], args[4]);
+	break;
+      }
+      // Advance the program counter past the instruction
+      pc = new_pc;
+      break;
+      }
+
+    case 0x30: // MOVE
+      {
+	const unsigned char *new_pc = pc+2;
+
+#ifdef DEBUG_INSTRS
+	{
+	  char src = MOVE_SRC(pc);
+	  char dst = MOVE_DST(pc);
+	  
+	  printf("MOVE ");
+	  if(VAL_IS_TUPLE(src))
+	    printf("tuple");
+	  else if(VAL_IS_REG(src))
+	    printf("reg %d", VAL_REG(src));
+	  else if(VAL_IS_HOST(src))
+	    printf("host");
+	  else if(VAL_IS_FIELD(src))
+	    printf("FIELD");
+	  else if(VAL_IS_INT(src))
+	    printf("INT");
+	  else if(VAL_IS_FLOAT(src))
+	    printf("float");
+	  else if(VAL_IS_REVERSE(src))
+	    printf("reverse");
+	  else printf("??");
+
+	  printf(" ");
+	  
+	  if(VAL_IS_TUPLE(dst))
+	    printf("tuple");
+	  else if(VAL_IS_REG(dst))
+	    printf("reg %d", VAL_REG(dst));
+	  else if(VAL_IS_HOST(dst))
+	    printf("host");
+	  else if(VAL_IS_FIELD(dst))
+	    printf("FIELD");
+	  else if(VAL_IS_INT(dst))
+	    printf("INT");
+	  else if(VAL_IS_FLOAT(dst))
+	    printf("float");
+	  else if(VAL_IS_REVERSE(dst))
+	    printf("reverse");
+	  else printf("??");
+
+	  printf("\n");
+	}
+#endif
+	size_t size = 0;
+	
+	Register *src = eval(MOVE_SRC(pc), &tuple, &new_pc, reg);
+	Register *dst = eval_dst(MOVE_DST(pc), &new_pc, reg, &size);
+
+	memcpy(dst, src, size);
+	// Advance the program counter past the instruction
+	pc = new_pc;
+	break;
+      }
+
+    case 0x40: // ALLOC
+    case 0x50: // ALLOC
+      {
+	const unsigned char *new_pc = pc+2;
+	tuple_t *dst;
+	tuple_type type = ALLOC_TYPE(pc);
       
-    case RULE_INSTR: 		/* 0x10 */ 
-      {
-	/* TODO: Trigger rule byte code processing */
-#ifdef DEBUG_INSTRS
-	printf ("RULE\n");
+#if defined(DEBUG_INSTRS) || defined(DEBUG_ALLOCS)
+	{
+	  printf("ALLOC %s\n", tuple_names[type]);
+	}
 #endif
-	const byte *npc = pc + RULE_BASE;
-	execute_rule (tuple, pc, reg);
-	pc = npc; goto eval_loop;
+
+	dst = eval(ALLOC_DST(pc), &tuple, &new_pc, reg);
+			
+	*dst = ALLOC_TUPLE(TYPE_SIZE(type));
+	memset(*dst, 0, TYPE_SIZE(type));
+	TUPLE_TYPE(*dst) = type;
+	// Advance the program counter past the instruction
+	pc = new_pc;
+	break;
       }
 
-    case RULE_DONE_INSTR: 		/* 0x11 */
-      {
+    case 0x60: // IF
+    case 0x70: // IF
 #ifdef DEBUG_INSTRS
-	printf ("RULE DONE\n");
+      printf("IF reg %d ", IF_REG(pc));
 #endif
-	const byte *npc = pc + RULE_DONE_BASE;
-	/* Nothing to be done */
-	pc = npc; goto eval_loop;
-      }
- 
-    case RETURN_LINEAR_INSTR:		/* 0xd0 */
+      if (!reg[IF_REG(pc)]) {
 #ifdef DEBUG_INSTRS
-      printf ("RETURN LINEAR\n");
-#endif       
-      return;
-
-    case MVINTFIELD_INSTR: 		/* 0x1e */
-      {
-#ifdef DEBUG_INSTRS
-	printf ("MVINTFIELD\n");
+	printf("no\n");
 #endif
-	const byte *npc = pc + MVINTFIELD_BASE;
-	execute_alloc (tuple, pc, reg);
-	pc = npc; goto eval_loop;
+	pc += IF_JUMP(pc);
+	break;
       }
 
-    case MVINTREG_INSTR: 		/* 0x1f */
-      {
 #ifdef DEBUG_INSTRS
-	printf ("MVINTREG\n");
+      printf("yes\n");
 #endif
-	const byte *npc = pc + MVINTREG_BASE;
-	execute_mvintreg (tuple, pc, reg);
-	pc = npc; goto eval_loop;
+      // Advance the program counter past the instruction
+      pc += IF_BASE;
+      break;
+
+    case 0x80: // REMOVE
+    case 0x90: // REMOVE
+      if (isNew > 0) {
+        int reg_remove = REMOVE_REG(pc);
+	int size = TYPE_SIZE(TUPLE_TYPE(MELD_CONVERT_REG_TO_PTR(reg[reg_remove])));
+
+	tuple_handle(memcpy(malloc(size),MELD_CONVERT_REG_TO_PTR(reg[reg_remove]), size), -1, reg);
+	reg[REMOVE_REG(pc)] = 0;
+      }	
+      // Advance the program counter past the instruction
+      pc += 1;
+      break;
+
+    case 0xa0: // ITER
+      {
+      const tuple_type type = ITER_TYPE(pc);
+      int i, length;
+      void **list;
+      const unsigned char *jump = pc + ITER_JUMP(pc);
+      int size = TYPE_SIZE(type);
+			
+      /* produce a random ordering for all tuples of the appropriate type */
+			
+      if(TYPE_IS_PERSISTENT(type) && !TYPE_IS_AGG(type)) {
+	/* persistent aggregate types not supported */
+        persistent_set *persistents = &PERSISTENT[type];
+        
+        length = persistents->current;
+        list = malloc(sizeof(tuple_t) * length);
+
+        for(i = 0; i < length; i++) {
+          int j = random() % (i + 1);
+          
+          list[i] = list[j];
+          list[j] = persistents->array + i * size;
+        }
+      } else {
+	/* non-persistent type */
+	tuple_entry *entry = TUPLES[type].head;
+		    
+	length = queue_length(&TUPLES[ITER_TYPE(pc)]);
+	list = malloc(sizeof(tuple_t) * length);
+		    
+	for (i = 0; i < length; i++) {
+	  int j = random() % (i+1);
+
+	  list[i] = list[j];
+	  list[j] = entry->tuple;
+
+	  entry = entry->next;
+	}
       }
-   
-    case MVFIELDREG_INSTR: 		/* 0x22 */
-      {
+			
 #ifdef DEBUG_INSTRS
-	printf ("MVFIELDREG\n");
+      printf("ITER %s len=%d\n", tuple_names[type], length);
 #endif
-	const byte *npc = pc + MVFIELDREG_BASE;
-	execute_mvfieldreg (tuple, pc, reg);
-	pc = npc; goto eval_loop;
+
+      if(length == 0) {
+        /* no need to execute any further code, just jump! */
+        pc = jump;
+	break;
       }
 
-    case INTEQUAL_INSTR: 		/* 0x3b */
-      {
-#ifdef DEBUG_INSTRS
-	printf ("INTEQUAL\n");
-#endif
-	const byte *npc = pc + INTEQUAL_BASE;
-	execute_intequal (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+      /* iterate over all tuples of the appropriate type */
+      void *next_tuple;
       
-    case ALLOC_INSTR: 		/* 0x40 */
-      {
+      for (i = 0; i < length; i++) {
+	next_tuple = list[i];
+
+	unsigned char matched = 1;
+	const unsigned char *tmppc;
+
+        tmppc = pc + ITER_BASE;
+
+        if(!ITER_MATCH_NONE(tmppc)) {
+	  /* check to see if it matches */
+          while (1) {
+            const unsigned char *new_pc = tmppc + 2;
+	    const unsigned char fieldnum = ITER_MATCH_FIELD(tmppc);
+	    const unsigned char type_size = TYPE_ARG_SIZE(type, fieldnum);
+
+            Register *field = GET_TUPLE_FIELD(next_tuple, fieldnum);
+            Register *val = eval(ITER_MATCH_VAL(tmppc), &tuple, &new_pc, reg);
+            
+            matched = matched && (memcmp(field, val, type_size) == 0);
+
+            if(ITER_MATCH_END(tmppc))
+              break;
+
+            tmppc = new_pc;
+          }
+	}
+
 #ifdef DEBUG_INSTRS
-	printf ("ALLOC\n");
+	printf("MATCHED: %d %d\n", matched, length);
 #endif
-	const byte *npc = pc + ALLOC_BASE;
-	execute_alloc (tuple, pc, reg);
-	pc = npc; goto eval_loop;
+          
+	if (matched) {
+	  const unsigned char* iter_pc = pc + ITER_BASE;
+    
+	  if(ITER_MATCH_NONE(iter_pc))
+	    iter_pc += 2;
+	  else {
+	    const unsigned char *old;
+	    while(1) {
+	      old = iter_pc;
+	      
+	      if (VAL_IS_FLOAT(ITER_MATCH_VAL(iter_pc)))
+		iter_pc += sizeof(meld_float);
+	      else if (VAL_IS_INT(ITER_MATCH_VAL(iter_pc)))
+		iter_pc += sizeof(meld_int);
+	      else if (VAL_IS_FIELD(ITER_MATCH_VAL(iter_pc)))
+		iter_pc += 2;
+	      else if (VAL_IS_REVERSE(ITER_MATCH_VAL(iter_pc)))
+		iter_pc += 2;
+	      else {
+		assert(0);
+		exit(1);
+	      }
+
+	      iter_pc += 2;
+
+	      if(ITER_MATCH_END(old))
+		break;
+	    }
+	  }
+
+	  if (RET_RET == tuple_process(next_tuple, iter_pc, isNew, reg)) {
+	    free(list);
+	    return RET_RET;
+	  }
+	}
       }
 
-    case IF_INSTR: 		/* 0x60 */
-      {
-#ifdef DEBUG_INSTRS
-	printf ("IF\n");
-#endif
-	const byte *npc = pc + IF_BASE;
-	/* if (reg not ok) { */
-	/*   pc += if_jump (pc);  */
-	/*   goto eval_loop; */
-	/* } */
-	/* else process if content */
-	pc = npc; goto eval_loop;
+      free(list);
+
+      /* advance the pc to the end of the loop */
+      pc = jump;
+      break;
       }
+
+    case 0xc0: // OP
+    case 0xd0: // OP
+    case 0xe0: // OP
+    case 0xf0: // OP
+      {
+	const unsigned char *new_pc = pc+3;
+			
+#ifdef DEBUG_INSTRS
+	printf("OP to %d\n", OP_DST(pc));
+#endif
+
+	Register *arg1, *arg2;
       
-    case RUN_ACTION_INSTR: 		/* 0x79 */
-      {
+	arg1 = eval(OP_ARG1(pc), &tuple, &new_pc, reg);
+	arg2 = eval(OP_ARG2(pc), &tuple, &new_pc, reg);
+      
 #ifdef DEBUG_INSTRS
-	printf ("RUN ACTION\n");
+	printf ("%ld", MELD_INT(arg1));
+	printf ("OP");
+	printf ("%ld", MELD_INT(arg2));
+	printf ("\n");
 #endif
-	const byte *npc = pc + RUN_ACTION_BASE;
-	execute_run_action (tuple, pc, reg);
-	pc = npc; goto eval_loop;
+
+	Register *dest = reg + OP_DST(pc);
+      
+	switch(OP_OP(pc)) {
+	case OP_NEQI: *dest = (MELD_INT(arg1) != MELD_INT(arg2)); break;
+	case OP_EQI: *dest = (MELD_INT(arg1) == MELD_INT(arg2)); break;
+	case OP_LESSI: *dest = (MELD_INT(arg1) < MELD_INT(arg2)); break;
+	case OP_LESSEQI: *dest = (MELD_INT(arg1) <= MELD_INT(arg2)); break;
+	case OP_GREATERI: *dest = (MELD_INT(arg1) > MELD_INT(arg2)); break;
+	case OP_GREATEREQI: *dest = (MELD_INT(arg1) >= MELD_INT(arg2)); break;
+	case OP_MODI: MELD_INT(dest) = (MELD_INT(arg1) % MELD_INT(arg2)); break;
+	case OP_PLUSI: MELD_INT(dest) = (MELD_INT(arg1) + MELD_INT(arg2)); break;
+	case OP_MINUSI: MELD_INT(dest) = (MELD_INT(arg1) - MELD_INT(arg2)); break;
+	case OP_TIMESI: MELD_INT(dest) = (MELD_INT(arg1) * MELD_INT(arg2)); break;
+	case OP_DIVI: MELD_INT(dest) = (MELD_INT(arg1) / MELD_INT(arg2)); break;
+	case OP_NEQF: *dest = (MELD_FLOAT(arg1) != MELD_FLOAT(arg2)); break;
+	case OP_EQF: *dest = (MELD_FLOAT(arg1) == MELD_FLOAT(arg2)); break;
+	case OP_LESSF: *dest = (MELD_FLOAT(arg1) < MELD_FLOAT(arg2)); break;
+	case OP_LESSEQF: *dest = (MELD_FLOAT(arg1) <= MELD_FLOAT(arg2)); break;
+	case OP_GREATERF: *dest = (MELD_FLOAT(arg1) > MELD_FLOAT(arg2)); break;
+	case OP_GREATEREQF: *dest = (MELD_FLOAT(arg1) >= MELD_FLOAT(arg2)); break;
+	case OP_MODF: MELD_FLOAT(dest) = fmod(MELD_FLOAT(arg1), MELD_FLOAT(arg2)); break;
+	case OP_PLUSF: MELD_FLOAT(dest) = (MELD_FLOAT(arg1) + MELD_FLOAT(arg2)); break;
+	case OP_MINUSF: MELD_FLOAT(dest) = (MELD_FLOAT(arg1) - MELD_FLOAT(arg2)); break;
+	case OP_TIMESF: MELD_FLOAT(dest) = (MELD_FLOAT(arg1) * MELD_FLOAT(arg2)); break;
+	case OP_DIVF: MELD_FLOAT(dest) = (MELD_FLOAT(arg1) / MELD_FLOAT(arg2)); break;
+	case OP_NEQA: *dest = (MELD_PTR(arg1) != MELD_PTR(arg2)); break;
+	case OP_EQA: *dest = (MELD_PTR(arg1) == MELD_PTR(arg2)); break;
+	}
+	// Advance the program counter past the send instruction
+	pc = new_pc;
+	break;
       }
 
+    default:
+      fprintf(stderr, "INVALID INSTRUCTION %u", *pc);
+      assert(0);
+      break;
     }
   }
+
+  return RET_RET;
 }
 
 void
@@ -1200,29 +1427,29 @@ void facts_dump(void)
 
     // don't print artificial tuple types
     /*
-      if (tuple_names[i][0] == '_')
+    if (tuple_names[i][0] == '_')
       continue;
     */
 
     fprintf(stderr, "tuple %s (type %d)\n", tuple_names[i], i);
     tuple_entry *tupleEntry;
     for (tupleEntry = TUPLES[i].head; tupleEntry != NULL; tupleEntry = tupleEntry->next) {
-      fprintf(stderr, "  ");
-      tuple_print(tupleEntry->tuple, stderr);
-      if (TYPE_IS_AGG(i)) {
-	fprintf(stderr, "\n    [[[");
-	tuple_entry *tpE;
-	for (tpE = tupleEntry->records.agg_queue->head;
-	     tpE != NULL;
-	     tpE = tpE->next) {
-	  tuple_print(tpE->tuple, stderr);
-	  fprintf(stderr, "x%d\n       ", tpE->records.count);
-	}
-	fprintf(stderr, "\b\b\b]]]\n");
-      }
-      else {
-	fprintf(stderr, "x%d\n", tupleEntry->records.count);
-      }
+			fprintf(stderr, "  ");
+			tuple_print(tupleEntry->tuple, stderr);
+			if (TYPE_IS_AGG(i)) {
+				fprintf(stderr, "\n    [[[");
+				tuple_entry *tpE;
+				for (tpE = tupleEntry->records.agg_queue->head;
+						 tpE != NULL;
+						 tpE = tpE->next) {
+					tuple_print(tpE->tuple, stderr);
+					fprintf(stderr, "x%d\n       ", tpE->records.count);
+				}
+				fprintf(stderr, "\b\b\b]]]\n");
+			}
+			else {
+				fprintf(stderr, "x%d\n", tupleEntry->records.count);
+			}
     }
   }
 }
