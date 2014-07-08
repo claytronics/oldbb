@@ -12,8 +12,8 @@
 #include "../system/myassert.h"
 #include <stdio.h>
 
-//#define DEBUG_INSTRS
-//#define DEBUG_ALLOCS
+#define DEBUG_INSTRS
+#define DEBUG_ALLOCS
 //#define DEBUG_PROVED_TUPLES
 
 static unsigned char **deltas = NULL;
@@ -26,6 +26,37 @@ tuple_type TYPE_PROVED = -1;
 tuple_type TYPE_TERMINATE = -1;
 
 extern persistent_set *persistent;
+
+/* EVAL FUNCTIONS */
+
+static inline 
+void* eval_field (const unsigned char value,
+		  const unsigned char **pc, Register *reg)
+{
+  const unsigned char reg_index = VAL_FIELD_REG(*pc);
+  const unsigned char field_num = VAL_FIELD_NUM(*pc);
+  tuple_t tuple = (tuple_t)MELD_CONVERT_REG_TO_PTR(reg[reg_index]);
+  (*pc) += 2;
+
+#ifdef DEBUG_INSTRS
+  /* NOTE: Interesting debug print can be found in core.c.old */
+  printf ("%d.%d ", reg_index, field_num);
+#endif
+
+  return GET_TUPLE_FIELD(tuple, field_num);
+}
+
+ static inline 
+void* eval_reg(const unsigned char value, const unsigned char **pc, Register *reg)
+{ 
+#ifdef DEBUG_INSTRS
+  printf ("reg %d", VAL_REG(value));
+#endif
+  ++pc;
+  return &(reg)[VAL_REG(value)]; 
+}
+
+/* END OF EVAL FUNCTIONS */
 
 /* INSTR EXECUTION FUNCTIONS */
 
@@ -72,9 +103,14 @@ execute_mvintreg (tuple_t tuple, const unsigned char *pc, Register *reg)
 inline void
 execute_mvfieldreg (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
-  (void)tuple;
-  (void)pc;
-  (void)reg;
+  printf ("\tMOVE FIELD ");
+  ++pc;
+  Register *src = eval_field (FETCH(pc), &pc, reg);
+  printf ("TO ");
+  Register *dst = eval_reg (FETCH(pc), &pc, reg); 
+  printf ("\n");
+  size_t size = sizeof(Register);
+  memcpy(dst, src, size);
 }
 
 inline void
@@ -86,11 +122,13 @@ execute_intequal (tuple_t tuple, const unsigned char *pc, Register *reg)
 }
 
 inline void
-execute_run_action (tuple_t tuple, const unsigned char *pc, Register *reg) 
+execute_run_action (tuple_t tuple, const unsigned char *pc, 
+		    Register *reg, byte isNew) 
 {
   (void)tuple;
   (void)pc;
   (void)reg;
+  (void)isNew;
 }
 
 /* END OF INSTR EXECUTION FUNCTIONS */
@@ -264,6 +302,7 @@ init_fields(void)
       case (int)FIELD_LIST_ADDR:
       case (int)FIELD_SET_INT:
       case (int)FIELD_SET_FLOAT:
+      case (int)FIELD_STRING:
 	size = sizeof(void*);
 	break;
 
@@ -809,28 +848,27 @@ void tuple_do_handle(tuple_type type,	tuple_t tuple, int isNew, Register *reg)
       exit(EXIT_FAILURE);
     }
     
-    for(i = 0; i < persistents->total; ++i) {
-      void *stored_tuple = persistents->array + i * size;
+    /* for(i = 0; i < persistents->total; ++i) { */
+    /*   void *stored_tuple = persistents->array + i * size; */
       
-      if(memcmp(stored_tuple, tuple, size) == 0) {
-        FREE_TUPLE(tuple);
-        return;
-      }
-    }
+    /*   if(memcmp(stored_tuple, tuple, size) == 0) { */
+    /*     FREE_TUPLE(tuple); */
+    /*     return; */
+    /*   } */
+    /* } */
     
     /* new tuple */
-    if(persistents->total == persistents->current) {
-      if(persistents->total == 0)
-        persistents->total = PERSISTENT_INITIAL;
-      else
-        persistents->total *= 2;
+    /* if(persistents->total == persistents->current) { */
+    /*   if(persistents->total == 0) */
+    /*     persistents->total = PERSISTENT_INITIAL; */
+    /*   else */
+    /*     persistents->total *= 2; */
         
-      persistents->array = realloc(persistents->array, size * persistents->total);
-    }
+    /*   persistents->array = realloc(persistents->array, size * persistents->total); */
+    /* } */
     
-    memcpy(persistents->array + persistents->current * size, tuple, size);
-    ++persistents->current;
-    
+    /* memcpy(persistents->array + persistents->current * size, tuple, size); */
+    /* ++persistents->current; */
     tuple_process(tuple, TYPE_START(type), isNew, reg);
     
     return;
@@ -1016,15 +1054,16 @@ int
 tuple_process(tuple_t tuple, const unsigned char *pc,
 	      int isNew, Register *reg)
 {
+  printf ("PROCESS %s\n", tuple_names[TUPLE_TYPE(tuple)]);
   for (;;) {
-  evalLoop:
-    switch (fetch (pc)) {
+  eval_loop:
+    switch (*(const unsigned char*)pc) {
     case RETURN_INSTR: 		/* 0x0 */
       {
 #ifdef DEBUG_INSTRS
 	printf ("RETURN\n");
 #endif
-	return;
+	return 0;
       }
       
     case RULE_INSTR: 		/* 0x10 */ 
@@ -1052,7 +1091,7 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 #ifdef DEBUG_INSTRS
       printf ("RETURN LINEAR\n");
 #endif       
-      return;
+      return 0;
 
     case MVINTFIELD_INSTR: 		/* 0x1e */
       {
@@ -1089,7 +1128,7 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 #ifdef DEBUG_INSTRS
 	printf ("INTEQUAL\n");
 #endif
-	const byte *npc = pc + INTEQUAL_BASE;
+	const byte *npc = pc + OP_BASE;
 	execute_intequal (tuple, pc, reg);
 	pc = npc; goto eval_loop;
       }
@@ -1118,20 +1157,25 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
       
-    case RUN_ACTION_INSTR: 		/* 0x79 */
+    case RUNACTION_INSTR: 		/* 0x79 */
       {
 #ifdef DEBUG_INSTRS
 	printf ("RUN ACTION\n");
 #endif
-	const byte *npc = pc + RUN_ACTION_BASE;
-	execute_run_action (tuple, pc, reg);
+	const byte *npc = pc + RUNACTION_BASE;
+	execute_run_action (tuple, pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
-
+    default:
+#ifdef DEBUG_INSTRS
+      printf ("INSTRUCTION NOT IMPLEMENTED YET: %#x %#x %#x\n", 
+	      (unsigned char)*pc, (unsigned char)*(pc+1), (unsigned char)*(pc+2));
+#endif
+      return -1;
     }
   }
 }
-
+      
 void
 tuple_print(tuple_t tuple, FILE *fp)
 {

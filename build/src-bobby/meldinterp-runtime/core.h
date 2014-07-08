@@ -9,10 +9,13 @@
 #include "model.h"
 #endif
 
-/* print tuple allocations
+/* print tuple allocations */
 //#define TUPLE_ALLOC_DEBUG 1
 /* tuple allocation checks */
 #define TUPLE_ALLOC_CHECKS 1
+
+/* Size variables */
+#define INSTR_SIZE 1
 
 /* Instructions */
 enum instr_type {
@@ -154,154 +157,124 @@ enum instr_type {
    RETURN_DERIVED_INSTR =  0xF0
 };
 
-/* Type sizes */
-const size_t instr_size = sizeof(unsigned char);
-const size_t type_size = sizeof(unsigned char);
-const size_t predicate_size = sizeof(unsigned char);
-const size_t extern_id_size = sizeof(unsigned char);
-const size_t instr_size = sizeof(unsigned char);
-const size_t field_size = 2 * sizeof(unsigned char);
-const size_t iter_match_size = 2 * sizeof(unsigned char);
-const size_t val_size = sizeof(unsigned char);
-const size_t int_size = sizeof(int32_t);
-const size_t uint_size = sizeof(int32_t);
-const size_t float_size = sizeof(double);
-const size_t node_size = sizeof(uint64_t);
-const size_t string_size = sizeof(int32_t);
-const size_t ptr_size = sizeof(uint64_t);
-const size_t const_id_size = uint_size;
-const size_t bool_size = sizeof(unsigned char);
-const size_t argument_size = 1;
-const size_t reg_size = 0;
-const size_t reg_val_size = 1;
-const size_t host_size = 0;
-const size_t nil_size = 0;
-const size_t non_nil_size = 0;
-const size_t any_size = 0;
-const size_t tuple_size = 0;
-const size_t index_size = 1;
-const size_t jump_size = 4;
-const size_t count_size = sizeof(unsigned char);
-const size_t stack_val_size = sizeof(unsigned char);
-const size_t pcounter_val_size = 0;
-const size_t operation_size = instr_size + 3 * reg_val_size;
-const size_t call_size = instr_size + extern_id_size + reg_val_size;
-const size_t iter_options_size = 2 * sizeof(unsigned char);
-
 /* Instruction sizes */
-const size_t SEND_BASE           = instr_size + 2 * reg_val_size;
-const size_t OP_BASE             = instr_size + 4;
-const size_t BASE_ITER           = instr_size + ptr_size + predicate_size + reg_val_size + bool_size + 2 * jump_size + count_size;
-const size_t ITER_BASE           = BASE_ITER + iter_options_size;
-const size_t PERS_ITER_BASE      = BASE_ITER;
-const size_t OPERS_ITER_BASE     = ITER_BASE;
-const size_t LINEAR_ITER_BASE    = BASE_ITER;
-const size_t RLINEAR_ITER_BASE   = BASE_ITER;
-const size_t OLINEAR_ITER_BASE   = ITER_BASE;
-const size_t ORLINEAR_ITER_BASE  = ITER_BASE;
-const size_t ALLOC_BASE          = instr_size + 2;
-const size_t CALL_BASE           = call_size + count_size;
-const size_t IF_BASE             = instr_size + 1 + jump_size;
-const size_t TESTNIL_BASE        = instr_size + reg_val_size + reg_val_size;
-const size_t HEAD_BASE           = instr_size + 3;
-const size_t NOT_BASE            = instr_size + 2 * reg_val_size;
-const size_t RETURN_BASE         = instr_size;
-const size_t NEXT_BASE           = instr_size;
-const size_t FLOAT_BASE          = instr_size + 2 * reg_val_size;
-const size_t SELECT_BASE         = instr_size + 8;
-const size_t RETURN_SELECT_BASE  = instr_size + 4;
-const size_t DELETE_BASE         = instr_size + 2;
-const size_t REMOVE_BASE         = instr_size + reg_val_size;
-const size_t RETURN_LINEAR_BASE  = instr_size;
-const size_t RETURN_DERIVED_BASE = instr_size;
-const size_t RESET_LINEAR_BASE   = instr_size + jump_size;
-const size_t END_LINEAR_BASE     = instr_size;
-const size_t RULE_BASE           = instr_size + uint_size;
-const size_t RULE_DONE_BASE      = instr_size;
-const size_t NEW_NODE_BASE       = instr_size + reg_val_size;
-const size_t NEW_AXIOMS_BASE     = instr_size + jump_size;
-const size_t SEND_DELAY_BASE     = instr_size + 2 + uint_size;
-const size_t PUSH_BASE           = instr_size;
-const size_t POP_BASE            = instr_size;
-const size_t PUSH_REGS_BASE      = instr_size;
-const size_t POP_REGS_BASE       = instr_size;
-const size_t CALLF_BASE          = instr_size + 1;
-const size_t CALLE_BASE          = call_size + count_size;
-const size_t MAKE_STRUCTR_BASE   = instr_size + type_size + reg_val_size;
-const size_t MVINTFIELD_BASE     = instr_size + int_size + field_size;
-const size_t MVINTREG_BASE       = instr_size + int_size + reg_val_size;
-const size_t MVFIELDFIELD_BASE   = instr_size + field_size + field_size;
-const size_t MVFIELDREG_BASE     = instr_size + field_size + reg_val_size;
-const size_t MVPTRREG_BASE       = instr_size + ptr_size + reg_val_size;
-const size_t MVNILFIELD_BASE     = instr_size + field_size;
-const size_t MVNILREG_BASE       = instr_size + reg_val_size;
-const size_t MVREGFIELD_BASE     = instr_size + reg_val_size + field_size;
-const size_t MVHOSTFIELD_BASE    = instr_size + field_size;
-const size_t MVREGCONST_BASE     = instr_size + reg_val_size + const_id_size;
-const size_t MVCONSTFIELD_BASE   = instr_size + const_id_size + field_size;
-const size_t MVADDRFIELD_BASE    = instr_size + node_size + field_size;
-const size_t MVFLOATFIELD_BASE   = instr_size + float_size + field_size;
-const size_t MVFLOATREG_BASE     = instr_size + float_size + reg_val_size;
-const size_t MVINTCONST_BASE     = instr_size + int_size + const_id_size;
-const size_t MVWORLDFIELD_BASE   = instr_size + field_size;
-const size_t MVSTACKPCOUNTER_BASE= instr_size + stack_val_size;
-const size_t MVPCOUNTERSTACK_BASE= instr_size + stack_val_size;
-const size_t MVSTACKREG_BASE     = instr_size + stack_val_size + reg_val_size;
-const size_t MVREGSTACK_BASE     = instr_size + reg_val_size + stack_val_size;
-const size_t MVADDRREG_BASE      = instr_size + node_size + reg_val_size;
-const size_t MVHOSTREG_BASE      = instr_size + reg_val_size;
-const size_t MVREGREG_BASE       = instr_size + 2 * reg_val_size;
-const size_t MVARGREG_BASE       = instr_size + argument_size + reg_val_size;
-const size_t HEADRR_BASE         = instr_size + 2 * reg_val_size;
-const size_t HEADFR_BASE         = instr_size + field_size + reg_val_size;
-const size_t HEADFF_BASE         = instr_size + 2 * field_size;
-const size_t HEADRF_BASE         = instr_size * reg_val_size + field_size;
-const size_t TAILRR_BASE         = HEADRR_BASE;
-const size_t TAILFR_BASE         = HEADFR_BASE;
-const size_t TAILFF_BASE         = HEADFF_BASE;
-const size_t TAILRF_BASE         = HEADRF_BASE;
-const size_t MVWORLDREG_BASE     = instr_size + reg_val_size;
-const size_t MVCONSTREG_BASE     = instr_size + const_id_size + reg_val_size;
-const size_t CONSRRR_BASE        = instr_size + type_size + 3 * reg_val_size;
-const size_t CONSRFF_BASE        = instr_size + reg_val_size + 2 * field_size;
-const size_t CONSFRF_BASE        = instr_size + field_size + reg_val_size + field_size;
-const size_t CONSFFR_BASE        = instr_size + 2 * field_size + reg_val_size;
-const size_t CONSRRF_BASE        = instr_size + 2 * reg_val_size + field_size;
-const size_t CONSRFR_BASE        = instr_size + reg_val_size + field_size + reg_val_size;
-const size_t CONSFRR_BASE        = instr_size + type_size + field_size + 2 * reg_val_size;
-const size_t CONSFFF_BASE        = instr_size + 3 * field_size;
-const size_t CALL0_BASE          = call_size;
-const size_t CALL1_BASE          = call_size + reg_val_size;
-const size_t CALL2_BASE          = call_size + 2 * reg_val_size;
-const size_t CALL3_BASE          = call_size + 3 * reg_val_size;
-const size_t MVINTSTACK_BASE     = instr_size + int_size + stack_val_size;
-const size_t PUSHN_BASE          = instr_size + count_size;
-const size_t MAKE_STRUCTF_BASE   = instr_size + field_size;
-const size_t STRUCT_VALRR_BASE   = instr_size + count_size + 2 * reg_val_size;
-const size_t STRUCT_VALFR_BASE   = instr_size + count_size + field_size + reg_val_size;
-const size_t STRUCT_VALRF_BASE   = STRUCT_VALFR_BASE;
-const size_t STRUCT_VALRFR_BASE  = STRUCT_VALRF_BASE;
-const size_t STRUCT_VALFF_BASE   = instr_size + count_size + 2 * field_size;
-const size_t STRUCT_VALFFR_BASE  = STRUCT_VALFF_BASE;
-const size_t MVFLOATSTACK_BASE   = instr_size + float_size + stack_val_size;
-const size_t ADDLINEAR_BASE      = instr_size + reg_val_size;
-const size_t ADDPERS_BASE        = ADDLINEAR_BASE;
-const size_t RUNACTION_BASE      = ADDLINEAR_BASE;
-const size_t ENQUEUE_LINEAR_BASE = ADDLINEAR_BASE;
-const size_t UPDATE_BASE         = instr_size + reg_val_size;
-const size_t SET_PRIORITY_BASE   = instr_size + 2 * reg_val_size;
-const size_t SET_PRIORITYH_BASE  = instr_size + reg_val_size;
-const size_t ADD_PRIORITY_BASE   = instr_size + 2 * reg_val_size;
-const size_t ADD_PRIORITYH_BASE  = instr_size + reg_val_size;
-const size_t STOP_PROG_BASE      = instr_size;
-const size_t CPU_ID_BASE         = instr_size + 2 * reg_val_size;
-const size_t NODE_PRIORITY_BASE  = instr_size + 2 * reg_val_size;
-const size_t IF_ELSE_BASE        = instr_size + reg_val_size + 2 * jump_size;
-const size_t JUMP_BASE           = instr_size + jump_size;
+#define SEND_BASE            3
+#define OP_BASE              4
+#define BASE_ITER            21
+#define ITER_BASE            23
+#define PERS_ITER_BASE       21
+#define OPERS_ITER_BASE      21
+#define LINEAR_ITER_BASE     21
+#define RLINEAR_ITER_BASE    21
+#define OLINEAR_ITER_BASE    23
+#define ORLINEAR_ITER_BASE   23
+#define ALLOC_BASE           1 + 2
+#define CALL_BASE            3 + 1
+#define IF_BASE              1 + 1 + 4
+#define TESTNIL_BASE         1 + 1 + 1
+#define HEAD_BASE            1 + 3
+#define NOT_BASE             1 + 2 * 1
+#define RETURN_BASE          1
+#define NEXT_BASE            1
+#define FLOAT_BASE           1 + 2 * 1
+#define SELECT_BASE          1 + 8
+#define RETURN_SELECT_BASE   1 + 4
+#define DELETE_BASE          1 + 2
+#define REMOVE_BASE          1 + 1
+#define RETURN_LINEAR_BASE   1
+#define RETURN_DERIVED_BASE  1
+#define RESET_LINEAR_BASE    1 + 4
+#define END_LINEAR_BASE      1
+#define RULE_BASE            1 + 4
+#define RULE_DONE_BASE       1
+#define NEW_NODE_BASE        1 + 1
+#define NEW_AXIOMS_BASE      1 + 4
+#define SEND_DELAY_BASE      1 + 2 + 4
+#define PUSH_BASE            1
+#define POP_BASE             1
+#define PUSH_REGS_BASE       1
+#define POP_REGS_BASE        1
+#define CALLF_BASE           1 + 1
+#define CALLE_BASE           3 + 1
+#define MAKE_STRUCTR_BASE    1 + 1 + 1
+#define MVINTFIELD_BASE      1 + 4 + 2
+#define MVINTREG_BASE        1 + 4 + 1
+#define MVFIELDFIELD_BASE    1 + 2 + 2
+#define MVFIELDREG_BASE      1 + 2 + 1
+#define MVPTRREG_BASE        1 + 8 + 1
+#define MVNILFIELD_BASE      1 + 2
+#define MVNILREG_BASE        1 + 1
+#define MVREGFIELD_BASE      1 + 1 + 2
+#define MVHOSTFIELD_BASE     1 + 2
+#define MVREGCONST_BASE      1 + 1 + 4
+#define MVCONSTFIELD_BASE    1 + 4 + 2
+#define MVADDRFIELD_BASE     1 + 8 + 2
+#define MVFLOATFIELD_BASE    1 + 8 + 2
+#define MVFLOATREG_BASE      1 + 8 + 1
+#define MVINTCONST_BASE      1 + 4 + 4
+#define MVWORLDFIELD_BASE    1 + 2
+#define MVSTACKPCOUNTER_BASE 1 + 1
+#define MVPCOUNTERSTACK_BASE 1 + 1
+#define MVSTACKREG_BASE      1 + 1 + 1
+#define MVREGSTACK_BASE      1 + 1 + 1
+#define MVADDRREG_BASE       1 + 8 + 1
+#define MVHOSTREG_BASE       1 + 1
+#define MVREGREG_BASE        1 + 2 * 1
+#define MVARGREG_BASE        1 + 1 + 1
+#define HEADRR_BASE          1 + 2 * 1
+#define HEADFR_BASE          1 + 2 + 1
+#define HEADFF_BASE          1 + 2 * 2
+#define HEADRF_BASE          1 * 1 + 2
+#define TAILRR_BASE          3
+#define TAILFR_BASE          4
+#define TAILFF_BASE          5
+#define TAILRF_BASE          3
+#define MVWORLDREG_BASE      1 + 1
+#define MVCONSTREG_BASE      1 + 4 + 1
+#define CONSRRR_BASE         1 + 1 + 3 * 1
+#define CONSRFF_BASE         1 + 1 + 2 * 2
+#define CONSFRF_BASE         1 + 2 + 1 + 2
+#define CONSFFR_BASE         1 + 2 * 2 + 1
+#define CONSRRF_BASE         1 + 2 * 1 + 2
+#define CONSRFR_BASE         1 + 1 + 2 + 1
+#define CONSFRR_BASE         1 + 1 + 2 + 2 * 1
+#define CONSFFF_BASE         1 + 3 * 2
+#define CALL0_BASE           3
+#define CALL1_BASE           3 + 1
+#define CALL2_BASE           3 + 2 * 1
+#define CALL3_BASE           3 + 3 * 1
+#define MVINTSTACK_BASE      1 + 4 + 1
+#define PUSHN_BASE           1 + 1
+#define MAKE_STRUCTF_BASE    1 + 2
+#define STRUCT_VALRR_BASE    1 + 1 + 2 * 1
+#define STRUCT_VALFR_BASE    1 + 1 + 2 + 1
+#define STRUCT_VALRF_BASE    5
+#define STRUCT_VALRFR_BASE   5
+#define STRUCT_VALFF_BASE    1 + 1 + 2 * 2
+#define STRUCT_VALFFR_BASE   6
+#define MVFLOATSTACK_BASE    1 + 8 + 1
+#define ADDLINEAR_BASE       1 + 1
+#define ADDPERS_BASE         2
+#define RUNACTION_BASE       2
+#define ENQUEUE_LINEAR_BASE  2
+#define UPDATE_BASE          1 + 1
+#define SET_PRIORITY_BASE    1 + 2 * 1
+#define SET_PRIORITYH_BASE   1 + 1
+#define ADD_PRIORITY_BASE    1 + 2 * 1
+#define ADD_PRIORITYH_BASE   1 + 1
+#define STOP_PROG_BASE       1
+#define CPU_ID_BASE          1 + 2 * 1
+#define NODE_PRIORITY_BASE   1 + 2 * 1
+#define IF_ELSE_BASE         1 + 1 + 2 * 4
+#define JUMP_BASE            1 + 4
 
 /* Instruction specific functions */
-inline code_offset_t if_jump(pcounter pc) 
-{ return jump_get(pc, instr_size + reg_val_size); }
+static inline uint32_t pcounter_code_size (const unsigned char *pc) 
+{ return *(uint32_t *)pc; }
+static inline uint32_t jump_get (unsigned char *x, size_t off) 
+{ return pcounter_code_size(x + off); }
+static inline uint32_t if_jump (unsigned char *pc) 
+{ return jump_get(pc, 2); }
 
 /* macros */
 
@@ -310,7 +283,6 @@ inline code_offset_t if_jump(pcounter pc)
 #define ITER_MATCH_END(x)   (((*(const unsigned char*)((x)+1))&0xc0) == 0x40)
 #define ITER_MATCH_NONE(x)  (((*(const unsigned char*)((x)+1))&0xc0) == 0xc0)
 #define ITER_MATCH_FIELD(x)   (*(const unsigned char*)(x))
-#define ITER_BASE     4
 
 #define ITER_MATCH_VAL(x)   (((*(const unsigned char*)((x)+1))&0x3f))
 #define SEND_MSG(x)   ((((*(const unsigned char*)(x))&0x3) << 3) | \
@@ -326,9 +298,9 @@ inline code_offset_t if_jump(pcounter pc)
 #define OP_OP(x)      ((*(const unsigned char*)((x)+2)) & 0x1f)
 #define OP_DST(x)     ((((*(const unsigned char*)((x)+1)) & 0x03) << 3) | \
                       (((*(const unsigned char*)((x)+2)) & 0xe0) >> 5))
- 
-#define MOVE_SRC(x)   ((((*(const unsigned char*)(x))&0xf) << 2) | \
-					   (((*(const unsigned char*)((x)+1))&0xc0) >> 6))
+
+#define FETCH(x)   (*(const unsigned char*)(x)) 
+#define MOVE_SRC(x)   (*(const unsigned char*)((x)+1))
 #define MOVE_DST(x)   (((*(const unsigned char*)((x)+1))&0x3f))
 #define ALLOC_TYPE(x) ((((*(const unsigned char *)(x))&0x1f) << 2) | \
 					   (((*(const unsigned char *)(x+1))&0xc0) >> 6))
@@ -480,8 +452,6 @@ extern int extern_functs_args[];
 extern char *tuple_names[];
 extern unsigned char *arguments;
 extern int *delta_sizes;
-
-inline unsigned char fetch (unsigned char *pc) { return (unsigned char)*pc; }
 
 static inline tuple_t
 tuple_alloc(tuple_type type)
