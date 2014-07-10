@@ -26,7 +26,8 @@ main (int argc, char* argv[])
 
   /* Get name for output */
   char outNameBuf[strlen (inNameBuf) + 3];
-  size_t i;
+  int i;
+  int j;
   for (i = 0;  i < (strlen (inNameBuf) - 1); ++i) {
     outNameBuf[i] = inNameBuf[i];
   }
@@ -43,7 +44,7 @@ main (int argc, char* argv[])
   pBBFile = fopen (outNameBuf, "w");
 
   /* Start parsing */
-  if (pMeldProg == NULL) perror ("Error opening file - No such file");
+  if (pMeldProg == NULL) perror ("Error opening file");
   else
     {
       /* Read magic and check that program is Meld file*/
@@ -89,7 +90,7 @@ main (int argc, char* argv[])
       /* Read types */
       byte types[numTypes];
       printf ("Types: ");
-      for (size_t i = 0; i < numTypes; ++i) types[i] = readType (pMeldProg);
+      for (i = 0; i < numTypes; ++i) types[i] = readType (pMeldProg);
       printf ("\n");
 
       /* Read number of imported predicates */
@@ -118,7 +119,7 @@ main (int argc, char* argv[])
       fread (&numRules, 4, 1, pMeldProg);
       printf ("Number of rules: %i\n", numRules);
 
-      for (size_t i = 0; i < numRules; ++i) {
+      for (i = 0; i < numRules; ++i) {
 	printf ("  Rule %lu: ", i);
 	    
 	/* Read rule length */
@@ -140,7 +141,7 @@ main (int argc, char* argv[])
       fread (&numStrings, 4, 1, pMeldProg);
       printf ("Number of string constants: %d\n", numStrings);
 
-      for (uint32_t i = 0; i < numStrings; ++i) {
+      for (i = 0; i < numStrings; ++i) {
 	printf ("  String %d: ", i);
 
 	uint32_t stringLength;
@@ -162,7 +163,7 @@ main (int argc, char* argv[])
       /* Read type */
       byte constTypes[numConstants];
 
-      for (uint32_t i = 0; i < numConstants; ++i) {
+      for (i = 0; i < numConstants; ++i) {
 	constTypes[i] = readTypeID(pMeldProg, types);
       }
 
@@ -181,7 +182,7 @@ main (int argc, char* argv[])
       fread (&numFunctions, 4, 1, pMeldProg);
       printf ("Number of functions: %d\n", numFunctions);
 
-      for (uint32_t i = 0; i < numFunctions; ++i) {
+      for (i = 0; i < numFunctions; ++i) {
 	uint32_t functionSize;
 	fread (&functionSize, 4, 1, pMeldProg);
 
@@ -196,7 +197,7 @@ main (int argc, char* argv[])
       fread (&numExternalFunctions, 4, 1, pMeldProg);
       printf ("Number of external functions: %d\n", numExternalFunctions);
       
-      for (uint32_t i = 0; i < numExternalFunctions; ++i) {
+      for (i = 0; i < numExternalFunctions; ++i) {
 	printf ("  Extern %d:\n", i);
 	
 	uint32_t externID;
@@ -222,7 +223,7 @@ main (int argc, char* argv[])
 	  printf ("    Types: ");
 	  byte funcArgTypes[numFuncArgs];
 	  
-	  for (uint32_t j = 0; j < numFuncArgs; j++) {
+	  for (j = 0; j < numFuncArgs; j++) {
 	    funcArgTypes[j] = readTypeID (pMeldProg, types);
 	  }
 	  /* TODO: store somewhere? */
@@ -235,11 +236,11 @@ main (int argc, char* argv[])
       /* Initialize global containers */
       Predicate predicates[numPredicates];
       Rule rules[numRules];
-      byte arguments[256];
+      byte allArguments[256];
 
       printf ("\n PREDICATE DESCRIPTORS \n");
 
-      for (size_t i = 0; i < numPredicates; ++i) { 
+      for (i = 0; i < numPredicates; ++i) { 
 	printf("  Predicate %lu:\n", i);
 	
 	/* Read code size */
@@ -265,10 +266,11 @@ main (int argc, char* argv[])
 	  printf ("LINEAR ");
 	  oldProp |= 0x04;
 	}
-	else {
-	  printf ("PERSISTENT ");
-	  oldProp |= 0x02;
-	}
+	/* TODO: Demistify this */
+	/* else { */
+	/*   printf ("PERSISTENT "); */
+	/*   oldProp |= 0x02; */
+	/* } */
 	if (prop & PRED_ROUTE) {
 	  printf ("ROUTE ");
 	  oldProp |= 0x20;
@@ -333,8 +335,9 @@ main (int argc, char* argv[])
 	printf ("    Field types: ");
 	predicates[i].argOffset = totalArguments;
 	
-	for (int i = 0; i < numFields; ++i) {
-	  arguments[totalArguments++] = readTypeID (pMeldProg, types);
+	int k;
+	for (k = 0; k < numFields; ++k) {
+	  allArguments[totalArguments++] = readTypeID (pMeldProg, types);
 	}
 	printf ("\n");
 
@@ -345,7 +348,7 @@ main (int argc, char* argv[])
   
 	printf ("    Name: ");
 	char *sc = predicates[i].pName;
-	for (int j = 0; (j < PRED_NAME_SIZE_MAX) || (*sc == '\0'); ++j) {
+	for (j = 0; (j < PRED_NAME_SIZE_MAX) || (*sc == '\0'); ++j) {
 	  printf("%c", *sc);
 	  ++sc;
 	}
@@ -410,7 +413,7 @@ main (int argc, char* argv[])
 
       /* Read predicate bytecode */
       printf ("\nEXTRACTING PREDICATE BYTECODE...\n");
-      for (int i = 0; i < numPredicates; ++i) {
+      for (i = 0; i < numPredicates; ++i) {
 	uint32_t bytecodeSize = predicates[i].codeSize;
 	predicates[i].pBytecode = malloc (bytecodeSize);
 
@@ -426,7 +429,7 @@ main (int argc, char* argv[])
       fread (&numRulesCode, 4, 1, pMeldProg);
       printf ("Number of rule codes: %d\n", numRulesCode);
 
-      for (int i = 0; i < numRulesCode; ++i) {
+      for (i = 0; i < numRulesCode; ++i) {
 	uint32_t ruleCodeSize;
 	fread (&ruleCodeSize, 4, 1, pMeldProg);
 	rules[i].codeSize = ruleCodeSize;
@@ -443,7 +446,7 @@ main (int argc, char* argv[])
 	uint32_t numInclPreds;
 	fread (&numInclPreds, 4, 1, pMeldProg);
 
-	for (int j = 0; j < numInclPreds; ++j) {
+	for (j = 0; j < numInclPreds; ++j) {
 	  byte predID;
 	  fread (&predID, 1, 1, pMeldProg);
 	  
@@ -469,7 +472,7 @@ main (int argc, char* argv[])
       size_t currentOffset = descriptorStart;
       fprintf (pBBFile, "\n/* OFFSET TO PREDICATE DESCRIPTORS */");
       
-      for (int i = 0; i < numPredicates; ++i) {
+      for (i = 0; i < numPredicates; ++i) {
       fprintf (pBBFile, "\n");
 
 	/* Print offset */
@@ -486,7 +489,7 @@ main (int argc, char* argv[])
       size_t bcOffset = currentOffset + numRules * sizeof(unsigned short);
   
       printf ("Predicate byte code offsets: ");
-      for (int i = 0; i < numPredicates; ++i) {
+      for (i = 0; i < numPredicates; ++i) {
 	printf ("%d ,", bcOffset);
 	predicates[i].bytecodeOffset = bcOffset;
 	bcOffset += predicates[i].codeSize;
@@ -495,7 +498,7 @@ main (int argc, char* argv[])
 
       /* Then set rule offsets */
       printf ("Rule byte code offsets: ");
-      for (int i = 0; i < numRules; ++i) {
+      for (i = 0; i < numRules; ++i) {
 	printf ("%d ,", bcOffset);
 	rules[i].bytecodeOffset = bcOffset;
 	bcOffset += rules[i].codeSize;
@@ -503,7 +506,7 @@ main (int argc, char* argv[])
 
       fprintf (pBBFile, "\n/* PREDICATE DESCRIPTORS */");
       /* Print predicate descriptors */
-      for (int i = 0; i < numPredicates; ++i) {
+      for (i = 0; i < numPredicates; ++i) {
 	fprintf (pBBFile, "\n");
 	
 	/* Force printing 2 bytes of the offset */
@@ -526,13 +529,13 @@ main (int argc, char* argv[])
 	fprintf (pBBFile, "%#x, ", 0);
 
 	/* Print argument descriptor */
-	for (int j = 0; j < predicates[i].nFields; ++j)
-	  fprintf (pBBFile, "%#x, ", arguments[predicates[i].argOffset + j]);
+	for (j = 0; j < predicates[i].nFields; ++j)
+	  fprintf (pBBFile, "%#x, ", allArguments[predicates[i].argOffset + j]);
       }
 
       /* Print rule offsets */
       fprintf (pBBFile, "\n/* OFFSETS TO RULE BYTECODE */");
-      for (int i = 0; i < numRules; ++i) {
+      for (i = 0; i < numRules; ++i) {
 	fprintf (pBBFile, "\n");
 	/* Force printing 2 bytes of the offset */
 	  fprintf (pBBFile, "%#x, ", rules[i].bytecodeOffset & 0x00ff );
@@ -542,10 +545,10 @@ main (int argc, char* argv[])
       /* Print predicate bytecode */
       printf ("\nPRINTING PREDICATE BYTE CODE...\n");
       fprintf (pBBFile, "\n/* PREDICATE BYTECODE */");
-      for (int i = 0; i < numPredicates; ++i) {
+      for (i = 0; i < numPredicates; ++i) {
 	fprintf (pBBFile, "\n/* Predicate %d: */", i);
         byte *pc =  predicates[i].pBytecode;
-	for (int j = 0; j < predicates[i].codeSize; j++) {
+	for (j = 0; j < predicates[i].codeSize; j++) {
 	  fprintf (pBBFile, "%#x, ", *pc);
 	  ++pc;
 	}
@@ -554,10 +557,10 @@ main (int argc, char* argv[])
       /* Print rule bytecode */
       printf ("\nPRINTING RULE BYTE CODE...\n");
       fprintf (pBBFile, "\n/* RULE BYTECODE */");
-      for (int i = 0; i < numRules; ++i) {
+      for (i = 0; i < numRules; ++i) {
 	fprintf (pBBFile, "\n/* Rule %d: */", i);
 	byte *pc =  rules[i].pBytecode;
-	for (int j = 0; j < rules[i].codeSize; j++) {
+	for (j = 0; j < rules[i].codeSize; j++) {
 	  fprintf (pBBFile, "%#x, ", *pc);
 	  ++pc;
 	}
@@ -570,10 +573,10 @@ main (int argc, char* argv[])
       printf ("\nPRINTING PREDICATE NAMES LIST...\n");
 
       fprintf (pBBFile, "\nchar *tuple_names[] = {");
-      for (int i = 0; i < numPredicates; ++i) {
+      for (i = 0; i < numPredicates; ++i) {
 	char *sc = predicates[i].pName;
 	fprintf (pBBFile, "\"");
-	for (int j = 0; (j < PRED_NAME_SIZE_MAX) && (*sc != 0x0); ++j) {
+	for (j = 0; (j < PRED_NAME_SIZE_MAX) && (*sc != 0x0); ++j) {
 	  fprintf (pBBFile, "%c", *sc);
 	  ++sc;
 	}
@@ -585,10 +588,9 @@ main (int argc, char* argv[])
       /* Print remaining elements */
       printf ("\nPRINTING EXTERNAL FUNCTIONS\n");
 
-      fprintf (pBBFile, "//COMMENTS\n");      
-      /* fprintf (pBBFile, "#include \"extern_functions.bbh\"\n"); */
-      /* fprintf (pBBFile, "Register (*extern_functs[])() = {};\n");  */
-      /* fprintf (pBBFile, "\nint extern_functs_args[] = {};\n"); */
+      fprintf (pBBFile, "#include \"extern_functions.bbh\"\n");
+      fprintf (pBBFile, "Register (*extern_functs[])() = {};\n");
+      fprintf (pBBFile, "\nint extern_functs_args[] = {};\n");
 
       fclose (pMeldProg);
       fclose (pBBFile);

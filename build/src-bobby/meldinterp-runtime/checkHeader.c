@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 #include "dummyCore.h"
-#include "samples/noNeighborRed.bb"
+#include "samples/noNeighborBlue.bb"
 
 int
 main (int argc, char* argv[]) 
