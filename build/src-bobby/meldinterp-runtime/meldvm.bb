@@ -395,6 +395,13 @@ void tuple_handle(tuple_t tuple, int isNew, Register *registers)
   }
 }
 
+void
+setColorWrapper (byte color) { setColor (color % NUM_COLORS);}
+
+void
+setLEDWrapper (byte r, byte g, byte b, byte intensity) 
+{ setLEDWrapper (r, g, b, intensity);}
+
 #ifdef BBSIM
 extern int alreadyExecuted(int flag);
 #endif

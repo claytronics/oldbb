@@ -268,23 +268,22 @@ enum instr_type {
 #define IF_ELSE_BASE         1 + 1 + 2 * 4
 #define JUMP_BASE            1 + 4
 
-/* Instruction specific functions */
-static inline uint32_t pcounter_code_size (const unsigned char *pc) 
-{ return *(uint32_t *)pc; }
-static inline uint32_t jump_get (unsigned char *x, size_t off) 
-{ return pcounter_code_size(x + off); }
-static inline uint32_t if_jump (unsigned char *pc) 
-{ return jump_get(pc, 2); }
+/* Instruction specific macros and functions */
+#define IF_JUMP(x)    (*(uint32_t*)((const unsigned char*)(x)))
+
+extern inline byte val_is_float(const byte x) { return x == 0x00; }
+extern inline byte val_is_int(const byte x) { return x == 0x01; }
+extern inline byte val_is_field(const byte x) { return x == 0x02; }
 
 /* macros */
 
-#define ITER_TYPE(x)  ((*(const unsigned char*)((x)+1))&0x7f)
-#define ITER_JUMP(x)  (*(unsigned short*)((const unsigned char*)((x)+2)))
-#define ITER_MATCH_END(x)   (((*(const unsigned char*)((x)+1))&0xc0) == 0x40)
-#define ITER_MATCH_NONE(x)  (((*(const unsigned char*)((x)+1))&0xc0) == 0xc0)
+#define ITER_TYPE(x)  ((*(const unsigned char*)((x)+9))&0x7f)
+#define ITER_INNER_JUMP(x)  (*(uint32_t*)((const unsigned char*)((x)+12)))
+#define ITER_OUTER_JUMP(x)  (*(uint32_t*)((const unsigned char*)((x)+16)))
+#define ITER_NUM_ARGS(x) (*(const unsigned char*)((x)+20))
 #define ITER_MATCH_FIELD(x)   (*(const unsigned char*)(x))
+#define ITER_MATCH_VAL(x)   ((*(const unsigned char*)((x)+1)))
 
-#define ITER_MATCH_VAL(x)   (((*(const unsigned char*)((x)+1))&0x3f))
 #define SEND_MSG(x)   ((((*(const unsigned char*)(x))&0x3) << 3) | \
                       (((*(const unsigned char*)((x)+1))&0xe0) >> 5))
 #define SEND_RT(x)    ((*(const unsigned char*)((x)+1))&0x1f)
@@ -441,6 +440,7 @@ static inline uint32_t if_jump (unsigned char *pc)
 
 #define RET_RET 0
 #define RET_NEXT 1
+#define RET_ERROR -1
 
 #define TYPE_SETCOLOR 2
 #define TYPE_SETCOLOR2 7
@@ -531,6 +531,8 @@ extern tuple_type TYPE_COLOCATED;
 extern tuple_type TYPE_PROVED;
 extern tuple_type TYPE_TERMINATE;
 
+extern void setColorWrapper (byte color);
+extern void setLEDWrapper (byte r, byte g, byte b, byte intensity);
 /* void print_process(const unsigned char *pc); */
 
 #endif
