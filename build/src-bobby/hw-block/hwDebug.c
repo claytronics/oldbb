@@ -1,6 +1,8 @@
 #include "../hw-api/hwDebug.h"
 #include <avr/io.h>
 
+/* DEBUGDEF */
+/* #define DEBUG 5 */
 #ifdef DEBUG
 
 #if DEBUG == 5 // UP

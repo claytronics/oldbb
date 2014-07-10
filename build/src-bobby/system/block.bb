@@ -78,9 +78,11 @@ void initBlock()
 
 	initPorts();
 
+/* DEBUGDEF */
+/* #define DEBUG 5 */
 #ifdef DEBUG
 	initDebug();
-    	//printf("System Debug Enabled\r\n");
+    	printf("System Debug Enabled\r\n");
 #endif
 
 	initDataLink();	
