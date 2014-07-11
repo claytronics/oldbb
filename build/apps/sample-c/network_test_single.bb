@@ -13,7 +13,7 @@ threadvar byte activePort;
 threadvar byte seqNum = 1;
 threadvar byte recSeq;	
 threadvar byte ackReceived = 0;
-threadvar char s[10];
+threadvar char ss[10];
 
 Time sendTime;
 
@@ -23,8 +23,8 @@ void myMain(void)
     uint16_t masterID;
     
     #ifdef LOG_DEBUG
-    snprintf(s, 150*sizeof(char), "INIT");
-    printDebug(s);
+    snprintf(ss, 150*sizeof(char), "INIT");
+    printDebug(ss);
     #endif
     
     initClock();
@@ -57,8 +57,8 @@ void myMain(void)
 	  if (getClock() > (sendTime + ACK_TIMEOUT)) {	
 	    // While an ack has not been received, resend command every ACK_TIMEOUT milliseconds
 #ifdef LOG_DEBUG
-	    snprintf(s, 15*sizeof(char), "CMD %d LOST", seqNum);
-	    printDebug(s);
+	    snprintf(ss, 15*sizeof(char), "CMD %d LOST", seqNum);
+	    printDebug(ss);
 #endif
 	    sendCmd();
 	    sendTime = getClock();
@@ -69,8 +69,8 @@ void myMain(void)
 	sendCmd();
       }
       #ifdef LOG_DEBUG
-      snprintf(s, 15*sizeof(char), "PASSED!");
-      printDebug(s);
+      snprintf(ss, 15*sizeof(char), "PASSED!");
+      printDebug(ss);
       #endif
  
       setColor(GREEN);
@@ -100,8 +100,8 @@ void myMsgHandler(void)
       else {
 	sendACK();
 #ifdef LOG_DEBUG
-	snprintf(s, 15*sizeof(char), "ACK %d LOST", recSeq);
-	printDebug(s);
+	snprintf(ss, 15*sizeof(char), "ACK %d LOST", recSeq);
+	printDebug(ss);
 #endif
       }
       break;
@@ -120,8 +120,8 @@ void myMsgHandler(void)
 byte sendACK(void)
 { 
 #ifdef LOG_DEBUG
-  snprintf(s, 15*sizeof(char), "ACK %d", seqNum);
-  printDebug(s);
+  snprintf(ss, 15*sizeof(char), "ACK %d", seqNum);
+  printDebug(ss);
 #endif
   
   Chunk *c = getSystemTXChunk();
@@ -144,8 +144,8 @@ byte
 sendCmd(void)
 {
 #ifdef LOG_DEBUG
-  snprintf(s, 15*sizeof(char), "CMD %d", seqNum);
-  printDebug(s);
+  snprintf(ss, 15*sizeof(char), "CMD %d", seqNum);
+  printDebug(ss);
 #endif
   
   Chunk *c = getSystemTXChunk();
