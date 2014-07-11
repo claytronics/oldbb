@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 #include "ldp.h"
      
 extern FILE *yyin;
@@ -16,7 +17,7 @@ extern Table symbols;
  int error = 0;
 
 void
-yyerror (char* s)
+yyerror (const char* s)
 {
   fprintf (stderr, "%s:%d:%s\n", fname, linenum, s);
   error = 1;
