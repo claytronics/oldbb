@@ -199,13 +199,10 @@ void meldMain(void)
   for (i = 0; i < NUM_PORTS; i++) {
     neighbors[i] = get_neighbor_ID(i);
 
-      if (neighbor == neighbors[i])
-	enqueue_face(neighbors[i], i, -1);
-
-#ifdef DEBUG_NEIGHBORHOOD
-      printf ("--%d--\tInit neighbor %d on face %d!\n",
-	      blockId, neighbors[i], i);
-#endif
+/* #ifdef DEBUG_NEIGHBORHOOD */
+/*       printf ("--%d--\tInit neighbor %d on face %d!\n", */
+/* 	      blockId, neighbors[i], i); */
+/* #endif */
 
     enqueue_face(neighbors[i], i, 1);
   }
