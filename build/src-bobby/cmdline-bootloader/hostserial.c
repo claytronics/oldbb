@@ -141,11 +141,12 @@ void shutdownSerial()
 // just grab bytes
 void process()
 {
-    byte curr;
+  //byte curr;
 
     while( !isEmpty(&(serialData)) )
     {
-        curr = (byte)pop(&(serialData));
+      //curr = (byte)
+      pop(&(serialData));
 
         // store last received byte
 //        pthread_mutex_lock(&responseMutex);
