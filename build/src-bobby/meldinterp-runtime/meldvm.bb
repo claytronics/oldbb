@@ -49,7 +49,8 @@ static tuple_type TYPE_NEIGHBORCOUNT = -1;
 static tuple_type TYPE_VACANT = -1;
 
 //#define DEBUG
-#define DEBUG_REGISTERS
+/* #define DEBUG_REGISTERS */
+/* #define DEBUG_NEIGHBORHOOD */
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -95,12 +96,9 @@ void enqueue_face(NodeID neighbor, meld_int face, int isNew)
     SET_TUPLE_FIELD(tuple, 0, &face);
   }
   else {
-    void *null = NULL;
-
     tuple = tuple_alloc(TYPE_NEIGHBOR);
     SET_TUPLE_FIELD(tuple, 0, &neighbor);
     SET_TUPLE_FIELD(tuple, 1, &face);
-    SET_TUPLE_FIELD(tuple, 2, &null);
   }
 
   enqueueNewTuple(tuple, (record_type) isNew);
@@ -245,7 +243,11 @@ void meldMain(void)
       if (neighbor == neighbors[i])
 	continue;
 
+#ifdef DEBUG_NEIGHBORHOOD
+      printf ("--%d--\tNew neighbor %d on face %d!\n",
+	      blockId, neighbor, i);
       enqueue_face(neighbors[i], i, -1);
+#endif
 
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);

@@ -15,7 +15,7 @@
 /* #define DEBUG_INSTRS */
 /* #define DEBUG_ALLOCS */
 //#define DEBUG_PROVED_TUPLES
-#define DEBUG_MOVE
+/* #define DEBUG_MOVE */
 
 static unsigned char **deltas = NULL;
 int *delta_sizes = NULL;
