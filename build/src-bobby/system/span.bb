@@ -7,7 +7,7 @@
 #define MAX_SPANTREE_ID 16
 
 // set by setSpanningTreeDebug
-static int debugmode = 0;
+//static int debugmode = 0;
 
 // list of ptrs to spanning tree structures
 static SpanningTree* trees[MAX_SPANTREE_ID];
@@ -20,8 +20,8 @@ static int allHaveBarrier = 0;
 static int reachBarrier = 0;
 
 //variable for debugging
-static int colorDebug = 0;
-static int logDebug = 0;
+//static int colorDebug = 0;
+//static int logDebug = 0;
 
 //private functions
 byte sendMySpChunk(byte myport, byte *data, byte size, MsgHandler mh);
