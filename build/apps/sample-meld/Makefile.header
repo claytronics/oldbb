@@ -355,7 +355,7 @@ BLOCKSTUFF += begin gccversion sizebefore build sizeafter end
 
 ############### back to our stuff
 else
-CFLAGS := -g -O1 -Wall -DBBSIM -Werror
+CFLAGS := -g -O1 -Wall -DBBSIM #-Werror
 ALL_CFLAGS = $(CFLAGS)
 CC     := gcc
 BLOCKSTUFF :=

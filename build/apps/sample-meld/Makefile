@@ -2,7 +2,7 @@
 # below here should be in an include file
 ##################################################
 
-SOURCE := rainbow.meld
+SOURCE := ends.meld
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
