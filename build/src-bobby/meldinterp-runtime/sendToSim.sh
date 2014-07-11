@@ -1,3 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 
-cp $1 /Users/pthalamy/Studies/CMU/MeldonBB/modifiedVM/oldbb/build/apps/sample-meld/arch-x86_64-Darwin/meldinterp-runtime/ends.bb
+if [ "$ARCH" == "" ]; then
+ echo "ARCH not defined!"
+else
+ cp $1 ../../apps/sample-meld/arch-$ARCH/meldinterp-runtime/ends.bb;
+fi
