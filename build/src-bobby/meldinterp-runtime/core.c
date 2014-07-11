@@ -15,6 +15,7 @@
 /* #define DEBUG_INSTRS */
 /* #define DEBUG_ALLOCS */
 //#define DEBUG_PROVED_TUPLES
+#define DEBUG_MOVE
 
 static unsigned char **deltas = NULL;
 int *delta_sizes = NULL;
@@ -359,6 +360,15 @@ execute_mvfieldreg (tuple_t tuple, const unsigned char *pc, Register *reg)
 #ifdef DEBUG_INSTRS
   printf ("\n");
 #endif
+
+#ifdef DEBUG_MOVE
+  printf (
+    "\nInstruction: mvfieldreg \n"
+    "src = %#x\n"
+    "dst = %#x\n"
+    ,src, dst);
+#endif
+
   size_t size = sizeof(Register);
   memcpy(dst, src, size);
 }

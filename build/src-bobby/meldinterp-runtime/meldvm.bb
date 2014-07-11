@@ -49,6 +49,7 @@ static tuple_type TYPE_NEIGHBORCOUNT = -1;
 static tuple_type TYPE_VACANT = -1;
 
 //#define DEBUG
+#define DEBUG_REGISTERS
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -124,7 +125,7 @@ void enqueue_tap(void)
 
   //#if DEBUG
   facts_dump();
-  //#endif
+  //#endifTUPLE_ALLOC_CHECKS
 }
 
 static
@@ -174,6 +175,11 @@ void meldMain(void)
   memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
 
   vm_init();
+
+#ifdef DEBUG_REGISTERS
+  printf ("\nRegister address range: %#8x - %#8x\n", 
+	  &reg[0], &reg[31]);
+#endif
 
   //block initialization
 #if DEBUG
@@ -278,6 +284,9 @@ void receive_tuple(int isNew)
   tuple_t rcvdTuple = (tuple_t)thisChunk->data;
   tuple_t tuple;
   size_t tuple_size = TYPE_SIZE(TUPLE_TYPE(rcvdTuple));
+
+  printf ("rcvdTuple type: %d | size: %lu\n", TUPLE_TYPE(rcvdTuple),
+	  tuple_size);
 
   tuple = malloc(tuple_size);
   memcpy(tuple, rcvdTuple, tuple_size);
