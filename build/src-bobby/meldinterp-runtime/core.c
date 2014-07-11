@@ -12,8 +12,8 @@
 #include "../system/myassert.h"
 #include <stdio.h>
 
-#define DEBUG_INSTRS
-#define DEBUG_ALLOCS
+/* #define DEBUG_INSTRS */
+/* #define DEBUG_ALLOCS */
 //#define DEBUG_PROVED_TUPLES
 
 static unsigned char **deltas = NULL;
@@ -51,6 +51,8 @@ void* eval_field (const unsigned char value, tuple_t tuple,
 #ifdef DEBUG_INSTRS
   /* NOTE: Interesting debug print can be found in core.c.old */
   printf ("%d.%d ", reg_index, field_num);
+#else
+  (void)reg_index;
 #endif
 
   return GET_TUPLE_FIELD(tuple, field_num);
@@ -102,8 +104,10 @@ void moveTupleToReg (const unsigned char reg_index, tuple_t tuple, Register *reg
   Register *dst = &(reg)[VAL_REG(reg_index)];
   *dst = (Register)tuple;
 
+#ifdef DEBUG_INSTRS
   printf ("MOVE tuple: %s to reg: %d\n", 
 	  tuple_names[TUPLE_TYPE(reg[reg_index])], reg_index);
+#endif
 }
 
 /* END OF EVAL FUNCTIONS */
@@ -125,7 +129,9 @@ execute_alloc (tuple_t tuple, const unsigned char *pc, Register *reg)
   tuple_t *dst = eval_reg (FETCH(pc), &pc, reg);			
   *dst = ALLOC_TUPLE(TYPE_SIZE(type));
 
+#ifdef DEBUG_INSTRS
   printf ("\n");
+#endif
 
   memset (*dst, 0, TYPE_SIZE(type));
   TUPLE_TYPE(*dst) = type;
@@ -141,7 +147,11 @@ execute_addpers (const unsigned char *pc,
   Register send_reg = reg[reg_index];
   tuple_type type = TUPLE_TYPE((tuple_t)send_reg);
 
+#ifdef DEBUG_INSTRS
   printf ("ADDPERS reg %d:%s\n", reg_index, tuple_names[type]);
+#else
+  (void)type;
+#endif
 
   enqueueNewTuple((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), 
 		  (record_type) isNew);
@@ -208,10 +218,6 @@ execute_iter (const unsigned char *pc,
     unsigned char num_args = ITER_NUM_ARGS(pc);	
     const unsigned char *tmppc = pc + PERS_ITER_BASE;
 
-#ifdef DEBUG_INSTRS
-    printf("  num_args = %d\n", num_args);
-#endif
-
     /* check to see if it matches */
     for (k = 0; k < num_args; ++k) {
       const unsigned char fieldnum = ITER_MATCH_FIELD(tmppc);
@@ -223,22 +229,28 @@ execute_iter (const unsigned char *pc,
       Register *val;      
 
       if (val_is_int (value_type)) {
+#ifdef DEBUG_INSTRS
 	printf ("VAL INT\n");
+#endif
 	tmppc += 2;
 	val = eval_int(value_type, &tmppc, reg);
       } else if (val_is_float (value_type)) {
+#ifdef DEBUG_INSTRS
 	printf ("VAL FLOAT\n");
+#endif
 	tmppc += 2;
 	val = eval_float(value_type, &tmppc, reg);
       } else if (val_is_field (value_type)) {
+#ifdef DEBUG_INSTRS
 	printf ("VAL FIELD\n");
+#endif
 	tmppc += 2;
 	byte reg_index = FETCH(tmppc+1);
 	tuple_t tpl = (tuple_t)reg[reg_index];
 	val = eval_field(value_type, tpl, &tmppc, reg);
       }  else {
         /* Don't know what to do */
-       	printf ("Type %d not support yet - don't know what to do.\n", fieldtype);
+       	fprintf (stderr, "Type %d not support yet - don't know what to do.\n", fieldtype);
 	assert (0);
 	exit (2);
       }
@@ -283,7 +295,9 @@ execute_rule_done (tuple_t tuple, const unsigned char *pc, Register *reg)
 inline void
 execute_mvintfield (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
+#ifdef DEBUG_INSTRS
   printf ("MOVE INT ");
+#endif
   ++pc;
   
   Register *src = eval_int (FETCH(pc), &pc, reg);
@@ -293,10 +307,14 @@ execute_mvintfield (tuple_t tuple, const unsigned char *pc, Register *reg)
   tuple_t dst_tuple = (tuple_t)reg[reg_index];
   tuple_type type = TUPLE_TYPE(dst_tuple);
 
+#ifdef DEBUG_INSTRS
   printf ("TO FIELD ");
+#endif
   Register *dst = eval_field (FETCH(pc), dst_tuple, &pc, reg); 
 
+#ifdef DEBUG_INSTRS
   printf ("\n");
+#endif
   
   size_t size = TYPE_ARG_SIZE(type, field_num);
 
@@ -306,12 +324,18 @@ execute_mvintfield (tuple_t tuple, const unsigned char *pc, Register *reg)
 inline void
 execute_mvintreg (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
+#ifdef DEBUG_INSTRS
   printf ("MOVE INT ");
+#endif
   ++pc;
   Register *src = eval_int (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
   printf ("TO ");
+#endif
   Register *dst = eval_reg (FETCH(pc), &pc, reg); 
+#ifdef DEBUG_INSTRS
   printf ("\n");
+#endif
   size_t size = sizeof(Register);
   memcpy(dst, src, size);
 }
@@ -323,12 +347,18 @@ execute_mvfieldreg (tuple_t tuple, const unsigned char *pc, Register *reg)
   moveTupleToReg (reg_index, tuple, reg);
   ++pc;
 
+#ifdef DEBUG_INSTRS
   printf ("MOVE FIELD ");
+#endif
   tuple_t tpl = (tuple_t)reg[reg_index];
   Register *src = eval_field (FETCH(pc), tpl, &pc, reg);
+#ifdef DEBUG_INSTRS
   printf ("TO ");
+#endif
   Register *dst = eval_reg (FETCH(pc), &pc, reg); 
+#ifdef DEBUG_INSTRS
   printf ("\n");
+#endif
   size_t size = sizeof(Register);
   memcpy(dst, src, size);
 }
@@ -339,12 +369,18 @@ execute_intequal (tuple_t tuple, const unsigned char *pc, Register *reg)
   ++pc;
 
   Register *arg1 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
   printf ("INT EQUAL ");
+#endif
   Register *arg2 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
   printf ("TO ");
+#endif
   Register *dest = eval_reg (FETCH(pc), &pc, reg);
   *dest = (MELD_INT(arg1) == MELD_INT(arg2)); 
+#ifdef DEBUG_INSTRS
   printf ("\n");		    
+#endif
 }
 
 inline void
@@ -353,12 +389,18 @@ execute_intgreater (tuple_t tuple, const unsigned char *pc, Register *reg)
   ++pc;
 
   Register *arg1 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
   printf ("INT GREATER THAN ");
+#endif
   Register *arg2 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
   printf ("TO ");
+#endif
   Register *dest = eval_reg (FETCH(pc), &pc, reg);
   *dest = (MELD_INT(arg1) > MELD_INT(arg2)); 
+#ifdef DEBUG_INSTRS
   printf ("\n");		    
+#endif
 }
 
 inline void
@@ -372,10 +414,12 @@ execute_run_action (const unsigned char *pc,
   tuple_t action_tuple = (tuple_t)reg[reg_index];
   tuple_type type = TUPLE_TYPE(action_tuple);
 
+#ifdef DEBUG_INSTRS
   printf ("RUN ACTION: ");
+#endif
   
   if (isNew <= 0)
-    printf ("WTH?!\n");
+    fprintf (stderr, "WTH?!\n");
   
   switch (type) {
   case TYPE_SETCOLOR:
@@ -390,7 +434,9 @@ execute_run_action (const unsigned char *pc,
    
   case TYPE_SETCOLOR2:
     if (isNew <= 0) return;
+#ifdef DEBUG_INSTRS
     printf ("%s(currentNode, %d)\n", tuple_names[type], MELD_INT(GET_TUPLE_FIELD(action_tuple, 0))); 
+#endif
    
     setColorWrapper(MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)));
     
@@ -1311,7 +1357,9 @@ int
 tuple_process(tuple_t tuple, const unsigned char *pc,
 	      int isNew, Register *reg)
 {
+#ifdef DEBUG_INSTRS
   printf ("\nPROCESS %s\n", tuple_names[TUPLE_TYPE(tuple)]);
+#endif
   for (;;) {
   eval_loop:
     switch (*(const unsigned char*)pc) {
@@ -1345,6 +1393,8 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 	byte rule_number = FETCH(++pc);
 #ifdef DEBUG_INSTRS
 	printf ("RULE %d\n", rule_number);
+#else
+	(void)rule_number;
 #endif	
 	execute_rule (tuple, pc, reg);
 	pc = npc; goto eval_loop;
@@ -1423,7 +1473,6 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 	if (!(char)(*if_reg)) {
 #ifdef DEBUG_INSTRS
 	  printf ("-- Failed\n");
-	  printf ("Jump = %d\n", IF_JUMP(pc));
 #endif
 	  pc = base + IF_JUMP(pc); goto eval_loop;
 	}
