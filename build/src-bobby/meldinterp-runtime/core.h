@@ -10,7 +10,7 @@
 #endif
 
 /* print tuple allocations */
-//#define TUPLE_ALLOC_DEBUG 1
+#define TUPLE_ALLOC_DEBUG 1
 /* tuple allocation checks */
 #define TUPLE_ALLOC_CHECKS 1
 
@@ -188,7 +188,7 @@
 
 #define TYPE_NEIGHBOR		0
 #define TYPE_NEIGHBORCOUNT	1
-#define TYPE_VACANT			2
+#define TYPE_VACANT		2
 #define TYPE_SETCOLOR		3
 #define TYPE_SETCOLOR2		4
 
@@ -226,7 +226,7 @@ tuple_alloc(tuple_type type)
 	TUPLE_TYPE(tuple) = type;
 	
 #ifdef TUPLE_ALLOC_DEBUG
-  printf("New %s(%d) tuple\n", tuple_names[type], type);
+	printf("New %s(%d) tuple of %d bytes\n", tuple_names[type], type, TYPE_SIZE(type));
 #endif
 
 	return tuple;
