@@ -3,7 +3,7 @@
 Firstly, if running on linux, make sure that you have the following tools and librairies installed on your system:
  - sudo apt-get install avr-libc gcc-avr g++ avrdude
 if you will be working with the meld-compiler, you may also need these packages:
- - sudo apt-get bison mlton ml-yacc ml-lex flex
+ - sudo apt-get install bison mlton ml-yacc ml-lex flex
 
  If you are using Mac OS X, here is a solution to install the complete AVR toolchain on your system:
  - Install homebrew if you don't have it yet: 
