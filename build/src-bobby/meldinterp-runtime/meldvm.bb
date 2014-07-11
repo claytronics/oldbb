@@ -50,7 +50,7 @@ static tuple_type TYPE_VACANT = -1;
 
 //#define DEBUG
 /* #define DEBUG_REGISTERS */
-/* #define DEBUG_NEIGHBORHOOD */
+#define DEBUG_NEIGHBORHOOD
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -123,7 +123,7 @@ void enqueue_tap(void)
 
   //#if DEBUG
   facts_dump();
-  //#endifTUPLE_ALLOC_CHECKS
+  //#endif
 }
 
 static
@@ -199,6 +199,14 @@ void meldMain(void)
   for (i = 0; i < NUM_PORTS; i++) {
     neighbors[i] = get_neighbor_ID(i);
 
+      if (neighbor == neighbors[i])
+	enqueue_face(neighbors[i], i, -1);
+
+#ifdef DEBUG_NEIGHBORHOOD
+      printf ("--%d--\tInit neighbor %d on face %d!\n",
+	      blockId, neighbors[i], i);
+#endif
+
     enqueue_face(neighbors[i], i, 1);
   }
 
@@ -246,8 +254,9 @@ void meldMain(void)
 #ifdef DEBUG_NEIGHBORHOOD
       printf ("--%d--\tNew neighbor %d on face %d!\n",
 	      blockId, neighbor, i);
-      enqueue_face(neighbors[i], i, -1);
 #endif
+
+      enqueue_face(neighbors[i], i, -1);
 
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
