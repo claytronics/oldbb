@@ -293,8 +293,11 @@ void receive_tuple(int isNew)
   tuple_t tuple;
   size_t tuple_size = TYPE_SIZE(TUPLE_TYPE(rcvdTuple));
 
-  printf ("rcvdTuple type: %d | size: %lu\n", TUPLE_TYPE(rcvdTuple),
-	  tuple_size);
+  /* printf ("rcvdTuple type: %d | size: %lu\n", TUPLE_TYPE(rcvdTuple), */
+  /* 	  tuple_size); */
+
+  printf ("--%d--\t Tuple received from %d: %s\n", 
+	  getBlockId(), faceNum(thisChunk), tuple_names[TUPLE_TYPE(rcvdTuple)]);
 
   tuple = malloc(tuple_size);
   memcpy(tuple, rcvdTuple, tuple_size);
@@ -327,8 +330,14 @@ void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
     p_enqueue(delayedTuples, getTime() + delay, tuple, rt, (record_type) isNew);
     return;
   }
+  
+  NodeID target = rt;
 
-  NodeID target = MELD_NODE_ID(GET_TUPLE_FIELD(tuple, 0));
+  printf ("\x1b[33m--%d--\t Send Check: tuple = %s | delay = %d | "
+	  "isNew = %d | Target = %d\x1b[0m\n",
+	  getBlockId(), TYPE_NAME(TUPLE_TYPE(tuple)), delay, isNew,
+	  target);
+
   if (target == blockId) {
     enqueueNewTuple(tuple, (record_type) isNew);
   }
@@ -360,6 +369,9 @@ void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
       }
 
       assert(TYPE_SIZE(TUPLE_TYPE(tuple)) <= 17);
+
+      printf ("--%d--\t Send tuple %s to face %d\n",
+	      getBlockId(), tuple_names[TUPLE_TYPE(tuple)], face);
 
       if (sendMessageToPort(c, face, tuple, TYPE_SIZE(TUPLE_TYPE(tuple)), (MsgHandler)receiver, (GenericHandler)&free_chunk) == 0) {
 	// Send failed :(

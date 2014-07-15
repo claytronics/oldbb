@@ -15,7 +15,6 @@
 #define DEBUG_INSTRS
 /* #define DEBUG_ALLOCS */
 //#define DEBUG_PROVED_TUPLES
-/* #define DEBUG_MOVE */
 
 #define inline 
 
@@ -72,7 +71,7 @@ void* eval_int (const unsigned char value,
 
 inline 
 void* eval_float (const unsigned char value,
-		const unsigned char **pc, Register *reg)
+		  const unsigned char **pc, Register *reg)
 {
   void *ret = (void *)(*pc);
   *pc += sizeof(meld_float);
@@ -255,7 +254,7 @@ execute_iter (const unsigned char *pc,
           
     if (matched) {
       moveTupleToReg (reg_store_index, next_tuple, reg);
-      if (RET_RET == tuple_process(next_tuple, inner_jump, isNew, reg)) {
+      if (RET_RET == tuple_process(next_tuple, inner_jump, isNew, reg, 1)) {
 	free(list);
 	return;
       }
@@ -328,6 +327,49 @@ execute_mvintreg (tuple_t tuple, const unsigned char *pc, Register *reg)
 }
 
 inline void
+execute_mvfloatreg (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+
+  Register *src = eval_float (FETCH(pc), &pc, reg);
+  byte reg_index = FETCH(pc);  
+  Register *dst = eval_reg (reg_index, &pc, reg); 
+
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t MOVE FLOAT %f TO reg %d\n", 
+	  getBlockId(), MELD_FLOAT(src), reg_index);
+#endif
+
+  size_t size = sizeof(Register);
+  memcpy(dst, src, size);
+}
+
+inline void
+execute_mvfloatfield (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  Register *src = eval_float (FETCH(pc), &pc, reg);
+  byte reg_index = FETCH(pc+1);
+  byte field_num = FETCH(pc);
+  
+  tuple_t dst_tuple = (tuple_t)reg[reg_index];
+  tuple_type type = TUPLE_TYPE(dst_tuple);
+
+  Register *dst = eval_field (FETCH(pc), dst_tuple, &pc, reg); 
+
+
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t MOVE FLOAT %f TO FIELD %d.%d\n", 
+	  getBlockId(), MELD_FLOAT(src), reg_index, field_num);
+#endif
+  
+  size_t size = TYPE_ARG_SIZE(type, field_num);
+
+  memcpy(dst, src, size);
+}
+
+inline void
 execute_mvfieldreg (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
   ++pc;
@@ -344,14 +386,6 @@ execute_mvfieldreg (tuple_t tuple, const unsigned char *pc, Register *reg)
   printf ("--%d--\t MOVE FIELD %d.%d TO reg %d\n", 
 	  getBlockId(), field_reg, field_num,
 	  reg_index);
-#endif
-
-#ifdef DEBUG_MOVE
-  printf (
-    "\nInstruction: mvfieldreg \n"
-    "src = %#x\n"
-    "dst = %#x\n"
-    ,src, dst);
 #endif
 
   size_t size = sizeof(Register);
@@ -376,14 +410,6 @@ execute_mvregfield (tuple_t tuple, const unsigned char *pc, Register *reg)
 #ifdef DEBUG_INSTRS
   printf ("--%d--\t MOVE REG %d TO FIELD %d.%d\n", 
 	  getBlockId(), reg_index, field_reg, field_num);
-#endif
-
-#ifdef DEBUG_MOVE
-  printf (
-    "\nInstruction: mvregfield\n"
-    "src = %#x\n"
-    "dst = %#x\n"
-    ,src, dst);
 #endif
 
   size_t size = TYPE_ARG_SIZE(type, field_num);
@@ -417,14 +443,6 @@ execute_mvfieldfield (tuple_t tuple, const unsigned char *pc,
 	  dst_field_reg, dst_field_num);
 #endif
 
-#ifdef DEBUG_MOVE
-  printf (
-    "\nInstruction: mvfieldfield\n"
-    "src = %#x\n"
-    "dst = %#x\n"
-    ,src, dst);
-#endif
-
   size_t size = TYPE_ARG_SIZE(type, dst_field_num);
 
   memcpy(dst, src, size);
@@ -450,15 +468,27 @@ execute_mvhostfield (tuple_t tuple, const unsigned char *pc, Register *reg)
 	  getBlockId(), field_reg, field_num);
 #endif
 
-#ifdef DEBUG_MOVE
-  printf (
-    "\nInstruction: mvhostfield\n"
-    "src = %#x\n"
-    "dst = %#x\n"
-    ,src, dst);
+  size_t size = TYPE_ARG_SIZE(type, field_num);
+
+  memcpy(dst, src, size);
+}
+
+inline void
+execute_mvhostreg (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+
+  Register *src = (void*)EVAL_HOST;
+
+  byte reg_index = FETCH(pc);
+  Register *dst = eval_reg (reg_index, &pc, reg); 
+
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t MOVE HOST TO reg %d\n", 
+	  getBlockId(), reg_index);
 #endif
 
-  size_t size = TYPE_ARG_SIZE(type, field_num);
+  size_t size = sizeof(Register);
 
   memcpy(dst, src, size);
 }
@@ -634,8 +664,8 @@ execute_run_action (const unsigned char *pc,
     if (isNew <= 0) return;
 #ifdef DEBUG_INSTRS
     printf ("--%d--\t RUN ACTION: %s(currentNode, %d)\n", 
-    getBlockId(), tuple_names[type], 
-    MELD_INT(GET_TUPLE_FIELD(action_tuple, 0))); 
+	    getBlockId(), tuple_names[type], 
+	    MELD_INT(GET_TUPLE_FIELD(action_tuple, 0))); 
 #endif
    
     setColorWrapper(MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)));
@@ -1268,12 +1298,12 @@ void aggregate_recalc(tuple_entry *agg, Register *reg,
   if(first_run)
     memcpy(acc_area, accumulator, size);
   else if (aggregate_changed(agg_type, acc_area, accumulator)) {
-    tuple_process(agg->tuple, TYPE_START(type), -1, reg);
+    tuple_process(agg->tuple, TYPE_START(type), -1, reg, 0);
     aggregate_free(agg->tuple, agg_field, agg_type);
     memcpy(acc_area, accumulator, size);
     if (total_copy > 0) /* copy right side from target tuple */
       memcpy(((unsigned char *)agg->tuple) + size_offset, ((unsigned char *)target_tuple) + size_offset, total_copy);
-    tuple_process(agg->tuple, TYPE_START(type), 1, reg);
+    tuple_process(agg->tuple, TYPE_START(type), 1, reg, 0);
   }
 
   free(accumulator);
@@ -1314,7 +1344,7 @@ void process_deltas(tuple_t tuple, tuple_type type, Register *reg)
       break;
     }
 
-    tuple_process(delta_tuple, TYPE_START(TUPLE_TYPE(delta_tuple)), 1, reg);
+    tuple_process(delta_tuple, TYPE_START(TUPLE_TYPE(delta_tuple)), 1, reg, 0);
   }
 
   FREE_TUPLE(old);
@@ -1342,7 +1372,7 @@ void tuple_do_handle(tuple_type type,	tuple_t tuple, int isNew, Register *reg)
 #endif
     PUSH_NEW_TUPLE(_proved);
   } else if(type == TYPE_PROVED) {
-    tuple_process(tuple, TYPE_START(type), isNew, reg);
+    tuple_process(tuple, TYPE_START(type), isNew, reg, 0);
     FREE_TUPLE(tuple);
     return;
   } else if(type == TYPE_TERMINATE) {
@@ -1383,7 +1413,7 @@ void tuple_do_handle(tuple_type type,	tuple_t tuple, int isNew, Register *reg)
     
     memcpy(persistents->array + persistents->current * size, tuple, size);
     ++persistents->current;
-    tuple_process(tuple, TYPE_START(type), isNew, reg);
+    tuple_process(tuple, TYPE_START(type), isNew, reg, 0);
     
     return;
   }
@@ -1409,7 +1439,7 @@ void tuple_do_handle(tuple_type type,	tuple_t tuple, int isNew, Register *reg)
 	      if (cur->records.count <= 0) {
 		/* only process if it isn't linear */
 		if (!TYPE_IS_LINEAR(type)) {
-		  tuple_process(tuple, TYPE_START(TUPLE_TYPE(tuple)), -1, reg);
+		  tuple_process(tuple, TYPE_START(TUPLE_TYPE(tuple)), -1, reg, 0);
 		  FREE_TUPLE(queue_dequeue_pos(queue, current));
 		} else {
 		  if(DELTA_WITH(type)) {
@@ -1439,7 +1469,7 @@ void tuple_do_handle(tuple_type type,	tuple_t tuple, int isNew, Register *reg)
       if(TYPE_IS_LINEAR(type) && DELTA_WITH(type))
 	process_deltas(tuple, type, reg);
 
-      tuple_process(tuple, TYPE_START(TUPLE_TYPE(tuple)), isNew, reg);
+      tuple_process(tuple, TYPE_START(TUPLE_TYPE(tuple)), isNew, reg, 0);
 
       return;
     }
@@ -1505,7 +1535,7 @@ void tuple_do_handle(tuple_type type,	tuple_t tuple, int isNew, Register *reg)
 		  /* delete queue */
 		  free(agg_queue);
 
-		  tuple_process(aggTuple, TYPE_START(TUPLE_TYPE(aggTuple)), -1, reg);
+		  tuple_process(aggTuple, TYPE_START(TUPLE_TYPE(aggTuple)), -1, reg, 0);
 		  aggregate_free(aggTuple, field_aggregate, AGG_AGG(type_aggregate));
 		  FREE_TUPLE(aggTuple);
 		} else
@@ -1550,356 +1580,379 @@ void tuple_do_handle(tuple_type type,	tuple_t tuple, int isNew, Register *reg)
     queue_enqueue(&TUPLES[type], tuple_cpy, (record_type)agg_queue);
 
   aggregate_recalc(entry, reg, true);
-  tuple_process(tuple, TYPE_START(type), isNew, reg);
+  tuple_process(tuple, TYPE_START(type), isNew, reg, 0);
 }
 
 int 
-tuple_process(tuple_t tuple, const unsigned char *pc,
-	      int isNew, Register *reg)
+tuple_process (tuple_t tuple, const unsigned char *pc,
+	      int isNew, Register *reg, byte iter)
 {
 #ifdef DEBUG_INSTRS
   printf ("\n--%d--\tPROCESS %s\n", getBlockId(), 
 	  tuple_names[TUPLE_TYPE(tuple)]);
 #endif
-  /* Move tuple to register 0 so it can be accessed */
-  moveTupleToReg (0, tuple, reg);
+	  /* Move tuple to register 0 so it can be accessed */
+	  if (!iter)
+	    moveTupleToReg (0, tuple, reg);
+	  /* Only if tuple_process not called by iter, */
+	  /* because otherwise the tuple is already in a register */
 
-  for (;;) {
-  eval_loop:
-    switch (*(const unsigned char*)pc) {
-    case RETURN_INSTR: 		/* 0x0 */
-      {
+	  for (;;) {
+	  eval_loop:
+	    switch (*(const unsigned char*)pc) {
+	    case RETURN_INSTR: 		/* 0x0 */
+	      {
 #ifdef DEBUG_INSTRS
-	printf ("--%d--\tRETURN\n", getBlockId());
+		printf ("--%d--\tRETURN\n", getBlockId());
 #endif
-	return RET_RET;
-      }
+		return RET_RET;
+	      }
 
-    case NEXT_INSTR: 		/* 0x1 */
-      {
+	    case NEXT_INSTR: 		/* 0x1 */
+	      {
 #ifdef DEBUG_INSTRS
-	printf ("--%d--\t NEXT\n", getBlockId());	
+		printf ("--%d--\t NEXT\n", getBlockId());	
 #endif
-	return RET_NEXT;
-      }
+		return RET_NEXT;
+	      }
 
-    case PERS_ITER_INSTR: 		/* 0x02 */ 
-      {
-	const byte *npc = pc + ITER_OUTER_JUMP(pc);
-	execute_iter (pc, reg, isNew);
-	pc = npc; goto eval_loop;
-      }
+	    case PERS_ITER_INSTR: 		/* 0x02 */ 
+	      {
+		const byte *npc = pc + ITER_OUTER_JUMP(pc);
+		execute_iter (pc, reg, isNew);
+		pc = npc; goto eval_loop;
+	      }
 
-    case SEND_INSTR: 		/* 0x08 */ 
-      {
-	const byte *npc = pc + SEND_BASE;
-	execute_send (pc, reg, isNew);
-	pc = npc; goto eval_loop;
-      }
+	    case SEND_INSTR: 		/* 0x08 */ 
+	      {
+		const byte *npc = pc + SEND_BASE;
+		execute_send (pc, reg, isNew);
+		pc = npc; goto eval_loop;
+	      }
       
-    case RULE_INSTR: 		/* 0x10 */ 
-      {
-	/* TODO: Trigger rule byte code processing */
-	const byte *npc = pc + RULE_BASE;
-	byte rule_number = FETCH(++pc);
+	    case RULE_INSTR: 		/* 0x10 */ 
+	      {
+		/* TODO: Trigger rule byte code processing */
+		const byte *npc = pc + RULE_BASE;
+		byte rule_number = FETCH(++pc);
 #ifdef DEBUG_INSTRS
-	printf ("--%d--\t RULE %d\n", getBlockId(), rule_number);
+		printf ("--%d--\t RULE %d\n", getBlockId(), rule_number);
 #else
-	(void)rule_number;
+		(void)rule_number;
 #endif	
-	execute_rule (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+		execute_rule (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case RULE_DONE_INSTR: 		/* 0x11 */
-      {
+	    case RULE_DONE_INSTR: 		/* 0x11 */
+	      {
 #ifdef DEBUG_INSTRS
-	printf ("--%d--\t RULE DONE\n", getBlockId());
+		printf ("--%d--\t RULE DONE\n", getBlockId());
 #endif
-	const byte *npc = pc + RULE_DONE_BASE;
-	/* Nothing to be done */
-	pc = npc; goto eval_loop;
-      }
+		const byte *npc = pc + RULE_DONE_BASE;
+		/* Nothing to be done */
+		pc = npc; goto eval_loop;
+	      }
  
-    case RETURN_LINEAR_INSTR:		/* 0xd0 */
+	    case RETURN_LINEAR_INSTR:		/* 0xd0 */
 #ifdef DEBUG_INSTRS
-      printf ("--%d--\tRETURN LINEAR\n", getBlockId());
+	      printf ("--%d--\tRETURN LINEAR\n", getBlockId());
 #endif       
-      return RET_RET;
+	      return RET_RET;
 
-    case MVINTFIELD_INSTR: 		/* 0x1e */
-      {
-	const byte *npc = pc + MVINTFIELD_BASE;
-	execute_mvintfield (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case MVINTFIELD_INSTR: 		/* 0x1e */
+	      {
+		const byte *npc = pc + MVINTFIELD_BASE;
+		execute_mvintfield (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case MVINTREG_INSTR: 		/* 0x1f */
-      {
-	const byte *npc = pc + MVINTREG_BASE;
-	execute_mvintreg (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case MVINTREG_INSTR: 		/* 0x1f */
+	      {
+		const byte *npc = pc + MVINTREG_BASE;
+		execute_mvintreg (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case MVFIELDFIELD_INSTR: 		/* 0x21 */
-      {
-	const byte *npc = pc + MVFIELDFIELD_BASE;
-	execute_mvfieldfield (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case MVFIELDFIELD_INSTR: 		/* 0x21 */
+	      {
+		const byte *npc = pc + MVFIELDFIELD_BASE;
+		execute_mvfieldfield (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
    
-    case MVFIELDREG_INSTR: 		/* 0x22 */
-      {
-	const byte *npc = pc + MVFIELDREG_BASE;
-	execute_mvfieldreg (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case MVFIELDREG_INSTR: 		/* 0x22 */
+	      {
+		const byte *npc = pc + MVFIELDREG_BASE;
+		execute_mvfieldreg (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case MVREGFIELD_INSTR: 		/* 0x26 */
-      {
-	const byte *npc = pc + MVREGFIELD_BASE;
-	execute_mvregfield (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case MVREGFIELD_INSTR: 		/* 0x26 */
+	      {
+		const byte *npc = pc + MVREGFIELD_BASE;
+		execute_mvregfield (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case MVHOSTFIELD_INSTR: 		/* 0x28 */
-      {
-	const byte *npc = pc + MVHOSTFIELD_BASE;
-	execute_mvhostfield (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case MVHOSTFIELD_INSTR: 		/* 0x28 */
+	      {
+		const byte *npc = pc + MVHOSTFIELD_BASE;
+		execute_mvhostfield (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case INTMINUS_INSTR: 		/* 0x3a */
-      {
-	const byte *npc = pc + OP_BASE;
-	execute_intminus (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case MVFLOATFIELD_INSTR: 		/* 0x2d */
+	      {
+		const byte *npc = pc + MVFLOATFIELD_BASE;
+		execute_mvfloatfield (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case ADDREQUAL_INSTR: 		/* 0x39 */
-      {
-	const byte *npc = pc + OP_BASE;
-	execute_addrequal (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case MVFLOATREG_INSTR: 		/* 0x2e */
+	      {
+		const byte *npc = pc + MVFLOATREG_BASE;
+		execute_mvfloatreg (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+	    case MVHOSTREG_INSTR: 		/* 0x37 */
+	      {
+		const byte *npc = pc + MVHOSTREG_BASE;
+		execute_mvhostreg (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case INTEQUAL_INSTR: 		/* 0x3b */
-      {
-	const byte *npc = pc + OP_BASE;
-	execute_intequal (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case ADDREQUAL_INSTR: 		/* 0x39 */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_addrequal (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+
+	    case INTMINUS_INSTR: 		/* 0x3a */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intminus (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+
+	    case INTEQUAL_INSTR: 		/* 0x3b */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intequal (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
       
-    case INTNOTEQUAL_INSTR: 		/* 0x3c */
-      {
-	const byte *npc = pc + OP_BASE;
-	execute_intnotequal (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case INTNOTEQUAL_INSTR: 		/* 0x3c */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intnotequal (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case INTPLUS_INSTR: 		/* 0x3d */
-      {
-	const byte *npc = pc + OP_BASE;
-	execute_intplus (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case INTPLUS_INSTR: 		/* 0x3d */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intplus (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case ALLOC_INSTR: 		/* 0x40 */
-      {
-	const byte *npc = pc + ALLOC_BASE;
-	execute_alloc (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case ALLOC_INSTR: 		/* 0x40 */
+	      {
+		const byte *npc = pc + ALLOC_BASE;
+		execute_alloc (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case INTGREATER_INSTR: 		/* 0x43 */
-      {
-	const byte *npc = pc + OP_BASE;
-	execute_intgreater (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case INTGREATER_INSTR: 		/* 0x43 */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intgreater (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    case IF_INSTR: 		/* 0x60 */
-      {
-	const byte *npc = pc + IF_BASE;
-	byte *base = (byte*)pc;
-	++pc;
-	byte reg_index = FETCH(pc);
-	Register *if_reg = eval_reg (reg_index, &pc, reg);
+	    case IF_INSTR: 		/* 0x60 */
+	      {
+		const byte *npc = pc + IF_BASE;
+		byte *base = (byte*)pc;
+		++pc;
+		byte reg_index = FETCH(pc);
+		Register *if_reg = eval_reg (reg_index, &pc, reg);
 
-	if (!(char)(*if_reg)) {
+		if (!(char)(*if_reg)) {
 #ifdef DEBUG_INSTRS
-	  printf ("--%d--\t IF (reg %d) -- Failed\n", 
-		  getBlockId(), reg_index);
+		  printf ("--%d--\t IF (reg %d) -- Failed\n", 
+			  getBlockId(), reg_index);
 #endif
 
-	  pc = base + IF_JUMP(pc); goto eval_loop;
-	}
-	/* else process if content */
+		  pc = base + IF_JUMP(pc); goto eval_loop;
+		}
+		/* else process if content */
 #ifdef DEBUG_INSTRS
-	printf ("--%d--\t IF (reg %d) -- Success\n", 
-	  getBlockId(), reg_index);
+		printf ("--%d--\t IF (reg %d) -- Success\n", 
+			getBlockId(), reg_index);
 #endif
-	pc = npc; goto eval_loop;
-      }
+		pc = npc; goto eval_loop;
+	      }
 
-    case ADDPERS_INSTR: 		/* 0x78 */
-      {
-	const byte *npc = pc + ADDPERS_BASE;
-	execute_addpers (pc, reg, isNew);
-	pc = npc; goto eval_loop;
-      }
+	    case ADDPERS_INSTR: 		/* 0x78 */
+	      {
+		const byte *npc = pc + ADDPERS_BASE;
+		execute_addpers (pc, reg, isNew);
+		pc = npc; goto eval_loop;
+	      }
       
-    case RUNACTION_INSTR: 		/* 0x79 */
-      {
-	const byte *npc = pc + RUNACTION_BASE;
-	execute_run_action (pc, reg, isNew);
-	pc = npc; goto eval_loop;
-      }
+	    case RUNACTION_INSTR: 		/* 0x79 */
+	      {
+		const byte *npc = pc + RUNACTION_BASE;
+		execute_run_action (pc, reg, isNew);
+		pc = npc; goto eval_loop;
+	      }
 
-    case INTMOD_INSTR: 		/* 0x3d */
-      {
-	const byte *npc = pc + OP_BASE;
-	execute_intmod (tuple, pc, reg);
-	pc = npc; goto eval_loop;
-      }
+	    case INTMOD_INSTR: 		/* 0x3d */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intmod (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
 
-    default:
+	    default:
 #ifdef DEBUG_INSTRS
-      printf ("--%d--\t "
-	      "INSTRUCTION NOT IMPLEMENTED YET: %#x %#x %#x %#x %#x\n", 
-	      getBlockId(), 
-	      (unsigned char)*pc, (unsigned char)*(pc+1), 
-	      (unsigned char)*(pc+2), (unsigned char)*(pc+3), 
-	      (unsigned char)*(pc+4));
+	      printf ("--%d--\t "
+		      "INSTRUCTION NOT IMPLEMENTED YET: %#x %#x %#x %#x %#x\n", 
+		      getBlockId(), 
+		      (unsigned char)*pc, (unsigned char)*(pc+1), 
+		      (unsigned char)*(pc+2), (unsigned char)*(pc+3), 
+		      (unsigned char)*(pc+4));
 #endif
-      return RET_ERROR;
-    }
-  }
+	      return RET_ERROR;
+	    }
+	  }
 }
-      
-void
-tuple_print(tuple_t tuple, FILE *fp)
-{
-  unsigned char tuple_type = TUPLE_TYPE(tuple);
-  int j;
+    
+    void
+    tuple_print(tuple_t tuple, FILE *fp)
+    {
+      unsigned char tuple_type = TUPLE_TYPE(tuple);
+      int j;
 
-  fprintf(fp, "%s(", TYPE_NAME(tuple_type));
-  for(j = 0; j < TYPE_NOARGS(tuple_type); ++j) {
-    void *field = GET_TUPLE_FIELD(tuple, j);
+      fprintf(fp, "%s(", TYPE_NAME(tuple_type));
+      for(j = 0; j < TYPE_NOARGS(tuple_type); ++j) {
+	void *field = GET_TUPLE_FIELD(tuple, j);
 
-    if (j > 0)
-      fprintf(fp, ", ");
+	if (j > 0)
+	  fprintf(fp, ", ");
 
-    switch(TYPE_ARG_TYPE(tuple_type, j)) {
-    case FIELD_INT:
+	switch(TYPE_ARG_TYPE(tuple_type, j)) {
+	case FIELD_INT:
 #ifndef BBSIM
-      fprintf(fp, "%ld", MELD_INT(field));
+	  fprintf(fp, "%ld", MELD_INT(field));
 #else
-      fprintf(fp, "%d", MELD_INT(field));
+	  fprintf(fp, "%d", MELD_INT(field));
 #endif
-      break;
-    case FIELD_FLOAT:
-      fprintf(fp, "%f", (double)MELD_FLOAT(field));
-      break;
-    case FIELD_ADDR:
-      fprintf(fp, "%p", MELD_PTR(field));
-      break;
-    case FIELD_LIST_INT:
-      fprintf(fp, "list_int[%d][%p]", list_total(MELD_LIST(field)),
-	      MELD_LIST(field));
-      break;
-    case FIELD_LIST_FLOAT:
-      fprintf(fp, "list_float[%d][%p]", list_total(MELD_LIST(field)),
-	      MELD_LIST(field));
-      break;
-    case FIELD_LIST_ADDR:
-      fprintf(fp, "list_addr[%p]", *(void **)field);
-      break;
-    case FIELD_SET_INT:
-      fprintf(fp, "set_int[%d][%p]", set_total(MELD_SET(field)),
-	      MELD_SET(field));
-      break;
-    case FIELD_SET_FLOAT:
-      fprintf(fp, "set_float[%d][%p]", set_total(MELD_SET(field)),
-	      MELD_SET(field));
-      break;
-    case FIELD_TYPE:
-      fprintf(fp, "%s", TYPE_NAME(MELD_INT(field)));
-      break;
-    default:
-      assert(0);
-      break;
-    }
-  }
-  fprintf(fp, ")");
-}
-
-void facts_dump(void)
-{
-  int i;
-
-  for (i = 0; i < NUM_TYPES; i++) {
-    // don't print fact types that don't exist
-    if (TUPLES[i].head == NULL)
-      continue;
-
-    // don't print artificial tuple types
-    /*
-      if (tuple_names[i][0] == '_')
-      continue;
-    */
-
-    fprintf(stderr, "tuple %s (type %d)\n", tuple_names[i], i);
-    tuple_entry *tupleEntry;
-    for (tupleEntry = TUPLES[i].head; tupleEntry != NULL; tupleEntry = tupleEntry->next) {
-      fprintf(stderr, "  ");
-      tuple_print(tupleEntry->tuple, stderr);
-      if (TYPE_IS_AGG(i)) {
-	fprintf(stderr, "\n    [[[");
-	tuple_entry *tpE;
-	for (tpE = tupleEntry->records.agg_queue->head;
-	     tpE != NULL;
-	     tpE = tpE->next) {
-	  tuple_print(tpE->tuple, stderr);
-	  fprintf(stderr, "x%d\n       ", tpE->records.count);
+	  break;
+	case FIELD_FLOAT:
+	  fprintf(fp, "%f", (double)MELD_FLOAT(field));
+	  break;
+	case FIELD_ADDR:
+	  fprintf(fp, "%p", MELD_PTR(field));
+	  break;
+	case FIELD_LIST_INT:
+	  fprintf(fp, "list_int[%d][%p]", list_total(MELD_LIST(field)),
+		  MELD_LIST(field));
+	  break;
+	case FIELD_LIST_FLOAT:
+	  fprintf(fp, "list_float[%d][%p]", list_total(MELD_LIST(field)),
+		  MELD_LIST(field));
+	  break;
+	case FIELD_LIST_ADDR:
+	  fprintf(fp, "list_addr[%p]", *(void **)field);
+	  break;
+	case FIELD_SET_INT:
+	  fprintf(fp, "set_int[%d][%p]", set_total(MELD_SET(field)),
+		  MELD_SET(field));
+	  break;
+	case FIELD_SET_FLOAT:
+	  fprintf(fp, "set_float[%d][%p]", set_total(MELD_SET(field)),
+		  MELD_SET(field));
+	  break;
+	case FIELD_TYPE:
+	  fprintf(fp, "%s", TYPE_NAME(MELD_INT(field)));
+	  break;
+	default:
+	  assert(0);
+	  break;
 	}
-	fprintf(stderr, "\b\b\b]]]\n");
       }
-      else {
-	fprintf(stderr, "x%d\n", tupleEntry->records.count);
-      }
+      fprintf(fp, ")");
     }
-  }
-}
 
-void
-print_program_info(void)
-{
-  /* print program info */
-  int i;
-  for(i = 0; i < NUM_TYPES; ++i) {
-    printf("Tuple (%s:%d:%d) ", tuple_names[i], i, TYPE_SIZE(i));
-    
-    printf("[");
-    if(TYPE_IS_AGG(i))
-      printf("agg");
-    if(TYPE_IS_PERSISTENT(i))
-      printf("per");
-    if(TYPE_IS_LINEAR(i))
-      printf("linear");
-    if(TYPE_IS_ROUTING(i))
-      printf("route");
-    if(TYPE_IS_PROVED(i))
-      printf("proved");
-    printf("] ");
-    
-    printf("num_args:%d deltas:%d off:%d ; args(offset, arg_size): ",
-	   TYPE_NOARGS(i), TYPE_NODELTAS(i), TYPE_OFFSET(i));
-		
-    int j;
-    for (j = 0; j < TYPE_NOARGS(i); ++j) {
-      printf(" %d:%d", TYPE_ARG_OFFSET(i, j), TYPE_ARG_SIZE(i, j));
+  void facts_dump(void)
+  {
+    int i;
+
+    for (i = 0; i < NUM_TYPES; i++) {
+      // don't print fact types that don't exist
+      if (TUPLES[i].head == NULL)
+	continue;
+
+      // don't print artificial tuple types
+      /*
+	if (tuple_names[i][0] == '_')
+	continue;
+      */
+
+      fprintf(stderr, "tuple %s (type %d)\n", tuple_names[i], i);
+      tuple_entry *tupleEntry;
+      for (tupleEntry = TUPLES[i].head; tupleEntry != NULL; tupleEntry = tupleEntry->next) {
+	fprintf(stderr, "  ");
+	tuple_print(tupleEntry->tuple, stderr);
+	if (TYPE_IS_AGG(i)) {
+	  fprintf(stderr, "\n    [[[");
+	  tuple_entry *tpE;
+	  for (tpE = tupleEntry->records.agg_queue->head;
+	       tpE != NULL;
+	       tpE = tpE->next) {
+	    tuple_print(tpE->tuple, stderr);
+	    fprintf(stderr, "x%d\n       ", tpE->records.count);
+	  }
+	  fprintf(stderr, "\b\b\b]]]\n");
+	}
+	else {
+	  fprintf(stderr, "x%d\n", tupleEntry->records.count);
+	}
+      }
     }
-    printf("\n");
   }
-}
+
+  void
+    print_program_info(void)
+  {
+    /* print program info */
+    int i;
+    for(i = 0; i < NUM_TYPES; ++i) {
+      printf("Tuple (%s:%d:%d) ", tuple_names[i], i, TYPE_SIZE(i));
+    
+      printf("[");
+      if(TYPE_IS_AGG(i))
+	printf("agg");
+      if(TYPE_IS_PERSISTENT(i))
+	printf("per");
+      if(TYPE_IS_LINEAR(i))
+	printf("linear");
+      if(TYPE_IS_ROUTING(i))
+	printf("route");
+      if(TYPE_IS_PROVED(i))
+	printf("proved");
+      printf("] ");
+    
+      printf("num_args:%d deltas:%d off:%d ; args(offset, arg_size): ",
+	     TYPE_NOARGS(i), TYPE_NODELTAS(i), TYPE_OFFSET(i));
+		
+      int j;
+      for (j = 0; j < TYPE_NOARGS(i); ++j) {
+	printf(" %d:%d", TYPE_ARG_OFFSET(i, j), TYPE_ARG_SIZE(i, j));
+      }
+      printf("\n");
+    }
+  }

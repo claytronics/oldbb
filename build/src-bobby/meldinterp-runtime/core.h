@@ -475,12 +475,11 @@ tuple_alloc(tuple_type type)
 	return tuple;
 }
 
-
 void tuple_handle(tuple_t tuple, int isNew, Register *reg);
 void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew);
 void tuple_do_handle(tuple_type type,	void *tuple, int isNew, Register *reg);
 int tuple_process(tuple_t tuple, const unsigned char *pc,
-		  int isNew, Register *reg);
+		  int isNew, Register *reg, byte iter);
 void tuple_print(tuple_t tuple, FILE *fp);
 
 
