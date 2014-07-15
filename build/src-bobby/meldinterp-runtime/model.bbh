@@ -10,7 +10,7 @@
 
 threadtype typedef void* tuple_t;
 threadtype typedef int32_t meld_int;
-threadtype typedef float meld_float;
+threadtype typedef double meld_float;
 threadtype typedef short tuple_type;
 threadtype typedef unsigned long int Register;
 
