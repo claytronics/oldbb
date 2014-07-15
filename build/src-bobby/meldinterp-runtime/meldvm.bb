@@ -395,7 +395,6 @@ void tuple_handle(tuple_t tuple, int isNew, Register *registers)
   printf ("\n");
 #endif
 
-
   tuple_type type = TUPLE_TYPE(tuple);
 
   assert (type < NUM_TYPES);

@@ -513,6 +513,25 @@ execute_addrequal (tuple_t tuple, const unsigned char *pc, Register *reg)
 }
 
 inline void
+execute_addrnotequal (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+  *dest = (MELD_PTR(arg1) != MELD_PTR(arg2));
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t ADDR reg %d NOTEQUAL reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
+#endif
+}
+
+inline void
 execute_intequal (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
   ++pc;
@@ -570,6 +589,101 @@ execute_intgreater (tuple_t tuple, const unsigned char *pc, Register *reg)
 }
 
 inline void
+execute_intgreaterequal (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+  *dest = (MELD_INT(arg1) >= MELD_INT(arg2));
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t INT reg %d GREATER/EQUAL THAN reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
+#endif
+}
+
+inline void
+execute_intlesser (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+  *dest = (MELD_INT(arg1) < MELD_INT(arg2));
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t INT reg %d LESSER THAN reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
+#endif
+}
+
+inline void
+execute_intlesserequal (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+  *dest = (MELD_INT(arg1) <= MELD_INT(arg2));
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t INT reg %d LESSER/EQUAL THAN reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
+#endif
+}
+
+inline void
+execute_intmul (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+  *dest = (MELD_INT(arg1) * MELD_INT(arg2));
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t INT reg %d MULTIPLIED BY reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
+#endif
+}
+
+inline void
+execute_intdiv (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+  *dest = (MELD_INT(arg1) / MELD_INT(arg2));
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t INT reg %d DIVIDED BY reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
+#endif
+}
+
+inline void
 execute_intmod (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
   ++pc;
@@ -622,6 +736,44 @@ execute_intminus (tuple_t tuple, const unsigned char *pc, Register *reg)
   *dest = (MELD_INT(arg1) - MELD_INT(arg2));
 #ifdef DEBUG_INSTRS
   printf ("--%d--\t INT reg %d MINUS reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
+#endif
+}
+
+inline void
+execute_floatplus (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+  *dest = (MELD_FLOAT(arg1) + MELD_FLOAT(arg2));
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t FLOAT reg %d PLUS reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
+#endif
+}
+
+inline void
+execute_floatminus (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+  *dest = (MELD_FLOAT(arg1) - MELD_FLOAT(arg2));
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t FLOAT reg %d MINUS reg %d TO reg %d\n", 
 	  getBlockId(), reg1, reg2, reg3);
 #endif
 }
@@ -1591,6 +1743,7 @@ tuple_process (tuple_t tuple, const unsigned char *pc,
   printf ("\n--%d--\tPROCESS %s\n", getBlockId(), 
 	  tuple_names[TUPLE_TYPE(tuple)]);
 #endif
+
 	  /* Move tuple to register 0 so it can be accessed */
 	  if (!iter)
 	    moveTupleToReg (0, tuple, reg);
@@ -1722,6 +1875,13 @@ tuple_process (tuple_t tuple, const unsigned char *pc,
 		pc = npc; goto eval_loop;
 	      }
 
+	    case ADDRNOTEQUAL_INSTR: 		/* 0x38 */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_addrnotequal (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+
 	    case ADDREQUAL_INSTR: 		/* 0x39 */
 	      {
 		const byte *npc = pc + OP_BASE;
@@ -1757,6 +1917,20 @@ tuple_process (tuple_t tuple, const unsigned char *pc,
 		pc = npc; goto eval_loop;
 	      }
 
+	    case INTLESSER_INSTR: 		/* 0x3e */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intlesser (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+
+	    case INTGREATEREQUAL_INSTR: 		/* 0x3f */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intgreaterequal (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+
 	    case ALLOC_INSTR: 		/* 0x40 */
 	      {
 		const byte *npc = pc + ALLOC_BASE;
@@ -1764,10 +1938,45 @@ tuple_process (tuple_t tuple, const unsigned char *pc,
 		pc = npc; goto eval_loop;
 	      }
 
+	    case INTLESSEREQUAL_INSTR: 		/* 0x42 */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intlesserequal (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+
 	    case INTGREATER_INSTR: 		/* 0x43 */
 	      {
 		const byte *npc = pc + OP_BASE;
 		execute_intgreater (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+
+	    case INTMUL_INSTR: 		/* 0x44 */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intmul (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+
+	    case INTDIV_INSTR: 		/* 0x45 */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_intdiv (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+
+	    case FLOATPLUS_INSTR: 		/* 0x46 */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_floatplus (tuple, pc, reg);
+		pc = npc; goto eval_loop;
+	      }
+
+	    case FLOATMINUS_INSTR: 		/* 0x47 */
+	      {
+		const byte *npc = pc + OP_BASE;
+		execute_floatminus (tuple, pc, reg);
 		pc = npc; goto eval_loop;
 	      }
 
