@@ -12,10 +12,12 @@
 #include "../system/myassert.h"
 #include <stdio.h>
 
-/* #define DEBUG_INSTRS */
+#define DEBUG_INSTRS
 /* #define DEBUG_ALLOCS */
 //#define DEBUG_PROVED_TUPLES
 /* #define DEBUG_MOVE */
+
+#define inline 
 
 static unsigned char **deltas = NULL;
 int *delta_sizes = NULL;
@@ -106,6 +108,7 @@ void moveTupleToReg (const unsigned char reg_index, tuple_t tuple, Register *reg
   *dst = (Register)tuple;
 
 #ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
   printf ("MOVE tuple: %s to reg: %d\n", 
 	  tuple_names[TUPLE_TYPE(reg[reg_index])], reg_index);
 #endif
@@ -123,6 +126,7 @@ execute_alloc (tuple_t tuple, const unsigned char *pc, Register *reg)
 
 #if defined(DEBUG_INSTRS) || defined(DEBUG_ALLOCS)
   {
+    printf ("--%d--\t", getBlockId());
     printf ("ALLOC %s TO ", tuple_names[type]);
   }
 #endif
@@ -149,6 +153,7 @@ execute_addpers (const unsigned char *pc,
   tuple_type type = TUPLE_TYPE((tuple_t)send_reg);
 
 #ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
   printf ("ADDPERS reg %d:%s\n", reg_index, tuple_names[type]);
 #else
   (void)type;
@@ -156,6 +161,23 @@ execute_addpers (const unsigned char *pc,
 
   enqueueNewTuple((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), 
 		  (record_type) isNew);
+}
+
+inline void
+execute_send (const unsigned char *pc,
+	      Register *reg, int isNew)
+{
+  ++pc;
+  Register send_reg = reg[SEND_MSG(pc)];
+  Register send_rt = reg[SEND_RT(pc)];
+
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
+  printf("SEND reg %d TO reg %d\n", SEND_MSG(pc), SEND_RT(pc));
+#endif
+
+  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg),
+	     MELD_CONVERT_REG_TO_PTR(send_rt), 0, isNew);
 }
 
 inline void
@@ -167,6 +189,9 @@ execute_iter (const unsigned char *pc,
   int i, k, length;
   void **list;
   int size = TYPE_SIZE(type);
+
+  /* Reg in which match will be stored during execution*/
+  byte reg_store_index = FETCH(pc+10);
 			
   /* produce a random ordering for all tuples of the appropriate type */
 			
@@ -201,6 +226,7 @@ execute_iter (const unsigned char *pc,
   }
 			
 #ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
   printf("ITER %s len=%d\n", tuple_names[type], length);
 #endif
 
@@ -260,10 +286,12 @@ execute_iter (const unsigned char *pc,
     }
 
 #ifdef DEBUG_INSTRS
+    printf ("--%d--\t", getBlockId());
     printf("MATCHED: %d %d\n", matched, length);
 #endif
           
     if (matched) {
+      moveTupleToReg (reg_store_index, next_tuple, reg);
       if (RET_RET == tuple_process(next_tuple, inner_jump, isNew, reg)) {
 	free(list);
 	return;
@@ -297,6 +325,7 @@ inline void
 execute_mvintfield (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
 #ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
   printf ("MOVE INT ");
 #endif
   ++pc;
@@ -326,6 +355,7 @@ inline void
 execute_mvintreg (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
 #ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
   printf ("MOVE INT ");
 #endif
   ++pc;
@@ -344,11 +374,11 @@ execute_mvintreg (tuple_t tuple, const unsigned char *pc, Register *reg)
 inline void
 execute_mvfieldreg (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
-  byte reg_index = FETCH(pc+1);
-  moveTupleToReg (reg_index, tuple, reg);
   ++pc;
+  byte reg_index = FETCH(pc+1);    
 
 #ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
   printf ("MOVE FIELD ");
 #endif
   tuple_t tpl = (tuple_t)reg[reg_index];
@@ -374,12 +404,145 @@ execute_mvfieldreg (tuple_t tuple, const unsigned char *pc, Register *reg)
 }
 
 inline void
+execute_mvregfield (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
+  printf ("MOVE REG ");
+#endif
+  Register *src = eval_reg (FETCH(pc), &pc, reg); 
+#ifdef DEBUG_INSTRS
+  printf ("TO FIELD ");
+#endif
+  byte dst_reg_index = FETCH(pc+1);
+  byte dst_field_num = FETCH(pc);
+
+  tuple_t tpl_dst = (tuple_t)reg[dst_reg_index];
+  tuple_type dst_type = TUPLE_TYPE(tpl_dst);
+  Register *dst = eval_field (FETCH(pc), tpl_dst, &pc, reg); 
+#ifdef DEBUG_INSTRS
+  printf ("\n");
+#endif
+
+#ifdef DEBUG_MOVE
+  printf (
+    "\nInstruction: mvregfield\n"
+    "src = %#x\n"
+    "dst = %#x\n"
+    ,src, dst);
+#endif
+
+  size_t size = TYPE_ARG_SIZE(dst_type, dst_field_num);
+
+  memcpy(dst, src, size);
+}
+
+inline void
+execute_mvfieldfield (tuple_t tuple, const unsigned char *pc, 
+		      Register *reg) 
+{
+  ++pc;
+  byte src_reg_index = FETCH(pc+1);
+  
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
+  printf ("MOVE FIELD ");
+#endif
+  tuple_t tpl_src = (tuple_t)reg[src_reg_index];
+  Register *src = eval_field (FETCH(pc), tpl_src, &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("TO FIELD ");
+#endif
+  byte dst_reg_index = FETCH(pc+1);
+  byte dst_field_num = FETCH(pc);
+
+  tuple_t tpl_dst = (tuple_t)reg[dst_reg_index];
+  tuple_type dst_type = TUPLE_TYPE(tpl_dst);
+  Register *dst = eval_field (FETCH(pc), tpl_dst, &pc, reg); 
+#ifdef DEBUG_INSTRS
+  printf ("\n");
+#endif
+
+#ifdef DEBUG_MOVE
+  printf (
+    "\nInstruction: mvfieldfield\n"
+    "src = %#x\n"
+    "dst = %#x\n"
+    ,src, dst);
+#endif
+
+  size_t size = TYPE_ARG_SIZE(dst_type, dst_field_num);
+
+  memcpy(dst, src, size);
+}
+
+inline void
+execute_mvhostfield (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
+  printf ("MOVE HOST ");
+#endif
+  Register *src = (void*)EVAL_HOST;
+#ifdef DEBUG_INSTRS
+  printf ("TO FIELD ");
+#endif
+  byte dst_reg_index = FETCH(pc+1);
+  byte dst_field_num = FETCH(pc);
+
+  tuple_t tpl_dst = (tuple_t)reg[dst_reg_index];
+  tuple_type dst_type = TUPLE_TYPE(tpl_dst);
+  Register *dst = eval_field (FETCH(pc), tpl_dst, &pc, reg); 
+#ifdef DEBUG_INSTRS
+  printf ("\n");
+#endif
+
+#ifdef DEBUG_MOVE
+  printf (
+    "\nInstruction: mvhostfield\n"
+    "src = %#x\n"
+    "dst = %#x\n"
+    ,src, dst);
+#endif
+
+  size_t size = TYPE_ARG_SIZE(dst_type, dst_field_num);
+
+  memcpy(dst, src, size);
+}
+
+inline void
+execute_addrequal (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+
+  Register *arg1 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
+  printf ("ADDR EQUAL ");
+#endif
+  Register *arg2 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("TO ");
+#endif
+  Register *dest = eval_reg (FETCH(pc), &pc, reg);
+  *dest = (MELD_PTR(arg1) == MELD_PTR(arg2));
+#ifdef DEBUG_INSTRS
+  printf ("\n");		    
+#endif
+}
+
+inline void
 execute_intequal (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
   ++pc;
 
   Register *arg1 = eval_reg (FETCH(pc), &pc, reg);
 #ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
   printf ("INT EQUAL ");
 #endif
   Register *arg2 = eval_reg (FETCH(pc), &pc, reg);
@@ -394,12 +557,34 @@ execute_intequal (tuple_t tuple, const unsigned char *pc, Register *reg)
 }
 
 inline void
+execute_intnotequal (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+
+  Register *arg1 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
+  printf ("INT NOT EQUAL ");
+#endif
+  Register *arg2 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("TO ");
+#endif
+  Register *dest = eval_reg (FETCH(pc), &pc, reg);
+  *dest = (MELD_INT(arg1) != MELD_INT(arg2)); 
+#ifdef DEBUG_INSTRS
+  printf ("\n");		    
+#endif
+}
+
+inline void
 execute_intgreater (tuple_t tuple, const unsigned char *pc, Register *reg) 
 {
   ++pc;
 
   Register *arg1 = eval_reg (FETCH(pc), &pc, reg);
 #ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
   printf ("INT GREATER THAN ");
 #endif
   Register *arg2 = eval_reg (FETCH(pc), &pc, reg);
@@ -408,6 +593,69 @@ execute_intgreater (tuple_t tuple, const unsigned char *pc, Register *reg)
 #endif
   Register *dest = eval_reg (FETCH(pc), &pc, reg);
   *dest = (MELD_INT(arg1) > MELD_INT(arg2)); 
+#ifdef DEBUG_INSTRS
+  printf ("\n");		    
+#endif
+}
+
+inline void
+execute_intmod (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+
+  Register *arg1 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
+  printf ("INT MOD ");
+#endif
+  Register *arg2 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("TO ");
+#endif
+  Register *dest = eval_reg (FETCH(pc), &pc, reg);
+  *dest = (MELD_INT(arg1) % MELD_INT(arg2)); 
+#ifdef DEBUG_INSTRS
+  printf ("\n");		    
+#endif
+}
+
+inline void
+execute_intplus (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+
+  Register *arg1 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
+  printf ("INT PLUS ");
+#endif
+  Register *arg2 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("TO ");
+#endif
+  Register *dest = eval_reg (FETCH(pc), &pc, reg);
+  *dest = (MELD_INT(arg1) + MELD_INT(arg2)); 
+#ifdef DEBUG_INSTRS
+  printf ("\n");		    
+#endif
+}
+
+inline void
+execute_intminus (tuple_t tuple, const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+
+  Register *arg1 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
+  printf ("INT MINUS ");
+#endif
+  Register *arg2 = eval_reg (FETCH(pc), &pc, reg);
+#ifdef DEBUG_INSTRS
+  printf ("TO ");
+#endif
+  Register *dest = eval_reg (FETCH(pc), &pc, reg);
+  *dest = (MELD_INT(arg1) - MELD_INT(arg2)); 
 #ifdef DEBUG_INSTRS
   printf ("\n");		    
 #endif
@@ -425,6 +673,7 @@ execute_run_action (const unsigned char *pc,
   tuple_type type = TUPLE_TYPE(action_tuple);
 
 #ifdef DEBUG_INSTRS
+  printf ("--%d--\t", getBlockId());
   printf ("RUN ACTION: ");
 #endif
   
@@ -1368,14 +1617,19 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 	      int isNew, Register *reg)
 {
 #ifdef DEBUG_INSTRS
-  printf ("\nPROCESS %s\n", tuple_names[TUPLE_TYPE(tuple)]);
+  printf ("\n--%d--\t", getBlockId());
+  printf ("PROCESS %s\n", tuple_names[TUPLE_TYPE(tuple)]);
 #endif
+  /* Move tuple to register 0 so it can be accessed */
+  moveTupleToReg (0, tuple, reg);
+
   for (;;) {
   eval_loop:
     switch (*(const unsigned char*)pc) {
     case RETURN_INSTR: 		/* 0x0 */
       {
 #ifdef DEBUG_INSTRS
+	printf ("--%d--\t", getBlockId());
 	printf ("RETURN\n");
 #endif
 	return RET_RET;
@@ -1384,6 +1638,7 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
     case NEXT_INSTR: 		/* 0x1 */
       {
 #ifdef DEBUG_INSTRS
+	printf ("--%d--\t", getBlockId());	
 	printf ("NEXT\n");
 #endif
 	return RET_NEXT;
@@ -1395,6 +1650,13 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 	execute_iter (pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
+
+    case SEND_INSTR: 		/* 0x08 */ 
+      {
+	const byte *npc = pc + SEND_BASE;
+	execute_send (pc, reg, isNew);
+	pc = npc; goto eval_loop;
+      }
       
     case RULE_INSTR: 		/* 0x10 */ 
       {
@@ -1402,6 +1664,7 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 	const byte *npc = pc + RULE_BASE;
 	byte rule_number = FETCH(++pc);
 #ifdef DEBUG_INSTRS
+	printf ("--%d--\t", getBlockId());
 	printf ("RULE %d\n", rule_number);
 #else
 	(void)rule_number;
@@ -1413,6 +1676,7 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
     case RULE_DONE_INSTR: 		/* 0x11 */
       {
 #ifdef DEBUG_INSTRS
+	printf ("--%d--\t", getBlockId());
 	printf ("RULE DONE\n");
 #endif
 	const byte *npc = pc + RULE_DONE_BASE;
@@ -1422,6 +1686,7 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
  
     case RETURN_LINEAR_INSTR:		/* 0xd0 */
 #ifdef DEBUG_INSTRS
+      printf ("--%d--\t", getBlockId());
       printf ("RETURN LINEAR\n");
 #endif       
       return RET_RET;
@@ -1439,11 +1704,46 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 	execute_mvintreg (tuple, pc, reg);
 	pc = npc; goto eval_loop;
       }
+
+    case MVFIELDFIELD_INSTR: 		/* 0x21 */
+      {
+	const byte *npc = pc + MVFIELDFIELD_BASE;
+	execute_mvfieldfield (tuple, pc, reg);
+	pc = npc; goto eval_loop;
+      }
    
     case MVFIELDREG_INSTR: 		/* 0x22 */
       {
 	const byte *npc = pc + MVFIELDREG_BASE;
 	execute_mvfieldreg (tuple, pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
+    case MVREGFIELD_INSTR: 		/* 0x26 */
+      {
+	const byte *npc = pc + MVREGFIELD_BASE;
+	execute_mvregfield (tuple, pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
+    case MVHOSTFIELD_INSTR: 		/* 0x28 */
+      {
+	const byte *npc = pc + MVHOSTFIELD_BASE;
+	execute_mvhostfield (tuple, pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
+    case INTMINUS_INSTR: 		/* 0x3a */
+      {
+	const byte *npc = pc + OP_BASE;
+	execute_intminus (tuple, pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
+    case ADDREQUAL_INSTR: 		/* 0x39 */
+      {
+	const byte *npc = pc + OP_BASE;
+	execute_addrequal (tuple, pc, reg);
 	pc = npc; goto eval_loop;
       }
 
@@ -1454,6 +1754,20 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
       
+    case INTNOTEQUAL_INSTR: 		/* 0x3c */
+      {
+	const byte *npc = pc + OP_BASE;
+	execute_intnotequal (tuple, pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
+    case INTPLUS_INSTR: 		/* 0x3d */
+      {
+	const byte *npc = pc + OP_BASE;
+	execute_intplus (tuple, pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
     case ALLOC_INSTR: 		/* 0x40 */
       {
 	const byte *npc = pc + ALLOC_BASE;
@@ -1471,6 +1785,7 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
     case IF_INSTR: 		/* 0x60 */
       {
 #ifdef DEBUG_INSTRS
+	printf ("--%d--\t", getBlockId());
 	printf ("IF ");
 #endif
 	const byte *npc = pc + IF_BASE;
@@ -1507,8 +1822,16 @@ tuple_process(tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+    case INTMOD_INSTR: 		/* 0x3d */
+      {
+	const byte *npc = pc + OP_BASE;
+	execute_intmod (tuple, pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
     default:
 #ifdef DEBUG_INSTRS
+      printf ("--%d--\t", getBlockId());
       printf ("INSTRUCTION NOT IMPLEMENTED YET: %#x %#x %#x %#x %#x\n", 
 	      (unsigned char)*pc, (unsigned char)*(pc+1), (unsigned char)*(pc+2), 
 	      (unsigned char)*(pc+3), (unsigned char)*(pc+4));

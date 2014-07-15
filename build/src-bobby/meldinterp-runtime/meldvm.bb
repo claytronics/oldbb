@@ -50,7 +50,7 @@ static tuple_type TYPE_VACANT = -1;
 
 //#define DEBUG
 /* #define DEBUG_REGISTERS */
-#define DEBUG_NEIGHBORHOOD
+/* #define DEBUG_NEIGHBORHOOD */
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -418,6 +418,9 @@ setColorWrapper (byte color) { setColor (color % NUM_COLORS);}
 void
 setLEDWrapper (byte r, byte g, byte b, byte intensity) 
 { setLEDWrapper (r, g, b, intensity);}
+
+NodeID 
+getBlockId (void) { return blockId;}
 
 #ifdef BBSIM
 extern int alreadyExecuted(int flag);

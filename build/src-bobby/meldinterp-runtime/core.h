@@ -284,9 +284,9 @@ extern inline byte val_is_field(const byte x) { return x == 0x02; }
 #define ITER_MATCH_FIELD(x)   (*(const unsigned char*)(x))
 #define ITER_MATCH_VAL(x)   ((*(const unsigned char*)((x)+1)))
 
-#define SEND_MSG(x)   ((((*(const unsigned char*)(x))&0x3) << 3) | \
-                      (((*(const unsigned char*)((x)+1))&0xe0) >> 5))
-#define SEND_RT(x)    ((*(const unsigned char*)((x)+1))&0x1f)
+#define SEND_MSG(x)   (*(const unsigned char*)(x))
+#define SEND_RT(x)    (*(const unsigned char*)((x)+1))
+
 #define SEND_ARG1(x)  ((*((const unsigned char*)(x)+2)) & 0x3f)
 #define SEND_DELAY(x) (*(const unsigned char *)((x)+2))
 
@@ -534,6 +534,7 @@ extern tuple_type TYPE_TERMINATE;
 
 extern void setColorWrapper (byte color);
 extern void setLEDWrapper (byte r, byte g, byte b, byte intensity);
+extern NodeID getBlockId (void);
 /* void print_process(const unsigned char *pc); */
 
 #endif
