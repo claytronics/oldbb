@@ -205,7 +205,7 @@ init_fields(void)
 	break;
 
       case (int)FIELD_ADDR:
-	size = sizeof(void*);
+	size = sizeof(NodeID);
 	break;
 
       case (int)FIELD_LIST_INT:
@@ -1404,7 +1404,7 @@ tuple_print(tuple_t tuple, FILE *fp)
       fprintf(fp, "%f", (double)MELD_FLOAT(field));
       break;
     case FIELD_ADDR:
-      fprintf(fp, "%p", MELD_PTR(field));
+      fprintf(fp, "%d", *(uint16_t*)(field));
       break;
     case FIELD_LIST_INT:
       fprintf(fp, "list_int[%d][%p]", list_total(MELD_LIST(field)),
