@@ -205,7 +205,7 @@ init_fields(void)
 	break;
 
       case (int)FIELD_ADDR:
-	size = sizeof(NodeID);
+	size = sizeof(void*);
 	break;
 
       case (int)FIELD_LIST_INT:
