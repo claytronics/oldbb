@@ -47,6 +47,7 @@ threadvar Register reg[32];
 static tuple_type TYPE_TAP = -1;
 
 //#define DEBUG
+/* #define DEBUG_SENG */
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -284,8 +285,10 @@ void receive_tuple(int isNew)
   tuple_type type = TUPLE_TYPE(rcvdTuple);
   size_t tuple_size = TYPE_SIZE(type);
   
+#ifdef DEBUG_SEND
   printf ("\x1b[33m--%d--\tTuple %s received of size %lu from %d\x1b[0m\n", 
 	  blockId, tuple_names[type], tuple_size, get_neighbor_ID(face));
+#endif
 
   tuple = malloc(tuple_size);
   memcpy(tuple, rcvdTuple, tuple_size);
@@ -352,10 +355,12 @@ void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
 
       assert(TYPE_SIZE(TUPLE_TYPE(tuple)) <= 17);
 
+#ifdef DEBUG_SEND
       printf ("\x1b[33m--%d--\tSending tuple %s of size %u to %d\x1b[0m\n", 
 	      blockId, tuple_names[TUPLE_TYPE(tuple)], TYPE_SIZE(TUPLE_TYPE(tuple)),
 	      get_neighbor_ID(face));
-      
+#endif      
+
       if (sendMessageToPort(c, face, tuple, TYPE_SIZE(TUPLE_TYPE(tuple)), (MsgHandler)receiver, (GenericHandler)&free_chunk) == 0) {
 	// Send failed :(
 	free(c);

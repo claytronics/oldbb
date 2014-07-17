@@ -1386,7 +1386,9 @@ tuple_print(tuple_t tuple, FILE *fp)
 
   fprintf(fp, "%s(", TYPE_NAME(tuple_type));
   for(j = 0; j < TYPE_NOARGS(tuple_type); ++j) {
+#if 0
     fprintf(fp, "[j:%d,TN:%d,TAT:%d(%s)]", j, TYPE_NOARGS(tuple_type),TYPE_ARG_TYPE(tuple_type, j),type2name(TYPE_ARG_TYPE(tuple_type, j)));
+#endif    
     void *field = GET_TUPLE_FIELD(tuple, j);
 
     if (j > 0)

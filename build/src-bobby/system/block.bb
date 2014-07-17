@@ -21,9 +21,9 @@ void blockTick()
   if (!VM_initialized) {
     /* In case VM not initialized yet, return to avoid 
        potential segmentation faults */
-    fprintf (stderr, "\x1b[31m--%d--\t"
-	    "blockTick blocked -- VM not initialized yet"
-	    "\x1b[0m\n", getGUID());
+    /* fprintf (stderr, "\x1b[31m--%d--\t" */
+    /* 	    "blockTick blocked -- VM not initialized yet" */
+    /* 	    "\x1b[0m\n", getGUID()); */
     return;
   }
 
