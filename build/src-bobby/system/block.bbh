@@ -34,7 +34,6 @@
 #include "../hw-api/hwAccelerometer.h"
 #include "../hw-api/hwMicrophone.h"
 
-
 // PROTOTYPES
 void blockTick(void);    // polls the system for status changes
 
@@ -45,6 +44,7 @@ void initBlock(void);   // calls initial register magic, other setup
 #ifdef BBSIM
 void pauseForever(void);
 void tellNeighborsDestroyed(Block *b);
+threadvar byte VM_initialized = 1;	/* Block blocktick until VM is initialized */
 #endif
 
 #endif

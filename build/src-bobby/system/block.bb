@@ -18,6 +18,15 @@ int accelReady=0;
 // Much of this can probably be done via ISRs and other state change triggers and this function eliminated.
 void blockTick()
 {
+  if (!VM_initialized) {
+    /* In case VM not initialized yet, return to avoid 
+       potential segmentation faults */
+    fprintf (stderr, "\x1b[31m--%d--\t"
+	    "blockTick blocked -- VM not initialized yet"
+	    "\x1b[0m\n", getGUID());
+    return;
+  }
+
   byte i;
   
 #ifdef BBSIM
@@ -25,6 +34,9 @@ void blockTick()
     // let neighbors know we are gone
     //tellNeighborsDestroyed(this());
     // and never do anything again
+    fprintf (stderr, "\x1b[31m--%d--\t"
+	    "I AM BEING DESTROYED EVEN THOUGH I DON'T DESERVE IT!!!"
+	    "\x1b[0m\n", getGUID());
     pauseForever();
   }
 #endif

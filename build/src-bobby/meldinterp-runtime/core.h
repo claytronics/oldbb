@@ -10,9 +10,9 @@
 #endif
 
 /* print tuple allocations */
-#define TUPLE_ALLOC_DEBUG 1
+/* #define TUPLE_ALLOC_DEBUG 1 */
 /* tuple allocation checks */
-#define TUPLE_ALLOC_CHECKS 1
+/* #define TUPLE_ALLOC_CHECKS 1 */
 
 /* macros */
 #define IF(x)     (((*(const unsigned char*)(x))&0xe0) == 0x60)
