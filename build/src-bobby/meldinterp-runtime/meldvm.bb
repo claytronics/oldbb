@@ -284,7 +284,7 @@ void receive_tuple(int isNew)
   tuple_type type = TUPLE_TYPE(rcvdTuple);
   size_t tuple_size = TYPE_SIZE(type);
   
-  printf ("\x1b[33m--%d--\tTuple %s received of size %u from %d\x1b[0m\n", 
+  printf ("\x1b[33m--%d--\tTuple %s received of size %lu from %d\x1b[0m\n", 
 	  blockId, tuple_names[type], tuple_size, get_neighbor_ID(face));
 
   tuple = malloc(tuple_size);
