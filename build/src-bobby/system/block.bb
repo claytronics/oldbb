@@ -21,9 +21,9 @@ void blockTick()
   if (!VM_initialized) {
     /* In case VM not initialized yet, return to avoid 
        potential segmentation faults */
-    /* fprintf (stderr, "\x1b[31m--%d--\t" */
-    /* 	    "blockTick blocked -- VM not initialized yet" */
-    /* 	    "\x1b[0m\n", getGUID()); */
+    fprintf (stderr, "\x1b[31m--%d--\t"
+    	    "blockTick blocked -- VM not initialized yet, %d"
+	     "\x1b[0m\n", getGUID(), VM_initialized);
     return;
   }
 
@@ -80,6 +80,10 @@ void blockTick()
 // Ties all the horrifying subfunctions together into one simple function
 void initBlock()
 {
+        //set to 1 but will be reset to 0 when VM starts
+        //used to avoid blocking blocktick if running a C program
+        VM_initialized = 1;
+
 	//software initialization
 	initHandlers();
 

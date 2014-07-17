@@ -40,11 +40,11 @@ void blockTick(void);    // polls the system for status changes
 void initBlock(void);   // calls initial register magic, other setup
 
 // SIM PROTOs
-
 #ifdef BBSIM
 void pauseForever(void);
 void tellNeighborsDestroyed(Block *b);
-threadvar byte VM_initialized = 1;	/* Block blocktick until VM is initialized */
 #endif
+
+threadvar byte VM_initialized;	/* Block blocktick until VM is initialized */
 
 #endif
