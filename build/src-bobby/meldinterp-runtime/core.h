@@ -372,10 +372,12 @@ extern inline byte val_is_field(const byte x) { return x == 0x02; }
 /* Offset to rule byte code, pred 0 byte code start is reference */
 #define RULE_START(x)							\
   ((unsigned char*)(meld_prog + *(unsigned short*)			\
-		    ((TYPE_START(0) - NUM_RULES * sizeof(unsigned short)) + x)))
+		    ((TYPE_START(0) \
+		      - NUM_RULES * sizeof(unsigned short)) + 2 * (x)) ) )
 #define RULE_START_CHECK(x)						\
   (*(unsigned short*)							\
-   ((TYPE_START(0) - NUM_RULES * sizeof(unsigned short))) + x)
+   ((TYPE_START(0) -							\
+     (NUM_RULES * sizeof(unsigned short))) + 2 * (x) ) )
 
 #define TYPE_IS_STRATIFIED(x) (TYPE_STRATIFICATION_ROUND(x) > 0)
 
@@ -440,10 +442,19 @@ extern inline byte val_is_field(const byte x) { return x == 0x02; }
 
 #define RET_RET 0
 #define RET_NEXT 1
+#define RET_LINEAR 2
+#define RET_DERIVED 3
 #define RET_ERROR -1
 
 #define TYPE_SETCOLOR 2
 #define TYPE_SETCOLOR2 7
+
+#define PROCESS_TUPLE 0
+#define PROCESS_ITER 1
+#define PROCESS_RULE 2
+
+#define RULE_NUMBER(x) ((unsigned char)(((x) & 0xf0) >> 4))
+#define PROCESS_TYPE(x) ((unsigned char)((x) & 0x0f))
 
 extern const unsigned char meld_prog[];
 typedef Register (*extern_funct_type)();
@@ -478,10 +489,11 @@ tuple_alloc(tuple_type type)
 void tuple_handle(tuple_t tuple, int isNew, Register *reg);
 void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew);
 void tuple_do_handle(tuple_type type,	void *tuple, int isNew, Register *reg);
-int tuple_process(tuple_t tuple, const unsigned char *pc,
-		  int isNew, Register *reg, byte iter);
 void tuple_print(tuple_t tuple, FILE *fp);
 
+int process_bytecode(tuple_t tuple, const unsigned char *pc,
+		  int isNew, Register *reg, byte state);
+void derive_axioms(Register *reg);
 
 static inline void
 tuple_dump(void *tuple)

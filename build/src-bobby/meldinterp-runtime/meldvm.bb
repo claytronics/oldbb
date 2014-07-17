@@ -121,9 +121,9 @@ void enqueue_tap(void)
 
   enqueueNewTuple(tuple, (record_type) 1);
 
-  //#if DEBUG
+  /* #if DEBUG */
   facts_dump();
-  //#endif
+  /* #endif */
 }
 
 static
@@ -132,9 +132,8 @@ void enqueue_init(void)
   if(TYPE_INIT == -1)
     return;
 
-  /* tuple_t tuple = tuple_alloc(TYPE_INIT); */
-
-  /* enqueueNewTuple(tuple, (record_type) 1); */
+  tuple_t tuple = tuple_alloc(TYPE_INIT);
+  enqueueNewTuple(tuple, (record_type) 1);
 }
 
 static
@@ -293,10 +292,7 @@ void receive_tuple(int isNew)
   tuple_t tuple;
   size_t tuple_size = TYPE_SIZE(TUPLE_TYPE(rcvdTuple));
 
-  /* printf ("rcvdTuple type: %d | size: %lu\n", TUPLE_TYPE(rcvdTuple), */
-  /* 	  tuple_size); */
-
-  printf ("--%d--\t Tuple received from %d: %s\n", 
+  printf ("\x1b[33m--%d--\t Tuple received from %d: %s\x1b[0m\n", 
 	  getBlockId(), faceNum(thisChunk), tuple_names[TUPLE_TYPE(rcvdTuple)]);
 
   tuple = malloc(tuple_size);
@@ -418,7 +414,7 @@ void tuple_handle(tuple_t tuple, int isNew, Register *registers)
     return;
 
   default:
-    tuple_do_handle(type, tuple, isNew, registers);
+      tuple_do_handle(type, tuple, isNew, registers);
     return;
   }
 }
