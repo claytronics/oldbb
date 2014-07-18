@@ -36,7 +36,7 @@ $(TARGET):	src
 
 src:	meldCompiler.tgz
 	mkdir -p src
-	cd src; tar -m -xf ../meldCompiler.tgz
+	cd src; tar -xf -C ../meldCompiler.tgz
 	touch src
 
 clean:

@@ -382,7 +382,7 @@ main (int argc, char* argv[])
       
 	totalArguments += numFields;
 	printf ("\n");
-    }
+      }
   
       /* Read global priority info */
       printf ("\nPRIORITY INFO\n");
@@ -473,8 +473,8 @@ main (int argc, char* argv[])
       fprintf (pBBFile, "\n/* OFFSET TO PREDICATE DESCRIPTORS */");
       
       for (i = 0; i < numPredicates; ++i) {
-      fprintf (pBBFile, "\n");
-
+	fprintf (pBBFile, "\n");
+          
 	/* Print offset */
 	fprintf (pBBFile, "%#x, ", currentOffset);
 
@@ -538,8 +538,8 @@ main (int argc, char* argv[])
       for (i = 0; i < numRules; ++i) {
 	fprintf (pBBFile, "\n");
 	/* Force printing 2 bytes of the offset */
-	  fprintf (pBBFile, "%#x, ", rules[i].bytecodeOffset & 0x00ff );
-	  fprintf (pBBFile, "%#x, ", (rules[i].bytecodeOffset & 0xff00) >> 8);
+	fprintf (pBBFile, "%#x, ", rules[i].bytecodeOffset & 0x00ff );
+	fprintf (pBBFile, "%#x, ", (rules[i].bytecodeOffset & 0xff00) >> 8);
       }
 
       /* Print predicate bytecode */

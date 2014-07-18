@@ -167,7 +167,7 @@ CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 #CFLAGS += -I../../../block/rev1c
-#CFLAGS += -DDEBUG=1
+#CFLAGS += -DDEBUG=5
 #CFLAGS += -I$(TARCH)
 
 #---------------- Assembler Options ----------------
@@ -409,7 +409,7 @@ $(TARCH)/Makefile.externs:
 	mkdir -p $(FULLDIRS)
 	create-extern-makefile.sh $(TARCH)/Makefile.externs $(DIRS) 
 
-SIMLIB=-L. -lm -lglut -lGLU -lGL -lpthread
+SIMLIB=-L. -lm -framework OpenGL -framework GLUT -lpthread
 
 $(TARCH)/system/%.o:	$(BBASE)/src-bobby/system/%.c 
 	$(CC) -c $(ALL_CFLAGS)  -I$(dir $@) -Isim   -I$(TARCH) -I$(dir $<) -o $@ $<

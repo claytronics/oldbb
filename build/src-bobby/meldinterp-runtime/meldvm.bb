@@ -49,7 +49,6 @@ static tuple_type TYPE_NEIGHBORCOUNT = -1;
 static tuple_type TYPE_VACANT = -1;
 
 //#define DEBUG
-/* #define DEBUG_REGISTERS */
 /* #define DEBUG_NEIGHBORHOOD */
 
 #ifdef BBSIM
@@ -160,23 +159,7 @@ extern pthread_mutex_t printmutex;
 
 void meldMain(void)
 {
-  blockId = getGUID();
-
-  // init stuff
-  tuples = calloc(NUM_TYPES, sizeof(tuple_queue));
-  newTuples = calloc(1, sizeof(tuple_queue));
-  newStratTuples = calloc(1, sizeof(tuple_pqueue));
-  oldTuples = calloc(NUM_TYPES, sizeof(tuple_t));
-  delayedTuples = calloc(1, sizeof(tuple_pqueue));
-  proved = calloc(NUM_TYPES, sizeof(meld_int));
-  memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
-
   vm_init();
-
-#ifdef DEBUG_REGISTERS
-  printf ("\nRegister address range: %#8x - %#8x\n", 
-	  &reg[0], &reg[31]);
-#endif
 
   //block initialization
 #if DEBUG
@@ -458,6 +441,23 @@ vm_init(void)
   // indicate that the vm is inited.
   alreadyExecuted(1);
 #endif
+}
+
+/* Called upon block init to ensure that data structures are allocated even before
+VM start in case other blocks send us tuples */
+void
+vm_alloc(void)
+{
+  blockId = getGUID();
+
+  // init stuff
+  tuples = calloc(NUM_TYPES, sizeof(tuple_queue));
+  newTuples = calloc(1, sizeof(tuple_queue));
+  newStratTuples = calloc(1, sizeof(tuple_pqueue));
+  oldTuples = calloc(NUM_TYPES, sizeof(tuple_t));
+  delayedTuples = calloc(1, sizeof(tuple_pqueue));
+  proved = calloc(NUM_TYPES, sizeof(meld_int));
+  memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
 }
 
 #ifndef BBSIM
