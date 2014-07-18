@@ -27,7 +27,6 @@
 
 void vm_init(void);
 
-
 threadvar tuple_t *oldTuples;
 
 threadvar tuple_pqueue *delayedTuples;
@@ -43,11 +42,12 @@ threadvar NodeID blockId;
 threadvar persistent_set *persistent;
 
 threadvar Register reg[32];
+threadvar  NodeID neighbors[6];
 
 static tuple_type TYPE_TAP = -1;
 
 //#define DEBUG
-/* #define DEBUG_SENG */
+/* #define DEBUG_SEND */
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -72,6 +72,16 @@ NodeID get_neighbor_ID(int face)
     assert(0);
     return -1;
   }
+}
+
+void
+printNeighbors (void)
+{
+  printf ("Neighbors table:\t");
+  int i;
+  for (i = 0; i < NUM_PORTS; ++i)
+    printf ("[%d]", get_neighbor_ID (i));
+  printf ("\n-------------------------------------------\n");
 }
 
 void enqueueNewTuple(tuple_t tuple, record_type isNew)
@@ -127,7 +137,16 @@ void enqueue_tap(void)
   enqueueNewTuple(tuple, (record_type) 1);
 
   //#if DEBUG
-  facts_dump();
+    int i;
+    printNeighbors();
+    for( i=0; i<NUM_PORTS; ++i)
+    {
+      printf("[%d]", thisNeighborhood.n[i]);
+      neighbors[i] = VACANT;
+      restartScan(i);
+    }
+    printf ("\n");
+  /* facts_dump(); */
   //#endif
 }
 
@@ -164,7 +183,10 @@ extern pthread_mutex_t printmutex;
 
 void meldMain(void)
 {
-  VM_initialized = 0;
+  //used to prevent blockTick to happen before the MeldVM has allocated
+  //its data structures, would cause segfaults otherwise
+  VM_initialized = 1;
+
   blockId = getGUID();
 
   // init stuff
@@ -176,6 +198,7 @@ void meldMain(void)
   proved = calloc(NUM_TYPES, sizeof(meld_int));
   memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
 
+  /* BlockTick can now be called */
   VM_initialized = 1;
   vm_init();
 
@@ -190,7 +213,6 @@ void meldMain(void)
   enqueue_init();
 
   // introduce intial set of axioms
-  NodeID neighbors[6];
   int numNeighbors = getNeighborCount();
 
   enqueue_count(numNeighbors, 1);
@@ -448,4 +470,4 @@ void __myassert(char* file, int line, char* exp) {
   while (1) {
     setColor(RED); delayMS(50); setColor(BLUE); delayMS(50);}
 }
-#endif
+#endif 
