@@ -45,6 +45,4 @@ void pauseForever(void);
 void tellNeighborsDestroyed(Block *b);
 #endif
 
-threadvar byte VM_initialized;	/* Block blocktick until VM is initialized */
-
 #endif

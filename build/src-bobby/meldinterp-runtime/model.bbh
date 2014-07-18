@@ -36,6 +36,7 @@ typedef int Node;
 #endif
 
 extern void enqueueNewTuple(tuple_t tuple, record_type isNew);
+extern void vm_alloc(void);
 
 #define TUPLES tuples
 #define OLDTUPLES oldTuples

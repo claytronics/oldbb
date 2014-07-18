@@ -8,6 +8,7 @@
 #endif
 
 threadvar int blockTickRunning = 0;
+extern void vm_alloc(void);
 
 int accelReady=0;
 
@@ -18,16 +19,6 @@ int accelReady=0;
 // Much of this can probably be done via ISRs and other state change triggers and this function eliminated.
 void blockTick()
 {
-#ifdef MELD
-  if (!VM_initialized) {
-    /* In case VM not initialized yet, return to avoid 
-       potential segmentation faults */
-    fprintf (stderr, "\x1b[31m--%d--\t"
-    	    "blockTick blocked -- VM not initialized yet"
-	     "\x1b[0m\n", getGUID());
-    return;
-  }
-#endif
   byte i;
   
 #ifdef BBSIM
@@ -78,12 +69,6 @@ void blockTick()
 // Ties all the horrifying subfunctions together into one simple function
 void initBlock()
 {
-        //used to prevent blockTick to happen before the MeldVM has allocated
-        //its data structures, would cause segfaults otherwise
-#ifdef MELD
-        VM_initialized = 1;
-#endif
-
 	//software initialization
 	initHandlers();
 
@@ -106,6 +91,11 @@ void initBlock()
 
 	initSystemMessage();
 	initEnsemble();
+
+#ifdef MELD
+	//allocate MeldVM's data structures
+	vm_alloc();
+#endif
 
 	initBlockTick();		// HW INITIALIZATION ROUTINE
 

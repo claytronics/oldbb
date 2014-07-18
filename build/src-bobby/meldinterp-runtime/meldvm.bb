@@ -183,23 +183,6 @@ extern pthread_mutex_t printmutex;
 
 void meldMain(void)
 {
-  //used to prevent blockTick to happen before the MeldVM has allocated
-  //its data structures, would cause segfaults otherwise
-  VM_initialized = 1;
-
-  blockId = getGUID();
-
-  // init stuff
-  tuples = calloc(NUM_TYPES, sizeof(tuple_queue));
-  newTuples = calloc(1, sizeof(tuple_queue));
-  newStratTuples = calloc(1, sizeof(tuple_pqueue));
-  oldTuples = calloc(NUM_TYPES, sizeof(tuple_t));
-  delayedTuples = calloc(1, sizeof(tuple_pqueue));
-  proved = calloc(NUM_TYPES, sizeof(meld_int));
-  memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
-
-  /* BlockTick can now be called */
-  VM_initialized = 1;
   vm_init();
 
   //block initialization
@@ -463,6 +446,23 @@ vm_init(void)
   // indicate that the vm is inited.
   alreadyExecuted(1);
 #endif
+}
+
+/* Called upon block init to ensure that data structures are allocated even before
+VM start in case other blocks send us tuples */
+void
+vm_alloc(void)
+{
+  blockId = getGUID();
+
+  // init stuff
+  tuples = calloc(NUM_TYPES, sizeof(tuple_queue));
+  newTuples = calloc(1, sizeof(tuple_queue));
+  newStratTuples = calloc(1, sizeof(tuple_pqueue));
+  oldTuples = calloc(NUM_TYPES, sizeof(tuple_t));
+  delayedTuples = calloc(1, sizeof(tuple_pqueue));
+  proved = calloc(NUM_TYPES, sizeof(meld_int));
+  memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
 }
 
 #ifndef BBSIM
