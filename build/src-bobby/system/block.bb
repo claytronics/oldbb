@@ -18,15 +18,16 @@ int accelReady=0;
 // Much of this can probably be done via ISRs and other state change triggers and this function eliminated.
 void blockTick()
 {
+#ifdef MELD
   if (!VM_initialized) {
     /* In case VM not initialized yet, return to avoid 
        potential segmentation faults */
     fprintf (stderr, "\x1b[31m--%d--\t"
-    	    "blockTick blocked -- VM not initialized yet, %d"
-	     "\x1b[0m\n", getGUID(), VM_initialized);
+    	    "blockTick blocked -- VM not initialized yet"
+	     "\x1b[0m\n", getGUID());
     return;
   }
-
+#endif
   byte i;
   
 #ifdef BBSIM
@@ -34,9 +35,6 @@ void blockTick()
     // let neighbors know we are gone
     //tellNeighborsDestroyed(this());
     // and never do anything again
-    fprintf (stderr, "\x1b[31m--%d--\t"
-	    "I AM BEING DESTROYED EVEN THOUGH I DON'T DESERVE IT!!!"
-	    "\x1b[0m\n", getGUID());
     pauseForever();
   }
 #endif
@@ -80,9 +78,11 @@ void blockTick()
 // Ties all the horrifying subfunctions together into one simple function
 void initBlock()
 {
-        //set to 1 but will be reset to 0 when VM starts
-        //used to avoid blocking blocktick if running a C program
+        //used to prevent blockTick to happen before the MeldVM has allocated
+        //its data structures, would cause segfaults otherwise
+#ifdef MELD
         VM_initialized = 1;
+#endif
 
 	//software initialization
 	initHandlers();
