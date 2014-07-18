@@ -74,16 +74,6 @@ NodeID get_neighbor_ID(int face)
   }
 }
 
-void
-printNeighbors (void)
-{
-  printf ("Neighbors table:\t");
-  int i;
-  for (i = 0; i < NUM_PORTS; ++i)
-    printf ("[%d]", get_neighbor_ID (i));
-  printf ("\n-------------------------------------------\n");
-}
-
 void enqueueNewTuple(tuple_t tuple, record_type isNew)
 {
   if (TYPE_IS_STRATIFIED(TUPLE_TYPE(tuple))) {
@@ -137,16 +127,7 @@ void enqueue_tap(void)
   enqueueNewTuple(tuple, (record_type) 1);
 
   //#if DEBUG
-    int i;
-    printNeighbors();
-    for( i=0; i<NUM_PORTS; ++i)
-    {
-      printf("[%d]", thisNeighborhood.n[i]);
-      neighbors[i] = VACANT;
-      restartScan(i);
-    }
-    printf ("\n");
-  /* facts_dump(); */
+  facts_dump();
   //#endif
 }
 
