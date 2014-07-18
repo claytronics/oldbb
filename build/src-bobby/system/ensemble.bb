@@ -9,7 +9,7 @@
 #include "log.bbh"
 #endif
 
-#define ENSEMBLE_DEBUG
+/* #define ENSEMBLE_DEBUG */
 
 //     allocated chunks rather than a user allocated chunk
 
@@ -341,9 +341,11 @@ byte handleNeighborMessage(void)
 	// else we are waiting for handshake, stay in NEIGHBOR_HANDSHAKE and don't send a response message
 #ifdef ENSEMBLE_DEBUG
 	else {
-	printf ("\x1b[33m--%d--\tAlready waiting for Handshake: %d\x1b[0m\n", 
-	  getGUID(), ++ignoredHandshakeCount[faceNum(thisChunk)]);	  
-      }
+	  printf ("\x1b[33m--%d--\tAlready waiting for Handshake: %d\x1b[0m\n", 
+		  getGUID(), ++ignoredHandshakeCount[faceNum(thisChunk)]);	  
+	}
+#else
+	else ++ignoredHandshakeCount[faceNum(thisChunk)];
 #endif
 	// (they are probably sending one to us right now)
 	break;
@@ -451,9 +453,9 @@ void initEnsemble(void)
 {
   int i;
 
-#ifdef ENSEMBLE_DEBUG
-  printf ("\x1b[34m--%d--\tIn initEnsemble\x1b[0m\n", getGUID());
-#endif
+/* #ifdef ENSEMBLE_DEBUG */
+/*   printf ("\x1b[34m--%d--\tIn initEnsemble\x1b[0m\n", getGUID()); */
+/* #endif */
   
   // restart scanning for neighbors on all ports
   for( i=0; i<NUM_PORTS; ++i)
