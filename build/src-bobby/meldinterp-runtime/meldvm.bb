@@ -44,12 +44,10 @@ threadvar persistent_set *persistent;
 threadvar Register reg[32];
 
 static tuple_type TYPE_TAP = -1;
-static tuple_type TYPE_NEIGHBOR = -1;
-static tuple_type TYPE_NEIGHBORCOUNT = -1;
-static tuple_type TYPE_VACANT = -1;
 
 //#define DEBUG
 /* #define DEBUG_NEIGHBORHOOD */
+/* #define DEBUG_SEND */
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -78,12 +76,22 @@ NodeID get_neighbor_ID(int face)
 
 void enqueueNewTuple(tuple_t tuple, record_type isNew)
 {
-  if (TYPE_IS_STRATIFIED(TUPLE_TYPE(tuple))) {
-    p_enqueue(newStratTuples, TYPE_STRATIFICATION_ROUND(TUPLE_TYPE(tuple)), tuple, NULL, isNew);
-  }
-  else {
+  /* if (TYPE_IS_STRATIFIED(TUPLE_TYPE(tuple))) { */
+  /*   pthread_mutex_lock(&(printMutex)); */
+  /*   fprintf(stderr, "\x1b[1;35m--%d--\tStrat enqueuing tuple ", getBlockId()); */
+  /*   tuple_print (tuple, stderr); */
+  /*   fprintf(stderr, "\x1b[0m\n"); */
+  /*   pthread_mutex_unlock(&(printMutex)); */
+  /*   p_enqueue(newStratTuples, TYPE_STRATIFICATION_ROUND(TUPLE_TYPE(tuple)), tuple, NULL, isNew); */
+  /* } */
+  /* else { */
+    /* pthread_mutex_lock(&(printMutex)); */
+    /* fprintf(stderr, "\x1b[1;35m--%d--\tBase enqueuing tuple ", getBlockId()); */
+    /* tuple_print (tuple, stderr); */
+    /* fprintf(stderr, "\x1b[0m\n"); */
+    /* pthread_mutex_unlock(&(printMutex));     */
     queue_enqueue(newTuples, tuple, isNew);
-  }
+  /* } */
 }
 
 void enqueue_face(NodeID neighbor, meld_int face, int isNew)
@@ -154,7 +162,7 @@ void init_all_consts(void)
 }
 
 #ifdef BBSIM
-extern pthread_mutex_t printmutex;
+pthread_mutex_t printMutex;
 #endif
 
 void meldMain(void)
@@ -180,11 +188,6 @@ void meldMain(void)
   int i;
   for (i = 0; i < NUM_PORTS; i++) {
     neighbors[i] = get_neighbor_ID(i);
-
-/* #ifdef DEBUG_NEIGHBORHOOD */
-/*       printf ("--%d--\tInit neighbor %d on face %d!\n", */
-/* 	      blockId, neighbors[i], i); */
-/* #endif */
 
     enqueue_face(neighbors[i], i, 1);
   }
@@ -239,6 +242,7 @@ void meldMain(void)
 
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
+	fprintf(stderr, "\x1b[1;33m--%d--\ttuple %s received and set for deletion\x1b[0m\n", getBlockId(), tuple_names[i]);
 	enqueueNewTuple(tuple, (record_type)-1);
       }
 
@@ -275,8 +279,10 @@ void receive_tuple(int isNew)
   tuple_t tuple;
   size_t tuple_size = TYPE_SIZE(TUPLE_TYPE(rcvdTuple));
 
+#ifdef DEBUG_SEND
   printf ("\x1b[33m--%d--\t Tuple received from %d: %s\x1b[0m\n", 
 	  getBlockId(), faceNum(thisChunk), tuple_names[TUPLE_TYPE(rcvdTuple)]);
+#endif
 
   tuple = malloc(tuple_size);
   memcpy(tuple, rcvdTuple, tuple_size);
@@ -312,10 +318,12 @@ void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
   
   NodeID target = rt;
 
+#ifdef DEBUG_SEND
   printf ("\x1b[33m--%d--\t Send Check: tuple = %s | delay = %d | "
 	  "isNew = %d | Target = %d\x1b[0m\n",
 	  getBlockId(), TYPE_NAME(TUPLE_TYPE(tuple)), delay, isNew,
 	  target);
+#endif
 
   if (target == blockId) {
     enqueueNewTuple(tuple, (record_type) isNew);
@@ -349,8 +357,10 @@ void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
 
       assert(TYPE_SIZE(TUPLE_TYPE(tuple)) <= 17);
 
+#ifdef DEBUG_SEND
       printf ("--%d--\t Send tuple %s to face %d\n",
 	      getBlockId(), tuple_names[TUPLE_TYPE(tuple)], face);
+#endif
 
       if (sendMessageToPort(c, face, tuple, TYPE_SIZE(TUPLE_TYPE(tuple)), (MsgHandler)receiver, (GenericHandler)&free_chunk) == 0) {
 	// Send failed :(
@@ -458,6 +468,9 @@ vm_alloc(void)
   delayedTuples = calloc(1, sizeof(tuple_pqueue));
   proved = calloc(NUM_TYPES, sizeof(meld_int));
   memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
+#ifdef BBSIM
+  pthread_mutex_init(&(printMutex), NULL);
+#endif
 }
 
 #ifndef BBSIM

@@ -271,9 +271,9 @@ enum instr_type {
 /* Instruction specific macros and functions */
 #define IF_JUMP(x)    (*(uint32_t*)((const unsigned char*)(x)))
 
-extern inline byte val_is_float(const byte x) { return x == 0x00; }
-extern inline byte val_is_int(const byte x) { return x == 0x01; }
-extern inline byte val_is_field(const byte x) { return x == 0x02; }
+inline byte val_is_float(const byte x) { return x == 0x00; }
+inline byte val_is_int(const byte x) { return x == 0x01; }
+inline byte val_is_field(const byte x) { return x == 0x02; }
 
 /* macros */
 
@@ -490,6 +490,7 @@ void tuple_handle(tuple_t tuple, int isNew, Register *reg);
 void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew);
 void tuple_do_handle(tuple_type type,	void *tuple, int isNew, Register *reg);
 void tuple_print(tuple_t tuple, FILE *fp);
+char* arg2String(tuple_t tuple, byte index);
 
 int process_bytecode(tuple_t tuple, const unsigned char *pc,
 		  int isNew, Register *reg, byte state);
@@ -536,17 +537,25 @@ p_peek(tuple_pqueue *q)
 tuple_pentry *p_dequeue(tuple_pqueue *q);
 void p_enqueue(tuple_pqueue *q, meld_int priority, tuple_t tuple,
 		void *rt, record_type isNew);
+int queue_length (tuple_queue *queue);
 
 extern tuple_type TYPE_INIT;
 extern tuple_type TYPE_EDGE;
 extern tuple_type TYPE_COLOCATED;
 extern tuple_type TYPE_PROVED;
 extern tuple_type TYPE_TERMINATE;
+extern tuple_type TYPE_NEIGHBORCOUNT;
+extern tuple_type TYPE_NEIGHBOR;
+extern tuple_type TYPE_VACANT;
 
 extern void setColorWrapper (byte color);
 extern void setLEDWrapper (byte r, byte g, byte b, byte intensity);
 extern NodeID getBlockId (void);
 /* void print_process(const unsigned char *pc); */
+
+#ifdef BBSIM
+extern pthread_mutex_t printMutex;
+#endif
 
 #endif
 
