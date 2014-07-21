@@ -8,7 +8,6 @@
 #endif
 
 threadvar int blockTickRunning = 0;
-extern void vm_alloc(void);
 
 int accelReady=0;
 
@@ -61,6 +60,11 @@ void blockTick()
     }
   }
   executeHandlers();	
+
+#ifdef MELD
+  /* databaseConsistencyChecker(); */
+#endif
+
   blockTickRunning = 0;
   
 }
