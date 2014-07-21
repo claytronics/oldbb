@@ -483,7 +483,7 @@ tuple_alloc(tuple_type type)
 }
 
 void tuple_handle(tuple_t tuple, int isNew, Register *reg);
-void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew);
+void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew);
 void tuple_do_handle(tuple_type type,	void *tuple, int isNew, Register *reg);
 void tuple_print(tuple_t tuple, FILE *fp);
 char* arg2String(tuple_t tuple, byte index);
@@ -532,7 +532,7 @@ p_peek(tuple_pqueue *q)
 
 tuple_pentry *p_dequeue(tuple_pqueue *q);
 void p_enqueue(tuple_pqueue *q, meld_int priority, tuple_t tuple,
-		void *rt, record_type isNew);
+		NodeID rt, record_type isNew);
 int queue_length (tuple_queue *queue);
 
 extern tuple_type TYPE_INIT;

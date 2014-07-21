@@ -18,7 +18,7 @@ threadtype typedef struct _tuple_entry tuple_entry;
 threadtype typedef struct _tuple_queue { tuple_entry *head; tuple_entry *tail; } tuple_queue;
 threadtype typedef union { int count; tuple_queue *agg_queue; } record_type;
 threadtype struct _tuple_entry { struct _tuple_entry *next; record_type records; void *tuple; };
-threadtype typedef struct _tuple_pentry { meld_int priority; struct _tuple_pentry *next; record_type records; void *tuple; void *rt;} tuple_pentry;
+threadtype typedef struct _tuple_pentry { meld_int priority; struct _tuple_pentry *next; record_type records; void *tuple; NodeID rt;} tuple_pentry;
 threadtype typedef struct {struct _tuple_pentry *queue;} tuple_pqueue;
 
 threadextern tuple_queue *tuples;
