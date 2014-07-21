@@ -167,7 +167,7 @@ CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
 #CFLAGS += -I../../../block/rev1c
-#CFLAGS += -DDEBUG=5
+#CFLAGS += -DDEBUG=1
 #CFLAGS += -I$(TARCH)
 
 #---------------- Assembler Options ----------------
@@ -355,7 +355,7 @@ BLOCKSTUFF += begin gccversion sizebefore build sizeafter end
 
 ############### back to our stuff
 else
-CFLAGS := -g -O1 -Wall -DBBSIM #-Werror
+CFLAGS := -g -O1 -Wall -DBBSIM -DMELD #-Werror
 ALL_CFLAGS = $(CFLAGS)
 CC     := gcc
 BLOCKSTUFF :=
@@ -409,7 +409,12 @@ $(TARCH)/Makefile.externs:
 	mkdir -p $(FULLDIRS)
 	create-extern-makefile.sh $(TARCH)/Makefile.externs $(DIRS) 
 
-SIMLIB=-L. -lm -framework OpenGL -framework GLUT -lpthread
+# Change sim flags if making for Mac OS X
+ifeq ($(TARCH), arch-x86_64-Darwin)
+SIMLIB=-L. -lm -framework GLUT -framework OpenGL -lpthread
+else
+SIMLIB=-L. -lm -lglut -lGLU -lGL -lpthread
+endif
 
 $(TARCH)/system/%.o:	$(BBASE)/src-bobby/system/%.c 
 	$(CC) -c $(ALL_CFLAGS)  -I$(dir $@) -Isim   -I$(TARCH) -I$(dir $<) -o $@ $<
