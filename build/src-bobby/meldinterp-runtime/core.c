@@ -32,6 +32,10 @@ extern persistent_set *persistent;
 
 /* EVAL FUNCTIONS */
 
+inline byte val_is_float(const byte x) { return x == 0x00; }
+inline byte val_is_int(const byte x) { return x == 0x01; }
+inline byte val_is_field(const byte x) { return x == 0x02; }
+
 inline 
 void* eval_field (tuple_t tuple, const unsigned char **pc)
 {

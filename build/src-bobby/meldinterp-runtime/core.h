@@ -271,10 +271,6 @@ enum instr_type {
 /* Instruction specific macros and functions */
 #define IF_JUMP(x)    (*(uint32_t*)((const unsigned char*)(x)))
 
-inline byte val_is_float(const byte x) { return x == 0x00; }
-inline byte val_is_int(const byte x) { return x == 0x01; }
-inline byte val_is_field(const byte x) { return x == 0x02; }
-
 /* macros */
 
 #define ITER_TYPE(x)  ((*(const unsigned char*)((x)+9))&0x7f)

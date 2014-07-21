@@ -26,7 +26,6 @@
 
 void vm_init(void);
 
-
 threadvar tuple_t *oldTuples;
 
 threadvar tuple_pqueue *delayedTuples;
