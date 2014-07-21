@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ "$ARCH" == "" ]; then
  echo "ARCH not defined!"
