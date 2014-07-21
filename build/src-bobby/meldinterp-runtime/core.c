@@ -15,6 +15,7 @@
 #define DEBUG_INSTRS
 /* #define DEBUG_ALLOCS */
 //#define DEBUG_PROVED_TUPLES
+#define inline 
 
 static unsigned char **deltas = NULL;
 int *delta_sizes = NULL;
@@ -131,15 +132,14 @@ execute_send (const unsigned char *pc,
 {
   ++pc;
   Register send_reg = reg[SEND_MSG(pc)];
-  Register send_rt = reg[SEND_RT(pc)];
+  NodeID send_rt = reg[SEND_RT(pc)];
 
 #ifdef DEBUG_INSTRS
   printf("--%d--\t SEND reg %d TO reg %d\n", 
 	 getBlockId(), SEND_MSG(pc), SEND_RT(pc));
 #endif
 
-  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg),
-	     MELD_CONVERT_REG_TO_PTR(send_rt), 0, 1);
+  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, 0, 1);
 }
 
 inline void
@@ -148,7 +148,7 @@ execute_send_delay (const unsigned char *pc,
 {
   ++pc;
   Register send_reg = reg[SEND_MSG(pc)];
-  Register send_rt = reg[SEND_RT(pc)];
+  NodeID send_rt = reg[SEND_RT(pc)];
   meld_int *delay = eval_int(&pc);
 
 #ifdef DEBUG_INSTRS
@@ -156,8 +156,7 @@ execute_send_delay (const unsigned char *pc,
 	 getBlockId(), SEND_MSG(pc), SEND_RT(pc));
 #endif
 
-  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg),
-	     MELD_CONVERT_REG_TO_PTR(send_rt), *delay, 1);
+  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, *delay, 1);
 }
 
 inline void
@@ -384,7 +383,7 @@ execute_mvfieldreg (const unsigned char *pc, Register *reg)
   (void)field_num;
 #endif
 
-  size_t size = sizeof(Register);
+  size_t size = TYPE_ARG_SIZE(TUPLE_TYPE(tpl), field_num);
   memcpy(dst, src, size);
 }
 
@@ -435,6 +434,8 @@ execute_mvfieldfield (const unsigned char *pc,
   printf ("--%d--\t MOVE FIELD %d.%d TO FIELD %d.%d\n", 
 	  getBlockId(), src_field_reg, src_field_num, 
 	  dst_field_reg, dst_field_num);
+#else
+  (void) src_field_num;
 #endif
 
   size_t size = TYPE_ARG_SIZE(type, dst_field_num);
@@ -519,7 +520,7 @@ execute_addrequal (const unsigned char *pc, Register *reg)
   Register *arg1 = eval_reg (reg1, &pc, reg);
   Register *arg2 = eval_reg (reg2, &pc, reg);
   Register *dest = eval_reg (reg3, &pc, reg);
-  *dest = (MELD_PTR(arg1) == MELD_PTR(arg2));
+  *dest = (MELD_NODE_ID(arg1) == MELD_NODE_ID(arg2));
 #ifdef DEBUG_INSTRS
   printf ("--%d--\t ADDR reg %d EQUAL reg %d TO reg %d\n", 
 	  getBlockId(), reg1, reg2, reg3);
@@ -538,7 +539,7 @@ execute_addrnotequal (const unsigned char *pc, Register *reg)
   Register *arg1 = eval_reg (reg1, &pc, reg);
   Register *arg2 = eval_reg (reg2, &pc, reg);
   Register *dest = eval_reg (reg3, &pc, reg);
-  *dest = (MELD_PTR(arg1) != MELD_PTR(arg2));
+  *dest = (MELD_NODE_ID(arg1) != MELD_NODE_ID(arg2));
 #ifdef DEBUG_INSTRS
   printf ("--%d--\t ADDR reg %d NOTEQUAL reg %d TO reg %d\n", 
 	  getBlockId(), reg1, reg2, reg3);
@@ -1115,7 +1116,7 @@ p_dequeue(tuple_pqueue *q)
 
 void
 p_enqueue(tuple_pqueue *queue, meld_int priority, tuple_t tuple,
-	  void *rt, record_type isNew)
+	  NodeID rt, record_type isNew)
 {
   tuple_pentry *entry = malloc(sizeof(tuple_pentry));
 

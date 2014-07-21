@@ -46,7 +46,7 @@ static tuple_type TYPE_TAP = -1;
 
 //#define DEBUG
 /* #define DEBUG_NEIGHBORHOOD */
-/* #define DEBUG_SEND */
+#define DEBUG_SEND
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -84,12 +84,12 @@ void enqueueNewTuple(tuple_t tuple, record_type isNew)
   /*   p_enqueue(newStratTuples, TYPE_STRATIFICATION_ROUND(TUPLE_TYPE(tuple)), tuple, NULL, isNew); */
   /* } */
   /* else { */
-    /* pthread_mutex_lock(&(printMutex)); */
-    /* fprintf(stderr, "\x1b[1;35m--%d--\tBase enqueuing tuple ", getBlockId()); */
-    /* tuple_print (tuple, stderr); */
-    /* fprintf(stderr, "\x1b[0m\n"); */
-    /* pthread_mutex_unlock(&(printMutex));     */
-    queue_enqueue(newTuples, tuple, isNew);
+  /* pthread_mutex_lock(&(printMutex)); */
+  /* fprintf(stderr, "\x1b[1;35m--%d--\tBase enqueuing tuple ", getBlockId()); */
+  /* tuple_print (tuple, stderr); */
+  /* fprintf(stderr, "\x1b[0m\n"); */
+  /* pthread_mutex_unlock(&(printMutex));     */
+  queue_enqueue(newTuples, tuple, isNew);
   /* } */
 }
 
@@ -241,8 +241,7 @@ void meldMain(void)
 
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
-	fprintf(stderr, "\x1b[1;33m--%d--\ttuple %s received and set for deletion\x1b[0m\n", getBlockId(), tuple_names[i]);
-	enqueueNewTuple(tuple, (record_type)-1);
+	enqueueNewTuple(tuple, (record_type)1);
       }
 
       neighbors[i] = neighbor;
@@ -279,8 +278,16 @@ void receive_tuple(int isNew)
   size_t tuple_size = TYPE_SIZE(TUPLE_TYPE(rcvdTuple));
 
 #ifdef DEBUG_SEND
-  printf ("\x1b[33m--%d--\t Tuple received from %d: %s\x1b[0m\n", 
-	  getBlockId(), faceNum(thisChunk), tuple_names[TUPLE_TYPE(rcvdTuple)]);
+#ifdef BBSIM
+  pthread_mutex_lock(&(printMutex));
+#endif
+  printf ("\x1b[33m--%d--\t Tuple received from %d: ",
+	  getBlockId(), get_neighbor_ID(faceNum(thisChunk)));
+  tuple_print (rcvdTuple, stdout);
+  printf("\x1b[0m\n"); 
+#ifdef BBSIM
+  pthread_mutex_unlock(&(printMutex));
+#endif
 #endif
 
   tuple = malloc(tuple_size);
@@ -306,7 +313,7 @@ void free_chunk(void) {
   free(thisChunk);
 }
 
-void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
+void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
 {
   assert (TUPLE_TYPE(tuple) < NUM_TYPES);
 
@@ -314,14 +321,19 @@ void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
     p_enqueue(delayedTuples, getTime() + delay, tuple, rt, (record_type) isNew);
     return;
   }
-  
+
   NodeID target = rt;
 
 #ifdef DEBUG_SEND
-  printf ("\x1b[33m--%d--\t Send Check: tuple = %s | delay = %d | "
-	  "isNew = %d | Target = %d\x1b[0m\n",
-	  getBlockId(), TYPE_NAME(TUPLE_TYPE(tuple)), delay, isNew,
-	  target);
+#ifdef BBSIM
+  pthread_mutex_lock(&(printMutex));
+#endif
+  printf ("\x1b[33m--%d--\t Sending tuple: ", getBlockId());
+  tuple_print (tuple, stdout);
+  printf(" to %d\x1b[0m\n", target); 
+#ifdef BBSIM
+  pthread_mutex_unlock(&(printMutex));
+#endif
 #endif
 
   if (target == blockId) {
@@ -406,7 +418,7 @@ void tuple_handle(tuple_t tuple, int isNew, Register *registers)
     return;
 
   default:
-      tuple_do_handle(type, tuple, isNew, registers);
+    tuple_do_handle(type, tuple, isNew, registers);
     return;
   }
 }
@@ -453,7 +465,7 @@ vm_init(void)
 }
 
 /* Called upon block init to ensure that data structures are allocated even before
-VM start in case other blocks send us tuples */
+   VM start in case other blocks send us tuples */
 void
 vm_alloc(void)
 {
