@@ -66,7 +66,7 @@ void sendOnSerial(PRef p)
             destPort = Top;
             break;
         default:
-            // this is very bad - I would like to just drop it silently
+	    // this is very bad - I would like to just drop it silently
             printf("did not rewrite direction\n");
 
             // pretend that it just couldn't get a response?
@@ -153,19 +153,21 @@ Chunk* nextPacket(void)
     Block* b = this();
 
     BB_LOCK(&(b->neighborMutex));
+
     Chunk* c = b->globalRq.head;
-    BB_UNLOCK(&(b->neighborMutex));
     
     // no packets
     if( c == NULL )
     {
-        BB_LOCK(&(b->neighborMutex));
-        b->globalRq.tail = NULL;
-        b->globalRq.flags &= ~PACKET_READY;
-        BB_UNLOCK(&(b->neighborMutex));
+      b->globalRq.flags &= ~PACKET_READY;
+      b->globalRq.tail = NULL;
+      
+      BB_UNLOCK(&(b->neighborMutex));
 
-        return NULL;
+      return NULL;
     }
+    
+    BB_UNLOCK(&(b->neighborMutex));
 
     // this is annoying but has to be done as to ensure using system chunks
     Chunk* recd = getSystemRXChunk();

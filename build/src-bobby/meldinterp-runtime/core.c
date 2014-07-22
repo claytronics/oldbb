@@ -25,6 +25,23 @@ tuple_type TYPE_COLOCATED = -1;
 tuple_type TYPE_PROVED = -1;
 tuple_type TYPE_TERMINATE = -1;
 
+char*
+type2name(int t)
+{
+  switch (t) {
+  case FIELD_INT: return "int";
+  case FIELD_FLOAT: return "float";
+  case FIELD_ADDR: return "addr/other";
+  case FIELD_LIST_INT: return "list_int";
+  case FIELD_LIST_FLOAT: return "list_float";
+  case FIELD_LIST_ADDR: return "list_addr";
+  case FIELD_SET_INT: return "set_int";
+  case FIELD_SET_FLOAT: return "set_float";
+  case FIELD_TYPE: return "type";
+  default: return "????";
+  }
+}
+
 extern persistent_set *persistent;
 
 bool
@@ -1369,6 +1386,9 @@ tuple_print(tuple_t tuple, FILE *fp)
 
   fprintf(fp, "%s(", TYPE_NAME(tuple_type));
   for(j = 0; j < TYPE_NOARGS(tuple_type); ++j) {
+#if 0
+    fprintf(fp, "[j:%d,TN:%d,TAT:%d(%s)]", j, TYPE_NOARGS(tuple_type),TYPE_ARG_TYPE(tuple_type, j),type2name(TYPE_ARG_TYPE(tuple_type, j)));
+#endif    
     void *field = GET_TUPLE_FIELD(tuple, j);
 
     if (j > 0)
@@ -1386,7 +1406,7 @@ tuple_print(tuple_t tuple, FILE *fp)
       fprintf(fp, "%f", (double)MELD_FLOAT(field));
       break;
     case FIELD_ADDR:
-      fprintf(fp, "%p", MELD_PTR(field));
+      fprintf(fp, "%d", *(uint16_t*)(field));
       break;
     case FIELD_LIST_INT:
       fprintf(fp, "list_int[%d][%p]", list_total(MELD_LIST(field)),

@@ -23,5 +23,6 @@ Symbol lookup(Table t, char* value);
 void pushWatermark(Table t);
 void popWatermark(Table t);
 void printTable(Table t);
+char* itype2str(Itype type);
 
 #endif

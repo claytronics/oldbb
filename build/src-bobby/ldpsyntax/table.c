@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+#include <malloc.h>
 #include "ldp.h"
 
 Table symbols;

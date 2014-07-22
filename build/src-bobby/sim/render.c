@@ -159,11 +159,15 @@ void show_directions ()
 	char lines[num_lines][65];
 	int i, j;
 
+	// preinit
+	for (i=0; i<num_lines; i++) 
+	  memset(&(lines[i][0]), 0, 65);
+
 	// Text to display
 	strcpy(lines[0], "Use left and middle mouse buttons to rotate scene.             ");
 	strcpy(lines[1], "Use Ctrl with left and middle mouse buttons to translate scene.");
 	strcpy(lines[2], "Use the right mouse button on a block to add a neighbor block. ");
-	strcpy(lines[3], "Use Ctrl and the right mouse button to delete a block.      ");
+	strcpy(lines[3], "Use Ctrl and the right mouse button to delete a block.         ");
 	strcpy(lines[4], "Press 'D' to hide or display these directions.                 ");
 
 
