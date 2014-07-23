@@ -152,7 +152,7 @@ p_enqueue(tuple_pqueue *queue, meld_int priority, tuple_t tuple,
   tuple_pentry **spot;
   for (spot = &(queue->queue);
        *spot != NULL &&
-         (*spot)->priority < priority;
+         (*spot)->priority <= priority;
        spot = &((*spot)->next));
 
   entry->next = *spot;
