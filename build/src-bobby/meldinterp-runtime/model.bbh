@@ -21,6 +21,9 @@ threadtype struct _tuple_entry { struct _tuple_entry *next; record_type records;
 threadtype typedef struct _tuple_pentry { meld_int priority; struct _tuple_pentry *next; record_type records; void *tuple; NodeID rt;} tuple_pentry;
 threadtype typedef struct {struct _tuple_pentry *queue;} tuple_pqueue;
 
+threadtype typedef struct { char* string; unsigned char numInclPreds; unsigned char* inclPredIDs; unsigned char matchedPredicatesCount; unsigned char state; } Rule;
+/* state: 0x00: inactive | 0x01: active */
+
 threadextern tuple_queue *tuples;
 threadextern void **oldTuples;
 threadextern meld_int *proved;

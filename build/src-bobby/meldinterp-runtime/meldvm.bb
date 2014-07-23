@@ -25,6 +25,7 @@
 #include "model.bbh"
 
 void vm_init(void);
+void init_rules(void);
 
 threadvar tuple_t *oldTuples;
 
@@ -41,6 +42,8 @@ threadvar NodeID blockId;
 threadvar persistent_set *persistent;
 
 threadvar Register reg[32];
+
+threadvar Rule *rules;
 
 static tuple_type TYPE_TAP = -1;
 
@@ -481,6 +484,24 @@ vm_alloc(void)
 #ifdef BBSIM
   pthread_mutex_init(&(printMutex), NULL);
 #endif
+
+  init_rules();
+}
+
+void
+init_rules(void)
+{
+  rules = calloc(NUM_RULES, sizeof(Rule));
+  int i, j;
+  for (i = 0; i < NUM_RULES; ++i) {
+    rules[i].string = rule_names[i];
+    rules[i].numInclPreds = RULE_NUM_INCLPREDS(i);
+    rules[i].inclPredIDs = malloc(rules[i].numInclPreds * sizeof(unsigned char));
+    for (j = 0; j < rules[i].numInclPreds; ++j) 
+      rules[i].inclPredIDs[j] = RULE_INCLPRED_ID(i, j);
+    rules[i].state = 0x0;
+    rules[i].matchedPredicatesCount = 0;
+  }
 }
 
 #ifndef BBSIM
