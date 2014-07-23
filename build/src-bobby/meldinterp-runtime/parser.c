@@ -8,6 +8,8 @@
 byte readType (FILE *pFile);
 byte readTypeID (FILE *pFile, byte typeArray[]);
 void skipNodeReferences (FILE *pFile);
+size_t sizeOfPredicateDescriptors(Predicate predicates[], byte numPreds);
+size_t sizeOfRuleDescriptors(Rule rules[], byte numRules);
 
 int 
 main (int argc, char* argv[])
@@ -77,6 +79,8 @@ main (int argc, char* argv[])
       fread (&numPredicates, 1, 1, pMeldProg);
       printf ("Number of predicates: %d\n", numPredicates);
 
+      Predicate predicates[numPredicates];
+
       /* Read number of nodes -- USELESS BB */
       uint32_t numNodes;
       fread (&numNodes, 4, 1, pMeldProg);
@@ -119,20 +123,21 @@ main (int argc, char* argv[])
       fread (&numRules, 4, 1, pMeldProg);
       printf ("Number of rules: %i\n", numRules);
 
+      Rule rules[numRules];
+
       for (i = 0; i < numRules; ++i) {
-	printf ("  Rule %lu: ", i);
+	printf ("  Rule %d: ", i);
 	    
 	/* Read rule length */
 	uint32_t ruleLength;
 	fread (&ruleLength, 4, 1, pMeldProg);
 	    
 	/* Read rule string */
-	char rule_str[ruleLength + 1];
-	fread (&rule_str, 1, ruleLength, pMeldProg);
-	rule_str[ruleLength] = '\0';
+	rules[i].pName = malloc (ruleLength + 1);
+	fread (rules[i].pName, 1, ruleLength, pMeldProg);
+	rules[i].pName[ruleLength] = '\0';
 
-	printf ("%s\n", rule_str);
-	/* TODO: store somewhere? */
+	printf ("%s\n", rules[i].pName);
       }
       printf ("\n");
 
@@ -189,6 +194,8 @@ main (int argc, char* argv[])
 	byte functionCode[functionSize];
 	fread (&functionSize, 1, functionSize, pMeldProg);
 	/* TODO: Store somewhere? */
+	(void)functionCode;
+
 	skipNodeReferences (pMeldProg);
       }
 
@@ -232,21 +239,17 @@ main (int argc, char* argv[])
 
       /* Read predicate information */
       size_t totalArguments = 0; /* Number of predicate args in program */
-      
-      /* Initialize global containers */
-      Predicate predicates[numPredicates];
-      Rule rules[numRules];
       byte allArguments[256];
-
+      
       printf ("\n PREDICATE DESCRIPTORS \n");
 
       for (i = 0; i < numPredicates; ++i) { 
-	printf("  Predicate %lu:\n", i);
-	
+	printf("  Predicate %d:\n", i);
+
 	/* Read code size */
 	uint32_t codeSize;
 	fread (&codeSize, 4, 1, pMeldProg);
-	printf("    code size: %lu\n", codeSize);
+	printf("    code size: %d\n", codeSize);
 	predicates[i].codeSize = codeSize;
 
 	/* Read predicate properties */
@@ -255,29 +258,29 @@ main (int argc, char* argv[])
 
 	printf ("    Properties: ");
 	
-	/* Format it to old property byte format */
-	byte oldProp = 0x0;
+	/* Format it to target property byte format */
+	byte targetProp = 0x0;
 
 	if (prop & PRED_AGG) {	/* AGG? */
 	  printf ("AGG ");
-	  oldProp |= 0x01;
+	  targetProp |= 0x01;
 	}
 	if (prop & PRED_LINEAR) {
 	  printf ("LINEAR ");
-	  oldProp |= 0x04;
+	  targetProp |= 0x04;
 	}
 	/* TODO: Demistify this */
 	/* else { */
 	/*   printf ("PERSISTENT "); */
-	/*   oldProp |= 0x02; */
+	/*   targetProp |= 0x02; */
 	/* } */
 	if (prop & PRED_ROUTE) {
 	  printf ("ROUTE ");
-	  oldProp |= 0x20;
+	  targetProp |= 0x20;
 	}
 	if (prop & PRED_REVERSE_ROUTE) {
 	  printf ("REVERSE-ROUTE ");
-	  oldProp |= 0x20;
+	  targetProp |= 0x20;
 	}
 	if (prop & PRED_ACTION) {
 	  printf ("ACTION ");
@@ -292,7 +295,7 @@ main (int argc, char* argv[])
 	  /* Not specified in old VM */
 	}
 	printf ("\n");
-	predicates[i].properties = oldProp;
+	predicates[i].properties = targetProp;
 	
 	/* Aggregate information if any */
 	byte agg;
@@ -342,10 +345,10 @@ main (int argc, char* argv[])
 	printf ("\n");
 
 	/* Predicate name */
-	/* USE PC */
 	predicates[i].pName = malloc (PRED_NAME_SIZE_MAX + 1);
 	fread (predicates[i].pName, 1, PRED_NAME_SIZE_MAX, pMeldProg);
-  
+
+	/* NOTE: Using %s returns a seg fault, print one char at a time instead */
 	printf ("    Name: ");
 	char *sc = predicates[i].pName;
 	for (j = 0; (j < PRED_NAME_SIZE_MAX) || (*sc == '\0'); ++j) {
@@ -380,7 +383,9 @@ main (int argc, char* argv[])
 	  else printf ("unknown\n");
 	} else printf ("  none\n");
       
-	totalArguments += numFields;
+	/* Set descriptor size */
+	predicates[i].desc_size = 7 + numFields;	
+
 	printf ("\n");
       }
   
@@ -439,19 +444,20 @@ main (int argc, char* argv[])
 
 	skipNodeReferences(pMeldProg);
 
-	byte persistence = 0x0;
-	fread (&persistence, 1, 1, pMeldProg);
-	/* TODO: Need to store? */
+	/* Read persistence */
+	fread (&rules[i].persistence, 1, 1, pMeldProg);
 	
-	uint32_t numInclPreds;
-	fread (&numInclPreds, 4, 1, pMeldProg);
+	/* Max number of preds by rule for parser set at 32 for now
+	 * Check parser.h / rule struct to upgrade it if needed */
+	fread (&rules[i].numInclPreds, 4, 1, pMeldProg);
 
-	for (j = 0; j < numInclPreds; ++j) {
-	  byte predID;
-	  fread (&predID, 1, 1, pMeldProg);
-	  
-	  /* TODO: Need to do something? */
+	/* Get id of each included predicate */
+	for (j = 0; j < rules[i].numInclPreds; ++j) {
+	  fread (&rules[i].inclPredIDs[j], 1, 1, pMeldProg);
 	}
+
+	/* Set descriptor size */
+        rules[i].desc_size = 4 + rules[i].numInclPreds;	
       }
 
       /* Print byte code header to output file */
@@ -468,29 +474,44 @@ main (int argc, char* argv[])
       fprintf (pBBFile, "%#x, ", numRules);
 
       /* Calculate and print offset to predicate descriptor for every predicate */
-      size_t descriptorStart = 2 + numPredicates * sizeof(byte);
-      size_t currentOffset = descriptorStart;
-      fprintf (pBBFile, "\n/* OFFSET TO PREDICATE DESCRIPTORS */");
+      uint32_t descriptorStart = 2 + numPredicates * sizeof(unsigned short)	
+	                         + numRules * sizeof(unsigned short);
+      uint32_t currentOffset = descriptorStart;
+      fprintf (pBBFile, "\n/* OFFSETS TO PREDICATE DESCRIPTORS */");
       
       for (i = 0; i < numPredicates; ++i) {
 	fprintf (pBBFile, "\n");
           
 	/* Print offset */
-	fprintf (pBBFile, "%#x, ", currentOffset);
+	fprintf (pBBFile, "%#x, ", currentOffset & 0x00ff );
+	fprintf (pBBFile, "%#x, ", (currentOffset & 0xff00) >> 8);
 
 	// Increment current offset
-	currentOffset += PREDICATE_DESCRIPTOR_SIZE + 
-	  predicates[i].nFields;
+	currentOffset += predicates[i].desc_size;
+      }
+
+      /* Calculate and print offset to rule descriptor for every rule */
+      fprintf (pBBFile, "\n/* OFFSETS TO RULE DESCRIPTORS */");
+      
+      for (i = 0; i < numRules; ++i) {
+	fprintf (pBBFile, "\n");
+          
+	/* Print offset */
+	fprintf (pBBFile, "%#x, ", currentOffset & 0x00ff );
+	fprintf (pBBFile, "%#x, ", (currentOffset & 0xff00) >> 8);
+
+	// Increment current offset
+	currentOffset += rules[i].desc_size;
       }
 
       /* Calculate byte code offsets */
       
       /* Start with offset to each predicate's bytecode */
-      size_t bcOffset = currentOffset + numRules * sizeof(unsigned short);
+      size_t bcOffset = currentOffset;
   
       printf ("Predicate byte code offsets: ");
       for (i = 0; i < numPredicates; ++i) {
-	printf ("%d ,", bcOffset);
+	printf ("%zu ,", bcOffset);
 	predicates[i].bytecodeOffset = bcOffset;
 	bcOffset += predicates[i].codeSize;
       }
@@ -499,7 +520,7 @@ main (int argc, char* argv[])
       /* Then set rule offsets */
       printf ("Rule byte code offsets: ");
       for (i = 0; i < numRules; ++i) {
-	printf ("%d ,", bcOffset);
+	printf ("%zu ,", bcOffset);
 	rules[i].bytecodeOffset = bcOffset;
 	bcOffset += rules[i].codeSize;
       }
@@ -534,12 +555,23 @@ main (int argc, char* argv[])
       }
 
       /* Print rule offsets */
-      fprintf (pBBFile, "\n/* OFFSETS TO RULE BYTECODE */");
+      fprintf (pBBFile, "\n/* RULE DESCRIPTORS */");
       for (i = 0; i < numRules; ++i) {
 	fprintf (pBBFile, "\n");
+
 	/* Force printing 2 bytes of the offset */
 	fprintf (pBBFile, "%#x, ", rules[i].bytecodeOffset & 0x00ff );
 	fprintf (pBBFile, "%#x, ", (rules[i].bytecodeOffset & 0xff00) >> 8);
+
+	/* Persistence */
+	fprintf (pBBFile, "%#x, ", rules[i].persistence);
+
+	/* Number of included predicates */
+	fprintf (pBBFile, "%#x, ", rules[i].numInclPreds);
+
+	/* ID of each included predicate */
+	for (j = 0; j < rules[i].numInclPreds; ++j)
+	  fprintf (pBBFile, "%#x, ", rules[i].inclPredIDs[j]);
       }
 
       /* Print predicate bytecode */
@@ -585,6 +617,15 @@ main (int argc, char* argv[])
       }
       fprintf (pBBFile, "};\n\n");
 
+      /* Print rule string array */     
+      printf ("\nPRINTING RULE NAMES ARRAY\n");
+ 
+      fprintf (pBBFile, "char *rule_names[] = {");
+      for (i = 0; i < numRules; ++i) {
+	fprintf (pBBFile, "\"%s\", ", rules[i].pName);
+      }
+      fprintf (pBBFile, "};\n\n");
+
       /* Print remaining elements */
       printf ("\nPRINTING EXTERNAL FUNCTIONS\n");
 
@@ -600,6 +641,9 @@ main (int argc, char* argv[])
   return 0;
 }
 
+/* Reads a fieldType byte from the bytecode and return a byte representing the
+ * equivalent of this type in the target VM.
+ */
 byte
 readType (FILE *pFile)
 {
@@ -607,6 +651,7 @@ readType (FILE *pFile)
   fread (&fieldType, 1, 1, pFile);
 
   switch (fieldType) {
+    /* TODO: Implement booleans */
   case FIELD_BOOL:    printf ("BOOL ");   perror ("BOOL not supported\n"); exit(1);
   case FIELD_INT:     printf ("INT ");    return 0x0;
   case FIELD_FLOAT:   printf ("FLOAT ");  return 0x1;
@@ -642,6 +687,7 @@ readType (FILE *pFile)
   return 0xff;
 }
 
+/* Returns the type ID of an argument by reading its index from the byte code */
 byte
 readTypeID (FILE *pFile, byte typeArray[])
 {
@@ -650,10 +696,36 @@ readTypeID (FILE *pFile, byte typeArray[])
   return typeArray[pos];
 }
 
+/* There should never be any node reference as in BB programs there should
+ * be always one single node, the block itself. 
+ * => ALWAYS SKIP 
+ */
 void
 skipNodeReferences (FILE *pFile)
 {
   uint32_t sizeNodes;
   fread (&sizeNodes, 1, sizeof(uint32_t), pFile);
   fseek (pFile, sizeNodes * sizeof(uint32_t), SEEK_CUR);
+}
+
+size_t
+sizeOfRuleDescriptors(Rule rules[], byte numRules)
+{
+  size_t i;
+  size_t size = 0;
+  for (i = 0; i < numRules; i++)
+    size += rules[i].desc_size;
+  
+  return size;
+}
+
+size_t
+sizeOfPredicateDescriptors(Predicate predicates[], byte numPreds)
+{
+  size_t i;
+  size_t size = 0;
+  for (i = 0; i < numPreds; i++)
+    size += predicates[i].desc_size;
+  
+  return size;
 }

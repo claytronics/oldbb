@@ -338,9 +338,11 @@ enum instr_type {
 
 #define NUM_TYPES  (meld_prog[0])
 #define NUM_RULES  (meld_prog[1])
-#define TYPE_OFFSET(x)     (meld_prog[2 + (x)])
+#define TYPE_OFFSET(x)     (meld_prog[2 + (2 * (x))])
+#define RULE_OFFSET(x)     (meld_prog[2 + (2 * (NUM_TYPES) + 2 * (x))])
 
-/* First 2 bytes contain offset to type's bytecode */
+// PREDICATE DESCRIPTOR
+/* Descriptor start */
 #define TYPE_DESCRIPTOR(x) ((unsigned char *)(meld_prog + TYPE_OFFSET(x)))
 /* Contain tuple's type (linear/persistent...)*/
 #define TYPE_PROPERTIES(x) (*(TYPE_DESCRIPTOR(x) + 2))
@@ -349,15 +351,15 @@ enum instr_type {
 /* Stratification round ..?*/
 #define TYPE_STRATIFICATION_ROUND(x) (*(TYPE_DESCRIPTOR(x) + 4))
 /* Number of arguments */
-#define TYPE_NOARGS(x)     (*(TYPE_DESCRIPTOR(x) + 5))
+#define TYPE_NUMARGS(x)     (*(TYPE_DESCRIPTOR(x) + 5))
 /* Number of deltas ..? */
-#define TYPE_NODELTAS(x)   (*(TYPE_DESCRIPTOR(x) + 6))
+#define TYPE_NUMDELTAS(x)   (*(TYPE_DESCRIPTOR(x) + 6))
 /* Argument descriptor */
 #define TYPE_ARGS_DESC(x)  ((unsigned char*)(TYPE_DESCRIPTOR(x)+TYPE_DESCRIPTOR_SIZE))
 /* Returns type of argument number f for type x */
 #define TYPE_ARG_DESC(x, f) ((unsigned char *)(TYPE_ARGS_DESC(x)+1*(f)))
 /* Returns type of deltas for type x */
-#define TYPE_DELTAS(x)     (TYPE_ARGS_DESC(x) + 1*TYPE_NOARGS(x))
+#define TYPE_DELTAS(x)     (TYPE_ARGS_DESC(x) + 1*TYPE_NUMARGS(x))
 
 /* Returns address of bytecode for type x */
 #define TYPE_START(x)							\
@@ -365,16 +367,22 @@ enum instr_type {
 #define TYPE_START_CHECK(x)			\
   (*(unsigned short *)TYPE_DESCRIPTOR(x))
 
+// RULE DESCRIPTOR
+/* Descriptor start */
+#define RULE_DESCRIPTOR(x) ((unsigned char*)(meld_prog + RULE_OFFSET(x)))
 /* Offset to rule byte code, pred 0 byte code start is reference */
-#define RULE_START(x)							\
-  ((unsigned char*)(meld_prog + *(unsigned short*)			\
-		    ((TYPE_START(0) \
-		      - NUM_RULES * sizeof(unsigned short)) + 2 * (x)) ) )
-#define RULE_START_CHECK(x)						\
-  (*(unsigned short*)							\
-   ((TYPE_START(0) -							\
-     (NUM_RULES * sizeof(unsigned short))) + 2 * (x) ) )
+/* Returns 1 if rule is persistent, 0 otherwise */
+#define RULE_PERSISTENCE(x) (*(RULE_DESCRIPTOR(x) + 2))
+/* Number of included predicates */
+#define RULE_NUM_INCLPREDS(x)   (*(RULE_DESCRIPTOR(x) + 3))
+/* ID of included predicate at index f  */
+#define RULE_INCLPRED_ID(x, f) (*(unsigned char *)(RULE_DESCRIPTOR(x) + 4 + 1*(f)))
 
+#define RULE_START(x)							\
+  ((unsigned char*)(meld_prog + *(unsigned short*)(RULE_DESCRIPTOR(x))))
+#define RULE_START_CHECK(x)						\
+  (*(unsigned char*)(meld_prog + *(unsigned short*)(RULE_DESCRIPTOR(x))))
+  
 #define TYPE_IS_STRATIFIED(x) (TYPE_STRATIFICATION_ROUND(x) > 0)
 
 #define TYPE_NAME(x)       (tuple_names[x])
@@ -457,6 +465,7 @@ typedef Register (*extern_funct_type)();
 extern extern_funct_type extern_functs[];
 extern int extern_functs_args[];
 extern char *tuple_names[];
+extern char *rule_names[];
 extern unsigned char *arguments;
 extern int *delta_sizes;
 

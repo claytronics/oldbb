@@ -1,10 +1,16 @@
+#ifndef __PARSER_H__
+#define __PARSER_H__
 
 #include "stdint.h"
 #include "string.h"
 
+typedef unsigned char byte;
+
+/* Used to check if opened file is Meld byte code file */
 const uint32_t MAGIC1 = 0x646c656d;
 const uint32_t MAGIC2 = 0x6c696620;
 
+/* Macros from source MeldVM */
 #define VERSION_AT_LEAST(MAJ, MIN) \
 (majorVersion > (MAJ) || (majorVersion == (MAJ) && minorVersion >= (MIN)))
 #define PRED_NAME_SIZE_MAX 32
@@ -12,8 +18,7 @@ const uint32_t MAGIC2 = 0x6c696620;
 #define PREDICATE_DESCRIPTOR_SIZE 7
 #define DELTA_TYPE_FIELD_SIZE 1
 
-typedef unsigned char byte;
-
+/* Field types for target VM */
 enum field_type {
    FIELD_INT = 0x0,
    FIELD_FLOAT = 0x1,
@@ -29,25 +34,35 @@ enum field_type {
 };
 
 typedef struct _Predicate {
-  uint32_t codeSize;
-  byte properties;
-  byte agg;
-  byte level;
-  byte nFields;
-  byte argOffset;
-  uint32_t bytecodeOffset;
-  char *pName;
-  byte *pBytecode;
+  uint32_t codeSize; 		/* Size of byte code */
+  byte argOffset;		/* Offset for global arg array */
+  char *pName;			/* Name string */
+  byte *pBytecode;		/* Pointer to byte code */
+
+  uint32_t bytecodeOffset;	/* Offset to byte code in header */
+  byte properties;		/* Linear, persistent, agg ... */
+  byte agg;			/* Type of agg if applicable */
+  byte level;			/* Stratification round */
+  byte nFields;			/* Number of arguments */
+
+  byte desc_size;		/* Size of predicate descriptor */
 } Predicate;
 
 typedef struct _Rule {
-  uint32_t codeSize; 
-  uint32_t bytecodeOffset;
-  byte *pBytecode;
+  uint32_t codeSize; 		/* Size of byte code */
+  byte *pBytecode;		/* Pointer to bytecode */
+  char *pName;			/* Rule string */
+
+  uint32_t bytecodeOffset;	/* Offset to byte code */
+  uint32_t numInclPreds;	/* Number of included predicates */
+  byte inclPredIDs[32];		/* ID of each included predicate */
+  byte persistence;		/* Is the rule persistent? */
+
+  byte desc_size;		/* Size of rule descriptor */
 } Rule;
 
-/* FLAVIO PROPS */
 
+/* Source properties */
 #define PRED_AGG 0x01
 #define PRED_ROUTE 0x02
 #define PRED_REVERSE_ROUTE 0x04
@@ -56,8 +71,7 @@ typedef struct _Rule {
 #define PRED_REUSED 0x20
 #define PRED_CYCLE 0x40
 
-/* MPA PROPS*/
-
+/* Target properties */
 #define TYPE_AGG 0x01
 #define TYPE_PERSISTENT 0x02
 #define TYPE_LINEAR 0x03
@@ -79,3 +93,6 @@ typedef struct _Rule {
 #define AGG_MIN_FLOAT 6
 #define AGG_SUM_FLOAT 7
 #define AGG_SUM_LIST_FLOAT 11
+/* done */
+
+#endif	/* ifdef __PARSER_H__ */
