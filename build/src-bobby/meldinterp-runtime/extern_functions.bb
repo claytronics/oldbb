@@ -8,7 +8,6 @@ meld_value blockID(meld_value x) {
   return MELD_CONVERT_INT(ret);
 }
 
-/*
 meld_value printInt(meld_value x, meld_value y, meld_value z) {
     
     if (sizeof(int) >= sizeof(meld_int)) {
@@ -22,7 +21,6 @@ meld_value printInt(meld_value x, meld_value y, meld_value z) {
 
    return 0;
 }
-*/
 
 int gen_fresh_file(void) {
 	static int f = 0;
