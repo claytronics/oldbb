@@ -438,6 +438,7 @@ enum instr_type {
 #define FIELD_SET_FLOAT 0x7
 #define FIELD_TYPE 0x8
 #define FIELD_STRING 0x9
+#define FIELD_BOOL 0xa
 
 #define DELTA_TYPE(ori, id) (*(unsigned char*)(deltas[ori] + (id)*DELTA_SIZE))
 #define DELTA_POSITION(ori, id) (*(unsigned char*)(deltas[ori] + (id)*DELTA_SIZE + 1))

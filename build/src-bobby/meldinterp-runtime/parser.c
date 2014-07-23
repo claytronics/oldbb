@@ -651,8 +651,7 @@ readType (FILE *pFile)
   fread (&fieldType, 1, 1, pFile);
 
   switch (fieldType) {
-    /* TODO: Implement booleans */
-  case FIELD_BOOL:    printf ("BOOL ");   perror ("BOOL not supported\n"); exit(1);
+  case FIELD_BOOL:    printf ("BOOL ");   return 0xa;
   case FIELD_INT:     printf ("INT ");    return 0x0;
   case FIELD_FLOAT:   printf ("FLOAT ");  return 0x1;
   case FIELD_NODE:    printf ("NODE ");   return 0x2;

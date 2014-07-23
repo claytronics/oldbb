@@ -509,6 +509,70 @@ execute_mvregreg (const unsigned char *pc, Register *reg)
 }
 
 inline void
+execute_not (const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+
+  Register *arg = eval_reg (reg1, &pc, reg);
+  Register *dest = eval_reg (reg2, &pc, reg);
+
+  if (MELD_BOOL(arg) > 0)
+    *dest = 0;
+  else
+    *dest = 1;
+
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t NOT reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2);
+#endif
+}
+
+inline void
+execute_boolequal (const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+
+  *dest = (MELD_BOOL(arg1) == MELD_BOOL(arg2));
+
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t BOOL reg %d EQUAL reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
+#endif
+}
+
+inline void
+execute_boolnotequal (const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+
+  *dest = (MELD_BOOL(arg1) != MELD_BOOL(arg2));
+
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t BOOL reg %d NOT EQUAL reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
+#endif
+}
+
+inline void
 execute_addrequal (const unsigned char *pc, Register *reg) 
 {
   ++pc;
@@ -1178,6 +1242,10 @@ init_fields(void)
 
       case (int)FIELD_FLOAT:
 	size = sizeof(meld_float);
+	break;
+
+      case (int)FIELD_BOOL:
+	size = sizeof(byte);
 	break;
 
       case (int)FIELD_ADDR:
@@ -1921,6 +1989,13 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+    case NOT_INSTR: 		/* 0x07 */ 
+      {
+	const byte *npc = pc + NOT_BASE;
+	execute_not (pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
     case SEND_INSTR: 		/* 0x08 */ 
       {
 	const byte *npc = pc + SEND_BASE;
@@ -2214,6 +2289,20 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+    case BOOLEQUAL_INSTR: 		/* 0x51 */
+      {
+	const byte *npc = pc + OP_BASE;
+	execute_boolequal (pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
+    case BOOLNOTEQUAL_INSTR: 		/* 0x51 */
+      {
+	const byte *npc = pc + OP_BASE;;
+	execute_boolnotequal (pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
     case IF_INSTR: 		/* 0x60 */
       {
 	const byte *npc = pc + IF_BASE;
@@ -2328,6 +2417,12 @@ tuple_print(tuple_t tuple, FILE *fp)
       break;
     case FIELD_TYPE:
       fprintf(fp, "%s", TYPE_NAME(MELD_INT(field)));
+      break;
+    case FIELD_BOOL:
+      if (MELD_BOOL(field))
+	fprintf(fp, "true");
+      else
+	fprintf(fp, "false");
       break;
     default:
       assert(0);
