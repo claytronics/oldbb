@@ -12,7 +12,7 @@
 #include "../system/myassert.h"
 #include <stdio.h>
 
-#define DEBUG_INSTRS
+/* #define DEBUG_INSTRS */
 /* #define DEBUG_ALLOCS */
 //#define DEBUG_PROVED_TUPLES
 #define inline 
@@ -152,8 +152,8 @@ execute_send_delay (const unsigned char *pc,
   meld_int *delay = eval_int(&pc);
 
 #ifdef DEBUG_INSTRS
-  printf("--%d--\t SEND reg %d TO reg %d\n", 
-	 getBlockId(), SEND_MSG(pc), SEND_RT(pc));
+  printf("--%d--\t SEND reg %d TO reg %d WITH DELAY %dms\n", 
+	 getBlockId(), SEND_MSG(pc), SEND_RT(pc), *delay);
 #endif
 
   tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, *delay, 1);
@@ -1128,7 +1128,7 @@ p_enqueue(tuple_pqueue *queue, meld_int priority, tuple_t tuple,
   tuple_pentry **spot;
   for (spot = &(queue->queue);
        *spot != NULL &&
-	 (*spot)->priority < priority;
+	 (*spot)->priority <= priority;
        spot = &((*spot)->next));
 
   entry->next = *spot;
@@ -1144,7 +1144,7 @@ init_deltas(void)
   delta_sizes = (int *)malloc(sizeof(int)*NUM_TYPES);
 
   for (i = 0; i < NUM_TYPES; ++i) {
-    delta_sizes[i] = TYPE_NODELTAS(i);
+    delta_sizes[i] = TYPE_NUMDELTAS(i);
     deltas[i] = (unsigned char*)TYPE_DELTAS(i);
   }
 }
@@ -1157,7 +1157,7 @@ init_fields(void)
   int i, j;
   
   for(i = 0; i < NUM_TYPES; ++i)
-    total += TYPE_NOARGS(i) * 2;
+    total += TYPE_NUMARGS(i) * 2;
   
   arguments = malloc(total);
   unsigned char *start = arguments + 2*NUM_TYPES;
@@ -1167,7 +1167,7 @@ init_fields(void)
     arguments[i*2] = start - arguments; /* start */
     offset = 0;
     
-    for(j = 0; j < TYPE_NOARGS(i); ++j) {
+    for(j = 0; j < TYPE_NUMARGS(i); ++j) {
       type = TYPE_ARG_TYPE(i, j);
       switch (type) {
 
@@ -1875,8 +1875,8 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	    tuple_names[TUPLE_TYPE(tuple)]);
 
   else if (PROCESS_TYPE(state) == PROCESS_RULE)
-    printf ("--%d--\t PROCESS RULE %d\n", getBlockId(), 
-	    RULE_NUMBER(state));
+    printf ("--%d--\t PROCESS RULE %d: %s\n", getBlockId(),
+	    RULE_NUMBER(state), rule_names[RULE_NUMBER(state)]);
 
   else
     printf ("\n--%d--\tERROR: UNKNOWN PROCESS TYPE\n", getBlockId());
@@ -2287,7 +2287,7 @@ tuple_print(tuple_t tuple, FILE *fp)
   int j;
 
   fprintf(fp, "%s(", TYPE_NAME(tuple_type));
-  for(j = 0; j < TYPE_NOARGS(tuple_type); ++j) {
+  for(j = 0; j < TYPE_NUMARGS(tuple_type); ++j) {
     void *field = GET_TUPLE_FIELD(tuple, j);
 
     if (j > 0)
@@ -2398,10 +2398,10 @@ print_program_info(void)
     printf("] ");
     
     printf("num_args:%d deltas:%d off:%d ; args(offset, arg_size): ",
-	   TYPE_NOARGS(i), TYPE_NODELTAS(i), TYPE_OFFSET(i));
+	   TYPE_NUMARGS(i), TYPE_NUMDELTAS(i), TYPE_OFFSET(i));
 		
     int j;
-    for (j = 0; j < TYPE_NOARGS(i); ++j) {
+    for (j = 0; j < TYPE_NUMARGS(i); ++j) {
       printf(" %d:%d", TYPE_ARG_OFFSET(i, j), TYPE_ARG_SIZE(i, j));
     }
     printf("\n");

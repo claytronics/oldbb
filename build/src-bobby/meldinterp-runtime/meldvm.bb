@@ -46,7 +46,7 @@ static tuple_type TYPE_TAP = -1;
 
 //#define DEBUG
 /* #define DEBUG_NEIGHBORHOOD */
-#define DEBUG_SEND
+/* #define DEBUG_SEND */
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -75,22 +75,25 @@ NodeID get_neighbor_ID(int face)
 
 void enqueueNewTuple(tuple_t tuple, record_type isNew)
 {
-  /* if (TYPE_IS_STRATIFIED(TUPLE_TYPE(tuple))) { */
-  /*   pthread_mutex_lock(&(printMutex)); */
-  /*   fprintf(stderr, "\x1b[1;35m--%d--\tStrat enqueuing tuple ", getBlockId()); */
-  /*   tuple_print (tuple, stderr); */
-  /*   fprintf(stderr, "\x1b[0m\n"); */
-  /*   pthread_mutex_unlock(&(printMutex)); */
-  /*   p_enqueue(newStratTuples, TYPE_STRATIFICATION_ROUND(TUPLE_TYPE(tuple)), tuple, NULL, isNew); */
-  /* } */
-  /* else { */
-  /* pthread_mutex_lock(&(printMutex)); */
-  /* fprintf(stderr, "\x1b[1;35m--%d--\tBase enqueuing tuple ", getBlockId()); */
-  /* tuple_print (tuple, stderr); */
-  /* fprintf(stderr, "\x1b[0m\n"); */
-  /* pthread_mutex_unlock(&(printMutex));     */
-  queue_enqueue(newTuples, tuple, isNew);
-  /* } */
+  assert (TUPLE_TYPE(tuple) < NUM_TYPES);
+
+  if (TYPE_IS_STRATIFIED(TUPLE_TYPE(tuple))) {
+    /* pthread_mutex_lock(&(printMutex)); */
+    /* fprintf(stderr, "\x1b[1;35m--%d--\tStrat enqueuing tuple ", getBlockId()); */
+    /* tuple_print (tuple, stderr); */
+    /* fprintf(stderr, "\x1b[0m\n"); */
+    /* pthread_mutex_unlock(&(printMutex)); */
+    p_enqueue(newStratTuples, 
+	      TYPE_STRATIFICATION_ROUND(TUPLE_TYPE(tuple)), tuple, 0, isNew);
+  }
+  else {
+    /* pthread_mutex_lock(&(printMutex)); */
+    /* fprintf(stderr, "\x1b[1;35m--%d--\tBase enqueuing tuple ", getBlockId()); */
+    /* tuple_print (tuple, stderr); */
+    /* fprintf(stderr, "\x1b[0m\n"); */
+    /* pthread_mutex_unlock(&(printMutex)); */
+    queue_enqueue(newTuples, tuple, isNew);
+  }
 }
 
 void enqueue_face(NodeID neighbor, meld_int face, int isNew)
@@ -153,7 +156,8 @@ void init_all_consts(void)
       TYPE_TAP = i;
     else if (strcmp(TYPE_NAME(i), "neighbor") == 0)
       TYPE_NEIGHBOR = i;
-    else if (strcmp(TYPE_NAME(i), "neighborCount") == 0)
+    else if ( (strcmp(TYPE_NAME(i), "neighborCount" ) == 0) ||
+	      (strcmp(TYPE_NAME(i), "neighborcount" ) == 0) )
       TYPE_NEIGHBORCOUNT = i;
     else if (strcmp(TYPE_NAME(i), "vacant") == 0)
       TYPE_VACANT = i;
@@ -368,11 +372,6 @@ void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
 
       assert(TYPE_SIZE(TUPLE_TYPE(tuple)) <= 17);
 
-#ifdef DEBUG_SEND
-      printf ("--%d--\t Send tuple %s to face %d\n",
-	      getBlockId(), tuple_names[TUPLE_TYPE(tuple)], face);
-#endif
-
       if (sendMessageToPort(c, face, tuple, TYPE_SIZE(TUPLE_TYPE(tuple)), (MsgHandler)receiver, (GenericHandler)&free_chunk) == 0) {
 	// Send failed :(
 	free(c);
@@ -389,11 +388,11 @@ void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
 
 void tuple_handle(tuple_t tuple, int isNew, Register *registers)
 {
-#if DEBUG
-  printf ("handling: ");
+  #if DEBUG
+  printf ("handling (%d): ", isNew);
   tuple_print(tuple, stdout);
   printf ("\n");
-#endif
+  #endif
 
   tuple_type type = TUPLE_TYPE(tuple);
 
