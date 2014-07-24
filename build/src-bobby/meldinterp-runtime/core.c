@@ -17,8 +17,6 @@
 //#define DEBUG_PROVED_TUPLES
 #define inline 
 
-static unsigned char **deltas = NULL;
-int *delta_sizes = NULL;
 unsigned char *arguments = NULL;
 tuple_type TYPE_INIT = 0;
 tuple_type TYPE_EDGE = -1;
@@ -114,15 +112,34 @@ execute_addpers (const unsigned char *pc,
   ++pc;  
   
   byte reg_index = FETCH(pc);  
-  Register send_reg = reg[reg_index];
+  Register tuple_reg = reg[reg_index];
 
 #ifdef DEBUG_INSTRS
-  tuple_type type = TUPLE_TYPE((tuple_t)send_reg);
+  tuple_type type = TUPLE_TYPE((tuple_t)tuple_reg);
   printf ("--%d--\t ADDPERS reg %d: %s\n", 
 	  getBlockId(), reg_index, tuple_names[type]);
 #endif
 
-  enqueueNewTuple((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), 
+  enqueueNewTuple((tuple_t)MELD_CONVERT_REG_TO_PTR(tuple_reg), 
+		  (record_type) 1);
+}
+
+inline void
+execute_update (const unsigned char *pc, 
+		 Register *reg) 
+{
+  ++pc;  
+  
+  byte reg_index = FETCH(pc);  
+  Register tuple_reg = reg[reg_index];
+
+#ifdef DEBUG_INSTRS
+  tuple_type type = TUPLE_TYPE((tuple_t)tuple_reg);
+  printf ("--%d--\t UPDATE reg %d: %s\n", 
+	  getBlockId(), reg_index, tuple_names[type]);
+#endif
+
+  enqueueNewTuple((tuple_t)MELD_CONVERT_REG_TO_PTR(tuple_reg), 
 		  (record_type) 1);
 }
 
@@ -247,7 +264,7 @@ execute_iter (const unsigned char *pc,
 	val = eval_field(tpl, &tmppc);
       }  else {
         /* Don't know what to do */
-       	fprintf (stderr, "Type %d not support yet - don't know what to do.\n", fieldtype);
+       	fprintf (stderr, "Type %d not supported yet - don't know what to do.\n", fieldtype);
 	assert (0);
 	exit (2);
       }
@@ -527,6 +544,27 @@ execute_not (const unsigned char *pc, Register *reg)
 #ifdef DEBUG_INSTRS
   printf ("--%d--\t NOT reg %d TO reg %d\n", 
 	  getBlockId(), reg1, reg2);
+#endif
+}
+
+inline void
+execute_boolor (const unsigned char *pc, Register *reg) 
+{
+  ++pc;
+  
+  byte reg1 = FETCH(pc);
+  byte reg2 = FETCH(pc+1);
+  byte reg3 = FETCH(pc+2);
+
+  Register *arg1 = eval_reg (reg1, &pc, reg);
+  Register *arg2 = eval_reg (reg2, &pc, reg);
+  Register *dest = eval_reg (reg3, &pc, reg);
+
+  *dest = (MELD_BOOL(arg1) | MELD_BOOL(arg2));
+
+#ifdef DEBUG_INSTRS
+  printf ("--%d--\t BOOL reg %d OR reg %d TO reg %d\n", 
+	  getBlockId(), reg1, reg2, reg3);
 #endif
 }
 
@@ -1199,20 +1237,6 @@ p_enqueue(tuple_pqueue *queue, meld_int priority, tuple_t tuple,
   *spot = entry;
 }
     
-void
-init_deltas(void)
-{
-  int i;
-
-  deltas = (unsigned char **)malloc(sizeof(unsigned char*)*NUM_TYPES);
-  delta_sizes = (int *)malloc(sizeof(int)*NUM_TYPES);
-
-  for (i = 0; i < NUM_TYPES; ++i) {
-    delta_sizes[i] = TYPE_NUMDELTAS(i);
-    deltas[i] = (unsigned char*)TYPE_DELTAS(i);
-  }
-}
-
 static int type;
 void
 init_fields(void)
@@ -1609,48 +1633,6 @@ void aggregate_recalc(tuple_entry *agg, Register *reg,
   free(accumulator);
 }
 
-static inline
-void process_deltas(tuple_t tuple, tuple_type type, Register *reg)
-{
-  void *old = OLDTUPLES[type];
-  
-  if(old == NULL)
-    return;
-    
-  OLDTUPLES[type] = NULL;
-
-  int i;
-  for(i = 0; i < DELTA_TOTAL(type); ++i) {
-    int delta_type = DELTA_TYPE(type, i);
-    int delta_pos = DELTA_POSITION(type, i);
-    void *delta_tuple = ALLOC_TUPLE(TYPE_SIZE(delta_type));
-
-    memcpy(delta_tuple, old, TYPE_SIZE(delta_type));
-    TUPLE_TYPE(delta_tuple) = delta_type;
-
-    void *field_delta = GET_TUPLE_FIELD(delta_tuple, delta_pos);
-    void *field_old = GET_TUPLE_FIELD(old, delta_pos);
-    void *field_new = GET_TUPLE_FIELD(tuple, delta_pos);
-
-    switch(TYPE_ARG_TYPE(type, delta_pos)) {
-    case FIELD_INT:
-      MELD_INT(field_delta) = MELD_INT(field_new) - MELD_INT(field_old);
-      break;
-    case FIELD_FLOAT:
-      MELD_FLOAT(field_delta) = MELD_FLOAT(field_new) - MELD_FLOAT(field_old);
-      break;
-    default:
-      assert(0);
-      break;
-    }
-
-    process_bytecode(delta_tuple, TYPE_START(TUPLE_TYPE(delta_tuple)), 
-		     1, reg, PROCESS_TUPLE);
-  }
-
-  FREE_TUPLE(old);
-}
-
 static inline tuple_t
 tuple_build_proved(tuple_type type, meld_int total)
 {
@@ -1756,26 +1738,12 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 	    {
 	      cur->records.count += isNew;
 
-	      if (cur->records.count <= 0) {
-		/* only process if it isn't linear */
-		if (!TYPE_IS_LINEAR(type)) {
-		  /* process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)),  */
-		  /* 		   -1, reg, PROCESS_TUPLE); */
-		  /* printf ("--%d--\tRemoving ", getBlockId()); */
-		  /* tuple_print (cur->tuple, stdout); printf ("\n"); */
-		  FREE_TUPLE(queue_dequeue_pos(queue, current));
-		} else {
-		  if(DELTA_WITH(type)) {
-		    if(OLDTUPLES[type])
-		      FREE_TUPLE(OLDTUPLES[type]);
-                
-		    OLDTUPLES[type] = queue_dequeue_pos(queue, current);
-		  } else
-		    FREE_TUPLE(queue_dequeue_pos(queue, current));
-		}
-	      }
+	      if (cur->records.count <= 0)
+		/* Remove fact from database */
+		FREE_TUPLE(queue_dequeue_pos(queue, current));
 
 	      /* fprintf(stderr, "\x1b[1;35m--%d--\tValid deletion of %s\x1b[0m\n", getBlockId(), tuple_names[type]); */
+	      /* Also free retraction fact */
 	      FREE_TUPLE(tuple);
 
 	      return;
@@ -1784,18 +1752,16 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 
       // if deleting, return
       if (isNew <= 0) {
-	fprintf(stderr, "\x1b[1;31m--%d--\tInvalid deletion of %s\x1b[0m\n", getBlockId(), tuple_names[type]);
+	fprintf(stderr, "\x1b[1;31m--%d--\tInvalid deletion of %s: Retraction fact probably should have matched a fact in the database. Check this.\x1b[0m\n", getBlockId(), tuple_names[type]);
 	FREE_TUPLE(tuple);
 	return;
       }
-
+      
       queue_enqueue(queue, tuple, (record_type) isNew);
 
-      if(TYPE_IS_LINEAR(type) && DELTA_WITH(type))
-	process_deltas(tuple, type, reg);
-      
       if (RET_LINEAR == process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), 
 					 isNew, reg, PROCESS_TUPLE)) {
+	/* TODO: Replace this hack by properly executing rule */
 	if (type == TYPE_INIT)
 	  /* Derive axioms specified in the byte code */
 	  derive_axioms(reg);
@@ -2005,19 +1971,12 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
       
     case RULE_INSTR: 		/* 0x10 */ 
       {
-	/* TODO: Trigger rule byte code processing */
 	const byte *npc = pc + RULE_BASE;
-	byte rule_number = FETCH(++pc);
-	byte state_byte = PROCESS_RULE | (rule_number << 4);
 #ifdef DEBUG_INSTRS
+	byte rule_number = FETCH(++pc);
 	printf ("--%d--\t RULE %d\n", getBlockId(), 
 		rule_number);
 #endif	 
-	if (!( (PROCESS_TYPE(state) == PROCESS_RULE) 
-	       && (RULE_NUMBER(state) == 0) ))
-	  process_bytecode (NULL, RULE_START(rule_number), 
-			    1, reg, state_byte);
-	/* else axioms do not need to be derived twice */
 	pc = npc; goto eval_loop;
       }
 
@@ -2184,6 +2143,13 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+    case BOOLOR_INSTR: 		/* 0x41 */
+      {
+	const byte *npc = pc + OP_BASE;
+	execute_boolor (pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
     case INTLESSEREQUAL_INSTR: 		/* 0x42 */
       {
 	const byte *npc = pc + OP_BASE;
@@ -2341,6 +2307,13 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+    case UPDATE_INSTR: 		/* 0x7b */
+      {
+	const byte *npc = pc + UPDATE_BASE;
+	execute_update (pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
     case REMOVE_INSTR: 		/* 0x80 */
       {
 	const byte *npc = pc + REMOVE_BASE;
@@ -2492,8 +2465,8 @@ print_program_info(void)
       printf("proved");
     printf("] ");
     
-    printf("num_args:%d deltas:%d off:%d ; args(offset, arg_size): ",
-	   TYPE_NUMARGS(i), TYPE_NUMDELTAS(i), TYPE_OFFSET(i));
+    printf("num_args:%d off:%d ; args(offset, arg_size): ",
+	   TYPE_NUMARGS(i), TYPE_OFFSET(i));
 		
     int j;
     for (j = 0; j < TYPE_NUMARGS(i); ++j) {
