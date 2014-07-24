@@ -384,7 +384,7 @@ main (int argc, char* argv[])
 	} else printf ("  none\n");
       
 	/* Set descriptor size */
-	predicates[i].desc_size = 7 + numFields;	
+	predicates[i].desc_size = PREDICATE_DESCRIPTOR_SIZE + numFields;	
 
 	printf ("\n");
       }
@@ -545,9 +545,6 @@ main (int argc, char* argv[])
 
 	/* Number of arguments */
 	fprintf (pBBFile, "%#x, ", predicates[i].nFields);
-
-	/* Number of deltas -- Force to 0*/
-	fprintf (pBBFile, "%#x, ", 0);
 
 	/* Print argument descriptor */
 	for (j = 0; j < predicates[i].nFields; ++j)

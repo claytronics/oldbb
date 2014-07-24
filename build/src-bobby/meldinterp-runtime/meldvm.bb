@@ -25,7 +25,6 @@
 #include "model.bbh"
 
 void vm_init(void);
-void init_rules(void);
 
 threadvar tuple_t *oldTuples;
 
@@ -451,7 +450,6 @@ vm_init(void)
 
   init_all_consts();
   init_fields();
-  init_deltas();
   set_init_descriptors();
   list_init_descriptors();
 #if DEBUG
@@ -482,8 +480,6 @@ vm_alloc(void)
 #ifdef BBSIM
   pthread_mutex_init(&(printMutex), NULL);
 #endif
-
-  init_rules();
 }
 
 #ifndef BBSIM

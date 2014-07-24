@@ -328,8 +328,7 @@ enum instr_type {
 #define VAL_FIELD_NUM(x) ((*(const unsigned char *)(x)) & 0xff)
 #define VAL_FIELD_REG(x) ((*(const unsigned char *)((x)+1)) & 0x1f)
 
-#define TYPE_DESCRIPTOR_SIZE 7
-#define DELTA_SIZE 2
+#define TYPE_DESCRIPTOR_SIZE 6
 #define TYPE_FIELD_SIZE 1
 #define TYPE_FIELD_TYPE unsigned char
 
@@ -352,14 +351,10 @@ enum instr_type {
 #define TYPE_STRATIFICATION_ROUND(x) (*(TYPE_DESCRIPTOR(x) + 4))
 /* Number of arguments */
 #define TYPE_NUMARGS(x)     (*(TYPE_DESCRIPTOR(x) + 5))
-/* Number of deltas ..? */
-#define TYPE_NUMDELTAS(x)   (*(TYPE_DESCRIPTOR(x) + 6))
 /* Argument descriptor */
 #define TYPE_ARGS_DESC(x)  ((unsigned char*)(TYPE_DESCRIPTOR(x)+TYPE_DESCRIPTOR_SIZE))
 /* Returns type of argument number f for type x */
 #define TYPE_ARG_DESC(x, f) ((unsigned char *)(TYPE_ARGS_DESC(x)+1*(f)))
-/* Returns type of deltas for type x */
-#define TYPE_DELTAS(x)     (TYPE_ARGS_DESC(x) + 1*TYPE_NUMARGS(x))
 
 /* Returns address of bytecode for type x */
 #define TYPE_START(x)							\
@@ -440,11 +435,6 @@ enum instr_type {
 #define FIELD_STRING 0x9
 #define FIELD_BOOL 0xa
 
-#define DELTA_TYPE(ori, id) (*(unsigned char*)(deltas[ori] + (id)*DELTA_SIZE))
-#define DELTA_POSITION(ori, id) (*(unsigned char*)(deltas[ori] + (id)*DELTA_SIZE + 1))
-#define DELTA_WITH(ori) (delta_sizes[ori])
-#define DELTA_TOTAL(ori) (delta_sizes[ori])
-
 #define RET_RET 0
 #define RET_NEXT 1
 #define RET_LINEAR 2
@@ -468,7 +458,6 @@ extern int extern_functs_args[];
 extern char *tuple_names[];
 extern char *rule_names[];
 extern unsigned char *arguments;
-extern int *delta_sizes;
 
 static inline tuple_t
 tuple_alloc(tuple_type type)
@@ -511,7 +500,6 @@ tuple_dump(void *tuple)
 
 void print_program_info(void);
 
-void init_deltas(void);
 void init_fields(void);
 void facts_dump(void);
 void init_consts(void);

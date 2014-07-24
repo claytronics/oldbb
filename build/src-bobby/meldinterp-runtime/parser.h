@@ -15,8 +15,7 @@ const uint32_t MAGIC2 = 0x6c696620;
 (majorVersion > (MAJ) || (majorVersion == (MAJ) && minorVersion >= (MIN)))
 #define PRED_NAME_SIZE_MAX 32
 #define PRED_AGG_INFO_MAX 32
-#define PREDICATE_DESCRIPTOR_SIZE 7
-#define DELTA_TYPE_FIELD_SIZE 1
+#define PREDICATE_DESCRIPTOR_SIZE 6
 
 /* Field types for target VM */
 enum field_type {
