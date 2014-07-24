@@ -1,3 +1,3 @@
 #!/bin/bash
 
-cp $1 ../../apps/sample-meld/arch-blocks/meldinterp-runtime/ends.bb;
+cp $1.bb ../../apps/sample-meld/arch-blocks/meldinterp-runtime/ends.bb;
