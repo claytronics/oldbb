@@ -12,7 +12,7 @@
 #include "../system/myassert.h"
 #include <stdio.h>
 
-/* #define DEBUG_INSTRS */
+#define DEBUG_INSTRS
 /* #define DEBUG_ALLOCS */
 //#define DEBUG_PROVED_TUPLES
 #define inline 
@@ -28,6 +28,8 @@ tuple_type TYPE_NEIGHBOR = -1;
 tuple_type TYPE_VACANT = -1;
 
 extern persistent_set *persistent;
+
+static tuple_t queue_dequeue_pos(tuple_queue *queue, tuple_entry **pos);
 
 /* EVAL FUNCTIONS */
 
@@ -125,8 +127,8 @@ execute_addpers (const unsigned char *pc,
 }
 
 inline void
-execute_update (const unsigned char *pc, 
-		 Register *reg) 
+execute_linear (const unsigned char *pc, 
+		Register *reg) 
 {
   ++pc;  
   
@@ -135,7 +137,7 @@ execute_update (const unsigned char *pc,
 
 #ifdef DEBUG_INSTRS
   tuple_type type = TUPLE_TYPE((tuple_t)tuple_reg);
-  printf ("--%d--\t UPDATE reg %d: %s\n", 
+  printf ("--%d--\t ADDLINEAR reg %d: %s\n", 
 	  getBlockId(), reg_index, tuple_names[type]);
 #endif
 
@@ -144,25 +146,40 @@ execute_update (const unsigned char *pc,
 }
 
 inline void
-execute_send (const unsigned char *pc,
-	      Register *reg)
+execute_update (const unsigned char *pc, Register *reg) 
 {
+  ++pc;  
+  
+  byte reg_index = FETCH(pc);  
+  Register tuple_reg = reg[reg_index];
+
+#ifdef DEBUG_INSTRS
+  tuple_type type = TUPLE_TYPE((tuple_t)tuple_reg);
+  printf ("--%d--\t UPDATE reg %d: %s\n", getBlockId(), reg_index, 
+	  tuple_names[type]);
+#endif
+}
+
+ inline void
+   execute_send (const unsigned char *pc,
+    Register *reg)
+ {
   ++pc;
   Register send_reg = reg[SEND_MSG(pc)];
   NodeID send_rt = reg[SEND_RT(pc)];
 
 #ifdef DEBUG_INSTRS
   printf("--%d--\t SEND reg %d TO reg %d\n", 
-	 getBlockId(), SEND_MSG(pc), SEND_RT(pc));
+    getBlockId(), SEND_MSG(pc), SEND_RT(pc));
 #endif
 
   tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, 0, 1);
 }
 
-inline void
-execute_send_delay (const unsigned char *pc,
-	      Register *reg)
-{
+ inline void
+   execute_send_delay (const unsigned char *pc,
+    Register *reg)
+ {
   ++pc;
   Register send_reg = reg[SEND_MSG(pc)];
   NodeID send_rt = reg[SEND_RT(pc)];
@@ -170,16 +187,16 @@ execute_send_delay (const unsigned char *pc,
 
 #ifdef DEBUG_INSTRS
   printf("--%d--\t SEND reg %d TO reg %d WITH DELAY %dms\n", 
-	 getBlockId(), SEND_MSG(pc), SEND_RT(pc), *delay);
+    getBlockId(), SEND_MSG(pc), SEND_RT(pc), *delay);
 #endif
 
   tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, *delay, 1);
 }
 
-inline void
-execute_iter (const unsigned char *pc, 
-	      Register *reg)
-{
+ void
+   execute_iter (const unsigned char *pc, 
+    Register *reg)
+ {
   const unsigned char *inner_jump = pc + ITER_INNER_JUMP(pc);
   const tuple_type type = ITER_TYPE(pc);
   int i, k, length;
@@ -192,100 +209,100 @@ execute_iter (const unsigned char *pc,
   /* produce a random ordering for all tuples of the appropriate type */
 			
   if(TYPE_IS_PERSISTENT(type) && !TYPE_IS_AGG(type)) {
-    /* persistent aggregate types not supported */
-    persistent_set *persistents = &PERSISTENT[type];
+  /* persistent aggregate types not supported */
+  persistent_set *persistents = &PERSISTENT[type];
         
-    length = persistents->current;
-    list = malloc(sizeof(tuple_t) * length);
+  length = persistents->current;
+  list = malloc(sizeof(tuple_t) * length);
 
-    for(i = 0; i < length; i++) {
-      int j = random() % (i + 1);
+  for(i = 0; i < length; i++) {
+  int j = random() % (i + 1);
           
-      list[i] = list[j];
-      list[j] = persistents->array + i * size;
-    }
-  } else {
-    /* non-persistent type */
-    tuple_entry *entry = TUPLES[type].head;
+  list[i] = list[j];
+  list[j] = persistents->array + i * size;
+}
+} else {
+  /* non-persistent type */
+  tuple_entry *entry = TUPLES[type].head;
     
-    length = queue_length(&TUPLES[ITER_TYPE(pc)]);
-    list = malloc(sizeof(tuple_t) * length);
+  length = queue_length(&TUPLES[ITER_TYPE(pc)]);
+  list = malloc(sizeof(tuple_t) * length);
 		    
-    for (i = 0; i < length; i++) {
-      int j = random() % (i+1);
+  for (i = 0; i < length; i++) {
+  int j = random() % (i+1);
 
-      list[i] = list[j];
-      list[j] = entry->tuple;
+  list[i] = list[j];
+  list[j] = entry->tuple;
 
-      entry = entry->next;
-    }
-  }
+  entry = entry->next;
+}
+}
 			
 #ifdef DEBUG_INSTRS
   printf("--%d--\t ITER %s len=%d TO reg %d\n",
-	 getBlockId(), tuple_names[type], length, reg_store_index);
+    getBlockId(), tuple_names[type], length, reg_store_index);
 #endif
 
   if(length == 0) {
-    /* no need to execute any further code, just jump! */
-    return;
-  }
+  /* no need to execute any further code, just jump! */
+  return;
+}
 
   /* iterate over all tuples of the appropriate type */
   void *next_tuple;
       
   for (i = 0; i < length; i++) {
-    next_tuple = list[i];
+  next_tuple = list[i];
 
-    unsigned char matched = 1;
-    unsigned char num_args = ITER_NUM_ARGS(pc);	
-    const unsigned char *tmppc = pc + PERS_ITER_BASE;
+  unsigned char matched = 1;
+  unsigned char num_args = ITER_NUM_ARGS(pc);	
+  const unsigned char *tmppc = pc + PERS_ITER_BASE;
 
-    /* check to see if it matches */
-    for (k = 0; k < num_args; ++k) {
-      const unsigned char fieldnum = ITER_MATCH_FIELD(tmppc);
-      const unsigned char fieldtype = TYPE_ARG_TYPE(type, fieldnum);
-      const unsigned char type_size = TYPE_ARG_SIZE(type, fieldnum);
-      const unsigned char value_type = ITER_MATCH_VAL(tmppc);
+  /* check to see if it matches */
+  for (k = 0; k < num_args; ++k) {
+  const unsigned char fieldnum = ITER_MATCH_FIELD(tmppc);
+  const unsigned char fieldtype = TYPE_ARG_TYPE(type, fieldnum);
+  const unsigned char type_size = TYPE_ARG_SIZE(type, fieldnum);
+  const unsigned char value_type = ITER_MATCH_VAL(tmppc);
 
-      Register *field = GET_TUPLE_FIELD(next_tuple, fieldnum);
-      Register *val;      
+  Register *field = GET_TUPLE_FIELD(next_tuple, fieldnum);
+  Register *val;      
 
-      if (val_is_int (value_type)) {
-	tmppc += 2;
-	val = eval_int(&tmppc);
-      } else if (val_is_float (value_type)) {
-	tmppc += 2;
-	val = eval_float(&tmppc);
-      } else if (val_is_field (value_type)) {
-	tmppc += 2;
-	byte reg_index = FETCH(tmppc+1);
-	tuple_t tpl = (tuple_t)reg[reg_index];
-	val = eval_field(tpl, &tmppc);
-      }  else {
-        /* Don't know what to do */
-       	fprintf (stderr, "Type %d not supported yet - don't know what to do.\n", fieldtype);
-	assert (0);
-	exit (2);
-      }
+  if (val_is_int (value_type)) {
+  tmppc += 2;
+  val = eval_int(&tmppc);
+} else if (val_is_float (value_type)) {
+  tmppc += 2;
+  val = eval_float(&tmppc);
+} else if (val_is_field (value_type)) {
+  tmppc += 2;
+  byte reg_index = FETCH(tmppc+1);
+  tuple_t tpl = (tuple_t)reg[reg_index];
+  val = eval_field(tpl, &tmppc);
+}  else {
+  /* Don't know what to do */
+  fprintf (stderr, "Type %d not supported yet - don't know what to do.\n", fieldtype);
+  assert (0);
+  exit (2);
+}
 
-      matched = matched && (memcmp(field, val, type_size) == 0);
-    }
+  matched = matched && (memcmp(field, val, type_size) == 0);
+}
 
 #ifdef DEBUG_INSTRS
-    printf("--%d--\t MATCHED: %d | length: %d\n", getBlockId(),
-	   matched, length);
+  printf("--%d--\t MATCHED: %d | length: %d\n", getBlockId(),
+    matched, length);
 #endif
           
-    if (matched) {
-      moveTupleToReg (reg_store_index, next_tuple, reg);
-      if (RET_RET == process_bytecode(next_tuple, inner_jump, 
-				      1, reg, PROCESS_ITER)) {
-	free(list);
-	return;
-      }
-    }
-  }
+  if (matched) {
+  moveTupleToReg (reg_store_index, next_tuple, reg);
+  if (RET_RET == process_bytecode(next_tuple, inner_jump, 
+    1, reg, PROCESS_ITER)) {
+  free(list);
+  return;
+}
+}
+}
 
   free(list);
 
@@ -293,9 +310,9 @@ execute_iter (const unsigned char *pc,
   return;
 }
 
-inline void
-execute_mvintfield (const unsigned char *pc, Register *reg) 
-{
+ inline void
+   execute_mvintfield (const unsigned char *pc, Register *reg) 
+ {
   ++pc;
   
   Register *src = eval_int (&pc);
@@ -310,7 +327,7 @@ execute_mvintfield (const unsigned char *pc, Register *reg)
 
 #ifdef DEBUG_INSTRS
   printf ("--%d--\t MOVE INT %d TO FIELD %d.%d\n", 
-	  getBlockId(), MELD_INT(src), reg_index, field_num);
+    getBlockId(), MELD_INT(src), reg_index, field_num);
 #endif
   
   size_t size = TYPE_ARG_SIZE(type, field_num);
@@ -318,9 +335,9 @@ execute_mvintfield (const unsigned char *pc, Register *reg)
   memcpy(dst, src, size);
 }
 
-inline void
-execute_mvintreg (const unsigned char *pc, Register *reg) 
-{
+ inline void
+   execute_mvintreg (const unsigned char *pc, Register *reg) 
+ {
   ++pc;
 
   Register *src = eval_int (&pc);
@@ -329,7 +346,7 @@ execute_mvintreg (const unsigned char *pc, Register *reg)
 
 #ifdef DEBUG_INSTRS
   printf ("--%d--\t MOVE INT %d TO reg %d\n", 
-	  getBlockId(), MELD_INT(src), reg_index);
+    getBlockId(), MELD_INT(src), reg_index);
 #endif
 
   size_t size = sizeof(Register);
@@ -1095,18 +1112,18 @@ execute_run_action (const unsigned char *pc,
 inline void
 execute_remove (const unsigned char *pc, Register *reg) 
 {
-    ++pc;
-    int reg_remove = REMOVE_REG(pc);
-    tuple_type type = TUPLE_TYPE(MELD_CONVERT_REG_TO_PTR(reg[reg_remove]));
-    int size = TYPE_SIZE(type);
+  ++pc;
+  int reg_remove = REMOVE_REG(pc);
+  tuple_type type = TUPLE_TYPE(MELD_CONVERT_REG_TO_PTR(reg[reg_remove]));
+  int size = TYPE_SIZE(type);
 
 #ifdef DEBUG_INSTRS
-    printf ("--%d--\t REMOVE reg %d: %s of size %d\n", 
-	    getBlockId(), reg_remove, tuple_names[type], size); 
+  printf ("--%d--\t REMOVE reg %d: %s of size %d and @%p\n", 
+	  getBlockId(), reg_remove, tuple_names[type], size, &reg[reg_remove]); 
 #endif
     
-    tuple_handle(memcpy(malloc(size),MELD_CONVERT_REG_TO_PTR(reg[reg_remove]), size), -1, reg);
-    reg[REMOVE_REG(pc)] = 0;
+  tuple_handle(memcpy(malloc(size),MELD_CONVERT_REG_TO_PTR(reg[reg_remove]), size), -1, reg);
+  reg[REMOVE_REG(pc)] = 0;
 }
  
 /* END OF INSTR EXECUTION FUNCTIONS */
@@ -1761,10 +1778,10 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 
       if (RET_LINEAR == process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), 
 					 isNew, reg, PROCESS_TUPLE)) {
-	/* TODO: Replace this hack by properly executing rule */
-	if (type == TYPE_INIT)
-	  /* Derive axioms specified in the byte code */
-	  derive_axioms(reg);
+	/* /\* TODO: Replace this hack by properly executing rule *\/ */
+	/* if (type == TYPE_INIT) */
+	/*   /\* Derive axioms specified in the byte code *\/ */
+	/*   derive_axioms(reg); */
       }
       
       return;
@@ -1904,9 +1921,10 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	    getBlockId(), tuple_names[TUPLE_TYPE(tuple)]);
 #endif
 
-  else if (PROCESS_TYPE(state) == PROCESS_ITER)
+  else if (PROCESS_TYPE(state) == PROCESS_ITER) {
     printf ("--%d--\t PROCESS ITER %s\n", getBlockId(), 
 	    tuple_names[TUPLE_TYPE(tuple)]);
+  }
 
   else if (PROCESS_TYPE(state) == PROCESS_RULE)
     printf ("--%d--\t PROCESS RULE %d: %s\n", getBlockId(),
@@ -1999,13 +2017,13 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     case RETURN_LINEAR_INSTR:		/* 0xd0 */
 #ifdef DEBUG_INSTRS
       printf ("--%d--\tRETURN LINEAR\n", getBlockId());
-#endif       
+#endif      
       return RET_LINEAR;
 
     case RETURN_DERIVED_INSTR:		/* 0xf0 */
 #ifdef DEBUG_INSTRS
       printf ("--%d--\tRETURN DERIVED\n", getBlockId());
-#endif       
+#endif      
       return RET_DERIVED;
 
     case MVINTFIELD_INSTR: 		/* 0x1e */
@@ -2293,6 +2311,13 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+    case ADDLINEAR_INSTR: 		/* 0x77 */
+      {
+	const byte *npc = pc + ADDLINEAR_BASE;
+	execute_addpers (pc, reg);
+	pc = npc; goto eval_loop;
+      }
+
     case ADDPERS_INSTR: 		/* 0x78 */
       {
 	const byte *npc = pc + ADDPERS_BASE;
@@ -2310,7 +2335,8 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     case UPDATE_INSTR: 		/* 0x7b */
       {
 	const byte *npc = pc + UPDATE_BASE;
-	execute_update (pc, reg);
+	if (PROCESS_TYPE(state) == PROCESS_ITER)
+	  execute_update (pc, reg);
 	pc = npc; goto eval_loop;
       }
 
@@ -2329,15 +2355,14 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
       }
 
     default:
-#ifdef DEBUG_INSTRS
       printf ("--%d--\t "
 	      "INSTRUCTION NOT IMPLEMENTED YET: %#x %#x %#x %#x %#x\n", 
 	      getBlockId(), 
 	      (unsigned char)*pc, (unsigned char)*(pc+1), 
 	      (unsigned char)*(pc+2), (unsigned char)*(pc+3), 
 	      (unsigned char)*(pc+4));
-#endif
-      return RET_ERROR;
+
+      exit(-2);
     }
   }
 }
@@ -2497,7 +2522,7 @@ databaseConsistencyChecker()
 	else if (i == TYPE_VACANT)
 	  ++vacantTCount;
 	else
-	++tupleCount;
+	  ++tupleCount;
       }
     
     if (i == TYPE_NEIGHBORCOUNT) {

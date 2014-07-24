@@ -25,6 +25,7 @@
 #include "model.bbh"
 
 void vm_init(void);
+byte updateRuleState(byte rid);
 
 threadvar tuple_t *oldTuples;
 
@@ -47,6 +48,7 @@ static tuple_type TYPE_TAP = -1;
 //#define DEBUG
 /* #define DEBUG_NEIGHBORHOOD */
 /* #define DEBUG_SEND */
+#define DEBUG_RULES
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -216,6 +218,21 @@ void meldMain(void)
 
       free(entry);
     } else {
+      /* Update rule state and process them */
+      for (i = 0; i < NUM_RULES; ++i) {
+
+	if (updateRuleState(i)) {
+	  /* Set state byte used by DEBUG */
+	  byte processState = PROCESS_RULE | (i << 4);
+#ifdef DEBUG_RULES
+	  printf ("\n\x1b[35m--%d--\tRule %d READY!\x1b[0m\n", getBlockId(), i);
+#endif
+	  /* Trigger execution */
+	  process_bytecode (NULL, RULE_START(i), 1, reg, processState);
+	}
+	/* else: Rule not ready yet, will re-check at next loop run */
+      }
+
       // if we've processed everything, sleep for the sake of letting other blocks run in the simulator
       delayMS(30);
     }
@@ -280,7 +297,7 @@ void receive_tuple(int isNew)
   tuple_t rcvdTuple = (tuple_t)thisChunk->data;
   tuple_t tuple;
   size_t tuple_size = TYPE_SIZE(TUPLE_TYPE(rcvdTuple));
-
+  
 #ifdef DEBUG_SEND
 #ifdef BBSIM
   pthread_mutex_lock(&(printMutex));
@@ -386,6 +403,21 @@ void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
   }
 }
 
+/* Check if rule of ID rid is ready to be derived */
+/* Returns 1 if true, 0 otherwise */
+byte
+updateRuleState(byte rid) 
+{
+  int i;
+  for (i = 0; i < RULE_NUM_INCLPREDS(rid); ++i) {
+    if (!queue_length(&TUPLES[RULE_INCLPRED_ID(rid, i)]))
+      return INACTIVE_RULE;
+  }
+
+  /* Rule is ready, enqueue it or process it rightaway */
+  return ACTIVE_RULE;
+}
+
 void tuple_handle(tuple_t tuple, int isNew, Register *registers)
 {
   #if DEBUG
@@ -467,6 +499,7 @@ vm_init(void)
 void
 vm_alloc(void)
 {
+  /* Get node ID */
   blockId = getGUID();
 
   // init stuff
@@ -476,7 +509,10 @@ vm_alloc(void)
   oldTuples = calloc(NUM_TYPES, sizeof(tuple_t));
   delayedTuples = calloc(1, sizeof(tuple_pqueue));
   proved = calloc(NUM_TYPES, sizeof(meld_int));
+
+  /* Reset received tuples queue */
   memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
+
 #ifdef BBSIM
   pthread_mutex_init(&(printMutex), NULL);
 #endif

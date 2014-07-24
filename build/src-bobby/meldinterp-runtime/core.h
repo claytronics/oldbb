@@ -459,6 +459,11 @@ extern char *tuple_names[];
 extern char *rule_names[];
 extern unsigned char *arguments;
 
+enum ruleState {
+  INACTIVE_RULE = 0x0,
+  ACTIVE_RULE   = 0x1
+}; 
+
 static inline tuple_t
 tuple_alloc(tuple_type type)
 {
