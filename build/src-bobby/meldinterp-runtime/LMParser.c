@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "parser.h"
+#include "LMParser.h"
 
 byte readType (FILE *pFile);
 byte readTypeID (FILE *pFile, byte typeArray[]);
@@ -20,7 +20,7 @@ main (int argc, char* argv[])
   /* Verify arguments */
   if (argc != 2) {
     perror ("Invalid number of arguments\n"
-	    "Usage: ./parser <path-to-.m-file>\n");
+	    "Usage: ./parser <path-to-.m-file> (without file extension)\n");
     exit(1);
   }
   
@@ -171,6 +171,8 @@ main (int argc, char* argv[])
       for (i = 0; i < numConstants; ++i) {
 	constTypes[i] = readTypeID(pMeldProg, types);
       }
+      /* TODO: store somewhere? */
+      (void) constTypes;
 
       /* Read and store code */
       uint32_t constCodeSize;
@@ -234,6 +236,7 @@ main (int argc, char* argv[])
 	    funcArgTypes[j] = readTypeID (pMeldProg, types);
 	  }
 	  /* TODO: store somewhere? */
+	  (void)funcArgTypes;
 	} /* else TODO: store somewhere? */
       }
 
