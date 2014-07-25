@@ -12,7 +12,7 @@
 #include "../system/myassert.h"
 #include <stdio.h>
 
-//#define DEBUG_INSTRS
+/* #define DEBUG_INSTRS */
 //#define DEBUG_ALLOCS
 //#define DEBUG_PROVED_TUPLES
 
@@ -349,7 +349,7 @@ void* eval(const unsigned char value, tuple_t tuple,
     printf ("tuple = ");
     tuple_print(tuple, stdout);
     printf ("\n");
-    printf ("tuple[%d] = %lx\n", field_num, MELD_INT(GET_TUPLE_FIELD(tuple, field_num)));
+    printf ("tuple[%d] = %lx\n", field_num, *(byte*)GET_TUPLE_FIELD(tuple, field_num));
 #endif
 
     return GET_TUPLE_FIELD(tuple, field_num);
@@ -966,6 +966,12 @@ queue_length (tuple_queue *queue)
 int tuple_process(tuple_t tuple, const unsigned char *pc,
 		  int isNew, Register *reg)
 {
+#ifdef DEBUG_INSTRS
+  printf ("\nPROCESS ");
+  tuple_print(tuple, stdout);
+  printf ("\n");
+#endif
+
   for (;;) {
     switch (0xf0 & *(const unsigned char*)pc) {
 
