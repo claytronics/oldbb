@@ -204,18 +204,18 @@ void meldMain(void)
     if(!queue_is_empty(newTuples)) {
       int isNew = 0;
       tuple_t tuple = queue_dequeue(newTuples, &isNew);
-
+      
       tuple_handle(tuple, isNew, reg);
-    }
-    else if (!p_empty(delayedTuples) && p_peek(delayedTuples)->priority <= getTime()) {
+    } else if (!p_empty(delayedTuples) 
+	       && p_peek(delayedTuples)->priority <= getTime()) {
       tuple_pentry *entry = p_dequeue(delayedTuples);
-
+      
       tuple_send(entry->tuple, entry->rt, 0, entry->records.count);
       free(entry);
     } else if (!(p_empty(newStratTuples))) {
       tuple_pentry *entry = p_dequeue(newStratTuples);
       tuple_handle(entry->tuple, entry->records.count, reg);
-
+      
       free(entry);
     } else {
       /* Update rule state and process them */
@@ -225,7 +225,8 @@ void meldMain(void)
 	  /* Set state byte used by DEBUG */
 	  byte processState = PROCESS_RULE | (i << 4);
 #ifdef DEBUG_RULES
-	  printf ("\n\x1b[35m--%d--\tRule %d READY!\x1b[0m\n", getBlockId(), i);
+	  if (!RULE_ISPERSISTENT(i))
+	    printf ("\n\x1b[35m--%d--\tRule %d READY!\x1b[0m\n", getBlockId(), i);
 #endif
 	  /* Trigger execution */
 	  process_bytecode (NULL, RULE_START(i), 1, reg, processState);
@@ -260,9 +261,10 @@ void meldMain(void)
 
       enqueue_face(neighbors[i], i, -1);
 
+      /* Enqueue received tuples */
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
-	enqueueNewTuple(tuple, (record_type)1);
+	enqueueNewTuple(tuple, (record_type) 1);
       }
 
       neighbors[i] = neighbor;
@@ -392,11 +394,11 @@ void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
       if (sendMessageToPort(c, face, tuple, TYPE_SIZE(TUPLE_TYPE(tuple)), (MsgHandler)receiver, (GenericHandler)&free_chunk) == 0) {
 	// Send failed :(
 	free(c);
-	fprintf(stderr, "SEND FAILED EVEN THOUGH BLOCK IS PRESENT! from %d to %d\n", (int)blockId, (int)target);
+	fprintf(stderr, "--%d--\tSEND FAILED EVEN THOUGH BLOCK IS PRESENT! TO %d\n", blockId, (int)target);
       };
     }
     else {
-      fprintf(stderr, "UNABLE TO ROUTE MESSAGE! from %d to %d\n", (int)blockId, (int)target);
+      fprintf(stderr, "--%d--\tUNABLE TO ROUTE MESSAGE! To %d\n", (int)blockId, (int)target);
       //exit(EXIT_FAILURE);
     }
     /* TODO-REAL: needs to free on real blinky blocks??? */
@@ -410,7 +412,7 @@ updateRuleState(byte rid)
 {
   int i;
   for (i = 0; i < RULE_NUM_INCLPREDS(rid); ++i) {
-    if (!queue_length(&TUPLES[RULE_INCLPRED_ID(rid, i)]))
+    if (TUPLES[RULE_INCLPRED_ID(rid, i)].length == 0)
       return INACTIVE_RULE;
   }
 

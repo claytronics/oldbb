@@ -1177,6 +1177,7 @@ queue_dequeue_pos(tuple_queue *queue, tuple_entry **pos)
 {
   tuple_entry *entry = *pos;
   tuple_entry *next = (*pos)->next;
+  queue ->length--;
   
   if (entry == queue->tail) {
     if(entry == queue->head)
@@ -1201,6 +1202,7 @@ queue_enqueue(tuple_queue *queue, tuple_t tuple, record_type isNew)
   entry->tuple = tuple;
   entry->records = isNew;
   entry->next = NULL;
+  queue ->length++;
   
   queue_push_tuple(queue, entry);
 
@@ -1211,6 +1213,7 @@ tuple_t
 queue_dequeue(tuple_queue *queue, int *isNew)
 {
   tuple_entry *entry = queue_pop_tuple(queue);
+  queue ->length--;
 
   tuple_t tuple = entry->tuple;
 
@@ -1926,11 +1929,13 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	    tuple_names[TUPLE_TYPE(tuple)]);
   }
 
-  else if (PROCESS_TYPE(state) == PROCESS_RULE)
-    printf ("--%d--\t PROCESS RULE %d: %s\n", getBlockId(),
-	    RULE_NUMBER(state), rule_names[RULE_NUMBER(state)]);
+  /* Dont't print if rule is persistent */
+  else if (PROCESS_TYPE(state) == PROCESS_RULE) {
+    if (!RULE_ISPERSISTENT(RULE_NUMBER(state)))
+      printf ("--%d--\t PROCESS RULE %d: %s\n", getBlockId(),
+	      RULE_NUMBER(state), rule_names[RULE_NUMBER(state)]);
 
-  else
+  } else
     printf ("\n--%d--\tERROR: UNKNOWN PROCESS TYPE\n", getBlockId());
 #endif
 
@@ -1945,8 +1950,10 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     switch (*(const unsigned char*)pc) {
     case RETURN_INSTR: 		/* 0x0 */
       {
-#ifdef DEBUG_INSTRS
-	printf ("--%d--\tRETURN\n", getBlockId());
+#ifdef DEBUG_INSTRS 
+	if (!(PROCESS_TYPE(state) == PROCESS_RULE
+	      && RULE_ISPERSISTENT(RULE_NUMBER(state))) )
+	  printf ("--%d--\tRETURN\n", getBlockId());
 #endif
 	return RET_RET;
       }
