@@ -367,7 +367,7 @@ enum instr_type {
 #define RULE_DESCRIPTOR(x) ((unsigned char*)(meld_prog + RULE_OFFSET(x)))
 /* Offset to rule byte code, pred 0 byte code start is reference */
 /* Returns 1 if rule is persistent, 0 otherwise */
-#define RULE_PERSISTENCE(x) (*(RULE_DESCRIPTOR(x) + 2))
+#define RULE_ISPERSISTENT(x) (*(RULE_DESCRIPTOR(x) + 2))
 /* Number of included predicates */
 #define RULE_NUM_INCLPREDS(x)   (*(RULE_DESCRIPTOR(x) + 3))
 /* ID of included predicate at index f  */
