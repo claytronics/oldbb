@@ -1,9 +1,13 @@
 CC = gcc
 CFLAGS = -Wall
 
-all: parser
-parser: parser.o
-parser.o: parser.c parser.h
+build: LMParser
+
+LMParser: LMParser.o
+parser.o: LMParser.c LMParser.h
+
+install: 
+	cp LMParser $(BBASE)/bin/arch-$(ARCH)	
 
 clean:
-	rm -f parser parser.o
+	rm -f LMParser LMParser.o
