@@ -9,6 +9,9 @@ usage(){
 
 [[ $# -eq 0 ]] && usage
 
+echo "Running make a first time"
+make
+
 (cd ../../../../cl-meld/
 echo "(load \"load\")
 (cl-meld:meld-compile \"$BBASE/apps/sample-meld/$1.meld\" \"$BBASE/apps/sample-meld/$1\")" | sbcl)
