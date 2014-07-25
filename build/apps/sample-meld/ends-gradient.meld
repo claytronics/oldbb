@@ -7,5 +7,4 @@ dist(X, N+1) :-
 	neighbor(X, Y, _),
 	dist(Y, N).
 
-
-setColor2(X, N) :- dist(X, N).
+setColor2(X, N % 9) :- dist(X, N).
