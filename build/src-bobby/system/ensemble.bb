@@ -15,6 +15,9 @@
 
 threadvar Neighborhood thisNeighborhood;
 threadvar Timer ttNeighbor[6];
+/* used to ensure that two blocks cannot be both waiting infinitely for a 
+handshake from the other block */
+threadvar byte ignoredHandshakeCount[NUM_PORTS];
 
 // converts a UID into a passed in character stream.  Assumes 2-byte GUIDs.
 void GUIDIntoChar(Uid id, byte * c)
