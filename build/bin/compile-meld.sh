@@ -2,7 +2,7 @@
 
 usage(){
     echo "Usage: compile-meld.sh meldfile (without extension)"
-    echo "Exemple: compile-meld.sh LM-programs/ends2"
+    echo "Example: compile-meld.sh LM-programs/ends2"
     echo "Make sure to run . ./initbb.sh script beforehand"
     exit 1
 }

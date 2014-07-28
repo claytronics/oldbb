@@ -5,6 +5,7 @@
 
 #include "LMParser.h"
 
+/* Function prototypes */
 byte readType (FILE *pFile);
 byte readTypeID (FILE *pFile, byte typeArray[]);
 void skipNodeReferences (FILE *pFile);
@@ -134,8 +135,20 @@ main (int argc, char* argv[])
 	    
 	/* Read rule string */
 	rules[i].pName = malloc (ruleLength + 1);
-	fread (rules[i].pName, 1, ruleLength, pMeldProg);
-	rules[i].pName[ruleLength] = '\0';
+	/* Sometimes cl-meld adds newLine characters to the rule string
+	 * we have to get rid of it otherwise the output file will have syntax
+	 * issues. Read characters one by one and eliminate newlines.
+	 */
+	char c; 
+	byte charPos = 0;
+	for (j = 0; j < ruleLength; ++j) {
+	  fread (&c, 1, 1, pMeldProg);
+	  if (c == '\n')
+	    continue;
+	  else
+	    rules[i].pName[charPos++] = c;
+	}
+	rules[i].pName[charPos] = '\0';
 
 	printf ("%s\n", rules[i].pName);
       }
