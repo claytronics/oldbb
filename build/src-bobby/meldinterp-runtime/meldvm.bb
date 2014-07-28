@@ -233,7 +233,7 @@ void meldMain(void)
 
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
-	enqueueNewTuple(tuple, (record_type)1);
+	enqueueNewTuple(tuple, (record_type)-1);
       }
 
       neighbors[i] = neighbor;
