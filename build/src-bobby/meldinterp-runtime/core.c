@@ -12,7 +12,7 @@
 #include "../system/myassert.h"
 #include <stdio.h>
 
-/* #define DEBUG_INSTRS */
+#define DEBUG_INSTRS
 /* #define DEBUG_ALLOCS */
 //#define DEBUG_PROVED_TUPLES
 #define inline 
@@ -274,7 +274,7 @@ execute_iter (const unsigned char *pc,
 #ifdef DEBUG_INSTRS
   printf("--%d--\t ITER %s len=%d TO reg %d\n",
 	 getBlockId(), tuple_names[type], length, reg_store_index);
-  fact_dump();
+  facts_dump();
 #endif
 
   if(length == 0) {

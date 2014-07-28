@@ -25,7 +25,7 @@
 #include "model.bbh"
 
 //#define DEBUG
-/* #define DEBUG_NEIGHBORHOOD */
+#define DEBUG_NEIGHBORHOOD
 #define DEBUG_SEND
 #define DEBUG_RULES
 
