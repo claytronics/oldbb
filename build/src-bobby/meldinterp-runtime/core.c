@@ -12,7 +12,7 @@
 #include "../system/myassert.h"
 #include <stdio.h>
 
-#define DEBUG_INSTRS
+/* #define DEBUG_INSTRS */
 /* #define DEBUG_ALLOCS */
 //#define DEBUG_PROVED_TUPLES
 #define inline 
@@ -108,8 +108,8 @@ execute_alloc (const unsigned char *pc, Register *reg)
 }
 
 inline void
-execute_addpers (const unsigned char *pc, 
-		 Register *reg) 
+execute_addtuple (const unsigned char *pc, 
+		 Register *reg, int isNew) 
 {
   ++pc;  
   
@@ -118,12 +118,12 @@ execute_addpers (const unsigned char *pc,
 
 #ifdef DEBUG_INSTRS
   tuple_type type = TUPLE_TYPE((tuple_t)tuple_reg);
-  printf ("--%d--\t ADDPERS reg %d: %s\n", 
+  printf ("--%d--\t ADD Tuple reg %d: %s\n", 
 	  getBlockId(), reg_index, tuple_names[type]);
 #endif
 
   enqueueNewTuple((tuple_t)MELD_CONVERT_REG_TO_PTR(tuple_reg), 
-		  (record_type) 1);
+		  (record_type) isNew);
 }
 
 inline void
@@ -157,11 +157,14 @@ execute_update (const unsigned char *pc, Register *reg)
   tuple_type type = TUPLE_TYPE((tuple_t)tuple_reg);
   printf ("--%d--\t UPDATE reg %d: %s\n", getBlockId(), reg_index, 
 	  tuple_names[type]);
+#else
+  (void)tuple_reg;
+
 #endif
 }
 
 inline void
-execute_send (const unsigned char *pc, Register *reg)
+execute_send (const unsigned char *pc, Register *reg, int isNew)
 {
   ++pc;
   Register send_reg = reg[SEND_MSG(pc)];
@@ -172,7 +175,7 @@ execute_send (const unsigned char *pc, Register *reg)
 	 getBlockId(), SEND_MSG(pc), SEND_RT(pc));
 #endif
 
-  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, 0, 1);
+  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, 0, isNew);
 }
 
 inline void
@@ -208,7 +211,7 @@ execute_call1 (const unsigned char *pc, Register *reg)
 
 inline void
 execute_send_delay (const unsigned char *pc,
-		    Register *reg)
+		    Register *reg, int isNew)
 {
   ++pc;
   Register send_reg = reg[SEND_MSG(pc)];
@@ -220,12 +223,12 @@ execute_send_delay (const unsigned char *pc,
 	 getBlockId(), SEND_MSG(pc), SEND_RT(pc), *delay);
 #endif
 
-  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, *delay, 1);
+  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, *delay, isNew);
 }
 
 void
 execute_iter (const unsigned char *pc, 
-	      Register *reg)
+	      Register *reg, int isNew)
 {
   const unsigned char *inner_jump = pc + ITER_INNER_JUMP(pc);
   const tuple_type type = ITER_TYPE(pc);
@@ -271,6 +274,7 @@ execute_iter (const unsigned char *pc,
 #ifdef DEBUG_INSTRS
   printf("--%d--\t ITER %s len=%d TO reg %d\n",
 	 getBlockId(), tuple_names[type], length, reg_store_index);
+  fact_dump();
 #endif
 
   if(length == 0) {
@@ -327,7 +331,7 @@ execute_iter (const unsigned char *pc,
     if (matched) {
       moveTupleToReg (reg_store_index, next_tuple, reg);
       if (RET_RET == process_bytecode(next_tuple, inner_jump, 
-				      1, reg, PROCESS_ITER)) {
+				      isNew, reg, PROCESS_ITER)) {
 	free(list);
 	return;
       }
@@ -1096,64 +1100,68 @@ execute_floatgreaterequal (const unsigned char *pc, Register *reg)
 
 inline void
 execute_run_action (const unsigned char *pc, 
-		    Register *reg) 
+		    Register *reg, int isNew) 
 {
-  ++pc;
+  if (isNew > 0) {
+    ++pc;
 
-  byte reg_index = FETCH(pc);
+    byte reg_index = FETCH(pc);
 
-  tuple_t action_tuple = (tuple_t)reg[reg_index];
-  tuple_type type = TUPLE_TYPE(action_tuple);
+    tuple_t action_tuple = (tuple_t)reg[reg_index];
+    tuple_type type = TUPLE_TYPE(action_tuple);
     
-  switch (type) {
-  case TYPE_SETCOLOR:
+    switch (type) {
+    case TYPE_SETCOLOR:
 
 #ifdef DEBUG_INSTRS
-    printf ("--%d--\t RUN ACTION: %s(currentNode, %d, %d, %d, %d)\n", 
-	    getBlockId(), tuple_names[type], 
-	    MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)),
-	    MELD_INT(GET_TUPLE_FIELD(action_tuple, 1)),
-	    MELD_INT(GET_TUPLE_FIELD(action_tuple, 2)),
-	    MELD_INT(GET_TUPLE_FIELD(action_tuple, 3))); 
+      printf ("--%d--\t RUN ACTION: %s(currentNode, %d, %d, %d, %d)\n", 
+	      getBlockId(), tuple_names[type], 
+	      MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)),
+	      MELD_INT(GET_TUPLE_FIELD(action_tuple, 1)),
+	      MELD_INT(GET_TUPLE_FIELD(action_tuple, 2)),
+	      MELD_INT(GET_TUPLE_FIELD(action_tuple, 3))); 
 #endif
    
-    setLEDWrapper(*(byte *)GET_TUPLE_FIELD(action_tuple, 0),
-		  *(byte *)GET_TUPLE_FIELD(action_tuple, 1),
-		  *(byte *)GET_TUPLE_FIELD(action_tuple, 2),
-		  *(byte *)GET_TUPLE_FIELD(action_tuple, 3));
-    FREE_TUPLE(action_tuple);
-    return;
+      setLEDWrapper(*(byte *)GET_TUPLE_FIELD(action_tuple, 0),
+		    *(byte *)GET_TUPLE_FIELD(action_tuple, 1),
+		    *(byte *)GET_TUPLE_FIELD(action_tuple, 2),
+		    *(byte *)GET_TUPLE_FIELD(action_tuple, 3));
+      FREE_TUPLE(action_tuple);
+      return;
    
-  case TYPE_SETCOLOR2:
+    case TYPE_SETCOLOR2:
 
 #ifdef DEBUG_INSTRS
-    printf ("--%d--\t RUN ACTION: %s(currentNode, %d)\n", 
-	    getBlockId(), tuple_names[type], 
-	    MELD_INT(GET_TUPLE_FIELD(action_tuple, 0))); 
+      printf ("--%d--\t RUN ACTION: %s(currentNode, %d)\n", 
+	      getBlockId(), tuple_names[type], 
+	      MELD_INT(GET_TUPLE_FIELD(action_tuple, 0))); 
 #endif
    
-    setColorWrapper(MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)));
+      setColorWrapper(MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)));
     
-    FREE_TUPLE(action_tuple);
-    return;
+      FREE_TUPLE(action_tuple);
+      return;
+    }
   }
 }
 
 inline void
-execute_remove (const unsigned char *pc, Register *reg) 
+execute_remove (const unsigned char *pc, Register *reg, int isNew) 
 {
-  ++pc;
-  int reg_remove = REMOVE_REG(pc);
-  tuple_type type = TUPLE_TYPE(MELD_CONVERT_REG_TO_PTR(reg[reg_remove]));
-  int size = TYPE_SIZE(type);
+  if (isNew > 0) {
+    ++pc;
+    int reg_remove = REMOVE_REG(pc);
+    tuple_type type = TUPLE_TYPE(MELD_CONVERT_REG_TO_PTR(reg[reg_remove]));
+    int size = TYPE_SIZE(type);
 
 #ifdef DEBUG_INSTRS
-  printf ("--%d--\t REMOVE reg %d: %s of size %d and @%p\n", 
-	  getBlockId(), reg_remove, tuple_names[type], size, &reg[reg_remove]); 
+    printf ("--%d--\t REMOVE reg %d: %s of size %d\n", 
+	    getBlockId(), reg_remove, tuple_names[type], size); 
 #endif
     
-  tuple_handle(memcpy(malloc(size),MELD_CONVERT_REG_TO_PTR(reg[reg_remove]), size), -1, reg);
-  reg[REMOVE_REG(pc)] = 0;
+    tuple_handle(memcpy(malloc(size),MELD_CONVERT_REG_TO_PTR(reg[reg_remove]), size), -1, reg);
+    reg[REMOVE_REG(pc)] = 0;
+  }
 }
  
 /* END OF INSTR EXECUTION FUNCTIONS */
@@ -1733,43 +1741,6 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 #endif
 #endif 
   
-  if(!TYPE_IS_AGG(type) && TYPE_IS_PERSISTENT(type)) {
-    persistent_set *persistents = &PERSISTENT[type];
-    int i;
-    int size = TYPE_SIZE(type);
-    
-    if(isNew < 0) {
-      fprintf(stderr, "meld: persistent types can't be deleted\n");
-      fprintf(stderr, "type: %s\n", tuple_names[type]);
-      exit(EXIT_FAILURE);
-    }
-    
-    for(i = 0; i < persistents->total; ++i) {
-      void *stored_tuple = persistents->array + i * size;
-      
-      if(memcmp(stored_tuple, tuple, size) == 0) {
-        FREE_TUPLE(tuple);
-        return;
-      }
-    }
-    
-    /* new tuple */
-    if(persistents->total == persistents->current) {
-      if(persistents->total == 0)
-        persistents->total = PERSISTENT_INITIAL;
-      else
-        persistents->total *= 2;
-        
-      persistents->array = realloc(persistents->array, size * persistents->total);
-    }
-    
-    memcpy(persistents->array + persistents->current * size, tuple, size);
-    ++persistents->current;
-    process_bytecode(tuple, TYPE_START(type), isNew, reg, PROCESS_TUPLE);
-    
-    return;
-  }
-  
   if (!TYPE_IS_AGG(type) || TYPE_IS_LINEAR(type))
     {
       tuple_queue *queue = &TUPLES[type];
@@ -1790,9 +1761,14 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 
 	      if (cur->records.count <= 0)
 		/* Remove fact from database */
+		if (!TYPE_IS_LINEAR(type))
+		  process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), -1, 
+				   reg, PROCESS_TUPLE);
+
+	      fprintf(stderr, "\x1b[1;32m--%d--\tValid deletion of %s\x1b[0m\n", 
+		      getBlockId(), tuple_names[type]);
 		FREE_TUPLE(queue_dequeue_pos(queue, current));
 
-	      /* fprintf(stderr, "\x1b[1;35m--%d--\tValid deletion of %s\x1b[0m\n", getBlockId(), tuple_names[type]); */
 	      /* Also free retraction fact */
 	      FREE_TUPLE(tuple);
 
@@ -1941,17 +1917,17 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 #ifdef DEBUG_INSTRS
 
 #ifdef BBSIM
-  if (PROCESS_TYPE(state) == PROCESS_TUPLE) {
-    pthread_mutex_lock(&(printMutex));
-    printf ("\n--%d--\tPROCESS TUPLE ", getBlockId());
-    tuple_print (tuple, stdout);
-    printf ("\n");
-    pthread_mutex_unlock(&(printMutex));
-  }
-#else
+  /* if (PROCESS_TYPE(state) == PROCESS_TUPLE) { */
+/*     pthread_mutex_lock(&(printMutex)); */
+/*     printf ("\n--%d--\tPROCESS TUPLE ", getBlockId()); */
+/*     tuple_print (tuple, stdout); */
+/*     printf ("\n"); */
+/*     pthread_mutex_unlock(&(printMutex)); */
+/*   } */
+/* #else */
   if (PROCESS_TYPE(state) == PROCESS_TUPLE)
-    printf ("\n--%d--\tPROCESS TUPLE %s\n", 
-	    getBlockId(), tuple_names[TUPLE_TYPE(tuple)]);
+    printf ("\n--%d--\tPROCESS TUPLE %s -- isNew = %d\n", 
+	    getBlockId(), tuple_names[TUPLE_TYPE(tuple)], isNew);
 #endif
 
   else if (PROCESS_TYPE(state) == PROCESS_ITER) {
@@ -1999,14 +1975,14 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     case PERS_ITER_INSTR: 		/* 0x02 */ 
       {
 	const byte *npc = pc + ITER_OUTER_JUMP(pc);
-	execute_iter (pc, reg);
+	execute_iter (pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
 
     case LINEAR_ITER_INSTR: 		/* 0x05 */ 
       {
 	const byte *npc = pc + ITER_OUTER_JUMP(pc);
-	execute_iter (pc, reg);
+	execute_iter (pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
 
@@ -2020,7 +1996,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     case SEND_INSTR: 		/* 0x08 */ 
       {
 	const byte *npc = pc + SEND_BASE;
-	execute_send (pc, reg);
+	execute_send (pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
       
@@ -2047,7 +2023,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     case SEND_DELAY_INSTR: 		/* 0x15 */ 
       {
 	const byte *npc = pc + SEND_DELAY_BASE;
-	execute_send_delay (pc, reg);
+	execute_send_delay (pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
  
@@ -2358,21 +2334,21 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     case ADDLINEAR_INSTR: 		/* 0x77 */
       {
 	const byte *npc = pc + ADDLINEAR_BASE;
-	execute_addpers (pc, reg);
+	execute_addtuple (pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
 
     case ADDPERS_INSTR: 		/* 0x78 */
       {
 	const byte *npc = pc + ADDPERS_BASE;
-	execute_addpers (pc, reg);
+	execute_addtuple (pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
       
     case RUNACTION_INSTR: 		/* 0x79 */
       {
 	const byte *npc = pc + RUNACTION_BASE;
-	execute_run_action (pc, reg);
+	execute_run_action (pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
 
@@ -2387,7 +2363,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     case REMOVE_INSTR: 		/* 0x80 */
       {
 	const byte *npc = pc + REMOVE_BASE;
-	execute_remove (pc, reg);
+	execute_remove (pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
 

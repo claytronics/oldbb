@@ -24,6 +24,11 @@
 // include here to make sure we include the threadypes, etc.
 #include "model.bbh"
 
+//#define DEBUG
+/* #define DEBUG_NEIGHBORHOOD */
+#define DEBUG_SEND
+#define DEBUG_RULES
+
 void vm_init(void);
 byte updateRuleState(byte rid);
 
@@ -44,11 +49,6 @@ threadvar persistent_set *persistent;
 threadvar Register reg[32];
 
 static tuple_type TYPE_TAP = -1;
-
-//#define DEBUG
-/* #define DEBUG_NEIGHBORHOOD */
-/* #define DEBUG_SEND */
-#define DEBUG_RULES
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -264,7 +264,7 @@ void meldMain(void)
       /* Enqueue received tuples */
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
-	enqueueNewTuple(tuple, (record_type) 1);
+	enqueueNewTuple(tuple, (record_type) -1);
       }
 
       neighbors[i] = neighbor;
@@ -304,10 +304,10 @@ void receive_tuple(int isNew)
 #ifdef BBSIM
   pthread_mutex_lock(&(printMutex));
 #endif
-  printf ("\x1b[33m--%d--\t Tuple received from %d: ",
-	  getBlockId(), get_neighbor_ID(faceNum(thisChunk)));
-  tuple_print (rcvdTuple, stdout);
-  printf("\x1b[0m\n"); 
+  printf ("\x1b[33m--%d--\t Tuple received from %d: %s -- isNew = %d\x1b[0m\n",
+	  getBlockId(), get_neighbor_ID(faceNum(thisChunk)), 
+	  tuple_names[TUPLE_TYPE(rcvdTuple)], isNew);
+/* tuple_print (rcvdTuple, stdout); */
 #ifdef BBSIM
   pthread_mutex_unlock(&(printMutex));
 #endif
@@ -351,9 +351,9 @@ void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
 #ifdef BBSIM
   pthread_mutex_lock(&(printMutex));
 #endif
-  printf ("\x1b[33m--%d--\t Sending tuple: ", getBlockId());
-  tuple_print (tuple, stdout);
-  printf(" to %d\x1b[0m\n", target); 
+  printf ("\x1b[33m--%d--\t Sending tuple: %s to %d -- isNew = %d\x1b[0m\n", 
+	  getBlockId(), tuple_names[TUPLE_TYPE(tuple)], target, isNew);
+  /* tuple_print (tuple, stdout); */
 #ifdef BBSIM
   pthread_mutex_unlock(&(printMutex));
 #endif

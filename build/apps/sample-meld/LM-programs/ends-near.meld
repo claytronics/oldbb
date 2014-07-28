@@ -1,7 +1,7 @@
 type vacant(node, int).
 type route neighbor(node, node, int).
 type neighborCount(node, int).
-type tap(node).
+type linear tap(node).
 
 type ending(node).
 type middle(node).
