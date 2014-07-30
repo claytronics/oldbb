@@ -8,9 +8,15 @@
  */
 
 /* - OpenGL Libraries - */
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+#endif
 
 /* - Standard Libraries - */
 #include <math.h>
@@ -296,8 +302,7 @@ void showstatus(void)
     Q_FOREACH(block, getBlockList(), blockLink)
     {
 	fprintf(stderr, "block:%u has: (", block->id);
-	int count;
-	for(count = 0, i = 0; i < NUM_PORTS; ++i)
+	for(i = 0; i < NUM_PORTS; ++i)
 	    if(block->thisNeighborhood.n[i] != 0) fprintf(stderr, "%d ", i);
 	fprintf(stderr, "\n");
     }

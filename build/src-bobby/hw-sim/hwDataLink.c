@@ -6,6 +6,10 @@
 #include "../sim/world.h"
 #include "../system/led.bbh"
 
+#ifdef CLOCK_SYNC
+#include  "../system/clock.bbh"
+#endif
+
 // is a HW only function
 void processBuffer(PRef p)
 {
@@ -62,7 +66,7 @@ void sendOnSerial(PRef p)
             destPort = Top;
             break;
         default:
-            // this is very bad - I would like to just drop it silently
+	    // this is very bad - I would like to just drop it silently
             printf("did not rewrite direction\n");
 
             // pretend that it just couldn't get a response?
@@ -95,11 +99,23 @@ void sendOnSerial(PRef p)
             outOfRetries(p);
             return;
         }
-
+#ifdef CLOCK_SYNC
+		// insert receive time
+		if (isAClockSyncMessage(send))
+		{
+			insertSendTime(send);
+		}
+#endif
         memcpy(recd, send, sizeof(*send));
         recd->status = CHUNK_USED | CHUNK_FILLED | destPort;
         recd->next = NULL;
-
+#ifdef CLOCK_SYNC
+		if (isAClockSyncMessage(recd))
+		{
+			// insert receive time
+			insertReceiveTime(recd);
+		}
+#endif
         // add to receive queue
         BB_LOCK(&(dest->neighborMutex));
 
@@ -137,19 +153,21 @@ Chunk* nextPacket(void)
     Block* b = this();
 
     BB_LOCK(&(b->neighborMutex));
+
     Chunk* c = b->globalRq.head;
-    BB_UNLOCK(&(b->neighborMutex));
     
     // no packets
     if( c == NULL )
     {
-        BB_LOCK(&(b->neighborMutex));
-        b->globalRq.tail = NULL;
-        b->globalRq.flags &= ~PACKET_READY;
-        BB_UNLOCK(&(b->neighborMutex));
+      b->globalRq.flags &= ~PACKET_READY;
+      b->globalRq.tail = NULL;
+      
+      BB_UNLOCK(&(b->neighborMutex));
 
-        return NULL;
+      return NULL;
     }
+    
+    BB_UNLOCK(&(b->neighborMutex));
 
     // this is annoying but has to be done as to ensure using system chunks
     Chunk* recd = getSystemRXChunk();

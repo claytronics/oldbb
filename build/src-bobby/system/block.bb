@@ -1,6 +1,14 @@
 #include "block.bbh"
 
+#ifdef CLOCK_SYNC
+#include  "clock.bbh"
+#endif
+#ifdef LOG_DEBUG
+#include "log.bbh"
+#endif
+
 threadvar int blockTickRunning = 0;
+extern void vm_alloc(void);
 
 int accelReady=0;
 
@@ -47,6 +55,12 @@ void blockTick()
     }
   
   executeHandlers();	
+  if(accelReady){
+    if(newAccelData()){
+      updateAccel();
+    }
+  }
+  executeHandlers();	
   blockTickRunning = 0;
   
 }
@@ -67,7 +81,7 @@ void initBlock()
 
 #ifdef DEBUG
 	initDebug();
-    	printf("System Debug Enabled\r\n");
+    	//printf("System Debug Enabled\r\n");
 #endif
 
 	initDataLink();	
@@ -78,10 +92,24 @@ void initBlock()
 	initSystemMessage();
 	initEnsemble();
 
+#ifdef MELD
+	//allocate MeldVM's data structures
+	vm_alloc();
+#endif
+
 	initBlockTick();		// HW INITIALIZATION ROUTINE
 
 	initHWAccel();
 	accelReady=1;
+
+#ifdef LOG_DEBUG
+	initLogDebug();
+#endif
+
+	delayMS(50);
+#ifdef CLOCK_SYNC
+	initClock();
+#endif
 
 #ifndef BBSIM
     initHWMic();

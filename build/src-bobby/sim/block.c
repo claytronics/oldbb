@@ -43,7 +43,7 @@ void destroyBlock(Block *block)
 	block->destroyed = 1;
 
 	// uh...need to shut down other mutexes and memory in threads?!
-	free(block);
+	//free(block);
 }
 
 BlockList *getBlockList(void)
