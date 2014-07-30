@@ -43,6 +43,8 @@ threadvar NodeID blockId;
 threadvar Register reg[32];
 
 static tuple_type TYPE_TAP = -1;
+static byte retractionOccured = 0;
+static byte inNeighborCountUpdate = 0;
 
 #ifdef BBSIM
 #include <sys/timeb.h>
@@ -201,6 +203,16 @@ void init_all_consts(void)
     else if (strcmp(TYPE_NAME(i), "vacant") == 0)
       TYPE_VACANT = i;
   }	
+}
+
+static
+void handle_count(meld_int count, int isNew)
+{
+  tuple_t tuple = tuple_alloc(TYPE_NEIGHBORCOUNT);
+
+  SET_TUPLE_FIELD(tuple, 0, &count);
+
+  tuple_handle(tuple, isNew, reg);
 }
 
 #ifdef BBSIM
@@ -465,6 +477,10 @@ void tuple_handle(tuple_t tuple, int isNew, Register *registers)
 {
   tuple_type type = TUPLE_TYPE(tuple);
   assert (type < NUM_TYPES);
+
+  if (isNew > 0
+      && !inNeighborCountUpdate) 
+    retractionOccured = 1;
 
   tuple_do_handle(type, tuple, isNew, registers);
 }
