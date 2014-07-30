@@ -14,20 +14,15 @@
 
 #define DEBUG_INSTRS
 /* #define DEBUG_ALLOCS */
-//#define DEBUG_PROVED_TUPLES
 #define inline 
 
 unsigned char *arguments = NULL;
 tuple_type TYPE_INIT = 0;
 tuple_type TYPE_EDGE = -1;
-tuple_type TYPE_COLOCATED = -1;
-tuple_type TYPE_PROVED = -1;
 tuple_type TYPE_TERMINATE = -1;
 tuple_type TYPE_NEIGHBORCOUNT = -1;
 tuple_type TYPE_NEIGHBOR = -1;
 tuple_type TYPE_VACANT = -1;
-
-extern persistent_set *persistent;
 
 static tuple_t queue_dequeue_pos(tuple_queue *queue, tuple_entry **pos);
 
@@ -109,7 +104,7 @@ execute_alloc (const unsigned char *pc, Register *reg)
 
 inline void
 execute_addtuple (const unsigned char *pc, 
-		 Register *reg, int isNew) 
+		  Register *reg, int isNew) 
 {
   ++pc;  
   
@@ -124,6 +119,8 @@ execute_addtuple (const unsigned char *pc,
 
   enqueueNewTuple((tuple_t)MELD_CONVERT_REG_TO_PTR(tuple_reg), 
 		  (record_type) isNew);
+  /* print_newTuples(); */
+  /* print_newStratTuples(); */
 }
 
 inline void
@@ -194,10 +191,10 @@ execute_call1 (const unsigned char *pc, Register *reg)
     /* No need to do anything for this function since VM is already *
      * considering node args as NodeID's, which are int's           */
     printf("--%d--\t CALL1 node2int/%d TO reg %d = (reg %d)\n", 
-    getBlockId(), arg1_index, dst_index, arg1_index);
+	   getBlockId(), arg1_index, dst_index, arg1_index);
   else
     printf("--%d--\t CALL1 (some func)/%d TO reg %d = (reg %d)\n", 
-    getBlockId(), arg1_index, dst_index, arg1_index);
+	   getBlockId(), arg1_index, dst_index, arg1_index);
 #endif
 
   if (functionID != 0x1f)
@@ -234,47 +231,28 @@ execute_iter (const unsigned char *pc,
   const tuple_type type = ITER_TYPE(pc);
   int i, k, length;
   void **list;
-  int size = TYPE_SIZE(type);
 
   /* Reg in which match will be stored during execution*/
   byte reg_store_index = FETCH(pc+10);
 			
   /* produce a random ordering for all tuples of the appropriate type */
-			
-  if(TYPE_IS_PERSISTENT(type) && !TYPE_IS_AGG(type)) {
-    /* persistent aggregate types not supported */
-    persistent_set *persistents = &PERSISTENT[type];
-        
-    length = persistents->current;
-    list = malloc(sizeof(tuple_t) * length);
-
-    for(i = 0; i < length; i++) {
-      int j = random() % (i + 1);
-          
-      list[i] = list[j];
-      list[j] = persistents->array + i * size;
-    }
-  } else {
-    /* non-persistent type */
-    tuple_entry *entry = TUPLES[type].head;
+  tuple_entry *entry = TUPLES[type].head;
     
-    length = queue_length(&TUPLES[ITER_TYPE(pc)]);
-    list = malloc(sizeof(tuple_t) * length);
+  length = queue_length(&TUPLES[ITER_TYPE(pc)]);
+  list = malloc(sizeof(tuple_t) * length);
 		    
-    for (i = 0; i < length; i++) {
-      int j = random() % (i+1);
+  for (i = 0; i < length; i++) {
+    int j = random() % (i+1);
 
-      list[i] = list[j];
-      list[j] = entry->tuple;
+    list[i] = list[j];
+    list[j] = entry->tuple;
 
-      entry = entry->next;
-    }
+    entry = entry->next;
   }
-			
+  
 #ifdef DEBUG_INSTRS
   printf("--%d--\t ITER %s len=%d TO reg %d\n",
 	 getBlockId(), tuple_names[type], length, reg_store_index);
-  facts_dump();
 #endif
 
   if(length == 0) {
@@ -1102,7 +1080,6 @@ inline void
 execute_run_action (const unsigned char *pc, 
 		    Register *reg, int isNew) 
 {
-  if (isNew > 0) {
     ++pc;
 
     byte reg_index = FETCH(pc);
@@ -1112,37 +1089,39 @@ execute_run_action (const unsigned char *pc,
     
     switch (type) {
     case TYPE_SETCOLOR:
-
+      if (isNew > 0) {
+    
 #ifdef DEBUG_INSTRS
-      printf ("--%d--\t RUN ACTION: %s(currentNode, %d, %d, %d, %d)\n", 
-	      getBlockId(), tuple_names[type], 
-	      MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)),
-	      MELD_INT(GET_TUPLE_FIELD(action_tuple, 1)),
-	      MELD_INT(GET_TUPLE_FIELD(action_tuple, 2)),
-	      MELD_INT(GET_TUPLE_FIELD(action_tuple, 3))); 
+	printf ("--%d--\t RUN ACTION: %s(currentNode, %d, %d, %d, %d)\n", 
+		getBlockId(), tuple_names[type], 
+		MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)),
+		MELD_INT(GET_TUPLE_FIELD(action_tuple, 1)),
+		MELD_INT(GET_TUPLE_FIELD(action_tuple, 2)),
+		MELD_INT(GET_TUPLE_FIELD(action_tuple, 3))); 
 #endif
    
-      setLEDWrapper(*(byte *)GET_TUPLE_FIELD(action_tuple, 0),
-		    *(byte *)GET_TUPLE_FIELD(action_tuple, 1),
-		    *(byte *)GET_TUPLE_FIELD(action_tuple, 2),
-		    *(byte *)GET_TUPLE_FIELD(action_tuple, 3));
+	setLEDWrapper(*(byte *)GET_TUPLE_FIELD(action_tuple, 0),
+		      *(byte *)GET_TUPLE_FIELD(action_tuple, 1),
+		      *(byte *)GET_TUPLE_FIELD(action_tuple, 2),
+		      *(byte *)GET_TUPLE_FIELD(action_tuple, 3));
+      }
       FREE_TUPLE(action_tuple);
       return;
    
     case TYPE_SETCOLOR2:
-
+      if (isNew > 0) {
 #ifdef DEBUG_INSTRS
-      printf ("--%d--\t RUN ACTION: %s(currentNode, %d)\n", 
-	      getBlockId(), tuple_names[type], 
-	      MELD_INT(GET_TUPLE_FIELD(action_tuple, 0))); 
+	printf ("--%d--\t RUN ACTION: %s(currentNode, %d)\n", 
+		getBlockId(), tuple_names[type], 
+		MELD_INT(GET_TUPLE_FIELD(action_tuple, 0))); 
 #endif
    
-      setColorWrapper(MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)));
-    
+	setColorWrapper(MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)));
+      }
+      
       FREE_TUPLE(action_tuple);
       return;
     }
-  }
 }
 
 inline void
@@ -1365,10 +1344,6 @@ void init_consts(void)
   for (i = 0; i < NUM_TYPES; i++) {
     if(strcmp(TYPE_NAME(i), "edge") == 0)
       TYPE_EDGE = i;
-    else if(strcmp(TYPE_NAME(i), "colocated") == 0)
-      TYPE_COLOCATED = i;
-    else if(strcmp(TYPE_NAME(i), "proved") == 0)
-      TYPE_PROVED = i;
     else if(strcmp(TYPE_NAME(i), "terminate") == 0)
       TYPE_TERMINATE = i;
   }	
@@ -1691,32 +1666,9 @@ void aggregate_recalc(tuple_entry *agg, Register *reg,
   free(accumulator);
 }
 
-static inline tuple_t
-tuple_build_proved(tuple_type type, meld_int total)
-{
-  tuple_t tuple = tuple_alloc(TYPE_PROVED);
-  meld_int type_int = (meld_int)type;
-  
-  SET_TUPLE_FIELD(tuple, 0, &type_int);
-  SET_TUPLE_FIELD(tuple, 1, &total);
-  
-  return tuple;
-}
-
 void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 {
-  if(TYPE_IS_PROVED(type)) {
-    PROVED[type] += (meld_int)isNew;
-    tuple_t _proved = tuple_build_proved(type, PROVED[type]);
-#ifdef DEBUG_PROVED_TUPLES
-    printf("New proved for tuple %s: %d\n", tuple_names[type], PROVED[type]);
-#endif
-    PUSH_NEW_TUPLE(_proved);
-  } else if(type == TYPE_PROVED) {
-    process_bytecode(tuple, TYPE_START(type), isNew, reg, PROCESS_TUPLE);
-    FREE_TUPLE(tuple);
-    return;
-  } else if(type == TYPE_TERMINATE) {
+  if(type == TYPE_TERMINATE) {
     FREE_TUPLE(tuple);
     TERMINATE_CURRENT();
     return;
@@ -1758,41 +1710,35 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 		     TYPE_SIZE(type)) == 0)
 	    {
 	      cur->records.count += isNew;
-
-	      if (cur->records.count <= 0)
+	  
+	      if (cur->records.count <= 0) {
 		/* Remove fact from database */
 		if (!TYPE_IS_LINEAR(type))
 		  process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), -1, 
 				   reg, PROCESS_TUPLE);
-
-	      fprintf(stderr, "\x1b[1;32m--%d--\tValid deletion of %s\x1b[0m\n", 
-		      getBlockId(), tuple_names[type]);
+	    
+		fprintf(stdout, 
+			"\x1b[1;32m--%d--\tDelete Iter success for  %s\x1b[0m\n", 
+			getBlockId(), tuple_names[type]);
 		FREE_TUPLE(queue_dequeue_pos(queue, current));
-
-	      /* Also free retraction fact */
-	      FREE_TUPLE(tuple);
-
-	      return;
+		/* Also free retraction fact */
+		FREE_TUPLE(tuple);
+	    
+		return;
+	      }
 	    }
 	}
 
       // if deleting, return
       if (isNew <= 0) {
-	fprintf(stderr, "\x1b[1;31m--%d--\tInvalid deletion of %s: Retraction fact probably should have matched a fact in the database. Check this.\x1b[0m\n", getBlockId(), tuple_names[type]);
+	fprintf(stdout, "\x1b[1;31m--%d--\tDelete Iter failure for %s\x1b[0m\n", getBlockId(), tuple_names[type]);
 	FREE_TUPLE(tuple);
 	return;
       }
       
       queue_enqueue(queue, tuple, (record_type) isNew);
-
-      if (RET_LINEAR == process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), 
-					 isNew, reg, PROCESS_TUPLE)) {
-	/* /\* TODO: Replace this hack by properly executing rule *\/ */
-	/* if (type == TYPE_INIT) */
-	/*   /\* Derive axioms specified in the byte code *\/ */
-	/*   derive_axioms(reg); */
-      }
-      
+      process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), 
+		       isNew, reg, PROCESS_TUPLE);    
       return;
     }
 
@@ -1866,6 +1812,10 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 	      } else
 		aggregate_recalc(cur, reg, false);
 
+		fprintf(stdout, 
+			"\x1b[1;32m--%d--\tAgg delete Iter success for %s\x1b[0m\n", 
+			getBlockId(), tuple_names[type]);
+
 	      FREE_TUPLE(tuple);
 	      return;
 	    }
@@ -1873,6 +1823,10 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 
       // if deleting, return
       if (isNew <= 0) {
+	fprintf(stdout, 
+		"\x1b[1;32m--%d--\tAgg delete Iter failure for %s\x1b[0m\n", 
+		getBlockId(), tuple_names[type]);
+
 	FREE_TUPLE(tuple);
 	return;
       }
@@ -1918,13 +1872,13 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 
 #ifdef BBSIM
   /* if (PROCESS_TYPE(state) == PROCESS_TUPLE) { */
-/*     pthread_mutex_lock(&(printMutex)); */
-/*     printf ("\n--%d--\tPROCESS TUPLE ", getBlockId()); */
-/*     tuple_print (tuple, stdout); */
-/*     printf ("\n"); */
-/*     pthread_mutex_unlock(&(printMutex)); */
-/*   } */
-/* #else */
+  /*     pthread_mutex_lock(&(printMutex)); */
+  /*     printf ("\n--%d--\tPROCESS TUPLE ", getBlockId()); */
+  /*     tuple_print (tuple, stdout); */
+  /*     printf ("\n"); */
+  /*     pthread_mutex_unlock(&(printMutex)); */
+  /*   } */
+  /* #else */
   if (PROCESS_TYPE(state) == PROCESS_TUPLE)
     printf ("\n--%d--\tPROCESS TUPLE %s -- isNew = %d\n", 
 	    getBlockId(), tuple_names[TUPLE_TYPE(tuple)], isNew);
@@ -2500,14 +2454,12 @@ print_program_info(void)
     printf("[");
     if(TYPE_IS_AGG(i))
       printf("agg");
-    if(TYPE_IS_PERSISTENT(i))
-      printf("per");
     if(TYPE_IS_LINEAR(i))
       printf("linear");
+    else 
+      printf("per");
     if(TYPE_IS_ROUTING(i))
       printf("route");
-    if(TYPE_IS_PROVED(i))
-      printf("proved");
     printf("] ");
     
     printf("num_args:%d off:%d ; args(offset, arg_size): ",
