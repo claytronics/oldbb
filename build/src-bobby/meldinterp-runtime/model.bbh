@@ -22,10 +22,8 @@ threadtype typedef struct _tuple_pentry { meld_int priority; struct _tuple_pentr
 threadtype typedef struct {struct _tuple_pentry *queue;} tuple_pqueue;
 
 threadextern tuple_queue *tuples;
-threadextern void **oldTuples;
-threadextern meld_int *proved;
 
-threadtype typedef struct _persistent_set { void *array; int total; int current; } persistent_set;
+/* threadtype typedef struct _persistent_set { void *array; int total; int current; } persistent_set; */
 
 threadextern NodeID blockId;
 

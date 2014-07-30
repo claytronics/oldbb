@@ -404,7 +404,6 @@ enum instr_type {
 #define TYPE_IS_DELETE(x) 		(TYPE_PROPERTIES(x) & 0x08)
 #define TYPE_IS_SCHEDULE(x) 	(TYPE_PROPERTIES(x) & 0x10)
 #define TYPE_IS_ROUTING(x) 		(TYPE_PROPERTIES(x) & 0x20)
-#define TYPE_IS_PROVED(x)     (TYPE_PROPERTIES(x) & 0x40)
 
 #define AGG_AGG(x)    (((x) & (0xf0)) >> 4)
 #define AGG_FIELD(x)  ((x) & 0x0f)
@@ -540,8 +539,6 @@ int queue_length (tuple_queue *queue);
 
 extern tuple_type TYPE_INIT;
 extern tuple_type TYPE_EDGE;
-extern tuple_type TYPE_COLOCATED;
-extern tuple_type TYPE_PROVED;
 extern tuple_type TYPE_TERMINATE;
 extern tuple_type TYPE_NEIGHBORCOUNT;
 extern tuple_type TYPE_NEIGHBOR;
@@ -550,6 +547,8 @@ extern tuple_type TYPE_VACANT;
 extern void setColorWrapper (byte color);
 extern void setLEDWrapper (byte r, byte g, byte b, byte intensity);
 extern NodeID getBlockId (void);
+extern void print_newTuples (void);
+extern void print_newStratTuples (void);
 /* void print_process(const unsigned char *pc); */
 
 #ifdef BBSIM
