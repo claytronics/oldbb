@@ -113,14 +113,17 @@ execute_addtuple (const unsigned char *pc,
 
 #ifdef DEBUG_INSTRS
   tuple_type type = TUPLE_TYPE((tuple_t)tuple_reg);
-  printf ("--%d--\t ADD Tuple reg %d: %s\n", 
+  if (isNew < 0)
+  printf ("--%d--\t Enqueue fact reg %d: %s\n", 
 	  getBlockId(), reg_index, tuple_names[type]);
+  else
+  printf ("--%d--\t Enqueue RETRACTION fact reg %d: %s\n", 
+	  getBlockId(), reg_index, tuple_names[type]);
+
 #endif
 
   enqueueNewTuple((tuple_t)MELD_CONVERT_REG_TO_PTR(tuple_reg), 
 		  (record_type) isNew);
-  /* print_newTuples(); */
-  /* print_newStratTuples(); */
 }
 
 inline void
