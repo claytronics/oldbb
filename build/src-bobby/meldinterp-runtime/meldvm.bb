@@ -32,19 +32,13 @@
 void vm_init(void);
 byte updateRuleState(byte rid);
 
-threadvar tuple_t *oldTuples;
-
 threadvar tuple_pqueue *delayedTuples;
 threadvar tuple_queue *tuples;
 threadvar tuple_pqueue *newStratTuples;
 threadvar tuple_queue *newTuples;
 threadvar tuple_queue receivedTuples[NUM_PORTS];
 
-threadvar meld_int *proved;
-
 threadvar NodeID blockId;
-
-threadvar persistent_set *persistent;
 
 threadvar Register reg[32];
 
@@ -53,6 +47,49 @@ static tuple_type TYPE_TAP = -1;
 #ifdef BBSIM
 #include <sys/timeb.h>
 #endif
+
+void
+print_newTuples(void)
+{
+#ifdef BBSIM
+  pthread_mutex_lock(&(printMutex));
+#endif
+  fprintf(stderr, "\x1b[34m--%d--\tContent of queue newTuples: \n", blockId);
+  tuple_entry *tupleEntry;
+  for (tupleEntry = newTuples->head; 
+       tupleEntry != NULL; 
+       tupleEntry = tupleEntry->next) {
+    tuple_print(tupleEntry->tuple, stderr);
+    fprintf(stderr, " -- isNew = %d\n", tupleEntry->records.count);
+  }
+  fprintf(stderr, "\x1b[0m");
+#ifdef BBSIM
+  pthread_mutex_unlock(&(printMutex));
+#endif
+}
+
+void
+print_newStratTuples(void)
+{
+#ifdef BBSIM
+  pthread_mutex_lock(&(printMutex));
+#endif
+  fprintf(stderr, "\x1b[34m--%d--\tContent of queue newStratTuples: \n",
+	  blockId);
+  if (newStratTuples) {
+    tuple_pentry *tupleEntry;
+    for (tupleEntry = newStratTuples->queue; 
+	 tupleEntry != NULL; 
+	 tupleEntry = tupleEntry->next) {
+      tuple_print(tupleEntry->tuple, stderr);
+      fprintf(stderr, " -- isNew = %d\n", tupleEntry->records.count);
+    }
+  }
+  fprintf(stderr, "\x1b[0m");
+#ifdef BBSIM
+  pthread_mutex_unlock(&(printMutex));
+#endif
+}
 
 static inline
 NodeID get_neighbor_ID(int face)
@@ -224,12 +261,15 @@ void meldMain(void)
 	if (updateRuleState(i)) {
 	  /* Set state byte used by DEBUG */
 	  byte processState = PROCESS_RULE | (i << 4);
+	  
+	  /* Don't process persistent rules (which is useless) */
+	  if (!RULE_ISPERSISTENT(i)) {
 #ifdef DEBUG_RULES
-	  if (!RULE_ISPERSISTENT(i))
 	    printf ("\n\x1b[35m--%d--\tRule %d READY!\x1b[0m\n", getBlockId(), i);
 #endif
-	  /* Trigger execution */
+	    /* Trigger execution */
 	  process_bytecode (NULL, RULE_START(i), 1, reg, processState);
+	  }
 	}
 	/* else: Rule not ready yet, will re-check at next loop run */
       }
@@ -264,6 +304,7 @@ void meldMain(void)
       /* Enqueue received tuples */
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
+	printf("--%d--\tDelete received\n", blockId);
 	enqueueNewTuple(tuple, (record_type) -1);
       }
 
@@ -422,42 +463,14 @@ updateRuleState(byte rid)
 
 void tuple_handle(tuple_t tuple, int isNew, Register *registers)
 {
-  #if DEBUG
-  printf ("handling (%d): ", isNew);
-  tuple_print(tuple, stdout);
-  printf ("\n");
-  #endif
-
   tuple_type type = TUPLE_TYPE(tuple);
-
   assert (type < NUM_TYPES);
 
-  switch (type) {
-  case TYPE_SETCOLOR:
-    if (isNew <= 0) return;
-
-    setLED(*(byte *)GET_TUPLE_FIELD(tuple, 1),
-	   *(byte *)GET_TUPLE_FIELD(tuple, 2),
-	   *(byte *)GET_TUPLE_FIELD(tuple, 3),
-	   *(byte *)GET_TUPLE_FIELD(tuple, 4));
-    FREE_TUPLE(tuple);
-    return;
-
-  case TYPE_SETCOLOR2:
-    if (isNew <= 0) return;
-
-    setColor(MELD_INT(GET_TUPLE_FIELD(tuple, 1)) % NUM_COLORS);
-    FREE_TUPLE(tuple);
-    return;
-
-  default:
-    tuple_do_handle(type, tuple, isNew, registers);
-    return;
-  }
+  tuple_do_handle(type, tuple, isNew, registers);
 }
 
 void
-setColorWrapper (byte color) { setColor (color % NUM_COLORS);}
+setColorWrapper (byte color) { setColor(color % NUM_COLORS);}
 
 void
 setLEDWrapper (byte r, byte g, byte b, byte intensity) 
@@ -508,9 +521,7 @@ vm_alloc(void)
   tuples = calloc(NUM_TYPES, sizeof(tuple_queue));
   newTuples = calloc(1, sizeof(tuple_queue));
   newStratTuples = calloc(1, sizeof(tuple_pqueue));
-  oldTuples = calloc(NUM_TYPES, sizeof(tuple_t));
   delayedTuples = calloc(1, sizeof(tuple_pqueue));
-  proved = calloc(NUM_TYPES, sizeof(meld_int));
 
   /* Reset received tuples queue */
   memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
