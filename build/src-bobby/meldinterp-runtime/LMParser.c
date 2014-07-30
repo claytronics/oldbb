@@ -5,6 +5,15 @@
 
 #include "LMParser.h"
 
+/******************************************************************************
+
+@note: Check out LMParser.h for more information.
+
+*******************************************************************************/
+
+/* Uncomment to print content of input file */
+/* #define DEBUG_PARSER */
+
 /* Function prototypes */
 byte readType (FILE *pFile);
 byte readTypeID (FILE *pFile, byte typeArray[]);
@@ -15,22 +24,19 @@ size_t sizeOfRuleDescriptors(Rule rules[], byte numRules);
 int 
 main (int argc, char* argv[])
 {
-  printf ("MELD BYTE CODE PARSER\n"
-	  "---------------------\n");
-
-  /* Verify arguments */
+  /* Verify number of arguments */
   if (argc != 2) {
     perror ("Invalid number of arguments\n"
-	    "Usage: ./parser <path-to-.m-file> (without file extension)\n");
+	    "Usage: ./LMParser <path-to-.m-file>\n");
     exit(1);
   }
-  
-  char *inNameBuf = argv[1];
 
-  /* Get name for output */
-  char outNameBuf[strlen (inNameBuf) + 3];
-  int i;
-  int j;
+  printf ("LMParser: ");
+
+  /* Deduce output file's name from name of input file */
+  char *inNameBuf = argv[1];
+  char outNameBuf[strlen (inNameBuf) + 2]; 
+  int i,j;
   for (i = 0;  i < (strlen (inNameBuf) - 1); ++i) {
     outNameBuf[i] = inNameBuf[i];
   }
@@ -38,99 +44,151 @@ main (int argc, char* argv[])
   outNameBuf[i++] = 'b';
   outNameBuf[i] = '\0';
 
-  /* Open input file */
+  /* Open input file in read-only mode */
   FILE *pMeldProg;
   pMeldProg = fopen (inNameBuf, "r");
 
-  /* Open output file */
+  /* Open output file in write-only mode */
   FILE *pBBFile;
   pBBFile = fopen (outNameBuf, "w");
 
-  /* Start parsing */
+  /* Check that file opening succeeded and start parsing */
   if (pMeldProg == NULL) perror ("Error opening file");
   else
     {
-      /* Read magic and check that program is Meld file*/
-      uint32_t magic1;
+      /* ************* FILE AND VERSION CHECK ************* */
+
+      /* Read magic and check that program is Meld file */
+      uint32_t magic1, magic2;
       fread (&magic1, 4, 1, pMeldProg);
-      uint32_t magic2;
       fread (&magic2, 4, 1, pMeldProg);	  
 
-      printf ("magics: %#x %#x\n", magic1, magic2);
+#ifdef DEBUG_PARSER
+      printf ("\nmagics: %#x %#x\n", magic1, magic2);
+#endif
 
       if (magic1 != MAGIC1 || magic2 != MAGIC2) {
 	perror ("Not a Meld byte code file!");
-	exit (1);
+	exit (-1);
       }
+#ifdef DEBUG_PARSER
       else printf ("magics OK\n");
+#endif
 
-      /* Check file version -- has to be 11 for now */
-      uint32_t majorVersion;
+      /* Check file version: 0.11 is the only supported version for now */
+      uint32_t majorVersion, minorVersion;
       fread (&majorVersion, 4, 1, pMeldProg);
-      uint32_t minorVersion;
       fread (&minorVersion, 4, 1, pMeldProg);
 
       if ( (!VERSION_AT_LEAST(0, 11)) || VERSION_AT_LEAST(0, 12) ) {
 	perror ("Unsupported byte code version");
+	exit(-2);
       }
+#ifdef DEBUG_PARSER
       else printf ("Version OK\n");
+#endif
 
-      /* Read number of predicates */
+      /* ************* NUMBER OF PREDICATES ************* */
+
+      /* Read number of predicates in the program */
+      /* It includes both the program's predicate, and some mandatory predicates
+       * added by the compiler */
       byte numPredicates;
       fread (&numPredicates, 1, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of predicates: %d\n", numPredicates);
-
+#endif
+      /* Initialize Predicate structure array */
       Predicate predicates[numPredicates];
 
-      /* Read number of nodes -- USELESS BB */
+      /* ************* NUMBER OF NODES ************* */
+
+      /* Read number of nodes */
       uint32_t numNodes;
       fread (&numNodes, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of nodes: %d\n", numNodes);
+#endif
 
-      /* Read number of types */
+      /* The number of nodes for a BB program has to be 0 */
+      if (numNodes > 0) {
+	perror ("Invalid number of nodes -- Should be 0\n");
+	exit(-3);
+      }
+
+      /* ************* TYPES ************* */
+
+      /* Read number of types 
+       * Types (int, node, string, float, etc...) are stored in a list in the 
+       * source byte code. All other types in the byte code will simply be 
+       * references to the type at index i of this list
+       */
       byte numTypes;
       fread (&numTypes, 1, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of types: %d\n", numTypes);
+#endif
 
       /* Read types */
       byte types[numTypes];
+#ifdef DEBUG_PARSER
       printf ("Types: ");
-      for (i = 0; i < numTypes; ++i) types[i] = readType (pMeldProg);
+#endif
+      for (i = 0; i < numTypes; ++i) 
+	types[i] = readType (pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("\n");
+#endif
+
+      /* ************* IMPORTED / EXPORTED PREDICATES ************* */
 
       /* Read number of imported predicates */
+      /* PTHY: Unused by targetVM for now since I do not know what they represent
+       * and have never seen them used.
+       */
       uint32_t numImportedPreds;
       fread (&numImportedPreds, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of imported predicates: %d\n", numImportedPreds);
-
-      /* Read imported predicates */
-      /* Ignore for now as there should be none */
+#endif
 
       /* Read number of exported predicates */
+      /* PTHY: Same as for imported predicates */
       uint32_t numExportedPreds;
       fread (&numExportedPreds, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of exported predicates: %d\n", numExportedPreds);
+#endif
 
-      /* Read exported predicates */
-      /* Ignore for now as there should be none */
-	  
-      /* Read number of args needed by program */
+      /* ************* MELD PROGRAM ARGUMENTS ************* */
+
+      /* Read number of args needed by program 
+       * Unused by targetVM, should be 0
+       */
       byte numProgArgs;
       fread (&numProgArgs, 1, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of program arguments: %d\n", numProgArgs);
+#endif
 
-      /* Read rule info */
-      uint32_t numRules;
+      /* ************* RULE STRINGS ************* */
+
+      /* Read and store rule information */
+      uint32_t numRules;	/* Number of rules in the program */
       fread (&numRules, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of rules: %i\n", numRules);
+#endif
 
+      /* Initialize array containing all rules */
       Rule rules[numRules];
 
       for (i = 0; i < numRules; ++i) {
+#ifdef DEBUG_PARSER
 	printf ("  Rule %d: ", i);
-	    
+#endif	    
 	/* Read rule length */
-	uint32_t ruleLength;
+	uint32_t ruleLength;	/* Length of rule name string */
 	fread (&ruleLength, 4, 1, pMeldProg);
 	    
 	/* Read rule string */
@@ -149,18 +207,30 @@ main (int argc, char* argv[])
 	    rules[i].pName[charPos++] = c;
 	}
 	rules[i].pName[charPos] = '\0';
-
+#ifdef DEBUG_PARSER
 	printf ("%s\n", rules[i].pName);
+#endif
       }
+#ifdef DEBUG_PARSER
       printf ("\n");
+#endif
+
+      /* ************* CONSTANTS ************* */
 
       /* Read string constants */
+      /* PTHY: Not implemented yet since constants were not compiling 
+       * at the time I did this work
+       */
       uint32_t numStrings;
       fread (&numStrings, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of string constants: %d\n", numStrings);
+#endif
 
       for (i = 0; i < numStrings; ++i) {
+#ifdef DEBUG_PARSER
 	printf ("  String %d: ", i);
+#endif
 
 	uint32_t stringLength;
 	fread (&stringLength, 4, 1, pMeldProg);
@@ -169,38 +239,51 @@ main (int argc, char* argv[])
 	fread (&constStr, 1, stringLength, pMeldProg);
 	constStr[stringLength] = '\0';
 
+#ifdef DEBUG_PARSER
 	printf ("%s\n", constStr);
-	/* TODO: store somewhere? */
+#endif
       }
 
       /* Read constants */
       uint32_t numConstants;
       fread (&numConstants, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of constants: %d\n", numConstants);
+#endif
  
-      /* Read type */
+      /* Read constants type */
       byte constTypes[numConstants];
-
       for (i = 0; i < numConstants; ++i) {
 	constTypes[i] = readTypeID(pMeldProg, types);
       }
-      /* TODO: store somewhere? */
+
+      /* Avoid unused variable warning */
       (void) constTypes;
 
       /* Read and store code */
       uint32_t constCodeSize;
       fread (&constCodeSize, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Constant code size: %d\n", constCodeSize);
+#endif
 
       byte constCode[constCodeSize];
       fread (&constCode, 1, constCodeSize, pMeldProg);
+#ifdef DEBUG_PARSER      
       printf("code: %x\n", constCode[0]);
+#endif
       skipNodeReferences (pMeldProg);
+
+      /* ************* FUNCTIONS ************* */
+
+      /* PTHY: Functions are currently not implemented into the VM */
 
       /* Read function code */
       uint32_t numFunctions;
       fread (&numFunctions, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of functions: %d\n", numFunctions);
+#endif
 
       for (i = 0; i < numFunctions; ++i) {
 	uint32_t functionSize;
@@ -208,7 +291,7 @@ main (int argc, char* argv[])
 
 	byte functionCode[functionSize];
 	fread (&functionSize, 1, functionSize, pMeldProg);
-	/* TODO: Store somewhere? */
+	/* Avoid getting unused variable warning */
 	(void)functionCode;
 
 	skipNodeReferences (pMeldProg);
@@ -217,99 +300,146 @@ main (int argc, char* argv[])
       /* Read external functions definitions */
       uint32_t numExternalFunctions;
       fread (&numExternalFunctions, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of external functions: %d\n", numExternalFunctions);
+#endif
       
       for (i = 0; i < numExternalFunctions; ++i) {
+#ifdef DEBUG_PARSER
 	printf ("  Extern %d:\n", i);
+#endif
 	
-	uint32_t externID;
+	uint32_t externID; 	/* ID of the function */
 	fread (&externID, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
 	printf ("    ID: %d\n", externID);
+#endif
 
-	char externName[256];
+	char externName[256];	/* Name string */
 	fread (&externName, 1, sizeof(externName), pMeldProg);
+#ifdef DEBUG_PARSER
 	printf ("    Name: %s\n", externName);
+#endif
 	
-	char skipFilename[1024];
+	char skipFilename[1024]; /* Function file 's name */
 	fread (&skipFilename, 1, sizeof(skipFilename), pMeldProg);
+#ifdef DEBUG_PARSER
 	printf ("    Filename: %s\n", skipFilename);
+#endif
 
-	uint64_t skipPtr;
+	uint64_t skipPtr;	/* Pointer to function? */
 	fread (&skipPtr, sizeof(uint64_t), 1, pMeldProg);
 	
-	uint32_t numFuncArgs;
+	uint32_t numFuncArgs;	/* Number of args for function */
 	fread (&numFuncArgs, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
 	printf ("    Number of args: %d\n", numFuncArgs);
+#endif
 	
 	if (numFuncArgs) {
+#ifdef DEBUG_PARSER
 	  printf ("    Types: ");
-	  byte funcArgTypes[numFuncArgs];
+#endif
+	  byte funcArgTypes[numFuncArgs]; /* Type of each argument */
 	  
 	  for (j = 0; j < numFuncArgs; j++) {
 	    funcArgTypes[j] = readTypeID (pMeldProg, types);
 	  }
-	  /* TODO: store somewhere? */
+	 
+	  /* Avoid getting unused variable warning */
 	  (void)funcArgTypes;
-	} /* else TODO: store somewhere? */
+	} 
       }
 
-      /* Read predicate information */
-      size_t totalArguments = 0; /* Number of predicate args in program */
+      /* ************* PREDICATE INFORMATION ************* */
+
+      /* Number of arguments in the program, used to keep track of the current
+       * index of the allArguments array */
+      size_t totalArguments = 0; 
+      /* All argument types of the program will be stored here linearly,
+       * and each predicate will have an offset to this array to access its own 
+       * argument types.
+       */
       byte allArguments[256];
       
+#ifdef DEBUG_PARSER
       printf ("\n PREDICATE DESCRIPTORS \n");
+#endif
 
       for (i = 0; i < numPredicates; ++i) { 
+#ifdef DEBUG_PARSER
 	printf("  Predicate %d:\n", i);
-
-	/* Read code size */
+#endif
+	/* Read size of byte code for this predicate */
 	uint32_t codeSize;
 	fread (&codeSize, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
 	printf("    code size: %d\n", codeSize);
+#endif
 	predicates[i].codeSize = codeSize;
 
 	/* Read predicate properties */
 	byte prop;
 	fread (&prop, 1, 1, pMeldProg);
 
+#ifdef DEBUG_PARSER
 	printf ("    Properties: ");
-	
+#endif	
 	/* Format it to target property byte format */
+	/* A conversion of the property byte is happening here! */
 	byte targetProp = 0x0;
 
 	if (prop & PRED_AGG) {
+#ifdef DEBUG_PARSER
 	  printf ("AGG ");
+#endif
 	  targetProp |= 0x01;
 	}
 	if (prop & PRED_LINEAR) {
+#ifdef DEBUG_PARSER
 	  printf ("LINEAR ");
+#endif
 	  targetProp |= 0x04;
 	}
 	else {
+#ifdef DEBUG_PARSER
 	  printf ("PERSISTENT ");
+#endif
 	  targetProp |= 0x02;
 	}
 	if (prop & PRED_ROUTE) {
+#ifdef DEBUG_PARSER
 	  printf ("ROUTE ");
+#endif
 	  targetProp |= 0x20;
 	}
 	if (prop & PRED_REVERSE_ROUTE) {
+#ifdef DEBUG_PARSER
 	  printf ("REVERSE-ROUTE ");
+#endif
 	  targetProp |= 0x20;
 	}
 	if (prop & PRED_ACTION) {
+#ifdef DEBUG_PARSER
 	  printf ("ACTION ");
-	  /* Not specified in old VM */
+#endif
+	  /* Not specified in target VM */
 	}
 	if (prop & PRED_REUSED) {
+#ifdef DEBUG_PARSER
 	  printf ("REUSED ");
-	  /* Not specified in old VM */
+#endif
+	  /* Not specified in target VM */
 	}
 	if (prop & PRED_CYCLE) {
+#ifdef DEBUG_PARSER
 	  printf ("CYCLE ");
-	  /* Not specified in old VM */
+#endif
+	  /* Not specified in target VM */
 	}
+#ifdef DEBUG_PARSER
 	printf ("\n");
+#endif
 	predicates[i].properties = targetProp;
 	
 	/* Aggregate information if any */
@@ -317,14 +447,14 @@ main (int argc, char* argv[])
 	fread (&agg, 1, 1, pMeldProg);
 	predicates[i].agg = agg;
 
+	byte aggField = agg & 0xf; 
+	byte type = ((0xf0 & agg) >> 4);
 	if (prop & PRED_AGG) {
+#ifdef DEBUG_PARSER
 	  printf ("    Aggregate: \n");
-
-	  byte aggField = agg & 0xf; 
 	  printf ("     field: %d\n", aggField);
-
-	  byte type = ((0xf0 & agg) >> 4);
 	  printf ("     type: ");
+
 	  switch(type) {
 	  case AGG_FIRST: printf ("first\n"); break;
 	  case AGG_MAX_INT: printf ("max_int\n"); break;
@@ -335,35 +465,50 @@ main (int argc, char* argv[])
 	  case AGG_SUM_FLOAT: printf ("sum_float\n"); break;
 	  case AGG_SUM_LIST_FLOAT: printf ("sum_list_float\n"); break;
 	  }
+#else
+(void)aggField;
+(void)type;
+#endif
 	}
 
 	/* Stratification level */
 	byte stratLevel;
 	fread (&stratLevel, 1, 1, pMeldProg);
 	predicates[i].level = stratLevel;
+#ifdef DEBUG_PARSER
 	printf ("    Stratification level: %d\n", stratLevel);
+#endif
 
-	/* Number of fields */
+	/* Number of fields (# of arguments) */
 	byte numFields;
 	fread (&numFields, 1, 1, pMeldProg);
 	predicates[i].nFields = numFields;
+#ifdef DEBUG_PARSER
 	printf ("    Number of fields: %d\n", numFields);
+#endif
 
 	/* Argument types */
+#ifdef DEBUG_PARSER
 	printf ("    Field types: ");
+#endif
+	/* Set offset to argument types in allArguments array */
 	predicates[i].argOffset = totalArguments;
 	
 	int k;
 	for (k = 0; k < numFields; ++k) {
 	  allArguments[totalArguments++] = readTypeID (pMeldProg, types);
 	}
+#ifdef DEBUG_PARSER
 	printf ("\n");
+#endif
 
-	/* Predicate name */
+	/* Predicate name string */
 	predicates[i].pName = malloc (PRED_NAME_SIZE_MAX + 1);
 	fread (predicates[i].pName, 1, PRED_NAME_SIZE_MAX, pMeldProg);
 
-	/* NOTE: Using %s returns a seg fault, print one char at a time instead */
+	/* PTHY: Using %s returns a seg fault for some reason,
+	   print one character at a time instead */
+#ifdef DEBUG_PARSER
 	printf ("    Name: ");
 	char *sc = predicates[i].pName;
 	for (j = 0; (j < PRED_NAME_SIZE_MAX) || (*sc == '\0'); ++j) {
@@ -371,12 +516,14 @@ main (int argc, char* argv[])
 	  ++sc;
 	}
 	printf ("\n");
+#endif
 
-	/* Aggregate info */
+	/* Aggregate info - Seems always empty, ignored it */
 	char bufVec[PRED_AGG_INFO_MAX];
 	fread (&bufVec, 1, PRED_AGG_INFO_MAX, pMeldProg);
 	char *buf = bufVec;
 	
+#ifdef DEBUG_PARSER
 	printf ("    Aggregate info (if any): ");
 	if (prop & PRED_AGG) {
 	  if (buf[0] == PRED_AGG_LOCAL) {
@@ -397,42 +544,64 @@ main (int argc, char* argv[])
 	  }
 	  else printf ("unknown\n");
 	} else printf ("  none\n");
-      
-	/* Set descriptor size */
-	predicates[i].desc_size = PREDICATE_DESCRIPTOR_SIZE + numFields;	
+#else
+(void)buf;
+#endif
 
+#ifdef DEBUG_PARSER
 	printf ("\n");
+#endif
+	/* Set TOTAL descriptor size (Argument descriptor included) */
+	predicates[i].desc_size = PREDICATE_DESCRIPTOR_SIZE + numFields;	
       }
-  
-      /* Read global priority info */
-      printf ("\nPRIORITY INFO\n");
 
+	/* ************* PRIORITY INFO ************* */
+  
+	/* Read global priority info */
+	/* This is ignored by the parser */
+#ifdef DEBUG_PARSER
+      printf ("\nPRIORITY INFO\n");
+#endif
       byte globalInfo;
       fread (&globalInfo, 1, 1, pMeldProg);
       
       switch (globalInfo) {
       case 0x01: perror ("Priority by predicate - not supported anymore.\n"); break;
       case 0x02: {
+#ifdef DEBUG_PARSER
 	printf ("Normal priority\n");
+#endif
 	byte type = 0x0;
 	byte ascDesc;
 
 	fread (&type, 1, 1, pMeldProg);
+#ifdef DEBUG_PARSER
 	printf ("Type: field float\n");
+#endif
 
 	fread (&ascDesc, 1, 1, pMeldProg);
+#ifdef DEBUG_PARSER
 	if (ascDesc & 0x01) printf ("Order: asc\n");
+#endif
+#ifdef DEBUG_PARSER
 	else printf ("Order: desc\n");
+#endif
 
 	double initialPriorityValue;
 	fread (&initialPriorityValue, sizeof(double), 1, pMeldProg);
+#ifdef DEBUG_PARSER
 	printf ("Initial priority value: %f\n", initialPriorityValue);
+#endif
       }	break;
       case 0x03: perror ("File wrongly appears as data file\n"); break;
       }
 
+      /* ************* PREDICATE BYTE CODE ************* */
+
       /* Read predicate bytecode */
-      printf ("\nEXTRACTING PREDICATE BYTECODE...\n");
+#ifdef DEBUG_PARSER
+      printf ("\nEXTRACTING PREDICATE BYTE CODE...\n");
+#endif
       for (i = 0; i < numPredicates; ++i) {
 	uint32_t bytecodeSize = predicates[i].codeSize;
 	predicates[i].pBytecode = malloc (bytecodeSize);
@@ -442,12 +611,18 @@ main (int argc, char* argv[])
 	skipNodeReferences (pMeldProg);
       }
 
+      /* ************* RULE INFORMATION ************* */
+
       /* Read rule bytecode */
+#ifdef DEBUG_PARSER
       printf ("\nEXTRACTING RULE BYTECODE\n");
+#endif
 
       uint32_t numRulesCode;
       fread (&numRulesCode, 4, 1, pMeldProg);
+#ifdef DEBUG_PARSER
       printf ("Number of rule codes: %d\n", numRulesCode);
+#endif
 
       for (i = 0; i < numRulesCode; ++i) {
 	uint32_t ruleCodeSize;
@@ -463,20 +638,24 @@ main (int argc, char* argv[])
 	fread (&rules[i].persistence, 1, 1, pMeldProg);
 	
 	/* Max number of preds by rule for parser set at 32 for now
-	 * Check parser.h / rule struct to upgrade it if needed */
+	 * Check LMParser.h / rule struct to upgrade it if needed */
 	fread (&rules[i].numInclPreds, 4, 1, pMeldProg);
 
-	/* Get id of each included predicate */
+	/* Get ID of each included predicate */
 	for (j = 0; j < rules[i].numInclPreds; ++j) {
 	  fread (&rules[i].inclPredIDs[j], 1, 1, pMeldProg);
 	}
 
 	/* Set descriptor size */
-        rules[i].desc_size = 4 + rules[i].numInclPreds;	
+        rules[i].desc_size = RULE_DESCRIPTOR_SIZE + rules[i].numInclPreds;	
       }
 
+      /* ************* PRINT BYTE CODE HEADER ************* */
+
       /* Print byte code header to output file */
+#ifdef DEBUG_PARSER
       printf ("\nPRINTING BYTE CODE HEADER...\n");
+#endif
       
       fprintf (pBBFile, "const unsigned char meld_prog[] = {");
 
@@ -488,9 +667,11 @@ main (int argc, char* argv[])
       fprintf (pBBFile, "\n/* NUMBER OF RULES */\n");
       fprintf (pBBFile, "%#x, ", numRules);
 
+      /* ************* PRINT OFFSETS TO DESCRIPTORS ************* */
+
       /* Calculate and print offset to predicate descriptor for every predicate */
       uint32_t descriptorStart = 2 + numPredicates * sizeof(unsigned short)	
-	                         + numRules * sizeof(unsigned short);
+	+ numRules * sizeof(unsigned short);
       uint32_t currentOffset = descriptorStart;
       fprintf (pBBFile, "\n/* OFFSETS TO PREDICATE DESCRIPTORS */");
       
@@ -524,21 +705,33 @@ main (int argc, char* argv[])
       /* Start with offset to each predicate's bytecode */
       size_t bcOffset = currentOffset;
   
+#ifdef DEBUG_PARSER
       printf ("Predicate byte code offsets: ");
+#endif
       for (i = 0; i < numPredicates; ++i) {
+#ifdef DEBUG_PARSER
 	printf ("%zu ,", bcOffset);
+#endif
 	predicates[i].bytecodeOffset = bcOffset;
 	bcOffset += predicates[i].codeSize;
       }
+#ifdef DEBUG_PARSER
       printf ("\n");
+#endif
 
       /* Then set rule offsets */
+#ifdef DEBUG_PARSER
       printf ("Rule byte code offsets: ");
+#endif
       for (i = 0; i < numRules; ++i) {
+#ifdef DEBUG_PARSER
 	printf ("%zu ,", bcOffset);
+#endif
 	rules[i].bytecodeOffset = bcOffset;
 	bcOffset += rules[i].codeSize;
       }
+
+      /* ************* PRINT PREDICATE DESCRIPTORS ************* */      
 
       fprintf (pBBFile, "\n/* PREDICATE DESCRIPTORS */");
       /* Print predicate descriptors */
@@ -566,8 +759,10 @@ main (int argc, char* argv[])
 	  fprintf (pBBFile, "%#x, ", allArguments[predicates[i].argOffset + j]);
       }
 
-      /* Print rule offsets */
+      /* ************* PRINT RULE DESCRIPTORS ************* */
+
       fprintf (pBBFile, "\n/* RULE DESCRIPTORS */");
+
       for (i = 0; i < numRules; ++i) {
 	fprintf (pBBFile, "\n");
 
@@ -586,8 +781,12 @@ main (int argc, char* argv[])
 	  fprintf (pBBFile, "%#x, ", rules[i].inclPredIDs[j]);
       }
 
+      /* ************* PRINT PREDICATE BYTE CODE ************* */
+
       /* Print predicate bytecode */
+#ifdef DEBUG_PARSER
       printf ("\nPRINTING PREDICATE BYTE CODE...\n");
+#endif
       fprintf (pBBFile, "\n/* PREDICATE BYTECODE */");
       for (i = 0; i < numPredicates; ++i) {
 	fprintf (pBBFile, "\n/* Predicate %d: */", i);
@@ -598,8 +797,12 @@ main (int argc, char* argv[])
 	}
       }
 
+      /* ************* PRINT RULE BYTE CODE ************* */
+
       /* Print rule bytecode */
+#ifdef DEBUG_PARSER
       printf ("\nPRINTING RULE BYTE CODE...\n");
+#endif
       fprintf (pBBFile, "\n/* RULE BYTECODE */");
       for (i = 0; i < numRules; ++i) {
 	fprintf (pBBFile, "\n/* Rule %d: */", i);
@@ -613,8 +816,12 @@ main (int argc, char* argv[])
       // Close byte code array
       fprintf (pBBFile, "};\n");
 
+      /* ************* PRINT PREDICATE NAMES ************* */
+
       /* Print predicate name array */
+#ifdef DEBUG_PARSER
       printf ("\nPRINTING PREDICATE NAMES LIST...\n");
+#endif
 
       fprintf (pBBFile, "\nchar *tuple_names[] = {");
       for (i = 0; i < numPredicates; ++i) {
@@ -629,8 +836,12 @@ main (int argc, char* argv[])
       }
       fprintf (pBBFile, "};\n\n");
 
+      /* ************* PRINT RULE NAMES ************* */
+
       /* Print rule string array */     
+#ifdef DEBUG_PARSER
       printf ("\nPRINTING RULE NAMES ARRAY\n");
+#endif
  
       fprintf (pBBFile, "char *rule_names[] = {");
       for (i = 0; i < numRules; ++i) {
@@ -638,8 +849,12 @@ main (int argc, char* argv[])
       }
       fprintf (pBBFile, "};\n\n");
 
+      /* ************* PRINT EXTERNAL FUNCTIONS ************* */
+
       /* Print remaining elements */
+#ifdef DEBUG_PARSER
       printf ("\nPRINTING EXTERNAL FUNCTIONS\n");
+#endif
 
       fprintf (pBBFile, "#include \"extern_functions.bbh\"\n");
       fprintf (pBBFile, "Register (*extern_functs[])() = {};\n");
@@ -648,13 +863,14 @@ main (int argc, char* argv[])
       fclose (pMeldProg);
       fclose (pBBFile);
 
-      printf ("\n\n-------- DONE --------\n\n");
-    }
-  return 0;
+      printf ("\nDONE\n");
+      return 0;  
+  }
+  return -4;
 }
 
-/* Reads a fieldType byte from the bytecode and return a byte representing the
- * equivalent of this type in the target VM.
+/* Reads a field type byte from source byte code file and return its equivalent
+   for the targetVM
  */
 byte
 readType (FILE *pFile)
@@ -663,11 +879,31 @@ readType (FILE *pFile)
   fread (&fieldType, 1, 1, pFile);
 
   switch (fieldType) {
-  case FIELD_BOOL:    printf ("BOOL ");   return 0xa;
-  case FIELD_INT:     printf ("INT ");    return 0x0;
-  case FIELD_FLOAT:   printf ("FLOAT ");  return 0x1;
-  case FIELD_NODE:    printf ("NODE ");   return 0x2;
-  case FIELD_STRING:  printf ("STRING "); return 0x9;
+  case FIELD_BOOL:    
+#ifdef DEBUG_PARSER
+    printf ("BOOL ");   
+#endif
+    return 0xa;
+  case FIELD_INT:     
+#ifdef DEBUG_PARSER
+    printf ("INT ");    
+#endif
+    return 0x0;
+  case FIELD_FLOAT:   
+#ifdef DEBUG_PARSER
+    printf ("FLOAT ");  
+#endif
+    return 0x1;
+  case FIELD_NODE:    
+#ifdef DEBUG_PARSER
+    printf ("NODE ");   
+#endif
+    return 0x2;
+  case FIELD_STRING:  
+#ifdef DEBUG_PARSER
+    printf ("STRING "); 
+#endif
+    return 0x9;
   case FIELD_LIST:
     {
       byte listType;
@@ -675,13 +911,19 @@ readType (FILE *pFile)
       
       switch (listType) {
       case FIELD_INT:
+#ifdef DEBUG_PARSER
 	printf ("INTLIST ");
+#endif
 	return 0x3;
       case FIELD_FLOAT:
+#ifdef DEBUG_PARSER
 	printf ("FLOATLIST ");
+#endif
 	return 0x4;
       case FIELD_NODE:
+#ifdef DEBUG_PARSER
 	printf ("NODELIST ");
+#endif
 	return 0x5;
       default:
 	perror ("UNKNOWN LIST type!");
@@ -698,7 +940,7 @@ readType (FILE *pFile)
   return 0xff;
 }
 
-/* Returns the type ID of an argument by reading its index from the byte code */
+/* Returns the type byte stored at index pos of typeArray */
 byte
 readTypeID (FILE *pFile, byte typeArray[])
 {
@@ -709,7 +951,7 @@ readTypeID (FILE *pFile, byte typeArray[])
 
 /* There should never be any node reference as in BB programs there should
  * be always one single node, the block itself. 
- * => ALWAYS SKIP 
+ * This function is used to skip the node references
  */
 void
 skipNodeReferences (FILE *pFile)
@@ -719,6 +961,7 @@ skipNodeReferences (FILE *pFile)
   fseek (pFile, sizeNodes * sizeof(uint32_t), SEEK_CUR);
 }
 
+/* Returns the total size of all rule descriptors */
 size_t
 sizeOfRuleDescriptors(Rule rules[], byte numRules)
 {
@@ -730,6 +973,7 @@ sizeOfRuleDescriptors(Rule rules[], byte numRules)
   return size;
 }
 
+/* Returns the total size of all predicate descriptors */
 size_t
 sizeOfPredicateDescriptors(Predicate predicates[], byte numPreds)
 {

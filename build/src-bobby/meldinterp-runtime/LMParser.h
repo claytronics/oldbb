@@ -9,6 +9,7 @@
 
 @author: Pierre Thalamy
 @email: pierre.thalamy@gmail.com
+@date: 07/30/14
 @note: Feel free to contact me if you have any question.
 *******************************************************************************/
 
@@ -19,8 +20,7 @@ typedef unsigned char byte;
 const uint32_t MAGIC1 = 0x646c656d;
 const uint32_t MAGIC2 = 0x6c696620;
 
-/* Macros from source MeldVM
- *
+/* Macros from source MeldVM */
 /* Only version 0.11 is currently supported by the parser */
 #define VERSION_AT_LEAST(MAJ, MIN) \
 (majorVersion > (MAJ) || (majorVersion == (MAJ) && minorVersion >= (MIN)))
@@ -29,11 +29,14 @@ const uint32_t MAGIC2 = 0x6c696620;
 /* Maximum length of aggregate information */
 /* PTHY: I do not really know the use of this since it looks always empty */
 #define PRED_AGG_INFO_MAX 32
-
+/* Maximum number of included predicates for a rule */
+#define RULE_MAX_INCL_PREDS 32
 
 /* Macros for target MeldVM */
 /* Size of a predicate descriptor, without argument descriptor */
 #define PREDICATE_DESCRIPTOR_SIZE 6
+/* Size of a rule descriptor, without included predicate IDs */
+#define RULE_DESCRIPTOR_SIZE 4
 
 /* Field types for target VM */
 enum field_type {
@@ -75,7 +78,7 @@ typedef struct _Rule {
 
   uint32_t bytecodeOffset;	/* Offset to byte code */
   uint32_t numInclPreds;	/* Number of included predicates */
-  byte inclPredIDs[32];		/* ID of each included predicate */
+  byte inclPredIDs[RULE_MAX_INCL_PREDS];	/* ID of each included predicate */
   byte persistence;		/* Is the rule persistent? */
 
   byte desc_size;		/* Size of rule descriptor */
@@ -109,7 +112,7 @@ typedef struct _Rule {
 #define TYPE_SCHEDULE 0x10	/* Unused */
 #define TYPE_ROUTING 0x20	/* Unused */
 
-/* Target aggregate types */
+/* Aggregate types common to both source and target VMs */
 #define AGG_FIRST 1		/* First received? */
 #define AGG_MAX_INT 2		/* Maximum int */
 #define AGG_MIN_INT 3		/* Minimum int */
@@ -117,13 +120,14 @@ typedef struct _Rule {
 #define AGG_MAX_FLOAT 5		/* Max float */
 #define AGG_MIN_FLOAT 6		/* Min float */
 #define AGG_SUM_FLOAT 7		/* Sum of all floats */
+#define AGG_SUM_LIST_FLOAT 11	/* PTHY: Don't really know what that is */
 
-/* Compatibility with the targetVM may be limited for all these types
+/* Compatibility with the targetVM may be limited for all these types since
+ * they do not exist in the source byte code.
  * If it turns out that they need to be used, some additional 
  * conversion / implementation work may be needed */
 #define AGG_SET_UNION_INT 8    
 #define AGG_SET_UNION_FLOAT 9
 #define AGG_SUM_LIST_INT 10
-#define AGG_SUM_LIST_FLOAT 11	
 
 #endif	/* ifdef __PARSER_H__ */
