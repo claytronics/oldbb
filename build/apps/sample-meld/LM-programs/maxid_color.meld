@@ -8,4 +8,4 @@ type count(node, max int).
 
 !neighbor(A,B,_), !count(A,N) -o !count(B,N).
 
-!count(A,N) -o !setColor2(A, N % 9).
+!count(A,N) -o !setColor2(A, N).

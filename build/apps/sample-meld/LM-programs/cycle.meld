@@ -10,4 +10,4 @@ color(X, 0).
 
 color(X, N)
    -o !setColor2(X, N),
-      color(X, (N + 1) % 8)@+1000ms.
+      color(X, (N + 1))@+1000ms.

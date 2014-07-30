@@ -23,4 +23,4 @@ type neighbor-level(node, node, int).
 !neighbor-level(N, X, BH), !bottomNeighbor(N, X) -o !level(N, BH + 1).
 !topNeighbor(N, X), !neighbor-level(N, X, TH) -o !level(N, TH - 1).
 
-!level(N, Color) -o !setColor2(N, Color % 9).
+!level(N, Color) -o !setColor2(N, Color).

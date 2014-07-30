@@ -8,5 +8,4 @@ type tapped(node,int).
 tap(A) -o !tapped(A, node2int(A)).
 
 !tapped(A,C),!neighbor(A,B,_) -o !tapped(B,C).
-!tapped(A,C) -o !setColor2(A,C % 9).
-
+!tapped(A,C) -o !setColor2(A, C).
