@@ -277,7 +277,7 @@ main (int argc, char* argv[])
 	/* Format it to target property byte format */
 	byte targetProp = 0x0;
 
-	if (prop & PRED_AGG) {	/* AGG? */
+	if (prop & PRED_AGG) {
 	  printf ("AGG ");
 	  targetProp |= 0x01;
 	}
@@ -285,11 +285,10 @@ main (int argc, char* argv[])
 	  printf ("LINEAR ");
 	  targetProp |= 0x04;
 	}
-	/* TODO: Demistify this */
-	/* else { */
-	/*   printf ("PERSISTENT "); */
-	/*   targetProp |= 0x02; */
-	/* } */
+	else {
+	  printf ("PERSISTENT ");
+	  targetProp |= 0x02;
+	}
 	if (prop & PRED_ROUTE) {
 	  printf ("ROUTE ");
 	  targetProp |= 0x20;
