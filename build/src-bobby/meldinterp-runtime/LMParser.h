@@ -38,21 +38,6 @@ const uint32_t MAGIC2 = 0x6c696620;
 /* Size of a rule descriptor, without included predicate IDs */
 #define RULE_DESCRIPTOR_SIZE 4
 
-/* Field types for target VM */
-enum field_type {
-   FIELD_INT = 0x0,
-   FIELD_FLOAT = 0x1,
-   FIELD_NODE = 0x2,
-   FIELD_LIST = 0x3,
-   FIELD_STRUCT = 0x4,
-   FIELD_BOOL = 0x5,
-   FIELD_ANY = 0x6, 
-   FIELD_STRING = 0x9,
-   FIELD_INTLIST = 0xa,
-   FIELD_FLOATLIST = 0xb,
-   FIELD_NODELIST = 0xc
-};
-
 /* Structures used for storing information a rule and predicates, 
  * which makes printing easier */
 
@@ -103,6 +88,21 @@ typedef struct _Rule {
 #define PRED_AGG_IMMEDIATE 0x08
 #define PRED_AGG_UNSAFE 0x00
 
+/* Field types for source VM */
+enum field_type {
+   FIELD_INT = 0x0,
+   FIELD_FLOAT = 0x1,
+   FIELD_NODE = 0x2,
+   FIELD_LIST = 0x3,
+   FIELD_STRUCT = 0x4,
+   FIELD_BOOL = 0x5,
+   FIELD_ANY = 0x6, 
+   FIELD_STRING = 0x9,
+   FIELD_INTLIST = 0xa,
+   FIELD_FLOATLIST = 0xb,
+   FIELD_NODELIST = 0xc
+};
+
 /* Target predicate properties */
 /* !-- TYPE = PREDICATE --! */
 #define TYPE_AGG 0x01		/* Predicate is an aggregate */
@@ -129,5 +129,21 @@ typedef struct _Rule {
 #define AGG_SET_UNION_INT 8    
 #define AGG_SET_UNION_FLOAT 9
 #define AGG_SUM_LIST_INT 10
+
+/* Field types for targetVM */
+#define TFIELD_INT 0x0		/* 4 byte integer */
+#define TFIELD_FLOAT 0x1	/* 8 byte double */
+#define TFIELD_ADDR 0x2		/* 2 byte integer: NodeID */
+#define TFIELD_OTHER 0x2	/* ? */
+#define TFIELD_LIST_INT 0x3	/* List of integers */
+#define TFIELD_LIST_FLOAT 0x4	/* List of doubles */
+#define TFIELD_LIST_ADDR 0x5	/* List of NodeID's */
+
+#define TFIELD_SET_INT 0x6	/* Unused */
+#define TFIELD_SET_FLOAT 0x7	/* Unused */
+#define TFIELD_TYPE 0x8		/* Unused */
+#define TFIELD_STRING 0x9	/* Unused */
+
+#define TFIELD_BOOL 0xa		/* Boolean, implemented but not tested */
 
 #endif	/* ifdef __PARSER_H__ */
