@@ -13,6 +13,7 @@
 @Description: core.h contains all the constants, external function headers, and
 macros, needed by the VM to parse the byte code, manage queues, and process 
 instructions.
+@note: Tuple type is the same as predicate!
 *******************************************************************************/
 
 /* DEBUG flags */
@@ -22,7 +23,7 @@ instructions.
 // tuple allocation checks
 /* #define TUPLE_ALLOC_CHECKS 1 */
 
-/* Instructions-related defines and macros */
+/* ************* INSTRUCTIONS RELATED DEFINES AND MACROS ************* */
 
 #define INSTR_SIZE 1		/* Size of an instruction (without arguments) */
 
@@ -164,7 +165,7 @@ instructions.
 #define RETURN_LINEAR_INSTR    0xD0
 #define RETURN_DERIVED_INSTR   0xF0
 
-/* Instruction sizes */
+/* Size of each instruction and arguments */
 #define SEND_BASE            3
 #define OP_BASE              4
 #define BASE_ITER            21
@@ -275,10 +276,8 @@ instructions.
 #define IF_ELSE_BASE         1 + 1 + 2 * 4
 #define JUMP_BASE            1 + 4
 
-/* Instruction specific macros and functions */
+/* PTHY: Some of these may be unused, if so, they belonged to the old VM. */
 #define IF_JUMP(x)    (*(uint32_t*)((const unsigned char*)(x)))
-
-/* macros */
 
 #define ITER_TYPE(x)  ((*(const unsigned char*)((x)+9))&0x7f)
 #define ITER_INNER_JUMP(x)  (*(uint32_t*)((const unsigned char*)((x)+12)))
@@ -287,12 +286,14 @@ instructions.
 #define ITER_MATCH_FIELD(x)   (*(const unsigned char*)(x))
 #define ITER_MATCH_VAL(x)   ((*(const unsigned char*)((x)+1)))
 
-#define SEND_MSG(x)   (*(const unsigned char*)(x))
+/* Reg num of reg containing tuple to send */
+#define SEND_MSG(x)   (*(const unsigned char*)(x)) 
+/* Reg num of reg containing faceNum to send to */
 #define SEND_RT(x)    (*(const unsigned char*)((x)+1))
-
 #define SEND_ARG1(x)  ((*((const unsigned char*)(x)+2)) & 0x3f)
 #define SEND_DELAY(x) (*(const unsigned char *)((x)+2))
 
+/* Returns the reg num of the reg containing tuple to remove */
 #define REMOVE_REG(x) ((*(const unsigned char*)(x))&0x1f)
 
 #define OP_ARG1(x)    (((*(const unsigned char*)(x)) & 0x3f))
@@ -301,50 +302,68 @@ instructions.
 #define OP_DST(x)     ((((*(const unsigned char*)((x)+1)) & 0x03) << 3) | \
                       (((*(const unsigned char*)((x)+2)) & 0xe0) >> 5))
 
+/* Returns a byte which is the value of the 
+   address program counter x is pointing at */
 #define FETCH(x)   (*(const unsigned char*)(x)) 
+
 #define MOVE_SRC(x)   (*(const unsigned char*)((x)+1))
 #define MOVE_DST(x)   (((*(const unsigned char*)((x)+1))&0x3f))
+
 #define ALLOC_TYPE(x) ((((*(const unsigned char *)(x))&0x1f) << 2) | \
-					   (((*(const unsigned char *)(x+1))&0xc0) >> 6))
+		       (((*(const unsigned char *)(x+1))&0xc0) >> 6))
 #define ALLOC_DST(x)  ((*(const unsigned char *)((x)+1))&0x3f)
 
 #define CALL_VAL(x)   (*(const unsigned char *)(x))
 #define CALL_DST(x)   ((*(const unsigned char *)((x)+1)) & 0x1f)
 #define CALL_ID(x)    ((((*(const unsigned char *)((x))) & 0x0f) << 3) | \
-						(((*(const unsigned char *)((x)+1)) & 0xe0) >> 5))
+		       (((*(const unsigned char *)((x)+1)) & 0xe0) >> 5))
 
 #define CALL_ARGS(x)  (extern_functs_args[CALL_ID(x)])
 #define CALL_FUNC(x)  (extern_functs[CALL_ID(x)])
 
-#define VALUE_TYPE_FLOAT 0x00
-#define VALUE_TYPE_INT 0x01
-#define VALUE_TYPE_FIELD 0x02
-#define VALUE_TYPE_HOST 0x03
-#define VALUE_TYPE_REVERSE 0x04
-#define VALUE_TYPE_TUPLE 0x1f
+/* ************* TUPLE MACROS ************* */
 
-#define VAL_REG(x) (((const unsigned char)(x)) & 0x1f)
-#define VAL_FIELD_NUM(x) ((*(const unsigned char *)(x)) & 0xff)
-#define VAL_FIELD_REG(x) ((*(const unsigned char *)((x)+1)) & 0x1f)
+/* Here is the format of a tuple:
+ * [typeID][(arg1)][(arg2)]..[(argx)]
+ *    1       x       y          z
+ * argument field sizes depends on the type. 
+ */
 
-#define TYPE_DESCRIPTOR_SIZE 6
 #define TYPE_FIELD_SIZE 1
 #define TYPE_FIELD_TYPE unsigned char
 
+/* Return the typeid (first byte of a tuple) of tuple x */
 #define TUPLE_TYPE(x)   (*(TYPE_FIELD_TYPE *)(x))
-#define TUPLE_FIELD(x,off)  ((void *)(((unsigned char*)(x)) + TYPE_FIELD_SIZE + (off)))
+/* Returns a pointer to argument at offset (off) of a tuple */
+#define TUPLE_FIELD(x,off)					\
+  ((void *)(((unsigned char*)(x)) + TYPE_FIELD_SIZE + (off)))
 
-#define NUM_TYPES  (meld_prog[0])
-#define NUM_RULES  (meld_prog[1])
+/* ************* BYTE CODE FILE PARSING ************* */
+
+/* Size of predicate descriptor */
+#define TYPE_DESCRIPTOR_SIZE 6
+
+#define NUM_TYPES  (meld_prog[0]) /* Number of predicates in program */
+#define NUM_RULES  (meld_prog[1]) /* Number of rules in program */
+
+/* Offset to predicate descriptor for predicate x */
 #define TYPE_OFFSET(x)     (meld_prog[2 + (2 * (x))])
+/* Offset to rule descriptor for rule x */
 #define RULE_OFFSET(x)     (meld_prog[2 + (2 * (NUM_TYPES) + 2 * (x))])
 
 // PREDICATE DESCRIPTOR
-// Descriptor start
+// Descriptor start address
 #define TYPE_DESCRIPTOR(x) ((unsigned char *)(meld_prog + TYPE_OFFSET(x)))
-// Contain tuple's type (linear/persistent...)
+
+/* Returns address of byte code for type x */
+#define TYPE_START(x)							\
+  ((unsigned char*)(meld_prog + *(unsigned short *)TYPE_DESCRIPTOR(x)))
+/* Returns fist byte of byte code for type x */
+#define TYPE_START_CHECK(x)			\
+  (*(unsigned short *)TYPE_DESCRIPTOR(x))
+// Contain tuple's properties (linear/persistent...)
 #define TYPE_PROPERTIES(x) (*(TYPE_DESCRIPTOR(x) + 2))
-// If tuple is aggregate, contains its type, 0 otherwise
+// If tuple is aggregate, contains its aggregate type, 0 otherwise
 #define TYPE_AGGREGATE(x)  (*(TYPE_DESCRIPTOR(x) + 3))
 // Stratification round
 #define TYPE_STRATIFICATION_ROUND(x) (*(TYPE_DESCRIPTOR(x) + 4))
@@ -356,48 +375,56 @@ instructions.
 // Returns type of argument number f for type x
 #define TYPE_ARG_DESC(x, f) ((unsigned char *)(TYPE_ARGS_DESC(x)+1*(f)))
 
-/* Returns address of bytecode for type x */
-#define TYPE_START(x)							\
-  ((unsigned char*)(meld_prog + *(unsigned short *)TYPE_DESCRIPTOR(x)))
-#define TYPE_START_CHECK(x)			\
-  (*(unsigned short *)TYPE_DESCRIPTOR(x))
-
 // RULE DESCRIPTOR
 /* Descriptor start */
 #define RULE_DESCRIPTOR(x) ((unsigned char*)(meld_prog + RULE_OFFSET(x)))
+
+/* Returns address of byte code for rule x */
+#define RULE_START(x)							\
+  ((unsigned char*)(meld_prog + *(unsigned short*)(RULE_DESCRIPTOR(x))))
+/* Returns first byte of byte code for rule x */
+#define RULE_START_CHECK(x)						\
+  (*(unsigned char*)(meld_prog + *(unsigned short*)(RULE_DESCRIPTOR(x))))
 /* Offset to rule byte code, pred 0 byte code start is reference */
 /* Returns 1 if rule is persistent, 0 otherwise */
 #define RULE_ISPERSISTENT(x) (*(RULE_DESCRIPTOR(x) + 2))
-/* Number of included predicates */
+/* Number of predicates included in rule x */
 #define RULE_NUM_INCLPREDS(x)   (*(RULE_DESCRIPTOR(x) + 3))
 /* ID of included predicate at index f  */
 #define RULE_INCLPRED_ID(x, f) (*(unsigned char *)(RULE_DESCRIPTOR(x) + 4 + 1*(f)))
 
-#define RULE_START(x)							\
-  ((unsigned char*)(meld_prog + *(unsigned short*)(RULE_DESCRIPTOR(x))))
-#define RULE_START_CHECK(x)						\
-  (*(unsigned char*)(meld_prog + *(unsigned short*)(RULE_DESCRIPTOR(x))))
-  
+/* Returns if a predicate is stratified or not */
 #define TYPE_IS_STRATIFIED(x) (TYPE_STRATIFICATION_ROUND(x) > 0)
 
+/* Alternative way of getting name string for type x */
 #define TYPE_NAME(x)       (tuple_names[x])
+/* Returns type of argument f of predicate x from byte code*/
 #define TYPE_ARG_TYPE(x, f) ((unsigned char)(*TYPE_ARG_DESC(x, f)))
 
+/* Returns total size of predicate x */
 #define TYPE_SIZE(x)       (arguments[(x) * 2 + 1])
+/* Returns address of arguments of type x in arguments array */
 #define TYPE_ARGS(x)       (arguments + arguments[(x) * 2])
 
+/* Returns argument (type?) number f of type x */
 #define TYPE_ARG(x, f)     (TYPE_ARGS(x)+2*(f))
+/* Returns size of argument number f of type x */
 #define TYPE_ARG_SIZE(x, f) (*TYPE_ARG(x, f))
+/* Returns arguments array offset for arg number f of type x */
 #define TYPE_ARG_OFFSET(x, f)   (*(TYPE_ARG(x, f) + 1))
 
+/* Set the value of a tuple's field */
 #define SET_TUPLE_FIELD(tuple, field, data) \
 		memcpy(TUPLE_FIELD(tuple, TYPE_ARG_OFFSET(TUPLE_TYPE(tuple), field)), \
 				data, TYPE_ARG_SIZE(TUPLE_TYPE(tuple), field))
+/* Get the value of a tuple's field */
 #define GET_TUPLE_FIELD(tuple, field) \
 		TUPLE_FIELD(tuple, TYPE_ARG_OFFSET(TUPLE_TYPE(tuple), field))
+/* Get total size of a tuple */
 #define GET_TUPLE_SIZE(tuple, field) \
 		TYPE_ARG_SIZE(TUPLE_TYPE(tuple), field)
 		
+/* Macros to test the property of a type */
 #define TYPE_IS_AGG(x)        (TYPE_PROPERTIES(x) & 0x01)
 #define TYPE_IS_PERSISTENT(x) (TYPE_PROPERTIES(x) & 0x02)
 #define TYPE_IS_LINEAR(x)     (TYPE_PROPERTIES(x) & 0x04)
@@ -405,11 +432,42 @@ instructions.
 #define TYPE_IS_SCHEDULE(x)   (TYPE_PROPERTIES(x) & 0x10)
 #define TYPE_IS_ROUTING(x)    (TYPE_PROPERTIES(x) & 0x20)
 
+/* x is aggregate byte for a type */
+/* Returns aggregate type of aggregate */
 #define AGG_AGG(x)    (((x) & (0xf0)) >> 4)
+/* Returns field at which aggregate is located */
 #define AGG_FIELD(x)  ((x) & 0x0f)
 
-#define RULE_NUMBER(x) ((unsigned char)(((x) & 0xf0) >> 4))
+/* ************* MACROS FOR BYTECODE_PROCESS FUNCTION ************* */
+
+/* Strip the type of the element which is being processed, from the state byte */
 #define PROCESS_TYPE(x) ((unsigned char)((x) & 0x0f))
+#define PROCESS_TUPLE 0
+#define PROCESS_ITER 1
+#define PROCESS_RULE 2
+
+/* Strip the rule number of the rule being processed from the state byte */
+#define RULE_NUMBER(x) ((unsigned char)(((x) & 0xf0) >> 4))
+
+/* Return types for checkRuleState function */
+#define INACTIVE_RULE 0x0
+#define ACTIVE_RULE   0x1
+
+/* Return types for process function */
+#define RET_RET 0
+#define RET_NEXT 1
+#define RET_LINEAR 2
+#define RET_DERIVED 3
+#define RET_ERROR -1
+
+/* ************* EVAL FUNCTIONS ************* */
+
+/* Various macros to get value of byte code */
+#define VAL_REG(x) (((const unsigned char)(x)) & 0x1f)
+#define VAL_FIELD_NUM(x) ((*(const unsigned char *)(x)) & 0xff)
+#define VAL_FIELD_REG(x) ((*(const unsigned char *)((x)+1)) & 0x1f)
+
+/* ************* AGGREGATE TYPES ************* */
 
 #define AGG_NONE 0
 #define AGG_FIRST 1
@@ -424,6 +482,8 @@ instructions.
 #define AGG_SUM_LIST_INT 10
 #define AGG_SUM_LIST_FLOAT 11
 
+/* ************* FIELD TYPES ************* */
+
 #define FIELD_INT 0x0
 #define FIELD_FLOAT 0x1
 #define FIELD_ADDR 0x2
@@ -437,18 +497,19 @@ instructions.
 #define FIELD_STRING 0x9
 #define FIELD_BOOL 0xa
 
-#define RET_RET 0
-#define RET_NEXT 1
-#define RET_LINEAR 2
-#define RET_DERIVED 3
-#define RET_ERROR -1
+/* ************* STATIC OR USEFUL PREDICATE IDs ************* */
 
 #define TYPE_SETCOLOR 2
 #define TYPE_SETCOLOR2 7
 
-#define PROCESS_TUPLE 0
-#define PROCESS_ITER 1
-#define PROCESS_RULE 2
+extern tuple_type TYPE_INIT;
+extern tuple_type TYPE_EDGE;
+extern tuple_type TYPE_TERMINATE;
+extern tuple_type TYPE_NEIGHBORCOUNT;
+extern tuple_type TYPE_NEIGHBOR;
+extern tuple_type TYPE_VACANT;
+
+/* ************* EXTERN DECLARATIONS  ************* */
 
 extern const unsigned char meld_prog[];
 typedef Register (*extern_funct_type)();
@@ -458,10 +519,17 @@ extern char *tuple_names[];
 extern char *rule_names[];
 extern unsigned char *arguments;
 
-enum ruleState {
-  INACTIVE_RULE = 0x0,
-  ACTIVE_RULE   = 0x1
-}; 
+extern void setColorWrapper (byte color);
+extern void setLEDWrapper (byte r, byte g, byte b, byte intensity);
+extern NodeID getBlockId (void);
+extern void print_newTuples (void);
+extern void print_newStratTuples (void);
+
+#ifdef BBSIM
+extern pthread_mutex_t printMutex;
+#endif
+
+/* ************* TUPLE HANDLING FUNCTIONS  ************* */
 
 static inline tuple_t
 tuple_alloc(tuple_type type)
@@ -489,11 +557,6 @@ void tuple_handle(tuple_t tuple, int isNew, Register *reg);
 void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew);
 void tuple_do_handle(tuple_type type,	void *tuple, int isNew, Register *reg);
 void tuple_print(tuple_t tuple, FILE *fp);
-char* arg2String(tuple_t tuple, byte index);
-
-int process_bytecode(tuple_t tuple, const unsigned char *pc,
-		  int isNew, Register *reg, byte state);
-void derive_axioms(Register *reg);
 
 static inline void
 tuple_dump(void *tuple)
@@ -502,11 +565,18 @@ tuple_dump(void *tuple)
 	fprintf(stderr, "\n");
 }
 
-void print_program_info(void);
+/* ************* MISC FUNCTION PROTOTYPES ************* */
+int process_bytecode(tuple_t tuple, const unsigned char *pc,
+		  int isNew, Register *reg, byte state);
 
 void init_fields(void);
-void facts_dump(void);
 void init_consts(void);
+
+void facts_dump(void);
+void print_program_info(void);
+char* arg2String(tuple_t tuple, byte index);
+
+/* ************* QUEUE MANAGEMENT PROTOTYPES ************* */
 
 tuple_entry* queue_enqueue(tuple_queue *queue, tuple_t tuple, record_type isNew);
 bool queue_is_empty(tuple_queue *queue);
@@ -536,23 +606,6 @@ tuple_pentry *p_dequeue(tuple_pqueue *q);
 void p_enqueue(tuple_pqueue *q, meld_int priority, tuple_t tuple,
 	       NodeID rt, record_type isNew);
 int queue_length (tuple_queue *queue);
-
-extern tuple_type TYPE_INIT;
-extern tuple_type TYPE_EDGE;
-extern tuple_type TYPE_TERMINATE;
-extern tuple_type TYPE_NEIGHBORCOUNT;
-extern tuple_type TYPE_NEIGHBOR;
-extern tuple_type TYPE_VACANT;
-
-extern void setColorWrapper (byte color);
-extern void setLEDWrapper (byte r, byte g, byte b, byte intensity);
-extern NodeID getBlockId (void);
-extern void print_newTuples (void);
-extern void print_newStratTuples (void);
-
-#ifdef BBSIM
-extern pthread_mutex_t printMutex;
-#endif
 
 #endif
 
