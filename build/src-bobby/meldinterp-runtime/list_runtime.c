@@ -8,6 +8,10 @@
 #include "api.h"
 #include "model.h"
 
+/******************************************************************************
+@Description: Implementation file for the lists used by aggregates.
+*******************************************************************************/
+
 static list_descriptor *int_descriptor = NULL;
 static list_descriptor *float_descriptor = NULL;
 static list_descriptor *node_descriptor = NULL;

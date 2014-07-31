@@ -8,6 +8,11 @@
 #include "model.h"
 #endif
 
+/******************************************************************************
+@Description: api.h contains useful macros for casting or dereferencing 
+meld values.
+*******************************************************************************/
+
 typedef Register meld_value;
 
 #define NODE_FORMAT "%u"

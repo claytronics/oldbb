@@ -9,6 +9,12 @@
 #include "model.h"
 #endif
 
+/******************************************************************************
+@Description: core.h contains all the constants, external function headers, and
+macros, needed by the VM to parse the byte code, manage queues, and process 
+instructions.
+*******************************************************************************/
+
 /* print tuple allocations */
 /* #define TUPLE_ALLOC_DEBUG 1 */
 /* tuple allocation checks */
@@ -316,14 +322,6 @@ enum instr_type {
 #define VALUE_TYPE_REVERSE 0x04
 #define VALUE_TYPE_TUPLE 0x1f
 
-#define VAL_IS_REG(x)   (((const unsigned char)(x)) & 0x20)
-#define VAL_IS_TUPLE(x) (((const unsigned char)(x)) == VALUE_TYPE_TUPLE)
-#define VAL_IS_FLOAT(x) (((const unsigned char)(x)) == VALUE_TYPE_FLOAT)
-#define VAL_IS_INT(x)   (((const unsigned char)(x)) == VALUE_TYPE_INT)
-#define VAL_IS_FIELD(x) (((const unsigned char)(x)) == VALUE_TYPE_FIELD)
-#define VAL_IS_HOST(x)  (((const unsigned char)(x)) == VALUE_TYPE_HOST)
-#define VAL_IS_REVERSE(x) (((const unsigned char)(x)) == VALUE_TYPE_REVERSE)
-
 #define VAL_REG(x) (((const unsigned char)(x)) & 0x1f)
 #define VAL_FIELD_NUM(x) ((*(const unsigned char *)(x)) & 0xff)
 #define VAL_FIELD_REG(x) ((*(const unsigned char *)((x)+1)) & 0x1f)
@@ -341,19 +339,20 @@ enum instr_type {
 #define RULE_OFFSET(x)     (meld_prog[2 + (2 * (NUM_TYPES) + 2 * (x))])
 
 // PREDICATE DESCRIPTOR
-/* Descriptor start */
+// Descriptor start
 #define TYPE_DESCRIPTOR(x) ((unsigned char *)(meld_prog + TYPE_OFFSET(x)))
-/* Contain tuple's type (linear/persistent...)*/
+// Contain tuple's type (linear/persistent...)
 #define TYPE_PROPERTIES(x) (*(TYPE_DESCRIPTOR(x) + 2))
-/* If tuple is aggregate, contains its type, 0 otherwise */
+// If tuple is aggregate, contains its type, 0 otherwise
 #define TYPE_AGGREGATE(x)  (*(TYPE_DESCRIPTOR(x) + 3))
-/* Stratification round ..?*/
+// Stratification round
 #define TYPE_STRATIFICATION_ROUND(x) (*(TYPE_DESCRIPTOR(x) + 4))
-/* Number of arguments */
+// Number of arguments
 #define TYPE_NUMARGS(x)     (*(TYPE_DESCRIPTOR(x) + 5))
-/* Argument descriptor */
-#define TYPE_ARGS_DESC(x)  ((unsigned char*)(TYPE_DESCRIPTOR(x)+TYPE_DESCRIPTOR_SIZE))
-/* Returns type of argument number f for type x */
+// Argument descriptor
+#define TYPE_ARGS_DESC(x)					\
+  ((unsigned char*)(TYPE_DESCRIPTOR(x)+TYPE_DESCRIPTOR_SIZE))
+// Returns type of argument number f for type x
 #define TYPE_ARG_DESC(x, f) ((unsigned char *)(TYPE_ARGS_DESC(x)+1*(f)))
 
 /* Returns address of bytecode for type x */
@@ -400,13 +399,16 @@ enum instr_type {
 		
 #define TYPE_IS_AGG(x)        (TYPE_PROPERTIES(x) & 0x01)
 #define TYPE_IS_PERSISTENT(x) (TYPE_PROPERTIES(x) & 0x02)
-#define TYPE_IS_LINEAR(x) 		(TYPE_PROPERTIES(x) & 0x04)
-#define TYPE_IS_DELETE(x) 		(TYPE_PROPERTIES(x) & 0x08)
-#define TYPE_IS_SCHEDULE(x) 	(TYPE_PROPERTIES(x) & 0x10)
-#define TYPE_IS_ROUTING(x) 		(TYPE_PROPERTIES(x) & 0x20)
+#define TYPE_IS_LINEAR(x)     (TYPE_PROPERTIES(x) & 0x04)
+#define TYPE_IS_DELETE(x)     (TYPE_PROPERTIES(x) & 0x08)
+#define TYPE_IS_SCHEDULE(x)   (TYPE_PROPERTIES(x) & 0x10)
+#define TYPE_IS_ROUTING(x)    (TYPE_PROPERTIES(x) & 0x20)
 
 #define AGG_AGG(x)    (((x) & (0xf0)) >> 4)
 #define AGG_FIELD(x)  ((x) & 0x0f)
+
+#define RULE_NUMBER(x) ((unsigned char)(((x) & 0xf0) >> 4))
+#define PROCESS_TYPE(x) ((unsigned char)((x) & 0x0f))
 
 #define AGG_NONE 0
 #define AGG_FIRST 1
@@ -446,9 +448,6 @@ enum instr_type {
 #define PROCESS_TUPLE 0
 #define PROCESS_ITER 1
 #define PROCESS_RULE 2
-
-#define RULE_NUMBER(x) ((unsigned char)(((x) & 0xf0) >> 4))
-#define PROCESS_TYPE(x) ((unsigned char)((x) & 0x0f))
 
 extern const unsigned char meld_prog[];
 typedef Register (*extern_funct_type)();
@@ -534,7 +533,7 @@ p_peek(tuple_pqueue *q)
 
 tuple_pentry *p_dequeue(tuple_pqueue *q);
 void p_enqueue(tuple_pqueue *q, meld_int priority, tuple_t tuple,
-		NodeID rt, record_type isNew);
+	       NodeID rt, record_type isNew);
 int queue_length (tuple_queue *queue);
 
 extern tuple_type TYPE_INIT;
@@ -549,7 +548,6 @@ extern void setLEDWrapper (byte r, byte g, byte b, byte intensity);
 extern NodeID getBlockId (void);
 extern void print_newTuples (void);
 extern void print_newStratTuples (void);
-/* void print_process(const unsigned char *pc); */
 
 #ifdef BBSIM
 extern pthread_mutex_t printMutex;

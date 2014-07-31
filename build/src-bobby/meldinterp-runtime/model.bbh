@@ -4,6 +4,11 @@
 #include <inttypes.h>
 #include "../system/defs.bbh"
 
+/******************************************************************************
+@Description: model.bbh contains the definition of all the data structures and
+types used by the VM.
+*******************************************************************************/
+
 /* allocation for tuples */
 #define ALLOC_TUPLE(x) malloc(x)
 #define FREE_TUPLE(x) free(x)

@@ -2,6 +2,12 @@
 #include "list_runtime.h"
 #include <stdio.h>
 
+/******************************************************************************
+@Description: This file contains the definition of the external functions.
+As they have not been implemented for linear Meld yet, the functions here are
+ all external functions from the old Meld.
+*******************************************************************************/
+
 meld_value blockID(meld_value x) {
   meld_int ret = MELD_INT(&x);
   //printf("Returning %d\n", ret);

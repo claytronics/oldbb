@@ -12,6 +12,18 @@
 #include "../system/myassert.h"
 #include <stdio.h>
 
+/******************************************************************************
+@Description: core.c represents the core of the VM as its name implies. 
+It contains all the function implementations for the following tasks:
+- Queue management.
+- Byte code processing. (Every byte code instruction as an associated execution
+function which is called when the instruction is encountered)
+- Removing / Adding tuples from/to the database, or just enqueuing them for
+execution.
+- Printing tuples or the database's content.
+- Handling aggregates.
+*******************************************************************************/
+
 #define DEBUG_INSTRS
 /* #define DEBUG_ALLOCS */
 #define inline 

@@ -24,6 +24,12 @@
 // include here to make sure we include the threadypes, etc.
 #include "model.bbh"
 
+/******************************************************************************
+@Description: meldvm.bb is the VM's main file, it initializes the VM,
+introduces and updates axioms, sends tuples to other blocks, and triggers
+the execution of all tuples and rules through the program's main loop.
+*******************************************************************************/
+
 //#define DEBUG
 #define DEBUG_NEIGHBORHOOD
 #define DEBUG_SEND
