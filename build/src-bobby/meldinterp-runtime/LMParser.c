@@ -31,10 +31,10 @@ main (int argc, char* argv[])
     exit(1);
   }
 
-  printf ("LMParser: ");
+  char *inNameBuf = argv[1];
+  printf("\nLMParser: Parsing file %s\n", inNameBuf);
 
   /* Deduce output file's name from name of input file */
-  char *inNameBuf = argv[1];
   char outNameBuf[strlen (inNameBuf) + 2]; 
   int i,j;
   for (i = 0;  i < (strlen (inNameBuf) - 1); ++i) {
@@ -650,13 +650,14 @@ main (int argc, char* argv[])
         rules[i].desc_size = RULE_DESCRIPTOR_SIZE + rules[i].numInclPreds;	
       }
 
+      printf("Parsing done - Printing to output file %s\n", outNameBuf);
+
       /* ************* PRINT BYTE CODE HEADER ************* */
 
       /* Print byte code header to output file */
-#ifdef DEBUG_PARSER
-      printf ("\nPRINTING BYTE CODE HEADER...\n");
-#endif
-      
+
+      printf ("-> Printing byte code header...\n");
+
       fprintf (pBBFile, "const unsigned char meld_prog[] = {");
 
       /* Print number of predicates */
@@ -784,9 +785,9 @@ main (int argc, char* argv[])
       /* ************* PRINT PREDICATE BYTE CODE ************* */
 
       /* Print predicate bytecode */
-#ifdef DEBUG_PARSER
-      printf ("\nPRINTING PREDICATE BYTE CODE...\n");
-#endif
+
+      printf ("-> Printing predicate byte code...\n");
+
       fprintf (pBBFile, "\n/* PREDICATE BYTECODE */");
       for (i = 0; i < numPredicates; ++i) {
 	fprintf (pBBFile, "\n/* Predicate %d: */", i);
@@ -800,9 +801,9 @@ main (int argc, char* argv[])
       /* ************* PRINT RULE BYTE CODE ************* */
 
       /* Print rule bytecode */
-#ifdef DEBUG_PARSER
-      printf ("\nPRINTING RULE BYTE CODE...\n");
-#endif
+
+      printf ("-> Printing predicate byte code...\n");
+
       fprintf (pBBFile, "\n/* RULE BYTECODE */");
       for (i = 0; i < numRules; ++i) {
 	fprintf (pBBFile, "\n/* Rule %d: */", i);
@@ -819,9 +820,8 @@ main (int argc, char* argv[])
       /* ************* PRINT PREDICATE NAMES ************* */
 
       /* Print predicate name array */
-#ifdef DEBUG_PARSER
-      printf ("\nPRINTING PREDICATE NAMES LIST...\n");
-#endif
+
+      printf ("-> Printing predicate names...\n");
 
       fprintf (pBBFile, "\nchar *tuple_names[] = {");
       for (i = 0; i < numPredicates; ++i) {
@@ -839,9 +839,8 @@ main (int argc, char* argv[])
       /* ************* PRINT RULE NAMES ************* */
 
       /* Print rule string array */     
-#ifdef DEBUG_PARSER
-      printf ("\nPRINTING RULE NAMES ARRAY\n");
-#endif
+
+      printf ("-> Printing rule names...\n");
  
       fprintf (pBBFile, "char *rule_names[] = {");
       for (i = 0; i < numRules; ++i) {
@@ -852,9 +851,8 @@ main (int argc, char* argv[])
       /* ************* PRINT EXTERNAL FUNCTIONS ************* */
 
       /* Print remaining elements */
-#ifdef DEBUG_PARSER
-      printf ("\nPRINTING EXTERNAL FUNCTIONS\n");
-#endif
+
+      printf ("-> Printing external functions (empty for now)...\n");
 
       fprintf (pBBFile, "#include \"extern_functions.bbh\"\n");
       fprintf (pBBFile, "Register (*extern_functs[])() = {};\n");
@@ -863,7 +861,7 @@ main (int argc, char* argv[])
       fclose (pMeldProg);
       fclose (pBBFile);
 
-      printf ("\nDONE\n");
+      printf ("LMParser: Done.\n\n");
       return 0;  
   }
   return -4;
@@ -883,27 +881,27 @@ readType (FILE *pFile)
 #ifdef DEBUG_PARSER
     printf ("BOOL ");   
 #endif
-    return 0xa;
+    return TFIELD_BOOL;
   case FIELD_INT:     
 #ifdef DEBUG_PARSER
     printf ("INT ");    
 #endif
-    return 0x0;
+    return TFIELD_INT;
   case FIELD_FLOAT:   
 #ifdef DEBUG_PARSER
     printf ("FLOAT ");  
 #endif
-    return 0x1;
+    return TFIELD_FLOAT;
   case FIELD_NODE:    
 #ifdef DEBUG_PARSER
     printf ("NODE ");   
 #endif
-    return 0x2;
+    return TFIELD_ADDR;
   case FIELD_STRING:  
 #ifdef DEBUG_PARSER
     printf ("STRING "); 
 #endif
-    return 0x9;
+    return TFIELD_STRING;
   case FIELD_LIST:
     {
       byte listType;
@@ -914,17 +912,17 @@ readType (FILE *pFile)
 #ifdef DEBUG_PARSER
 	printf ("INTLIST ");
 #endif
-	return 0x3;
+	return TFIELD_LIST_INT;
       case FIELD_FLOAT:
 #ifdef DEBUG_PARSER
 	printf ("FLOATLIST ");
 #endif
-	return 0x4;
+	return TFIELD_LIST_FLOAT;
       case FIELD_NODE:
 #ifdef DEBUG_PARSER
 	printf ("NODELIST ");
 #endif
-	return 0x5;
+	return TFIELD_LIST_ADDR;
       default:
 	perror ("UNKNOWN LIST type!");
 	exit (1);
