@@ -30,6 +30,7 @@ introduces and updates axioms, sends tuples to other blocks, and triggers
 the execution of all tuples and rules through the program's main loop.
 *******************************************************************************/
 
+/* Various DEBUG Modes for troubleshooting */
 //#define DEBUG
 #define DEBUG_NEIGHBORHOOD
 #define DEBUG_SEND
@@ -38,24 +39,33 @@ the execution of all tuples and rules through the program's main loop.
 void vm_init(void);
 byte updateRuleState(byte rid);
 
-threadvar tuple_pqueue *delayedTuples;
-threadvar tuple_queue *tuples;
+/* Queue for tuples to send with delay */
+threadvar tuple_pqueue *delayedTuples; 
+/* Contains a queueu for each type, this is essentially the database */
+threadvar tuple_queue *tuples;	      
+/* Where stratified tuples are enqueued for execution  */
 threadvar tuple_pqueue *newStratTuples;
+/* Where non-stratified tuples are enqueued for execution */
 threadvar tuple_queue *newTuples;
+/* Received tuples are enqueued both to a normal queue
+ * and to this one. Tuples store in this one will be used to remove 
+ * remove tuples from the database.*/
 threadvar tuple_queue receivedTuples[NUM_PORTS];
 
+/* This block's ID */
 threadvar NodeID blockId;
 
+/* An array of 32 registers (pointers) */
 threadvar Register reg[32];
 
-static tuple_type TYPE_TAP = -1;
-static byte retractionOccured = 0;
-static byte inNeighborCountUpdate = 0;
+/* thr\dvar byte retractionOccured = 0; */
+/* thr\dvar byte inNeighborCountUpdate = 0; */
 
 #ifdef BBSIM
 #include <sys/timeb.h>
 #endif
 
+/* Print the content of the newTuples queue */
 void
 print_newTuples(void)
 {
@@ -76,6 +86,7 @@ print_newTuples(void)
 #endif
 }
 
+/* Prints the content of the newStartTuples queue */
 void
 print_newStratTuples(void)
 {
@@ -99,6 +110,7 @@ print_newStratTuples(void)
 #endif
 }
 
+/* Gets ID of neighbor on face 'face' */
 static inline
 NodeID get_neighbor_ID(int face)
 {
@@ -120,6 +132,7 @@ NodeID get_neighbor_ID(int face)
   }
 }
 
+/* Enqueue a tuple for execution */
 void enqueueNewTuple(tuple_t tuple, record_type isNew)
 {
   assert (TUPLE_TYPE(tuple) < NUM_TYPES);
@@ -143,6 +156,7 @@ void enqueueNewTuple(tuple_t tuple, record_type isNew)
   }
 }
 
+/* Enqueue a neighbor or vacant tuple */
 void enqueue_face(NodeID neighbor, meld_int face, int isNew)
 {
   tuple_t tuple = NULL;
@@ -160,6 +174,7 @@ void enqueue_face(NodeID neighbor, meld_int face, int isNew)
   enqueueNewTuple(tuple, (record_type) isNew);
 }
 
+/* Enqueue a neighborCount tuple */
 static
 void enqueue_count(meld_int count, int isNew)
 {
@@ -170,6 +185,7 @@ void enqueue_count(meld_int count, int isNew)
   enqueueNewTuple(tuple, (record_type) isNew);
 }
 
+/* Enqueue a tap tuple and also prints database if DEBUG is ON */
 static
 void enqueue_tap(void)
 {
@@ -182,6 +198,7 @@ void enqueue_tap(void)
   /* #endif */
 }
 
+/* Enqueue init tuple, triggers derivation of RULE 0, which derives axioms */
 static
 void enqueue_init(void)
 {
@@ -192,6 +209,7 @@ void enqueue_init(void)
   enqueueNewTuple(tuple, (record_type) 1);
 }
 
+/* Saves the ID of useful types */
 static
 void init_all_consts(void)
 {
@@ -211,7 +229,8 @@ void init_all_consts(void)
   }	
 }
 
-static
+/* Can be used to directly process neighborCount instead of enqueing it */
+/* static
 void handle_count(meld_int count, int isNew)
 {
   tuple_t tuple = tuple_alloc(TYPE_NEIGHBORCOUNT);
@@ -219,12 +238,13 @@ void handle_count(meld_int count, int isNew)
   SET_TUPLE_FIELD(tuple, 0, &count);
 
   tuple_handle(tuple, isNew, reg);
-}
+  } */
 
 #ifdef BBSIM
 pthread_mutex_t printMutex;
 #endif
 
+/* The VM's main function */
 void meldMain(void)
 {
   vm_init();
@@ -237,6 +257,7 @@ void meldMain(void)
   //setColor(0);
   setLED(128,0,128,32);
 
+  /* Enqueue init to derive the program's axioms */
   enqueue_init();
 
   // introduce intial set of axioms
@@ -273,14 +294,17 @@ void meldMain(void)
       
       free(entry);
     } else {
-      /* Update rule state and process them */
+      /* If all tuples have been processed
+       * update rule state and process them if they are ready */
       for (i = 0; i < NUM_RULES; ++i) {
 
 	if (updateRuleState(i)) {
 	  /* Set state byte used by DEBUG */
 	  byte processState = PROCESS_RULE | (i << 4);
 	  
-	  /* Don't process persistent rules (which is useless) */
+	  /* Don't process persistent rules (which is useless) 
+	   * as they all have only a RETURN instruction.
+	   */
 	  if (!RULE_ISPERSISTENT(i)) {
 #ifdef DEBUG_RULES
 	    printf ("\n\x1b[35m--%d--\tRule %d READY!\x1b[0m\n", getBlockId(), i);
@@ -289,7 +313,7 @@ void meldMain(void)
 	  process_bytecode (NULL, RULE_START(i), 1, reg, processState);
 	  }
 	}
-	/* else: Rule not ready yet, will re-check at next loop run */
+	/* else: Rule not ready yet, will re-check at next main loop run */
       }
 
       // if we've processed everything, sleep for the sake of letting other blocks run in the simulator
@@ -319,7 +343,10 @@ void meldMain(void)
 
       enqueue_face(neighbors[i], i, -1);
 
-      /* Enqueue received tuples */
+      /* Delete received tuples from database
+       * This may need to be reviewed, 
+       * I am not sure what LM is supposed to do with received tuples
+       */
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
 	printf("--%d--\tDelete received\n", blockId);
@@ -353,6 +380,7 @@ void endian_swap(Register* x)
 }
 #endif
 
+/* Receive a tuple and enqueue it to both receivedTuples and newTuples */
 void receive_tuple(int isNew)
 {
   tuple_t rcvdTuple = (tuple_t)thisChunk->data;
@@ -381,11 +409,13 @@ void receive_tuple(int isNew)
   enqueueNewTuple(tuple, (record_type)isNew);
 }
 
+/* Received tuple is a retraction fact */
 void receive_tuple_delete(void)
 {
   receive_tuple(-1);
 }
 
+/* Received tuple is a normal fact */
 void receive_tuple_add(void)
 {
   receive_tuple(1);
@@ -395,6 +425,7 @@ void free_chunk(void) {
   free(thisChunk);
 }
 
+/* Sends a tuple to Block of ID rt, with or without delay */
 void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
 {
   assert (TUPLE_TYPE(tuple) < NUM_TYPES);
@@ -457,6 +488,7 @@ void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
       };
     }
     else {
+      /* This may happen when you delete a block in the simulator */
       fprintf(stderr, "--%d--\tUNABLE TO ROUTE MESSAGE! To %d\n", (int)blockId, (int)target);
       //exit(EXIT_FAILURE);
     }
@@ -470,6 +502,7 @@ byte
 updateRuleState(byte rid) 
 {
   int i;
+  /* A rule is ready if all included predicates are present in the database */
   for (i = 0; i < RULE_NUM_INCLPREDS(rid); ++i) {
     if (TUPLES[RULE_INCLPRED_ID(rid, i)].length == 0)
       return INACTIVE_RULE;
@@ -479,25 +512,26 @@ updateRuleState(byte rid)
   return ACTIVE_RULE;
 }
 
+/* Simply calls tuple_do_handle located in core.c to handle tuple  */
 void tuple_handle(tuple_t tuple, int isNew, Register *registers)
 {
   tuple_type type = TUPLE_TYPE(tuple);
   assert (type < NUM_TYPES);
 
-  if (isNew > 0
-      && !inNeighborCountUpdate) 
-    retractionOccured = 1;
+  /* if (isNew > 0 */
+  /*     && !inNeighborCountUpdate)  */
+  /*   retractionOccured = 1; */
 
   tuple_do_handle(type, tuple, isNew, registers);
 }
 
+/* Used to call setColor functions from core.c */
 void
 setColorWrapper (byte color) { setColor(color % NUM_COLORS);}
-
 void
 setLEDWrapper (byte r, byte g, byte b, byte intensity) 
 { setLEDWrapper (r, g, b, intensity);}
-
+/* Used to get blockId from core.c */
 NodeID 
 getBlockId (void) { return blockId;}
 
@@ -505,7 +539,7 @@ getBlockId (void) { return blockId;}
 extern int alreadyExecuted(int flag);
 #endif
 
-/* NOTE: this must be executed before running the virtual machine */
+/* VM initialization routine */
 void
 vm_init(void)
 {
@@ -531,8 +565,9 @@ vm_init(void)
 #endif
 }
 
-/* Called upon block init to ensure that data structures are allocated even before
-   VM start in case other blocks send us tuples */
+/* Called upon block init (block.bb) 
+ * to ensure that data structures are allocated before
+ * VM start in case other blocks send us tuples - Would seg fault otherwise */
 void
 vm_alloc(void)
 {

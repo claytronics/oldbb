@@ -13,12 +13,14 @@ types used by the VM.
 #define ALLOC_TUPLE(x) malloc(x)
 #define FREE_TUPLE(x) free(x)
 
+/* Meld Types */
 threadtype typedef void* tuple_t;
 threadtype typedef int32_t meld_int;
 threadtype typedef double meld_float;
 threadtype typedef short tuple_type;
 threadtype typedef unsigned long int Register;
 
+/* Meld Structures */
 threadtype typedef struct _tuple_entry tuple_entry;
 threadtype typedef struct _tuple_queue { tuple_entry *head; tuple_entry *tail; unsigned char length;} tuple_queue;
 threadtype typedef union { int count; tuple_queue *agg_queue; } record_type;
@@ -28,6 +30,7 @@ threadtype typedef struct {struct _tuple_pentry *queue;} tuple_pqueue;
 
 threadextern tuple_queue *tuples;
 
+/* This one is unused */
 /* threadtype typedef struct _persistent_set { void *array; int total; int current; } persistent_set; */
 
 threadextern NodeID blockId;

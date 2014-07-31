@@ -29,12 +29,16 @@ execution.
 #define inline 
 
 unsigned char *arguments = NULL;
+
+/* Init will always be predicate 0 */
 tuple_type TYPE_INIT = 0;
+/* Initialize unknown type IDs */
 tuple_type TYPE_EDGE = -1;
 tuple_type TYPE_TERMINATE = -1;
 tuple_type TYPE_NEIGHBORCOUNT = -1;
 tuple_type TYPE_NEIGHBOR = -1;
 tuple_type TYPE_VACANT = -1;
+tuple_type TYPE_TAP = -1;
 
 static tuple_t queue_dequeue_pos(tuple_queue *queue, tuple_entry **pos);
 
@@ -2413,8 +2417,8 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 
 	  pc = base + IF_JUMP(pc); goto eval_loop;
 	} else {
-	  /* Otherwise, process if until a jump instruction is encountered
-	   * (This is only a guess)
+	  /* Else, process if until a jump instruction is encountered
+	   * (it seems...)
 	   */
 #ifdef DEBUG_INSTRS
 	  printf ("--%d--\t IF_ELSE (reg %d) -- ELSE\n", 
@@ -2422,6 +2426,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 #endif
 
 	  pc = npc; goto eval_loop;
+	}
       }
 
 	/* NOT TESTED */
@@ -2432,7 +2437,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	  printf ("--%d--\t JUMP TO\n", getBlockId());
 #endif
 	  pc += JUMP_BASE + IF_JUMP(pc); goto eval_loop;
-        }
+  }
 
     case INTMOD_INSTR: 		/* 0x3d */
       {

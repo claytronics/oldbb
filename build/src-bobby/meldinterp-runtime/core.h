@@ -508,6 +508,7 @@ extern tuple_type TYPE_TERMINATE;
 extern tuple_type TYPE_NEIGHBORCOUNT;
 extern tuple_type TYPE_NEIGHBOR;
 extern tuple_type TYPE_VACANT;
+extern tuple_type TYPE_TAP;
 
 /* ************* EXTERN DECLARATIONS  ************* */
 
