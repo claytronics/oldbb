@@ -15,153 +15,154 @@ macros, needed by the VM to parse the byte code, manage queues, and process
 instructions.
 *******************************************************************************/
 
-/* print tuple allocations */
+/* DEBUG flags */
+
+// print tuple allocations 
 /* #define TUPLE_ALLOC_DEBUG 1 */
-/* tuple allocation checks */
+// tuple allocation checks
 /* #define TUPLE_ALLOC_CHECKS 1 */
 
-/* Size variables */
-#define INSTR_SIZE 1
+/* Instructions-related defines and macros */
 
-/* Instructions */
-enum instr_type {
-   RETURN_INSTR	        =  0x00,
-   NEXT_INSTR		=  0x01,
-   PERS_ITER_INSTR      =  0x02,
-   TESTNIL_INSTR	=  0x03,
-   OPERS_ITER_INSTR     =  0x04,
-   LINEAR_ITER_INSTR    =  0x05,
-   RLINEAR_ITER_INSTR   =  0x06,
-   NOT_INSTR		=  0x07,
-   SEND_INSTR 		=  0x08,
-   FLOAT_INSTR          =  0x09,
-   SELECT_INSTR         =  0x0A,
-   RETURN_SELECT_INSTR  =  0x0B,
-   OLINEAR_ITER_INSTR   =  0x0C,
-   DELETE_INSTR         =  0x0D,
-   RESET_LINEAR_INSTR   =  0x0E,
-   END_LINEAR_INSTR     =  0x0F,
-   RULE_INSTR           =  0x10,
-   RULE_DONE_INSTR      =  0x11,
-   ORLINEAR_ITER_INSTR  =  0x12,
-   NEW_NODE_INSTR       =  0x13,
-   NEW_AXIOMS_INSTR     =  0x14,
-   SEND_DELAY_INSTR     =  0x15,
-   PUSH_INSTR           =  0x16,
-   POP_INSTR            =  0x17,
-   PUSH_REGS_INSTR      =  0x18,
-   POP_REGS_INSTR       =  0x19,
-   CALLF_INSTR          =  0x1A,
-   CALLE_INSTR          =  0x1B,
-   SET_PRIORITY_INSTR   =  0x1C,
-   MAKE_STRUCTR_INSTR   =  0x1D,
-   MVINTFIELD_INSTR     =  0x1E,
-   MVINTREG_INSTR       =  0x1F,
-   CALL_INSTR	        =  0x20,
-   MVFIELDFIELD_INSTR   =  0x21,
-   MVFIELDREG_INSTR     =  0x22,
-   MVPTRREG_INSTR       =  0x23,
-   MVNILREG_INSTR       =  0x24,
-   MVFIELDFIELDR_INSTR  =  0x25,
-   MVREGFIELD_INSTR     =  0x26,
-   MVREGFIELDR_INSTR    =  0x27,
-   MVHOSTFIELD_INSTR    =  0x28,
-   MVREGCONST_INSTR     =  0x29,
-   MVCONSTFIELD_INSTR   =  0x2A,
-   MVCONSTFIELDR_INSTR  =  0x2B,
-   MVADDRFIELD_INSTR    =  0x2C,
-   MVFLOATFIELD_INSTR   =  0x2D,
-   MVFLOATREG_INSTR     =  0x2E,
-   MVINTCONST_INSTR     =  0x2F,
-   SET_PRIORITYH_INSTR  =  0x30,
-   MVWORLDFIELD_INSTR   =  0x31,
-   MVSTACKPCOUNTER_INSTR=  0x32,
-   MVPCOUNTERSTACK_INSTR=  0x33,
-   MVSTACKREG_INSTR     =  0x34,
-   MVREGSTACK_INSTR     =  0x35,
-   MVADDRREG_INSTR      =  0x36,
-   MVHOSTREG_INSTR      =  0x37,
-   ADDRNOTEQUAL_INSTR   =  0x38,
-   ADDREQUAL_INSTR      =  0x39,
-   INTMINUS_INSTR       =  0x3A,
-   INTEQUAL_INSTR       =  0x3B,
-   INTNOTEQUAL_INSTR    =  0x3C,
-   INTPLUS_INSTR        =  0x3D,
-   INTLESSER_INSTR      =  0x3E,
-   INTGREATEREQUAL_INSTR=  0x3F,
-   ALLOC_INSTR 	        =  0x40,
-   BOOLOR_INSTR         =  0x41,
-   INTLESSEREQUAL_INSTR =  0x42,
-   INTGREATER_INSTR     =  0x43,
-   INTMUL_INSTR         =  0x44,
-   INTDIV_INSTR         =  0x45,
-   FLOATPLUS_INSTR      =  0x46,
-   FLOATMINUS_INSTR     =  0x47,
-   FLOATMUL_INSTR       =  0x48,
-   FLOATDIV_INSTR       =  0x49,
-   FLOATEQUAL_INSTR     =  0x4A,
-   FLOATNOTEQUAL_INSTR  =  0x4B,
-   FLOATLESSER_INSTR    =  0x4C,
-   FLOATLESSEREQUAL_INSTR= 0x4D,
-   FLOATGREATER_INSTR   =  0x4E,
-   FLOATGREATEREQUAL_INSTR=0x4F,
-   MVREGREG_INSTR       =  0x50,
-   BOOLEQUAL_INSTR      =  0x51,
-   BOOLNOTEQUAL_INSTR   =  0x52,
-   HEADRR_INSTR         =  0x53,
-   HEADFR_INSTR         =  0x54,
-   HEADFF_INSTR         =  0x55,
-   HEADRF_INSTR         =  0x56,
-   HEADFFR_INSTR        =  0x57,
-   HEADRFR_INSTR        =  0x58,
-   TAILRR_INSTR         =  0x59,
-   TAILFR_INSTR         =  0x5A,
-   TAILFF_INSTR         =  0x5B,
-   TAILRF_INSTR         =  0x5C,
-   MVWORLDREG_INSTR     =  0x5D,
-   MVCONSTREG_INSTR     =  0x5E,
-   CONSRRR_INSTR        =  0x5F,
-   IF_INSTR 	        =  0x60,
-   CONSRFF_INSTR        =  0x61,
-   CONSFRF_INSTR        =  0x62,
-   CONSFFR_INSTR        =  0x63,
-   CONSRRF_INSTR        =  0x64,
-   CONSRFR_INSTR        =  0x65,
-   CONSFRR_INSTR        =  0x66,
-   CONSFFF_INSTR        =  0x67,
-   CALL0_INSTR          =  0x68,
-   CALL1_INSTR          =  0x69,
-   CALL2_INSTR          =  0x6A,
-   CALL3_INSTR          =  0x6B,
-   MVINTSTACK_INSTR     =  0x6C,
-   PUSHN_INSTR          =  0x6D,
-   MAKE_STRUCTF_INSTR   =  0x6E,
-   STRUCT_VALRR_INSTR   =  0x6F,
-   MVNILFIELD_INSTR	=  0x70,
-   STRUCT_VALFR_INSTR   =  0x71,
-   STRUCT_VALRF_INSTR   =  0x72,
-   STRUCT_VALRFR_INSTR  =  0x73,
-   STRUCT_VALFF_INSTR   =  0x74,
-   STRUCT_VALFFR_INSTR  =  0x75,
-   MVFLOATSTACK_INSTR   =  0x76,
-   ADDLINEAR_INSTR      =  0x77,
-   ADDPERS_INSTR        =  0x78,
-   RUNACTION_INSTR      =  0x79,
-   ENQUEUE_LINEAR_INSTR =  0x7A,
-   UPDATE_INSTR         =  0x7B,
-   MVARGREG_INSTR       =  0x7C,
-   INTMOD_INSTR         =  0x7D,
-   CPU_ID_INSTR         =  0x7E,
-   NODE_PRIORITY_INSTR  =  0x7F,
-   REMOVE_INSTR 	=  0x80,
-   IF_ELSE_INSTR        =  0x81,
-   JUMP_INSTR           =  0x82,
-   ADD_PRIORITY_INSTR   =  0xA0,
-   ADD_PRIORITYH_INSTR  =  0xA1,
-   STOP_PROG_INSTR      =  0xA2,
-   RETURN_LINEAR_INSTR  =  0xD0,
-   RETURN_DERIVED_INSTR =  0xF0
-};
+#define INSTR_SIZE 1		/* Size of an instruction (without arguments) */
+
+/* All instructions and their values  */
+#define RETURN_INSTR	       0x00
+#define NEXT_INSTR	       0x01
+#define PERS_ITER_INSTR        0x02
+#define TESTNIL_INSTR	       0x03 /* niy: not implemented yet */
+#define OPERS_ITER_INSTR       0x04 /* niy */
+#define LINEAR_ITER_INSTR      0x05
+#define RLINEAR_ITER_INSTR     0x06 /* niy */
+#define NOT_INSTR	       0x07
+#define SEND_INSTR 	       0x08
+#define FLOAT_INSTR            0x09 /* niy */
+#define SELECT_INSTR           0x0A /* niy */
+#define RETURN_SELECT_INSTR    0x0B /* niy */
+#define OLINEAR_ITER_INSTR     0x0C /* niy */
+#define DELETE_INSTR           0x0D /* niy */
+#define RESET_LINEAR_INSTR     0x0E /* niy */
+#define END_LINEAR_INSTR       0x0F /* niy */
+#define RULE_INSTR             0x10
+#define RULE_DONE_INSTR        0x11
+#define ORLINEAR_ITER_INSTR    0x12 /* niy */
+#define NEW_NODE_INSTR         0x13 /* niy - No need to implement it */
+#define NEW_AXIOMS_INSTR       0x14 /* niy */
+#define SEND_DELAY_INSTR       0x15 /* niy */
+#define PUSH_INSTR             0x16 /* niy */
+#define POP_INSTR              0x17 /* niy */
+#define PUSH_REGS_INSTR        0x18 /* niy */
+#define POP_REGS_INSTR         0x19 /* niy */
+#define CALLF_INSTR            0x1A /* niy */
+#define CALLE_INSTR            0x1B /* niy */
+#define SET_PRIORITY_INSTR     0x1C /* niy */
+#define MAKE_STRUCTR_INSTR     0x1D /* niy */
+#define MVINTFIELD_INSTR       0x1E
+#define MVINTREG_INSTR         0x1F
+#define CALL_INSTR             0x20 /* niy */
+#define MVFIELDFIELD_INSTR     0x21
+#define MVFIELDREG_INSTR       0x22
+#define MVPTRREG_INSTR         0x23
+#define MVNILREG_INSTR         0x24 /* niy */
+#define MVFIELDFIELDR_INSTR    0x25 /* niy */
+#define MVREGFIELD_INSTR       0x26
+#define MVREGFIELDR_INSTR      0x27 /* niy */
+#define MVHOSTFIELD_INSTR      0x28
+#define MVREGCONST_INSTR       0x29 /* niy */
+#define MVCONSTFIELD_INSTR     0x2A /* niy */
+#define MVCONSTFIELDR_INSTR    0x2B /* niy */
+#define MVADDRFIELD_INSTR      0x2C /* niy */
+#define MVFLOATFIELD_INSTR     0x2D
+#define MVFLOATREG_INSTR       0x2E
+#define MVINTCONST_INSTR       0x2F /* niy */
+#define SET_PRIORITYH_INSTR    0x30 /* niy */
+#define MVWORLDFIELD_INSTR     0x31 /* niy */
+#define MVSTACKPCOUNTER_INSTR  0x32 /* niy */
+#define MVPCOUNTERSTACK_INSTR  0x33 /* niy */
+#define MVSTACKREG_INSTR       0x34 /* niy */
+#define MVREGSTACK_INSTR       0x35 /* niy */
+#define MVADDRREG_INSTR        0x36 /* niy */
+#define MVHOSTREG_INSTR        0x37
+#define ADDRNOTEQUAL_INSTR     0x38
+#define ADDREQUAL_INSTR        0x39
+#define INTMINUS_INSTR         0x3A
+#define INTEQUAL_INSTR         0x3B
+#define INTNOTEQUAL_INSTR      0x3C
+#define INTPLUS_INSTR          0x3D
+#define INTLESSER_INSTR        0x3E
+#define INTGREATEREQUAL_INSTR  0x3F
+#define ALLOC_INSTR            0x40
+#define BOOLOR_INSTR           0x41
+#define INTLESSEREQUAL_INSTR   0x42
+#define INTGREATER_INSTR       0x43
+#define INTMUL_INSTR           0x44
+#define INTDIV_INSTR           0x45
+#define FLOATPLUS_INSTR        0x46
+#define FLOATMINUS_INSTR       0x47
+#define FLOATMUL_INSTR         0x48
+#define FLOATDIV_INSTR         0x49
+#define FLOATEQUAL_INSTR       0x4A
+#define FLOATNOTEQUAL_INSTR    0x4B
+#define FLOATLESSER_INSTR      0x4C
+#define FLOATLESSEREQUAL_INSTR 0x4D
+#define FLOATGREATER_INSTR     0x4E
+#define FLOATGREATEREQUAL_INSTR 0x4F
+#define MVREGREG_INSTR         0x50
+#define BOOLEQUAL_INSTR        0x51
+#define BOOLNOTEQUAL_INSTR     0x52
+#define HEADRR_INSTR           0x53 /* niy */
+#define HEADFR_INSTR           0x54 /* niy */
+#define HEADFF_INSTR           0x55 /* niy */
+#define HEADRF_INSTR           0x56 /* niy */
+#define HEADFFR_INSTR          0x57 /* niy */
+#define HEADRFR_INSTR          0x58 /* niy */
+#define TAILRR_INSTR           0x59 /* niy */
+#define TAILFR_INSTR           0x5A /* niy */
+#define TAILFF_INSTR           0x5B /* niy */
+#define TAILRF_INSTR           0x5C /* niy */
+#define MVWORLDREG_INSTR       0x5D /* niy */
+#define MVCONSTREG_INSTR       0x5E /* niy */
+#define CONSRRR_INSTR          0x5F /* niy */
+#define IF_INSTR 	       0x60 
+#define CONSRFF_INSTR          0x61 /* niy */
+#define CONSFRF_INSTR          0x62 /* niy */
+#define CONSFFR_INSTR          0x63 /* niy */
+#define CONSRRF_INSTR          0x64 /* niy */
+#define CONSRFR_INSTR          0x65 /* niy */
+#define CONSFRR_INSTR          0x66 /* niy */
+#define CONSFFF_INSTR          0x67 /* niy */
+#define CALL0_INSTR            0x68 /* niy */
+#define CALL1_INSTR            0x69 /* niy */
+#define CALL2_INSTR            0x6A /* niy */
+#define CALL3_INSTR            0x6B /* niy */
+#define MVINTSTACK_INSTR       0x6C /* niy */
+#define PUSHN_INSTR            0x6D /* niy */
+#define MAKE_STRUCTF_INSTR     0x6E /* niy */
+#define STRUCT_VALRR_INSTR     0x6F /* niy */
+#define MVNILFIELD_INSTR       0x70 /* niy */
+#define STRUCT_VALFR_INSTR     0x71 /* niy */
+#define STRUCT_VALRF_INSTR     0x72 /* niy */
+#define STRUCT_VALRFR_INSTR    0x73 /* niy */
+#define STRUCT_VALFF_INSTR     0x74 /* niy */
+#define STRUCT_VALFFR_INSTR    0x75 /* niy */
+#define MVFLOATSTACK_INSTR     0x76 /* niy */
+#define ADDLINEAR_INSTR        0x77
+#define ADDPERS_INSTR          0x78
+#define RUNACTION_INSTR        0x79
+#define ENQUEUE_LINEAR_INSTR   0x7A /* niy */
+#define UPDATE_INSTR           0x7B
+#define MVARGREG_INSTR         0x7C /* niy */
+#define INTMOD_INSTR           0x7D
+#define CPU_ID_INSTR           0x7E /* niy */
+#define NODE_PRIORITY_INSTR    0x7F /* niy */
+#define REMOVE_INSTR 	       0x80
+#define IF_ELSE_INSTR          0x81
+#define JUMP_INSTR             0x82 /* niy */
+#define ADD_PRIORITY_INSTR     0xA0 /* niy */
+#define ADD_PRIORITYH_INSTR    0xA1 /* niy */
+#define STOP_PROG_INSTR        0xA2 /* niy */
+#define RETURN_LINEAR_INSTR    0xD0
+#define RETURN_DERIVED_INSTR   0xF0
 
 /* Instruction sizes */
 #define SEND_BASE            3
