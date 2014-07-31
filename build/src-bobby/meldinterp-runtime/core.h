@@ -158,7 +158,7 @@ instructions.
 #define NODE_PRIORITY_INSTR    0x7F /* niy */
 #define REMOVE_INSTR 	       0x80
 #define IF_ELSE_INSTR          0x81
-#define JUMP_INSTR             0x82 /* niy */
+#define JUMP_INSTR             0x82 
 #define ADD_PRIORITY_INSTR     0xA0 /* niy */
 #define ADD_PRIORITYH_INSTR    0xA1 /* niy */
 #define STOP_PROG_INSTR        0xA2 /* niy */

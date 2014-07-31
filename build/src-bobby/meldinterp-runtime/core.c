@@ -38,12 +38,16 @@ tuple_type TYPE_VACANT = -1;
 
 static tuple_t queue_dequeue_pos(tuple_queue *queue, tuple_entry **pos);
 
-/* EVAL FUNCTIONS */
-
 inline byte val_is_float(const byte x) { return x == 0x00; }
 inline byte val_is_int(const byte x) { return x == 0x01; }
 inline byte val_is_field(const byte x) { return x == 0x02; }
 
+/* ************* EVAL FUNCTIONS ************* */
+
+/* Returns the address of field number 'field_num' (extracted from byte code)
+ * of the tuple given as argument.
+ * Also increment pc past the field.
+ */
 inline 
 void* eval_field (tuple_t tuple, const unsigned char **pc)
 {
@@ -52,7 +56,9 @@ void* eval_field (tuple_t tuple, const unsigned char **pc)
 
   return GET_TUPLE_FIELD(tuple, field_num);
 }
-
+/* Returns the address of register number 'value' 
+ * and increment pc past the reg byte.
+ */
 inline 
 void* eval_reg(const unsigned char value, const unsigned char **pc, Register *reg)
 { 
@@ -60,6 +66,9 @@ void* eval_reg(const unsigned char value, const unsigned char **pc, Register *re
   return &(reg)[VAL_REG(value)]; 
 }
 
+/* Returns a pointer to the meld_int at address pointed at by pc 
+ * and increment it past the int.
+ */
 inline 
 void* eval_int (const unsigned char **pc)
 {
@@ -69,6 +78,9 @@ void* eval_int (const unsigned char **pc)
   return ret;
 }
 
+/* Returns a pointer to the meld_float (double) at address pointed at by pc 
+ * and increment it past the float.
+ */
 inline 
 void* eval_float (const unsigned char **pc)
 {
@@ -78,6 +90,7 @@ void* eval_float (const unsigned char **pc)
   return ret;
 }
 
+/* Set value of register number 'reg_index' as a pointer to tuple 'tuple' */
 inline 
 void moveTupleToReg (const unsigned char reg_index, tuple_t tuple, Register *reg)
 {
@@ -90,10 +103,9 @@ void moveTupleToReg (const unsigned char reg_index, tuple_t tuple, Register *reg
 #endif
 }
 
-/* END OF EVAL FUNCTIONS */
+/* ************* INSTRUCTION EXECUTION FUNCTIONS ************* */
 
-/* INSTR EXECUTION FUNCTIONS */
-
+/* Allocates a new tuple of type 'type' and set its type byte */
 inline void
 execute_alloc (const unsigned char *pc, Register *reg) 
 {
@@ -114,6 +126,9 @@ execute_alloc (const unsigned char *pc, Register *reg)
   TUPLE_TYPE(*dst) = type;
 }
 
+/* Either enqueue a tuple for derivation
+ * or enqueue it for retraction
+ */
 inline void
 execute_addtuple (const unsigned char *pc, 
 		  Register *reg, int isNew) 
@@ -138,25 +153,9 @@ execute_addtuple (const unsigned char *pc,
 		  (record_type) isNew);
 }
 
-inline void
-execute_linear (const unsigned char *pc, 
-		Register *reg) 
-{
-  ++pc;  
-  
-  byte reg_index = FETCH(pc);  
-  Register tuple_reg = reg[reg_index];
-
-#ifdef DEBUG_INSTRS
-  tuple_type type = TUPLE_TYPE((tuple_t)tuple_reg);
-  printf ("--%d--\t ADDLINEAR reg %d: %s\n", 
-	  getBlockId(), reg_index, tuple_names[type]);
-#endif
-
-  enqueueNewTuple((tuple_t)MELD_CONVERT_REG_TO_PTR(tuple_reg), 
-		  (record_type) 1);
-}
-
+/* Only used to notify user that a linear tuple has been updated
+ * instead of removed during rule derivation.
+ */
 inline void
 execute_update (const unsigned char *pc, Register *reg) 
 {
@@ -175,6 +174,9 @@ execute_update (const unsigned char *pc, Register *reg)
 #endif
 }
 
+/* Send tuple pointed at by 'send_reg' to blockID designated by send_rt
+ * NO DELAY!
+ */
 inline void
 execute_send (const unsigned char *pc, Register *reg, int isNew)
 {
@@ -190,6 +192,10 @@ execute_send (const unsigned char *pc, Register *reg, int isNew)
   tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, 0, isNew);
 }
 
+/* Call an external function with one argument.
+ * Not implemented yet, only used to support the node2int function
+ * which is useless when using BB as nodeID's are not pointers.
+ */
 inline void
 execute_call1 (const unsigned char *pc, Register *reg)
 {
@@ -221,6 +227,7 @@ execute_call1 (const unsigned char *pc, Register *reg)
   (void)dst;
 }
 
+/* Similar to send, but with a delay */
 inline void
 execute_send_delay (const unsigned char *pc,
 		    Register *reg, int isNew)
@@ -238,6 +245,9 @@ execute_send_delay (const unsigned char *pc,
   tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, *delay, isNew);
 }
 
+/* Iterate through the database to find a match with tuple read from byte code
+ * If there are matches, process the inside of the ITER with all matches sequentially.
+ */
 void
 execute_iter (const unsigned char *pc, 
 	      Register *reg, int isNew)
@@ -322,7 +332,11 @@ execute_iter (const unsigned char *pc,
 #endif
           
     if (matched) {
+      /* We've got a match! */
       moveTupleToReg (reg_store_index, next_tuple, reg);
+      /* Process it - And if we encounter a return instruction, return 
+       * Otherwise, look for another match.
+       */
       if (RET_RET == process_bytecode(next_tuple, inner_jump, 
 				      isNew, reg, PROCESS_ITER)) {
 	free(list);
@@ -337,6 +351,79 @@ execute_iter (const unsigned char *pc,
   return;
 }
 
+/* Run an action onto the block */
+inline void
+execute_run_action (const unsigned char *pc, 
+		    Register *reg, int isNew) 
+{
+    ++pc;
+
+    byte reg_index = FETCH(pc);
+
+    tuple_t action_tuple = (tuple_t)reg[reg_index];
+    tuple_type type = TUPLE_TYPE(action_tuple);
+    
+    switch (type) {
+    case TYPE_SETCOLOR:
+      if (isNew > 0) {
+    
+#ifdef DEBUG_INSTRS
+	printf ("--%d--\t RUN ACTION: %s(currentNode, %d, %d, %d, %d)\n", 
+		getBlockId(), tuple_names[type], 
+		MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)),
+		MELD_INT(GET_TUPLE_FIELD(action_tuple, 1)),
+		MELD_INT(GET_TUPLE_FIELD(action_tuple, 2)),
+		MELD_INT(GET_TUPLE_FIELD(action_tuple, 3))); 
+#endif
+   
+	/* Don't call it directly to avoid having to import led.bbh */
+	setLEDWrapper(*(byte *)GET_TUPLE_FIELD(action_tuple, 0),
+		      *(byte *)GET_TUPLE_FIELD(action_tuple, 1),
+		      *(byte *)GET_TUPLE_FIELD(action_tuple, 2),
+		      *(byte *)GET_TUPLE_FIELD(action_tuple, 3));
+      }
+      FREE_TUPLE(action_tuple);
+      return;
+   
+    case TYPE_SETCOLOR2:
+      if (isNew > 0) {
+#ifdef DEBUG_INSTRS
+	printf ("--%d--\t RUN ACTION: %s(currentNode, %d)\n", 
+		getBlockId(), tuple_names[type], 
+		MELD_INT(GET_TUPLE_FIELD(action_tuple, 0))); 
+#endif
+   
+	/* Don't call it directly to avoid having to import led.bbh */
+	setColorWrapper(MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)));
+      }
+      
+      FREE_TUPLE(action_tuple);
+      return;
+    }
+}
+
+inline void
+execute_remove (const unsigned char *pc, Register *reg, int isNew) 
+{
+  if (isNew > 0) {
+    ++pc;
+    int reg_remove = REMOVE_REG(pc);
+    tuple_type type = TUPLE_TYPE(MELD_CONVERT_REG_TO_PTR(reg[reg_remove]));
+    int size = TYPE_SIZE(type);
+
+#ifdef DEBUG_INSTRS
+    printf ("--%d--\t REMOVE reg %d: %s of size %d\n", 
+	    getBlockId(), reg_remove, tuple_names[type], size); 
+#endif
+    
+    tuple_handle(memcpy(malloc(size),MELD_CONVERT_REG_TO_PTR(reg[reg_remove]), size), -1, reg);
+    reg[REMOVE_REG(pc)] = 0;
+  }
+}
+
+/* ************* MOVE INSTRUCTIONS FUNCTIONS ************* */
+
+/* Moves an int to a tuple field */
 inline void
 execute_mvintfield (const unsigned char *pc, Register *reg) 
 {
@@ -362,6 +449,7 @@ execute_mvintfield (const unsigned char *pc, Register *reg)
   memcpy(dst, src, size);
 }
 
+/* Moves pointer to an int to a register */
 inline void
 execute_mvintreg (const unsigned char *pc, Register *reg) 
 {
@@ -380,6 +468,7 @@ execute_mvintreg (const unsigned char *pc, Register *reg)
   memcpy(dst, src, size);
 }
 
+/* Moves pointer to a float to a register */
 inline void
 execute_mvfloatreg (const unsigned char *pc, Register *reg) 
 {
@@ -398,6 +487,7 @@ execute_mvfloatreg (const unsigned char *pc, Register *reg)
   memcpy(dst, src, size);
 }
 
+/* Moves pointer to a float to a tuple field */
 inline void
 execute_mvfloatfield (const unsigned char *pc, Register *reg) 
 {
@@ -423,6 +513,7 @@ execute_mvfloatfield (const unsigned char *pc, Register *reg)
   memcpy(dst, src, size);
 }
 
+/* Moves pointer to a tuple field to a register */
 inline void
 execute_mvfieldreg (const unsigned char *pc, Register *reg) 
 {
@@ -448,6 +539,7 @@ execute_mvfieldreg (const unsigned char *pc, Register *reg)
   memcpy(dst, src, size);
 }
 
+/* Moves value pointed at by a register to a field */
 inline void
 execute_mvregfield (const unsigned char *pc, Register *reg) 
 {
@@ -473,6 +565,7 @@ execute_mvregfield (const unsigned char *pc, Register *reg)
   memcpy(dst, src, size);
 }
 
+/* Moves content of a tuple field to another */
 inline void
 execute_mvfieldfield (const unsigned char *pc, 
 		      Register *reg) 
@@ -504,6 +597,7 @@ execute_mvfieldfield (const unsigned char *pc,
   memcpy(dst, src, size);
 }
 
+/* Moves blockId to a tuple field */
 inline void
 execute_mvhostfield (const unsigned char *pc, Register *reg) 
 {
@@ -528,6 +622,7 @@ execute_mvhostfield (const unsigned char *pc, Register *reg)
   memcpy(dst, src, size);
 }
 
+/* Moves blockId to a register */
 inline void
 execute_mvhostreg (const unsigned char *pc, Register *reg) 
 {
@@ -548,6 +643,7 @@ execute_mvhostreg (const unsigned char *pc, Register *reg)
   memcpy(dst, src, size);
 }
 
+/* Moves content of a reg to another */
 inline void
 execute_mvregreg (const unsigned char *pc, Register *reg) 
 {
@@ -569,6 +665,9 @@ execute_mvregreg (const unsigned char *pc, Register *reg)
   memcpy(dst, src, size);
 }
 
+/* ************* OPERATION INSTRUCTIONS FUNCTIONS ************* */
+
+/* Perform boolean NOT operation */
 inline void
 execute_not (const unsigned char *pc, Register *reg) 
 {
@@ -591,6 +690,7 @@ execute_not (const unsigned char *pc, Register *reg)
 #endif
 }
 
+/* Perform boolean OR operation */
 inline void
 execute_boolor (const unsigned char *pc, Register *reg) 
 {
@@ -654,6 +754,7 @@ execute_boolnotequal (const unsigned char *pc, Register *reg)
 #endif
 }
 
+/* Compares two blockId and store the result to 'dest' */
 inline void
 execute_addrequal (const unsigned char *pc, Register *reg) 
 {
@@ -673,6 +774,7 @@ execute_addrequal (const unsigned char *pc, Register *reg)
 #endif
 }
 
+/* Compares two blockId and store the result to 'dest' */
 inline void
 execute_addrnotequal (const unsigned char *pc, Register *reg) 
 {
@@ -692,6 +794,7 @@ execute_addrnotequal (const unsigned char *pc, Register *reg)
 #endif
 }
 
+/* Same with and int... */
 inline void
 execute_intequal (const unsigned char *pc, Register *reg) 
 {
@@ -1090,75 +1193,10 @@ execute_floatgreaterequal (const unsigned char *pc, Register *reg)
 	  getBlockId(), reg1, reg2, reg3);
 #endif
 }
-
-inline void
-execute_run_action (const unsigned char *pc, 
-		    Register *reg, int isNew) 
-{
-    ++pc;
-
-    byte reg_index = FETCH(pc);
-
-    tuple_t action_tuple = (tuple_t)reg[reg_index];
-    tuple_type type = TUPLE_TYPE(action_tuple);
-    
-    switch (type) {
-    case TYPE_SETCOLOR:
-      if (isNew > 0) {
-    
-#ifdef DEBUG_INSTRS
-	printf ("--%d--\t RUN ACTION: %s(currentNode, %d, %d, %d, %d)\n", 
-		getBlockId(), tuple_names[type], 
-		MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)),
-		MELD_INT(GET_TUPLE_FIELD(action_tuple, 1)),
-		MELD_INT(GET_TUPLE_FIELD(action_tuple, 2)),
-		MELD_INT(GET_TUPLE_FIELD(action_tuple, 3))); 
-#endif
-   
-	setLEDWrapper(*(byte *)GET_TUPLE_FIELD(action_tuple, 0),
-		      *(byte *)GET_TUPLE_FIELD(action_tuple, 1),
-		      *(byte *)GET_TUPLE_FIELD(action_tuple, 2),
-		      *(byte *)GET_TUPLE_FIELD(action_tuple, 3));
-      }
-      FREE_TUPLE(action_tuple);
-      return;
-   
-    case TYPE_SETCOLOR2:
-      if (isNew > 0) {
-#ifdef DEBUG_INSTRS
-	printf ("--%d--\t RUN ACTION: %s(currentNode, %d)\n", 
-		getBlockId(), tuple_names[type], 
-		MELD_INT(GET_TUPLE_FIELD(action_tuple, 0))); 
-#endif
-   
-	setColorWrapper(MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)));
-      }
-      
-      FREE_TUPLE(action_tuple);
-      return;
-    }
-}
-
-inline void
-execute_remove (const unsigned char *pc, Register *reg, int isNew) 
-{
-  if (isNew > 0) {
-    ++pc;
-    int reg_remove = REMOVE_REG(pc);
-    tuple_type type = TUPLE_TYPE(MELD_CONVERT_REG_TO_PTR(reg[reg_remove]));
-    int size = TYPE_SIZE(type);
-
-#ifdef DEBUG_INSTRS
-    printf ("--%d--\t REMOVE reg %d: %s of size %d\n", 
-	    getBlockId(), reg_remove, tuple_names[type], size); 
-#endif
-    
-    tuple_handle(memcpy(malloc(size),MELD_CONVERT_REG_TO_PTR(reg[reg_remove]), size), -1, reg);
-    reg[REMOVE_REG(pc)] = 0;
-  }
-}
  
 /* END OF INSTR EXECUTION FUNCTIONS */
+
+/* ************* QUEUE MANAGEMENT FUNCTIONS ************* */
 
 int
 queue_length (tuple_queue *queue)
@@ -1170,7 +1208,7 @@ queue_length (tuple_queue *queue)
 
   return i;
 }
- 
+
 bool
 queue_is_empty(tuple_queue *queue)
 {
@@ -1289,6 +1327,8 @@ p_enqueue(tuple_pqueue *queue, meld_int priority, tuple_t tuple,
   *spot = entry;
 }
     
+/* ************* VM INITIALIZATION FUNCTIONS ************* */
+
 static int type;
 void
 init_fields(void)
@@ -1353,6 +1393,7 @@ init_fields(void)
   }
 }
 
+/* Get TYPE id for uselful types */
 void init_consts(void)
 {
   tuple_type i;
@@ -1363,6 +1404,8 @@ void init_consts(void)
       TYPE_TERMINATE = i;
   }	
 }
+
+/* ************* AGGREGATE RELATED FUNCTIONS ************* */
 
 static inline
 bool aggregate_accumulate(int agg_type, void *acc, void *obj, int count)
@@ -1681,6 +1724,14 @@ void aggregate_recalc(tuple_entry *agg, Register *reg,
   free(accumulator);
 }
 
+/* ************* PROCESSING FUNCTIONS ************* */
+
+/* Handles a tuple, if it is a derivation tuple (isNew > 0):
+ * -> Process tuple and add it to the database
+ * If it is a retraction tuple (isNew < 0):
+ * -> Iterate through the database and find corresponding tuple, dequeue and 
+ * process it with a isNew of -1 to perform retraction, and free both tuples.
+ */
 void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 {
   if(type == TYPE_TERMINATE) {
@@ -1875,10 +1926,6 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
   process_bytecode(tuple, TYPE_START(type), isNew, reg, PROCESS_TUPLE);
 }
 
-void
-derive_axioms (Register *reg)
-{ process_bytecode(NULL, RULE_START(0), 1, reg, PROCESS_RULE); }
-
 int 
 process_bytecode (tuple_t tuple, const unsigned char *pc,
 		  int isNew, Register *reg, byte state)
@@ -1989,6 +2036,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+      /* NOT TESTED */
     case SEND_DELAY_INSTR: 		/* 0x15 */ 
       {
 	const byte *npc = pc + SEND_DELAY_BASE;
@@ -2060,6 +2108,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+      /* NOT TESTED */
     case MVFLOATFIELD_INSTR: 		/* 0x2d */
       {
 	const byte *npc = pc + MVFLOATFIELD_BASE;
@@ -2067,12 +2116,15 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+      /* NOT TESTED */
     case MVFLOATREG_INSTR: 		/* 0x2e */
       {
 	const byte *npc = pc + MVFLOATREG_BASE;
 	execute_mvfloatreg (pc, reg);
 	pc = npc; goto eval_loop;
       }
+
+      /* NOT TESTED */
     case MVHOSTREG_INSTR: 		/* 0x37 */
       {
 	const byte *npc = pc + MVHOSTREG_BASE;
@@ -2143,6 +2195,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+      /* NOT TESTED */
     case BOOLOR_INSTR: 		/* 0x41 */
       {
 	const byte *npc = pc + OP_BASE;
@@ -2248,6 +2301,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+      /* NOT TESTED */
     case MVREGREG_INSTR: 		/* 0x50 */
       {
 	const byte *npc = pc + MVREGREG_BASE;
@@ -2255,6 +2309,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+      /* NOT TESTED */
     case BOOLEQUAL_INSTR: 		/* 0x51 */
       {
 	const byte *npc = pc + OP_BASE;
@@ -2262,6 +2317,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+      /* NOT TESTED */
     case BOOLNOTEQUAL_INSTR: 		/* 0x51 */
       {
 	const byte *npc = pc + OP_BASE;;
@@ -2277,7 +2333,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	byte reg_index = FETCH(pc);
 	Register *if_reg = eval_reg (reg_index, &pc, reg);
 
-	if (!(char)(*if_reg)) {
+	if (!(unsigned char)(*if_reg)) {
 #ifdef DEBUG_INSTRS
 	  printf ("--%d--\t IF (reg %d) -- Failed\n", 
 		  getBlockId(), reg_index);
@@ -2336,6 +2392,48 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	pc = npc; goto eval_loop;
       }
 
+      /* NOT TESTED */
+      /* CAUTION: I have no way to ensure that it is the correct way to handle
+       * this instruction at this moment, please review this when you encounter it.
+       */
+    case IF_ELSE_INSTR: 		/* 0x81 */
+      {
+	const byte *npc = pc + IF_ELSE_BASE;
+	byte *base = (byte*)pc;
+	++pc;
+	byte reg_index = FETCH(pc);
+	Register *if_reg = eval_reg (reg_index, &pc, reg);
+
+	/* If false, jump to else */
+	if (!(unsigned char)(*if_reg)) {
+#ifdef DEBUG_INSTRS
+	  printf ("--%d--\t IF_ELSE (reg %d) -- ELSE\n", 
+		  getBlockId(), reg_index);
+#endif
+
+	  pc = base + IF_JUMP(pc); goto eval_loop;
+	} else {
+	  /* Otherwise, process if until a jump instruction is encountered
+	   * (This is only a guess)
+	   */
+#ifdef DEBUG_INSTRS
+	  printf ("--%d--\t IF_ELSE (reg %d) -- ELSE\n", 
+		  getBlockId(), reg_index);
+#endif
+
+	  pc = npc; goto eval_loop;
+      }
+
+	/* NOT TESTED */
+      case JUMP_INSTR:
+	{
+	  ++pc;
+#ifdef DEBUG_INSTRS
+	  printf ("--%d--\t JUMP TO\n", getBlockId());
+#endif
+	  pc += JUMP_BASE + IF_JUMP(pc); goto eval_loop;
+        }
+
     case INTMOD_INSTR: 		/* 0x3d */
       {
 	const byte *npc = pc + OP_BASE;
@@ -2355,7 +2453,8 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     }
   }
 }
-    
+
+/* Prints a tuple */
 void
 tuple_print(tuple_t tuple, FILE *fp)
 {
@@ -2419,6 +2518,7 @@ tuple_print(tuple_t tuple, FILE *fp)
   fprintf(fp, ")");
 }
 
+/* Prints the content of the whole database */
 void facts_dump(void)
 {
   int i;
@@ -2458,10 +2558,12 @@ void facts_dump(void)
   }
 }
 
+/* Print program info, this was designed for the oldVM, not sure if it works or not,
+ * looks like it should.
+ */
 void
 print_program_info(void)
 {
-  /* print program info */
   int i;
   for(i = 0; i < NUM_TYPES; ++i) {
     printf("Tuple (%s:%d:%d) ", tuple_names[i], i, TYPE_SIZE(i));
@@ -2488,6 +2590,11 @@ print_program_info(void)
   }
 }
 
+/* If activated, call each blockTick to ensure that tuples such as vacant, neighbor,
+ * or neighborCount or don't have duplicates in the database.
+ * i.e. numberOfVacant + numberOfNeighbor < NUM_PORTS :
+ * and numberOfNeighborCount == 1 are two conditions which must always be true
+ */
 void
 databaseConsistencyChecker() 
 {
