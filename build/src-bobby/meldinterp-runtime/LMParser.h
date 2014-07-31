@@ -5,7 +5,7 @@
 #include "string.h"
 
 /******************************************************************************
-@Description: LMParser is used to generate a .bb file (In this case, a Meld byte code file for the targetVM = oldbb's one), from a .m file (Byte code file from Flavio Cruz's cl-meld compiler, I sometimes refer it as source MeldVM).
+@Description: LMParser is used to generate a .bb file (In this case, a Meld byte code file for the targetVM = oldbb's one), from a .m file (Byte code file from Flavio Cruz's cl-meld compiler, I sometimes refer to it as source MeldVM).
 
 @author: Pierre Thalamy
 @email: pierre.thalamy@gmail.com
