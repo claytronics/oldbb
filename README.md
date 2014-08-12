@@ -27,9 +27,18 @@ Not all the files in *meldinterp-runtime* have been altered, most of the modific
 3. Go to *build/apps/sample-meld/*, where you can find some *.meld* files, which are **suited for the old VM**, and the *LM-programs/* folder, where the current version's Meld programs are.
 4. Go to the *LM-programs/* folder.  
 5. `export BB=SIM` if making for the sim **or** `export BB=block` for the blocks.
-6. Then run `compile-meld.sh [meld_program_name_without_extension]` to compile the program.  
-
+6. Then run `compile-meld.sh [meld_program_name_without_extension]` to compile the program.
 7. `../arch-$ARCH/ends [OPTIONS]` to run the simulator.  
    **or**  
    `reprogrammer -p /dev/[PORT] -f ../arch-blocks/ends.hex` to reprogram the blocks.  
    (cf. *build/README*)  
+
+## What is the format of a Meld byte code file and how does it get executed?
+A Meld program goes through several steps before it actually gets executed. The first one is the compilation of the *.meld* program in a *.m* byte code file by the [cl-meld](https://github.com/flavioc/cl-meld/tree/dev) compiler.  
+Below is a draft diagram of the format of the output file: 
+![](http://i58.tinypic.com/68udj9.jpg)
+
+Then, the *.m* file is passed to LMParser, which will extract the useful information form it and reformat it as a new file, with a *.bb* extension, and the following format:
+![](![](http://i62.tinypic.com/2ntfbxl.jpg)
+
+Next, this file is copied to *build/apps/sample-meld/arch-$ARCH/meldinterp-runtime/*, and finally, the VM is recompiled with the *.bb* file.
