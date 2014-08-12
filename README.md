@@ -1,5 +1,5 @@
-oldbb - modifiedVM
-===================
+oldbb - modifiedVM - 08/12/14
+====================================
 The *modifiedVM* branch of oldbb is a fork from the master branch in which the original Meld virtual machine has been revised to allow the execution of _Linear Meld_ onto the Blinky Blocks.  
 
 ## What changes have been made?
@@ -21,4 +21,15 @@ Not all the files in *meldinterp-runtime* have been altered, most of the modific
 - **core.h:** All global variable and macro declarations, as well as instructions and their size are here.
 - **core.c:** Where serious stuff happens! Manages queues and the database, and executes byte code.
 
-## 
+## How do I CURRENTLY compile a Meld program and send it to the blocks?
+1. Make sure that the [cl-meld](https://github.com/flavioc/cl-meld/tree/dev) compiler is **in the same folder as oldbb**, and on the *dev* branch.
+2. Follow the instructions in *build/README* to compile all the tools you will need.
+3. Go to *build/apps/sample-meld/*, where you can find some *.meld* files, which are **suited for the old VM**, and the *LM-programs/* folder, where the current version's Meld programs are.
+4. Go to the *LM-programs/* folder.  
+5. `export BB=SIM` if making for the sim **or** `export BB=block` for the blocks.
+6. Then run `compile-meld.sh [meld_program_name_without_extension]` to compile the program.  
+
+7. `../arch-$ARCH/ends [OPTIONS]` to run the simulator.  
+   **or**  
+   `reprogrammer -p /dev/[PORT] -f ../arch-blocks/ends.hex` to reprogram the blocks.  
+   (cf. *build/README*)  
