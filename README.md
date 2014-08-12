@@ -39,6 +39,6 @@ Below is a draft diagram of the format of the output file:
 ![](http://i58.tinypic.com/68udj9.jpg)
 
 Then, the *.m* file is passed to LMParser, which will extract the useful information form it and reformat it as a new file, with a *.bb* extension, and the following format:
-![](![](http://i62.tinypic.com/2ntfbxl.jpg)
+![](http://i62.tinypic.com/2ntfbxl.jpg)
 
 Next, this file is copied to *build/apps/sample-meld/arch-$ARCH/meldinterp-runtime/*, and finally, the VM is recompiled with the *.bb* file.
