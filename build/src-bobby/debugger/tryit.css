@@ -1,0 +1,69 @@
+#buttonbox
+{
+position:absolute;
+height:auto;
+left:0cm;
+top: 0cm;
+bottom:0cm;
+width:20%;
+      background-color : yellow;
+}
+
+
+#registerbox
+{
+position:absolute;
+height:auto;
+left:10cm;
+top: -8px;
+bottom: 20px;
+width:20%;
+      background-color : green;
+}
+
+
+#memorybox
+{
+position:absolute;
+height:auto;
+left:20cm;
+top: -8px;
+bottom:40px;
+width:20%;
+      background-color : blue;
+}
+
+#codebox
+{
+position:absolute;
+height:auto;
+left:30cm;
+top: -8px;
+bottom:60px;
+width:20%;
+      background-color : red;
+}
+
+#footer
+{
+position:absolute;
+height:auto;
+left:40cm;
+top: 0px;
+bottom:80px;
+width:20%;
+      background-color : black;
+}
+
+
+#console
+{
+position:absolute;
+height:auto;
+left:50cm;
+top: 0px;
+bottom:100px;
+width:20%;
+      background-color : silver;
+
+}

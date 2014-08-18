@@ -1,0 +1,49 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+$(document).ready(
+		function(){
+
+		$("#Submit").click(function() {
+			var url = $("#url").val();
+			if( url == "")
+			{
+			alert("please enter valid url");
+			return;
+			}
+			alert("url "+url);
+			//$("#form").hide();
+			//$.get(url,{cat:"meow",yonce:"on his mouth like",song:"lalala"},function(data,status){
+			$.get(url,function(data,status){
+					//alert(data);
+					$("#TEXT").text(function(i,orig_text){return orig_text+data});
+					});
+
+		});
+			$("#Reset").click(function() {
+				alert("Resetting the blinky blocks");
+				$.get("/a/reset",function(data,status){
+					alert("Reset Done");
+					});
+
+				})
+
+		}
+		);
+		</script>
+			</head>
+			<body>
+			<div id=form>
+			enter the url <input id=url type=text></input>
+			<button id="Submit">Submit</button>
+			</div>
+			<div id = content>
+			<div = contents>
+			</div>
+			</div>
+			<button id=Reset>RESET</button>
+			<div id="TEXT"style="border:1px solid black;width:200px;height:100px;overflow:scroll;" >
+			</div>
+			</body>
+			</html>

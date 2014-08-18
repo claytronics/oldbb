@@ -1,0 +1,85 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+<!--<link rel="stylesheet" href="/resources/demos/style.css">-->
+<!--<link rel="stylesheet" href="/resources/demos/style.css">-->
+<script>
+$(document).ready(function(){
+		$( "#tabs" ).tabs();
+
+		$("#Reset").click(function() {
+			alert("Resetting the blinky blocks");
+			$.get("/a/reset",function(data,status){
+				alert("Reset Done");
+				});
+
+			});
+
+
+		$("#Submit").click(function() {
+			var url = $("#url").val();
+			if( url == "")
+			{
+			alert("please enter valid url");
+			return;
+			}
+			alert("url "+url);
+			//$("#form").hide();
+			//$.get(url,{cat:"meow",yonce:"on his mouth like",song:"lalala"},function(data,status){
+			$.get(url,function(data,status){
+					//alert(data);
+					$("#TEXT2").html(function(i,orig_text){return (orig_text+data)});
+					});
+
+
+		});
+
+
+			function update_logs() {
+			$.get("/a/debug_logs?",function(data,status){
+				$("#TEXT").html(function(i,orig_text){return (orig_text+data).replace(/\n/g,"<br>")});
+				});
+			}
+
+			var myVar=setInterval(function(){update_logs()},1000);
+
+		});
+
+		</script>
+			</head>
+			<body>
+			<div id="tabs">
+			<ul>
+			<li><a href="#tabs-1">Debugger</a></li>
+			<li><a href="#tabs-2">Debug Messages</a></li>
+			<li><a href="#tabs-3">Files</a></li>
+			</ul>
+			<div id="tabs-1">
+			<div id=form>
+			enter the url <input id=url type=text></input>
+			<button id="Submit">Submit</button>
+			<div>
+			<button id=Reset>RESET</button>
+			</div>
+			</div>
+
+			</div>
+			<div id="tabs-2">
+			<div id="TEXT">
+			</div>
+			</div>
+
+
+			<div id="tabs-3">
+			<div id="TEXT2">
+			</div>
+			</div>
+			</div>
+			<!--<div id = content>
+			<div = contents>
+			</div>
+			</div>-->
+			</body>
+			</html>
