@@ -42,3 +42,13 @@ Then, the *.m* file is passed to LMParser, which will extract the useful informa
 ![](http://i62.tinypic.com/2ntfbxl.jpg)
 
 Next, this file is copied to *build/apps/sample-meld/arch-$ARCH/meldinterp-runtime/*, and finally, the VM is recompiled with the *.bb* file.
+
+## What is the easiest way to implement new instructions?
+
+Here is what I did for the instructions already implemented:  
+1. Checkout the `dev` branch of [meld](https://github.com/flavioc/meld) if you don't have it yet.  
+2. Open the following files: `vm/instr.cpp vm/instr.hpp exec.cpp`  
+3. In `vm/instr.hpp`, you should be able to get a good view of the format of the instructions, by looking at the size of the instruction, and its fields.  
+4. Then, you can also use `vm/instr.cpp` to get an even clearer idea of what its format is by looking at how its printing is performed.  
+5. Once you have understood its format, browse to `vm/exec.cpp` to see how it is executed.  
+6. Finally, implement its execution to the VM by adding a case statement to the loop's switch in `core.c` and a call to its execution function.
