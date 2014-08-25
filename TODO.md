@@ -1,4 +1,4 @@
-TODO
+TODO - as of August 2014
 ====
 
 ## Instructions not implemented yet:
@@ -175,14 +175,13 @@ Assume we start with 11 blocks lined up numbers 0 to 10 from left to
 right.  Blocks 1 thru 9 will all derive the middle fact.  Blocks 1 and
 9 will also derive the nearEnd fact.  The result looks like:
 
-
+![](http://hpics.li/560b775)
 
 If we remove block 5, then blocks 4 & 6 will retract the middle fact
 and derive the end fact.  blocks 3 & 7 will derive the nearEnd fact.
 As this happens the blocks turn their proper colors and we get:
 
-           0 1 2 3 4   6 7 8 9 A
-           R G B G R   R G B G R
+![](http://hpics.li/1e4bdd2)
 
 If we re-insert block 5, then 4 & 6 retract the end fact, block 3 & 7
 retract the nearEnd fact.  Finally, 4, 5, and 6 will derive the middle
