@@ -175,21 +175,29 @@ Assume we start with 11 blocks lined up numbers 0 to 10 from left to
 right.  Blocks 1 thru 9 will all derive the middle fact.  Blocks 1 and
 9 will also derive the nearEnd fact.  The result looks like:
 
-![](http://hpics.li/560b775)
+![](http://img4.hostingpics.net/pics/819739Screenshot20140730144456.png)
 
 If we remove block 5, then blocks 4 & 6 will retract the middle fact
 and derive the end fact.  blocks 3 & 7 will derive the nearEnd fact.
 As this happens the blocks turn their proper colors and we get:
 
-![](http://hpics.li/1e4bdd2)
+![](http://img4.hostingpics.net/pics/944394Screenshot20140730144958.png)
 
 If we re-insert block 5, then 4 & 6 retract the end fact, block 3 & 7
 retract the nearEnd fact.  Finally, 4, 5, and 6 will derive the middle
 fact.  The resulting ensemble looks like:
 
-           0 1 2 3 4 5 6 7 8 9 A
-           R G B G B B B G B G R
+![](http://img4.hostingpics.net/pics/729608Screenshot20140730145042.png)
 
 In other words, there is no fact derived on blocks 3 & 7 which will
 reset their colors to blue!  If we power of the ensemble and power it
 back on, everything is fine.
+
+## Simplify compilation process
+In the current state of the repository, the VM has to be compiled and linked twice in order to compile a single program.  
+1. Firstly, `make` has to be run in *meld-programs/*, it will compile an old *.meld* file, compile system files, and the VM, and put everything in *arch-$ARCH/*.  
+2. Then, our actual Meld program will be compiled by *cl-meld*, and the output will be parsed by *LMParser*. The result of this is a bb file which will in turn be moved to *arch-$ARCH/meldinterp-runtime/* and will replace the former *.bb* file.  
+3. Finally, `make` has to be run once again to link the file we added to the VM.  
+(Have a look at *bin/meld-compile.sh* for further details.)
+  
+It has to be much simpler than that. Ideally, all we should have to do is to compile with *cl-meld*, parse its output, compile the VM and system files with it and voilà!
