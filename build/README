@@ -2,6 +2,8 @@
 
 Firstly, if running on linux, make sure that you have the following tools and libraries installed on your system:
  - sudo apt-get update avr-libc gcc-avr g++ avrdude freeglut3-dev libglu1-mesa-dev
+If you are running Meld programs, please install SBCL:
+ - sudo apt-get install sbcl
 
  If you are using Mac OS X, here is a solution to install the complete AVR toolchain on your system:
  - Install homebrew if you don't have it yet: 
