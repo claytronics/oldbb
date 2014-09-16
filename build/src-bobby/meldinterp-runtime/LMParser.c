@@ -53,8 +53,10 @@ main (int argc, char* argv[])
   pBBFile = fopen (outNameBuf, "w");
 
   /* Check that file opening succeeded and start parsing */
-  if (pMeldProg == NULL) perror ("Error opening file");
-  else
+  if (pMeldProg == NULL) {
+     perror ("Error opening file");
+     exit(1);
+  } else
     {
       /* ************* FILE AND VERSION CHECK ************* */
 

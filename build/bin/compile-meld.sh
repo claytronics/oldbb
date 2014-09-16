@@ -10,25 +10,41 @@ usage(){
 [[ $# -eq 0 ]] && usage
 
 echo "Running make a first time"
-make
+make -C $BBASE/src-bobby
+if [ $? != 0 ]; then
+   echo "Failed to compile tools"
+   exit 1
+fi
 
-(cd ../../../../cl-meld/
-echo "(load \"load\")
-(cl-meld:meld-compile \"$BBASE/apps/sample-meld/$1.meld\" \"$BBASE/apps/sample-meld/$1\")" | sbcl)
+sbcl --eval "(load \"$BBASE/meld-compiler/setup\")" \
+     --eval "(ql:quickload \"cl-meld\")" \
+     --eval "(cl-meld:meld-compile \"$PWD/$1.meld\" \"$PWD/$1.meld\")" \
+     --eval "(quit)"
+if [ $? != 0 ]; then
+   echo "Failed to compile file $1.meld"
+   exit 1
+fi
 echo "Compilation done"
 
 echo "Generating .bb file"
-LMParser $1.m
+$BBASE/src-bobby/meldinterp-runtime/LMParser $PWD/$1.m
+if [ $? != 0 ]; then
+   echo "Failed to parse byte-code file $1.m"
+   exit 1
+fi
 
 if [ "$BB" == "block" ]; then
   echo "Moving .bb file to arch-blocks"
-  mv $1.bb arch-blocks/meldinterp-runtime/ends.bb
+  dir=$BBASE/apps/sample-meld/arch-blocks/meldinterp-runtime
 else
   echo "Moving .bb file to arch-$ARCH"
-  mv $1.bb arch-$ARCH/meldinterp-runtime/ends.bb
+  dir=$BBASE/apps/sample-meld/arch-$ARCH/meldinterp-runtime
 fi
+mkdir -p $dir
+mv $1.bb $dir/blinkyblocks.bb || exit 1
 
 echo "Compiling the VM with the LM program"
-make
+make -C $BBASE/apps/sample-meld
 
+echo "Run $BBASE/apps/sample-meld/arch-$ARCH/blinkyblocks -c $BBASE/apps/configs/line.txt"
 echo "Done."
