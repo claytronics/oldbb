@@ -45,6 +45,10 @@ mv $1.bb $dir/blinkyblocks.bb || exit 1
 
 echo "Compiling the VM with the LM program"
 make -C $BBASE/apps/sample-meld
+if [ $? != 0 ]; then
+   echo "Failed to compile the VM. Maybe you need to install OpenGL?"
+   exit 1
+fi
 
 echo "Run $BBASE/apps/sample-meld/arch-$ARCH/blinkyblocks -c $BBASE/apps/configs/line.txt"
 echo "Done."
