@@ -22,13 +22,12 @@ Not all the files in *meldinterp-runtime* have been altered, most of the modific
 - **core.c:** Where serious stuff happens! Manages queues and the database, and executes byte code.
 
 ## How do I CURRENTLY compile a Meld program and send it to the blocks?
-1. Make sure that the [cl-meld](https://github.com/flavioc/cl-meld/tree/dev) compiler is **in the same folder as oldbb**, and on the *dev* branch.
-2. Follow the instructions in *build/README* to compile all the tools you will need.
-3. Go to *build/apps/sample-meld/*, where you can find some *.meld* files, which are **suited for the old VM**, and the *LM-programs/* folder, where the current version's Meld programs are.
-4. Go to the *LM-programs/* folder.  
-5. `export BB=SIM` if making for the sim **or** `export BB=block` for the blocks.
-6. Then run `compile-meld.sh [meld_program_name_without_extension]` to compile the program.
-7. `../arch-$ARCH/ends [OPTIONS]` to run the simulator.  
+1. Follow the instructions in *build/README* to compile all the tools you will need.
+2. Go to *build/apps/sample-meld/*, where you can find some *.meld* files, which are **suited for the old VM**, and the *LM-programs/* folder, where the current version's Meld programs are.
+3. Go to the *LM-programs/* folder.  
+4. `export BB=SIM` if making for the sim **or** `export BB=block` for the blocks.
+5. Run ". ./initbb.sh" and then run `compile-meld.sh [meld_program_name_without_extension]` to compile the program.
+6. `../arch-$ARCH/blinkyblocks [OPTIONS]` to run the simulator.  
    **or**  
    `reprogrammer -p /dev/[PORT] -f ../arch-blocks/ends.hex` to reprogram the blocks.  
    (cf. *build/README*)  
