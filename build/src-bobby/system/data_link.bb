@@ -21,6 +21,8 @@
   #include "message.bbh"
 #endif
 
+#include "../sim/sim.h"
+
 // global receive queue for packets
 // move to network layer???
 threadvar ReceivePacketQueue globalRq;
@@ -198,16 +200,14 @@ byte setupChunk(Chunk* c, PRef p, byte * msg, byte length, MsgHandler mh, Generi
 byte queueChunk(Chunk* c)
 {
  
-    // null Chunk
-    if(c == NULL)
-    {
-        return 0;    
-    }
+  // null Chunk
+  if(c == NULL) {
+    return 0;    
+  }
     
-    byte p = faceNum(c);
+  byte p = faceNum(c);
     
-    if(p < NUM_PORTS)
-    {
+  if(p < NUM_PORTS) {
 #ifdef DEBUG
 #if DEBUG == 5 // UP
 
@@ -244,38 +244,32 @@ byte queueChunk(Chunk* c)
 #error Invalid DEBUG option chosen - use a face enum.
 #endif
 
-        if(p == DEBUGPORT)
-        {
-            freeChunk(c);
-            return 0;
-        }
+    if(p == DEBUGPORT) {
+      freeChunk(c);
+      return 0;
+    }
 #endif    
     
-        BB_LOCK(SQ_LOCK)
+    BB_LOCK(SQ_LOCK)
 
-        // add to queue - queue empty
-        if( port[p].sq.head == NULL ) 
-        {
-            port[p].sq.head = c;
-        }
+      // add to queue - queue empty
+      if( port[p].sq.head == NULL ) {
+        port[p].sq.head = c;
+      } else {
         // queue has stuff
-        else 
-        {
-            port[p].sq.tail->next = c;
-        }
-        // add to tail and update flags
-        port[p].sq.tail   = c;
-        port[p].sq.flags |= CHUNK_READY;
+        port[p].sq.tail->next = c;
+      }
+    // add to tail and update flags
+    port[p].sq.tail   = c;
+    port[p].sq.flags |= CHUNK_READY;
 
-        BB_UNLOCK(SQ_LOCK)
+    BB_UNLOCK(SQ_LOCK)
 
-        return 1;
-    }
-    else
-    {
-        freeChunk(c);
-        return 0;
-    }
+      return 1;
+  } else {
+    freeChunk(c);
+    return 0;
+  }
 }
 
 // call active message handler and send ack
@@ -290,6 +284,12 @@ byte handleOneMessage()
     if( thisChunk == NULL )
     {
         return 0;
+    }
+
+    {
+      char buffer[256];
+      chunk2str(thisChunk, buffer);
+      blockprint(stderr, "HOM: [%s]\n", buffer);
     }
 
     // call handler
@@ -326,3 +326,11 @@ void initDataLink()
 ////////////////// END PUBLIC FUNCTIONS ///////////////////
 
 #endif
+
+
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
