@@ -6,52 +6,46 @@
 #include "log.bbh"
 #endif
 
-byte sendMessageToUid(Chunk* c, Uid dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
+byte 
+sendMessageToUid(Chunk* c, Uid dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
 {
-    byte i;
+  byte i;
 
-    for(i = 0; i < NUM_PORTS; ++i)
-    {
-        if(thisNeighborhood.n[i] == dest)
-        {
-            if(setupChunk(c, i, msg, length, mh, cb) == 0)
-            {
-                return 0;
-            }
-            queueChunk(c);
-            return 1;
-        }
+  for(i = 0; i < NUM_PORTS; ++i) {
+    if(thisNeighborhood.n[i] == dest) {
+      if(setupChunk(c, i, msg, length, mh, cb) == 0) {
+        return 0;
+      }
+      queueChunk(c);
+      return 1;
     }
+  }
     
-    return 0;
+  return 0;
 }
 
-byte sendMessageToPort(Chunk* c, PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
+byte 
+sendMessageToPort(Chunk* c, PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
 {
-    // NOTE: Can no longer support BROADCAST since requires 6 memory chunks passed in
+  // NOTE: Can no longer support BROADCAST since requires 6 memory chunks passed in
   
 #ifdef TESTING
-    assert(c != 0);
+  assert(c != 0);
 #endif
     
-    if(dest == BROADCAST)
-    {
-        return 0;
-    }
-    else
-    {
-        if(dest < NUM_PORTS)
-        {
-            if(setupChunk(c,dest, msg, length, mh, cb) == 0)
-            {
-                return 0;
-            }
-            queueChunk(c);
-            return 1;
-        }
-    }
-    
+  if(dest == BROADCAST) {
     return 0;
+  } else {
+    if(dest < NUM_PORTS) {
+      if(setupChunk(c,dest, msg, length, mh, cb) == 0) {
+        return 0;
+      }
+      queueChunk(c);
+      return 1;
+    }
+  }
+    
+  return 0;
 }
 
 
@@ -137,3 +131,10 @@ void _assert
   }
 } 
 #endif
+
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
