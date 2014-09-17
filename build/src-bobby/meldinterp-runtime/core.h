@@ -9,155 +9,163 @@
 #include "model.h"
 #endif
 
-/* print tuple allocations */
+/******************************************************************************
+@Description: core.h contains all the constants, external function headers, and
+macros, needed by the VM to parse the byte code, manage queues, and process 
+instructions.
+@note: Tuple type is the same as predicate!
+*******************************************************************************/
+
+/* DEBUG flags */
+
+// print tuple allocations 
 /* #define TUPLE_ALLOC_DEBUG 1 */
-/* tuple allocation checks */
+// tuple allocation checks
 /* #define TUPLE_ALLOC_CHECKS 1 */
 
-/* Size variables */
-#define INSTR_SIZE 1
+/* ************* INSTRUCTIONS RELATED DEFINES AND MACROS ************* */
 
-/* Instructions */
-enum instr_type {
-   RETURN_INSTR	        =  0x00,
-   NEXT_INSTR		=  0x01,
-   PERS_ITER_INSTR      =  0x02,
-   TESTNIL_INSTR	=  0x03,
-   OPERS_ITER_INSTR     =  0x04,
-   LINEAR_ITER_INSTR    =  0x05,
-   RLINEAR_ITER_INSTR   =  0x06,
-   NOT_INSTR		=  0x07,
-   SEND_INSTR 		=  0x08,
-   FLOAT_INSTR          =  0x09,
-   SELECT_INSTR         =  0x0A,
-   RETURN_SELECT_INSTR  =  0x0B,
-   OLINEAR_ITER_INSTR   =  0x0C,
-   DELETE_INSTR         =  0x0D,
-   RESET_LINEAR_INSTR   =  0x0E,
-   END_LINEAR_INSTR     =  0x0F,
-   RULE_INSTR           =  0x10,
-   RULE_DONE_INSTR      =  0x11,
-   ORLINEAR_ITER_INSTR  =  0x12,
-   NEW_NODE_INSTR       =  0x13,
-   NEW_AXIOMS_INSTR     =  0x14,
-   SEND_DELAY_INSTR     =  0x15,
-   PUSH_INSTR           =  0x16,
-   POP_INSTR            =  0x17,
-   PUSH_REGS_INSTR      =  0x18,
-   POP_REGS_INSTR       =  0x19,
-   CALLF_INSTR          =  0x1A,
-   CALLE_INSTR          =  0x1B,
-   SET_PRIORITY_INSTR   =  0x1C,
-   MAKE_STRUCTR_INSTR   =  0x1D,
-   MVINTFIELD_INSTR     =  0x1E,
-   MVINTREG_INSTR       =  0x1F,
-   CALL_INSTR	        =  0x20,
-   MVFIELDFIELD_INSTR   =  0x21,
-   MVFIELDREG_INSTR     =  0x22,
-   MVPTRREG_INSTR       =  0x23,
-   MVNILREG_INSTR       =  0x24,
-   MVFIELDFIELDR_INSTR  =  0x25,
-   MVREGFIELD_INSTR     =  0x26,
-   MVREGFIELDR_INSTR    =  0x27,
-   MVHOSTFIELD_INSTR    =  0x28,
-   MVREGCONST_INSTR     =  0x29,
-   MVCONSTFIELD_INSTR   =  0x2A,
-   MVCONSTFIELDR_INSTR  =  0x2B,
-   MVADDRFIELD_INSTR    =  0x2C,
-   MVFLOATFIELD_INSTR   =  0x2D,
-   MVFLOATREG_INSTR     =  0x2E,
-   MVINTCONST_INSTR     =  0x2F,
-   SET_PRIORITYH_INSTR  =  0x30,
-   MVWORLDFIELD_INSTR   =  0x31,
-   MVSTACKPCOUNTER_INSTR=  0x32,
-   MVPCOUNTERSTACK_INSTR=  0x33,
-   MVSTACKREG_INSTR     =  0x34,
-   MVREGSTACK_INSTR     =  0x35,
-   MVADDRREG_INSTR      =  0x36,
-   MVHOSTREG_INSTR      =  0x37,
-   ADDRNOTEQUAL_INSTR   =  0x38,
-   ADDREQUAL_INSTR      =  0x39,
-   INTMINUS_INSTR       =  0x3A,
-   INTEQUAL_INSTR       =  0x3B,
-   INTNOTEQUAL_INSTR    =  0x3C,
-   INTPLUS_INSTR        =  0x3D,
-   INTLESSER_INSTR      =  0x3E,
-   INTGREATEREQUAL_INSTR=  0x3F,
-   ALLOC_INSTR 	        =  0x40,
-   BOOLOR_INSTR         =  0x41,
-   INTLESSEREQUAL_INSTR =  0x42,
-   INTGREATER_INSTR     =  0x43,
-   INTMUL_INSTR         =  0x44,
-   INTDIV_INSTR         =  0x45,
-   FLOATPLUS_INSTR      =  0x46,
-   FLOATMINUS_INSTR     =  0x47,
-   FLOATMUL_INSTR       =  0x48,
-   FLOATDIV_INSTR       =  0x49,
-   FLOATEQUAL_INSTR     =  0x4A,
-   FLOATNOTEQUAL_INSTR  =  0x4B,
-   FLOATLESSER_INSTR    =  0x4C,
-   FLOATLESSEREQUAL_INSTR= 0x4D,
-   FLOATGREATER_INSTR   =  0x4E,
-   FLOATGREATEREQUAL_INSTR=0x4F,
-   MVREGREG_INSTR       =  0x50,
-   BOOLEQUAL_INSTR      =  0x51,
-   BOOLNOTEQUAL_INSTR   =  0x52,
-   HEADRR_INSTR         =  0x53,
-   HEADFR_INSTR         =  0x54,
-   HEADFF_INSTR         =  0x55,
-   HEADRF_INSTR         =  0x56,
-   HEADFFR_INSTR        =  0x57,
-   HEADRFR_INSTR        =  0x58,
-   TAILRR_INSTR         =  0x59,
-   TAILFR_INSTR         =  0x5A,
-   TAILFF_INSTR         =  0x5B,
-   TAILRF_INSTR         =  0x5C,
-   MVWORLDREG_INSTR     =  0x5D,
-   MVCONSTREG_INSTR     =  0x5E,
-   CONSRRR_INSTR        =  0x5F,
-   IF_INSTR 	        =  0x60,
-   CONSRFF_INSTR        =  0x61,
-   CONSFRF_INSTR        =  0x62,
-   CONSFFR_INSTR        =  0x63,
-   CONSRRF_INSTR        =  0x64,
-   CONSRFR_INSTR        =  0x65,
-   CONSFRR_INSTR        =  0x66,
-   CONSFFF_INSTR        =  0x67,
-   CALL0_INSTR          =  0x68,
-   CALL1_INSTR          =  0x69,
-   CALL2_INSTR          =  0x6A,
-   CALL3_INSTR          =  0x6B,
-   MVINTSTACK_INSTR     =  0x6C,
-   PUSHN_INSTR          =  0x6D,
-   MAKE_STRUCTF_INSTR   =  0x6E,
-   STRUCT_VALRR_INSTR   =  0x6F,
-   MVNILFIELD_INSTR	=  0x70,
-   STRUCT_VALFR_INSTR   =  0x71,
-   STRUCT_VALRF_INSTR   =  0x72,
-   STRUCT_VALRFR_INSTR  =  0x73,
-   STRUCT_VALFF_INSTR   =  0x74,
-   STRUCT_VALFFR_INSTR  =  0x75,
-   MVFLOATSTACK_INSTR   =  0x76,
-   ADDLINEAR_INSTR      =  0x77,
-   ADDPERS_INSTR        =  0x78,
-   RUNACTION_INSTR      =  0x79,
-   ENQUEUE_LINEAR_INSTR =  0x7A,
-   UPDATE_INSTR         =  0x7B,
-   MVARGREG_INSTR       =  0x7C,
-   INTMOD_INSTR         =  0x7D,
-   CPU_ID_INSTR         =  0x7E,
-   NODE_PRIORITY_INSTR  =  0x7F,
-   REMOVE_INSTR 	=  0x80,
-   IF_ELSE_INSTR        =  0x81,
-   JUMP_INSTR           =  0x82,
-   ADD_PRIORITY_INSTR   =  0xA0,
-   ADD_PRIORITYH_INSTR  =  0xA1,
-   STOP_PROG_INSTR      =  0xA2,
-   RETURN_LINEAR_INSTR  =  0xD0,
-   RETURN_DERIVED_INSTR =  0xF0
-};
+#define INSTR_SIZE 1		/* Size of an instruction (without arguments) */
 
-/* Instruction sizes */
+/* All instructions and their values  */
+#define RETURN_INSTR	       0x00
+#define NEXT_INSTR	       0x01
+#define PERS_ITER_INSTR        0x02
+#define TESTNIL_INSTR	       0x03 /* niy: not implemented yet */
+#define OPERS_ITER_INSTR       0x04 /* niy */
+#define LINEAR_ITER_INSTR      0x05
+#define RLINEAR_ITER_INSTR     0x06 /* niy */
+#define NOT_INSTR	       0x07
+#define SEND_INSTR 	       0x08
+#define FLOAT_INSTR            0x09 /* niy */
+#define SELECT_INSTR           0x0A /* niy */
+#define RETURN_SELECT_INSTR    0x0B /* niy */
+#define OLINEAR_ITER_INSTR     0x0C /* niy */
+#define DELETE_INSTR           0x0D /* niy */
+#define RESET_LINEAR_INSTR     0x0E /* niy */
+#define END_LINEAR_INSTR       0x0F /* niy */
+#define RULE_INSTR             0x10
+#define RULE_DONE_INSTR        0x11
+#define ORLINEAR_ITER_INSTR    0x12 /* niy */
+#define NEW_NODE_INSTR         0x13 /* niy - No need to implement it */
+#define NEW_AXIOMS_INSTR       0x14 /* niy */
+#define SEND_DELAY_INSTR       0x15 /* niy */
+#define PUSH_INSTR             0x16 /* niy */
+#define POP_INSTR              0x17 /* niy */
+#define PUSH_REGS_INSTR        0x18 /* niy */
+#define POP_REGS_INSTR         0x19 /* niy */
+#define CALLF_INSTR            0x1A /* niy */
+#define CALLE_INSTR            0x1B /* niy */
+#define SET_PRIORITY_INSTR     0x1C /* niy */
+#define MAKE_STRUCTR_INSTR     0x1D /* niy */
+#define MVINTFIELD_INSTR       0x1E
+#define MVINTREG_INSTR         0x1F
+#define CALL_INSTR             0x20 /* niy */
+#define MVFIELDFIELD_INSTR     0x21
+#define MVFIELDREG_INSTR       0x22
+#define MVPTRREG_INSTR         0x23
+#define MVNILREG_INSTR         0x24 /* niy */
+#define MVFIELDFIELDR_INSTR    0x25 /* niy */
+#define MVREGFIELD_INSTR       0x26
+#define MVREGFIELDR_INSTR      0x27 /* niy */
+#define MVHOSTFIELD_INSTR      0x28
+#define MVREGCONST_INSTR       0x29 /* niy */
+#define MVCONSTFIELD_INSTR     0x2A /* niy */
+#define MVCONSTFIELDR_INSTR    0x2B /* niy */
+#define MVADDRFIELD_INSTR      0x2C /* niy */
+#define MVFLOATFIELD_INSTR     0x2D
+#define MVFLOATREG_INSTR       0x2E
+#define MVINTCONST_INSTR       0x2F /* niy */
+#define SET_PRIORITYH_INSTR    0x30 /* niy */
+#define MVWORLDFIELD_INSTR     0x31 /* niy */
+#define MVSTACKPCOUNTER_INSTR  0x32 /* niy */
+#define MVPCOUNTERSTACK_INSTR  0x33 /* niy */
+#define MVSTACKREG_INSTR       0x34 /* niy */
+#define MVREGSTACK_INSTR       0x35 /* niy */
+#define MVADDRREG_INSTR        0x36 /* niy */
+#define MVHOSTREG_INSTR        0x37
+#define ADDRNOTEQUAL_INSTR     0x38
+#define ADDREQUAL_INSTR        0x39
+#define INTMINUS_INSTR         0x3A
+#define INTEQUAL_INSTR         0x3B
+#define INTNOTEQUAL_INSTR      0x3C
+#define INTPLUS_INSTR          0x3D
+#define INTLESSER_INSTR        0x3E
+#define INTGREATEREQUAL_INSTR  0x3F
+#define ALLOC_INSTR            0x40
+#define BOOLOR_INSTR           0x41
+#define INTLESSEREQUAL_INSTR   0x42
+#define INTGREATER_INSTR       0x43
+#define INTMUL_INSTR           0x44
+#define INTDIV_INSTR           0x45
+#define FLOATPLUS_INSTR        0x46
+#define FLOATMINUS_INSTR       0x47
+#define FLOATMUL_INSTR         0x48
+#define FLOATDIV_INSTR         0x49
+#define FLOATEQUAL_INSTR       0x4A
+#define FLOATNOTEQUAL_INSTR    0x4B
+#define FLOATLESSER_INSTR      0x4C
+#define FLOATLESSEREQUAL_INSTR 0x4D
+#define FLOATGREATER_INSTR     0x4E
+#define FLOATGREATEREQUAL_INSTR 0x4F
+#define MVREGREG_INSTR         0x50
+#define BOOLEQUAL_INSTR        0x51
+#define BOOLNOTEQUAL_INSTR     0x52
+#define HEADRR_INSTR           0x53 /* niy */
+#define HEADFR_INSTR           0x54 /* niy */
+#define HEADFF_INSTR           0x55 /* niy */
+#define HEADRF_INSTR           0x56 /* niy */
+#define HEADFFR_INSTR          0x57 /* niy */
+#define HEADRFR_INSTR          0x58 /* niy */
+#define TAILRR_INSTR           0x59 /* niy */
+#define TAILFR_INSTR           0x5A /* niy */
+#define TAILFF_INSTR           0x5B /* niy */
+#define TAILRF_INSTR           0x5C /* niy */
+#define MVWORLDREG_INSTR       0x5D /* niy */
+#define MVCONSTREG_INSTR       0x5E /* niy */
+#define CONSRRR_INSTR          0x5F /* niy */
+#define IF_INSTR 	       0x60 
+#define CONSRFF_INSTR          0x61 /* niy */
+#define CONSFRF_INSTR          0x62 /* niy */
+#define CONSFFR_INSTR          0x63 /* niy */
+#define CONSRRF_INSTR          0x64 /* niy */
+#define CONSRFR_INSTR          0x65 /* niy */
+#define CONSFRR_INSTR          0x66 /* niy */
+#define CONSFFF_INSTR          0x67 /* niy */
+#define CALL0_INSTR            0x68 /* niy */
+#define CALL1_INSTR            0x69 /* niy */
+#define CALL2_INSTR            0x6A /* niy */
+#define CALL3_INSTR            0x6B /* niy */
+#define MVINTSTACK_INSTR       0x6C /* niy */
+#define PUSHN_INSTR            0x6D /* niy */
+#define MAKE_STRUCTF_INSTR     0x6E /* niy */
+#define STRUCT_VALRR_INSTR     0x6F /* niy */
+#define MVNILFIELD_INSTR       0x70 /* niy */
+#define STRUCT_VALFR_INSTR     0x71 /* niy */
+#define STRUCT_VALRF_INSTR     0x72 /* niy */
+#define STRUCT_VALRFR_INSTR    0x73 /* niy */
+#define STRUCT_VALFF_INSTR     0x74 /* niy */
+#define STRUCT_VALFFR_INSTR    0x75 /* niy */
+#define MVFLOATSTACK_INSTR     0x76 /* niy */
+#define ADDLINEAR_INSTR        0x77
+#define ADDPERS_INSTR          0x78
+#define RUNACTION_INSTR        0x79
+#define ENQUEUE_LINEAR_INSTR   0x7A /* niy */
+#define UPDATE_INSTR           0x7B
+#define MVARGREG_INSTR         0x7C /* niy */
+#define INTMOD_INSTR           0x7D
+#define CPU_ID_INSTR           0x7E /* niy */
+#define NODE_PRIORITY_INSTR    0x7F /* niy */
+#define REMOVE_INSTR 	       0x80
+#define IF_ELSE_INSTR          0x81
+#define JUMP_INSTR             0x82 
+#define ADD_PRIORITY_INSTR     0xA0 /* niy */
+#define ADD_PRIORITYH_INSTR    0xA1 /* niy */
+#define STOP_PROG_INSTR        0xA2 /* niy */
+#define RETURN_LINEAR_INSTR    0xD0
+#define RETURN_DERIVED_INSTR   0xF0
+
+/* Size of each instruction and arguments */
 #define SEND_BASE            3
 #define OP_BASE              4
 #define BASE_ITER            21
@@ -268,14 +276,8 @@ enum instr_type {
 #define IF_ELSE_BASE         1 + 1 + 2 * 4
 #define JUMP_BASE            1 + 4
 
-/* Instruction specific macros and functions */
+/* PTHY: Some of these may be unused, if so, they belonged to the old VM. */
 #define IF_JUMP(x)    (*(uint32_t*)((const unsigned char*)(x)))
-
-extern inline byte val_is_float(const byte x) { return x == 0x00; }
-extern inline byte val_is_int(const byte x) { return x == 0x01; }
-extern inline byte val_is_field(const byte x) { return x == 0x02; }
-
-/* macros */
 
 #define ITER_TYPE(x)  ((*(const unsigned char*)((x)+9))&0x7f)
 #define ITER_INNER_JUMP(x)  (*(uint32_t*)((const unsigned char*)((x)+12)))
@@ -284,12 +286,14 @@ extern inline byte val_is_field(const byte x) { return x == 0x02; }
 #define ITER_MATCH_FIELD(x)   (*(const unsigned char*)(x))
 #define ITER_MATCH_VAL(x)   ((*(const unsigned char*)((x)+1)))
 
-#define SEND_MSG(x)   ((((*(const unsigned char*)(x))&0x3) << 3) | \
-                      (((*(const unsigned char*)((x)+1))&0xe0) >> 5))
-#define SEND_RT(x)    ((*(const unsigned char*)((x)+1))&0x1f)
+/* Reg num of reg containing tuple to send */
+#define SEND_MSG(x)   (*(const unsigned char*)(x)) 
+/* Reg num of reg containing faceNum to send to */
+#define SEND_RT(x)    (*(const unsigned char*)((x)+1))
 #define SEND_ARG1(x)  ((*((const unsigned char*)(x)+2)) & 0x3f)
 #define SEND_DELAY(x) (*(const unsigned char *)((x)+2))
 
+/* Returns the reg num of the reg containing tuple to remove */
 #define REMOVE_REG(x) ((*(const unsigned char*)(x))&0x1f)
 
 #define OP_ARG1(x)    (((*(const unsigned char*)(x)) & 0x3f))
@@ -298,115 +302,172 @@ extern inline byte val_is_field(const byte x) { return x == 0x02; }
 #define OP_DST(x)     ((((*(const unsigned char*)((x)+1)) & 0x03) << 3) | \
                       (((*(const unsigned char*)((x)+2)) & 0xe0) >> 5))
 
+/* Returns a byte which is the value of the 
+   address program counter x is pointing at */
 #define FETCH(x)   (*(const unsigned char*)(x)) 
+
 #define MOVE_SRC(x)   (*(const unsigned char*)((x)+1))
 #define MOVE_DST(x)   (((*(const unsigned char*)((x)+1))&0x3f))
+
 #define ALLOC_TYPE(x) ((((*(const unsigned char *)(x))&0x1f) << 2) | \
-					   (((*(const unsigned char *)(x+1))&0xc0) >> 6))
+		       (((*(const unsigned char *)(x+1))&0xc0) >> 6))
 #define ALLOC_DST(x)  ((*(const unsigned char *)((x)+1))&0x3f)
 
 #define CALL_VAL(x)   (*(const unsigned char *)(x))
 #define CALL_DST(x)   ((*(const unsigned char *)((x)+1)) & 0x1f)
 #define CALL_ID(x)    ((((*(const unsigned char *)((x))) & 0x0f) << 3) | \
-						(((*(const unsigned char *)((x)+1)) & 0xe0) >> 5))
+		       (((*(const unsigned char *)((x)+1)) & 0xe0) >> 5))
 
 #define CALL_ARGS(x)  (extern_functs_args[CALL_ID(x)])
 #define CALL_FUNC(x)  (extern_functs[CALL_ID(x)])
 
-#define VALUE_TYPE_FLOAT 0x00
-#define VALUE_TYPE_INT 0x01
-#define VALUE_TYPE_FIELD 0x02
-#define VALUE_TYPE_HOST 0x03
-#define VALUE_TYPE_REVERSE 0x04
-#define VALUE_TYPE_TUPLE 0x1f
+/* ************* TUPLE MACROS ************* */
 
-#define VAL_IS_REG(x)   (((const unsigned char)(x)) & 0x20)
-#define VAL_IS_TUPLE(x) (((const unsigned char)(x)) == VALUE_TYPE_TUPLE)
-#define VAL_IS_FLOAT(x) (((const unsigned char)(x)) == VALUE_TYPE_FLOAT)
-#define VAL_IS_INT(x)   (((const unsigned char)(x)) == VALUE_TYPE_INT)
-#define VAL_IS_FIELD(x) (((const unsigned char)(x)) == VALUE_TYPE_FIELD)
-#define VAL_IS_HOST(x)  (((const unsigned char)(x)) == VALUE_TYPE_HOST)
-#define VAL_IS_REVERSE(x) (((const unsigned char)(x)) == VALUE_TYPE_REVERSE)
+/* Here is the format of a tuple:
+ * [typeID][(arg1)][(arg2)]..[(argx)]
+ *    1       x       y          z
+ * argument field sizes depends on the type. 
+ */
 
+#define TYPE_FIELD_SIZE 1
+#define TYPE_FIELD_TYPE unsigned char
+
+/* Return the typeid (first byte of a tuple) of tuple x */
+#define TUPLE_TYPE(x)   (*(TYPE_FIELD_TYPE *)(x))
+/* Returns a pointer to argument at offset (off) of a tuple */
+#define TUPLE_FIELD(x,off)					\
+  ((void *)(((unsigned char*)(x)) + TYPE_FIELD_SIZE + (off)))
+
+/* ************* BYTE CODE FILE PARSING ************* */
+
+/* Size of predicate descriptor */
+#define TYPE_DESCRIPTOR_SIZE 6
+
+#define NUM_TYPES  (meld_prog[0]) /* Number of predicates in program */
+#define NUM_RULES  (meld_prog[1]) /* Number of rules in program */
+
+/* Offset to predicate descriptor for predicate x */
+#define TYPE_OFFSET(x)     (meld_prog[2 + (2 * (x))])
+/* Offset to rule descriptor for rule x */
+#define RULE_OFFSET(x)     (meld_prog[2 + (2 * (NUM_TYPES) + 2 * (x))])
+
+// PREDICATE DESCRIPTOR
+// Descriptor start address
+#define TYPE_DESCRIPTOR(x) ((unsigned char *)(meld_prog + TYPE_OFFSET(x)))
+
+/* Returns address of byte code for type x */
+#define TYPE_START(x)							\
+  ((unsigned char*)(meld_prog + *(unsigned short *)TYPE_DESCRIPTOR(x)))
+/* Returns fist byte of byte code for type x */
+#define TYPE_START_CHECK(x)			\
+  (*(unsigned short *)TYPE_DESCRIPTOR(x))
+// Contain tuple's properties (linear/persistent...)
+#define TYPE_PROPERTIES(x) (*(TYPE_DESCRIPTOR(x) + 2))
+// If tuple is aggregate, contains its aggregate type, 0 otherwise
+#define TYPE_AGGREGATE(x)  (*(TYPE_DESCRIPTOR(x) + 3))
+// Stratification round
+#define TYPE_STRATIFICATION_ROUND(x) (*(TYPE_DESCRIPTOR(x) + 4))
+// Number of arguments
+#define TYPE_NUMARGS(x)     (*(TYPE_DESCRIPTOR(x) + 5))
+// Argument descriptor
+#define TYPE_ARGS_DESC(x)					\
+  ((unsigned char*)(TYPE_DESCRIPTOR(x)+TYPE_DESCRIPTOR_SIZE))
+// Returns type of argument number f for type x
+#define TYPE_ARG_DESC(x, f) ((unsigned char *)(TYPE_ARGS_DESC(x)+1*(f)))
+
+// RULE DESCRIPTOR
+/* Descriptor start */
+#define RULE_DESCRIPTOR(x) ((unsigned char*)(meld_prog + RULE_OFFSET(x)))
+
+/* Returns address of byte code for rule x */
+#define RULE_START(x)							\
+  ((unsigned char*)(meld_prog + *(unsigned short*)(RULE_DESCRIPTOR(x))))
+/* Returns first byte of byte code for rule x */
+#define RULE_START_CHECK(x)						\
+  (*(unsigned char*)(meld_prog + *(unsigned short*)(RULE_DESCRIPTOR(x))))
+/* Offset to rule byte code, pred 0 byte code start is reference */
+/* Returns 1 if rule is persistent, 0 otherwise */
+#define RULE_ISPERSISTENT(x) (*(RULE_DESCRIPTOR(x) + 2))
+/* Number of predicates included in rule x */
+#define RULE_NUM_INCLPREDS(x)   (*(RULE_DESCRIPTOR(x) + 3))
+/* ID of included predicate at index f  */
+#define RULE_INCLPRED_ID(x, f) (*(unsigned char *)(RULE_DESCRIPTOR(x) + 4 + 1*(f)))
+
+/* Returns if a predicate is stratified or not */
+#define TYPE_IS_STRATIFIED(x) (TYPE_STRATIFICATION_ROUND(x) > 0)
+
+/* Alternative way of getting name string for type x */
+#define TYPE_NAME(x)       (tuple_names[x])
+/* Returns type of argument f of predicate x from byte code*/
+#define TYPE_ARG_TYPE(x, f) ((unsigned char)(*TYPE_ARG_DESC(x, f)))
+
+/* Returns total size of predicate x */
+#define TYPE_SIZE(x)       (arguments[(x) * 2 + 1])
+/* Returns address of arguments of type x in arguments array */
+#define TYPE_ARGS(x)       (arguments + arguments[(x) * 2])
+
+/* Returns argument (type?) number f of type x */
+#define TYPE_ARG(x, f)     (TYPE_ARGS(x)+2*(f))
+/* Returns size of argument number f of type x */
+#define TYPE_ARG_SIZE(x, f) (*TYPE_ARG(x, f))
+/* Returns arguments array offset for arg number f of type x */
+#define TYPE_ARG_OFFSET(x, f)   (*(TYPE_ARG(x, f) + 1))
+
+/* Set the value of a tuple's field */
+#define SET_TUPLE_FIELD(tuple, field, data) \
+		memcpy(TUPLE_FIELD(tuple, TYPE_ARG_OFFSET(TUPLE_TYPE(tuple), field)), \
+				data, TYPE_ARG_SIZE(TUPLE_TYPE(tuple), field))
+/* Get the value of a tuple's field */
+#define GET_TUPLE_FIELD(tuple, field) \
+		TUPLE_FIELD(tuple, TYPE_ARG_OFFSET(TUPLE_TYPE(tuple), field))
+/* Get total size of a tuple */
+#define GET_TUPLE_SIZE(tuple, field) \
+		TYPE_ARG_SIZE(TUPLE_TYPE(tuple), field)
+		
+/* Macros to test the property of a type */
+#define TYPE_IS_AGG(x)        (TYPE_PROPERTIES(x) & 0x01)
+#define TYPE_IS_PERSISTENT(x) (TYPE_PROPERTIES(x) & 0x02)
+#define TYPE_IS_LINEAR(x)     (TYPE_PROPERTIES(x) & 0x04)
+#define TYPE_IS_DELETE(x)     (TYPE_PROPERTIES(x) & 0x08)
+#define TYPE_IS_SCHEDULE(x)   (TYPE_PROPERTIES(x) & 0x10)
+#define TYPE_IS_ROUTING(x)    (TYPE_PROPERTIES(x) & 0x20)
+
+/* x is aggregate byte for a type */
+/* Returns aggregate type of aggregate */
+#define AGG_AGG(x)    (((x) & (0xf0)) >> 4)
+/* Returns field at which aggregate is located */
+#define AGG_FIELD(x)  ((x) & 0x0f)
+
+/* ************* MACROS FOR BYTECODE_PROCESS FUNCTION ************* */
+
+/* Strip the type of the element which is being processed, from the state byte */
+#define PROCESS_TYPE(x) ((unsigned char)((x) & 0x0f))
+#define PROCESS_TUPLE 0
+#define PROCESS_ITER 1
+#define PROCESS_RULE 2
+
+/* Strip the rule number of the rule being processed from the state byte */
+#define RULE_NUMBER(x) ((unsigned char)(((x) & 0xf0) >> 4))
+
+/* Return types for checkRuleState function */
+#define INACTIVE_RULE 0x0
+#define ACTIVE_RULE   0x1
+
+/* Return types for process function */
+#define RET_RET 0
+#define RET_NEXT 1
+#define RET_LINEAR 2
+#define RET_DERIVED 3
+#define RET_ERROR -1
+
+/* ************* EVAL FUNCTIONS ************* */
+
+/* Various macros to get value of byte code */
 #define VAL_REG(x) (((const unsigned char)(x)) & 0x1f)
 #define VAL_FIELD_NUM(x) ((*(const unsigned char *)(x)) & 0xff)
 #define VAL_FIELD_REG(x) ((*(const unsigned char *)((x)+1)) & 0x1f)
 
-#define TYPE_DESCRIPTOR_SIZE 7
-#define DELTA_SIZE 2
-#define TYPE_FIELD_SIZE 1
-#define TYPE_FIELD_TYPE unsigned char
-
-#define TUPLE_TYPE(x)   (*(TYPE_FIELD_TYPE *)(x))
-#define TUPLE_FIELD(x,off)  ((void *)(((unsigned char*)(x)) + TYPE_FIELD_SIZE + (off)))
-
-#define NUM_TYPES  (meld_prog[0])
-#define NUM_RULES  (meld_prog[1])
-#define TYPE_OFFSET(x)     (meld_prog[2 + (x)])
-
-/* First 2 bytes contain offset to type's bytecode */
-#define TYPE_DESCRIPTOR(x) ((unsigned char *)(meld_prog + TYPE_OFFSET(x)))
-/* Contain tuple's type (linear/persistent...)*/
-#define TYPE_PROPERTIES(x) (*(TYPE_DESCRIPTOR(x) + 2))
-/* If tuple is aggregate, contains its type, 0 otherwise */
-#define TYPE_AGGREGATE(x)  (*(TYPE_DESCRIPTOR(x) + 3))
-/* Stratification round ..?*/
-#define TYPE_STRATIFICATION_ROUND(x) (*(TYPE_DESCRIPTOR(x) + 4))
-/* Number of arguments */
-#define TYPE_NOARGS(x)     (*(TYPE_DESCRIPTOR(x) + 5))
-/* Number of deltas ..? */
-#define TYPE_NODELTAS(x)   (*(TYPE_DESCRIPTOR(x) + 6))
-/* Argument descriptor */
-#define TYPE_ARGS_DESC(x)  ((unsigned char*)(TYPE_DESCRIPTOR(x)+TYPE_DESCRIPTOR_SIZE))
-/* Returns type of argument number f for type x */
-#define TYPE_ARG_DESC(x, f) ((unsigned char *)(TYPE_ARGS_DESC(x)+1*(f)))
-/* Returns type of deltas for type x */
-#define TYPE_DELTAS(x)     (TYPE_ARGS_DESC(x) + 1*TYPE_NOARGS(x))
-
-/* Returns address of bytecode for type x */
-#define TYPE_START(x)							\
-  ((unsigned char*)(meld_prog + *(unsigned short *)TYPE_DESCRIPTOR(x)))
-#define TYPE_START_CHECK(x)			\
-  (*(unsigned short *)TYPE_DESCRIPTOR(x))
-
-/* Offset to rule byte code, pred 0 byte code start is reference */
-#define RULE_START(x)							\
-  ((unsigned char*)(meld_prog + *(unsigned short*)			\
-		    ((TYPE_START(0) - NUM_RULES * sizeof(unsigned short)) + x)))
-#define RULE_START_CHECK(x)						\
-  (*(unsigned short*)							\
-   ((TYPE_START(0) - NUM_RULES * sizeof(unsigned short))) + x)
-
-#define TYPE_IS_STRATIFIED(x) (TYPE_STRATIFICATION_ROUND(x) > 0)
-
-#define TYPE_NAME(x)       (tuple_names[x])
-#define TYPE_ARG_TYPE(x, f) ((unsigned char)(*TYPE_ARG_DESC(x, f)))
-
-#define TYPE_SIZE(x)       (arguments[(x) * 2 + 1])
-#define TYPE_ARGS(x)       (arguments + arguments[(x) * 2])
-
-#define TYPE_ARG(x, f)     (TYPE_ARGS(x)+2*(f))
-#define TYPE_ARG_SIZE(x, f) (*TYPE_ARG(x, f))
-#define TYPE_ARG_OFFSET(x, f)   (*(TYPE_ARG(x, f) + 1))
-
-#define SET_TUPLE_FIELD(tuple, field, data) \
-		memcpy(TUPLE_FIELD(tuple, TYPE_ARG_OFFSET(TUPLE_TYPE(tuple), field)), \
-				data, TYPE_ARG_SIZE(TUPLE_TYPE(tuple), field))
-#define GET_TUPLE_FIELD(tuple, field) \
-		TUPLE_FIELD(tuple, TYPE_ARG_OFFSET(TUPLE_TYPE(tuple), field))
-#define GET_TUPLE_SIZE(tuple, field) \
-		TYPE_ARG_SIZE(TUPLE_TYPE(tuple), field)
-		
-#define TYPE_IS_AGG(x)        (TYPE_PROPERTIES(x) & 0x01)
-#define TYPE_IS_PERSISTENT(x) (TYPE_PROPERTIES(x) & 0x02)
-#define TYPE_IS_LINEAR(x) 		(TYPE_PROPERTIES(x) & 0x04)
-#define TYPE_IS_DELETE(x) 		(TYPE_PROPERTIES(x) & 0x08)
-#define TYPE_IS_SCHEDULE(x) 	(TYPE_PROPERTIES(x) & 0x10)
-#define TYPE_IS_ROUTING(x) 		(TYPE_PROPERTIES(x) & 0x20)
-#define TYPE_IS_PROVED(x)     (TYPE_PROPERTIES(x) & 0x40)
-
-#define AGG_AGG(x)    (((x) & (0xf0)) >> 4)
-#define AGG_FIELD(x)  ((x) & 0x0f)
+/* ************* AGGREGATE TYPES ************* */
 
 #define AGG_NONE 0
 #define AGG_FIRST 1
@@ -421,6 +482,8 @@ extern inline byte val_is_field(const byte x) { return x == 0x02; }
 #define AGG_SUM_LIST_INT 10
 #define AGG_SUM_LIST_FLOAT 11
 
+/* ************* FIELD TYPES ************* */
+
 #define FIELD_INT 0x0
 #define FIELD_FLOAT 0x1
 #define FIELD_ADDR 0x2
@@ -432,26 +495,42 @@ extern inline byte val_is_field(const byte x) { return x == 0x02; }
 #define FIELD_SET_FLOAT 0x7
 #define FIELD_TYPE 0x8
 #define FIELD_STRING 0x9
+#define FIELD_BOOL 0xa
 
-#define DELTA_TYPE(ori, id) (*(unsigned char*)(deltas[ori] + (id)*DELTA_SIZE))
-#define DELTA_POSITION(ori, id) (*(unsigned char*)(deltas[ori] + (id)*DELTA_SIZE + 1))
-#define DELTA_WITH(ori) (delta_sizes[ori])
-#define DELTA_TOTAL(ori) (delta_sizes[ori])
-
-#define RET_RET 0
-#define RET_NEXT 1
-#define RET_ERROR -1
+/* ************* STATIC OR USEFUL PREDICATE IDs ************* */
 
 #define TYPE_SETCOLOR 2
 #define TYPE_SETCOLOR2 7
+
+extern tuple_type TYPE_INIT;
+extern tuple_type TYPE_EDGE;
+extern tuple_type TYPE_TERMINATE;
+extern tuple_type TYPE_NEIGHBORCOUNT;
+extern tuple_type TYPE_NEIGHBOR;
+extern tuple_type TYPE_VACANT;
+extern tuple_type TYPE_TAP;
+
+/* ************* EXTERN DECLARATIONS  ************* */
 
 extern const unsigned char meld_prog[];
 typedef Register (*extern_funct_type)();
 extern extern_funct_type extern_functs[];
 extern int extern_functs_args[];
 extern char *tuple_names[];
+extern char *rule_names[];
 extern unsigned char *arguments;
-extern int *delta_sizes;
+
+extern void setColorWrapper (byte color);
+extern void setLEDWrapper (byte r, byte g, byte b, byte intensity);
+extern NodeID getBlockId (void);
+extern void print_newTuples (void);
+extern void print_newStratTuples (void);
+
+#ifdef BBSIM
+extern pthread_mutex_t printMutex;
+#endif
+
+/* ************* TUPLE HANDLING FUNCTIONS  ************* */
 
 static inline tuple_t
 tuple_alloc(tuple_type type)
@@ -475,14 +554,10 @@ tuple_alloc(tuple_type type)
 	return tuple;
 }
 
-
 void tuple_handle(tuple_t tuple, int isNew, Register *reg);
-void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew);
+void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew);
 void tuple_do_handle(tuple_type type,	void *tuple, int isNew, Register *reg);
-int tuple_process(tuple_t tuple, const unsigned char *pc,
-		  int isNew, Register *reg);
 void tuple_print(tuple_t tuple, FILE *fp);
-
 
 static inline void
 tuple_dump(void *tuple)
@@ -491,12 +566,18 @@ tuple_dump(void *tuple)
 	fprintf(stderr, "\n");
 }
 
-void print_program_info(void);
+/* ************* MISC FUNCTION PROTOTYPES ************* */
+int process_bytecode(tuple_t tuple, const unsigned char *pc,
+		  int isNew, Register *reg, byte state);
 
-void init_deltas(void);
 void init_fields(void);
-void facts_dump(void);
 void init_consts(void);
+
+void facts_dump(void);
+void print_program_info(void);
+char* arg2String(tuple_t tuple, byte index);
+
+/* ************* QUEUE MANAGEMENT PROTOTYPES ************* */
 
 tuple_entry* queue_enqueue(tuple_queue *queue, tuple_t tuple, record_type isNew);
 bool queue_is_empty(tuple_queue *queue);
@@ -524,17 +605,8 @@ p_peek(tuple_pqueue *q)
 
 tuple_pentry *p_dequeue(tuple_pqueue *q);
 void p_enqueue(tuple_pqueue *q, meld_int priority, tuple_t tuple,
-		void *rt, record_type isNew);
-
-extern tuple_type TYPE_INIT;
-extern tuple_type TYPE_EDGE;
-extern tuple_type TYPE_COLOCATED;
-extern tuple_type TYPE_PROVED;
-extern tuple_type TYPE_TERMINATE;
-
-extern void setColorWrapper (byte color);
-extern void setLEDWrapper (byte r, byte g, byte b, byte intensity);
-/* void print_process(const unsigned char *pc); */
+	       NodeID rt, record_type isNew);
+int queue_length (tuple_queue *queue);
 
 #endif
 

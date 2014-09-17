@@ -1,0 +1,1 @@
+setColor2(X, N) :- neighborCount(X, N).

@@ -2,27 +2,31 @@
 #include "list_runtime.h"
 #include <stdio.h>
 
+/******************************************************************************
+@Description: This file contains the definition of the external functions.
+As they have not been implemented for linear Meld yet, the functions here are
+ all external functions from the old Meld.
+*******************************************************************************/
+
 meld_value blockID(meld_value x) {
   meld_int ret = MELD_INT(&x);
   //printf("Returning %d\n", ret);
   return MELD_CONVERT_INT(ret);
 }
 
-/*
-meld_value printInt(meld_value x, meld_value y, meld_value z) {
+/* meld_value printInt(meld_value x, meld_value y, meld_value z) { */
     
-    if (sizeof(int) >= sizeof(meld_int)) {
-	fprintf(stderr, "%2d: %2d -> %d\n", 
-		(int)MELD_INT(x),(int)MELD_INT(y),(int)MELD_INT(z));
-    } else {
-	fprintf(stderr, "%s: ", convert_meld_int_safe(MELD_INT(x)));
-	fprintf(stderr, "%s -> ", convert_meld_int_safe(MELD_INT(y)));
-	fprintf(stderr, "%s\n", convert_meld_int_safe(MELD_INT(z)));
-    }
+/*     if (sizeof(int) >= sizeof(meld_int)) { */
+/* 	fprintf(stderr, "%2d: %2d -> %d\n",  */
+/* 		(int)MELD_INT(x),(int)MELD_INT(y),(int)MELD_INT(z)); */
+/*     } else { */
+/* 	fprintf(stderr, "%s: ", convert_meld_int_safe(MELD_INT(x))); */
+/* 	fprintf(stderr, "%s -> ", convert_meld_int_safe(MELD_INT(y))); */
+/* 	fprintf(stderr, "%s\n", convert_meld_int_safe(MELD_INT(z))); */
+/*     } */
 
-   return 0;
-}
-*/
+/*    return 0; */
+/* } */
 
 int gen_fresh_file(void) {
 	static int f = 0;

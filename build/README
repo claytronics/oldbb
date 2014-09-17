@@ -1,9 +1,9 @@
 9/29/10 --- updated on 06/09/14
 
-Firstly, if running on linux, make sure that you have the following tools and librairies installed on your system:
- - sudo apt-get update avr-libc gcc-avr g++ avrdude
-if you will be working with the meld-compiler, you may also need these packages:
- - sudo apt-get bison mlton ml-yacc ml-lex flex
+Firstly, if running on linux, make sure that you have the following tools and libraries installed on your system:
+ - sudo apt-get update avr-libc gcc-avr g++ avrdude freeglut3-dev libglu1-mesa-dev
+If you are running Meld programs, please install SBCL:
+ - sudo apt-get install sbcl
 
  If you are using Mac OS X, here is a solution to install the complete AVR toolchain on your system:
  - Install homebrew if you don't have it yet: 
@@ -19,32 +19,8 @@ This directory tree contains the code used to develop applications for
 the blinkyblocks.  At this point it has a reasonable makefile for meld
 and has been tested on Windows 7 + Cygwin and Ubuntu 12+. 
 
-- we recommend the bash shell
-- run ". ./initbb.sh"
-  this sets BBASE, ARCH, and your PATH. If you don't use bash or want to do it yourself
-  - set BBASE to this directory
-  - set ARCH to `uname -m`-`uname -s` , e.g., export ARCH=`uname -m`-`uname -s`
-  - add $BBASE/bin and $BBASE/bin/$ARCH to your path
-- check that there exists a bin/$(ARCH) directory.  If not, create one and fix everything, 
-  or try one of the ones that exists. (and, let us know??)
-- chdir to $BBASE/src-bobby
-- run make build
-- run make install
-
-Now you are set to compile for either the simulator or the block
-hardware.  If you are going to do this for meld programs, look in
-$BBASE/apps/sample-meld to see some sample meld applications and a
-basic Makefile.  Basically, you should only have to change the source
-you want to compile and run make.
-If you modifiy the system API, you can run `make wipeout && make` to recompile it at the same time has the user program. 
-
 If you want to add Log messages to your program you have to uncomment 
 the -DLOG_DEBUG line of the Makefile and run `make wipeout && make`. You can find the host program in /src-bobby/logger.
-
-To run the resulting executable:
-
-arch-$ARCH/source-name.exe will invoke the simulator
-arch-blocks/source-name.hex is the file to load onto the blocks
 
 If you want to compile for the simulator you should set BB=SIM.
 If you want to compile for the blocks you should set BB=block.

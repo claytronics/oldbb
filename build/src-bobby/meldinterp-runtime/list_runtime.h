@@ -9,6 +9,10 @@
 #include "model.h"
 #endif
 
+/******************************************************************************
+@Description: Header file for the lists used by aggregates.
+*******************************************************************************/
+
 typedef void* list_element;
 
 #define LIST_NEXT(node) (*(void**)(node))

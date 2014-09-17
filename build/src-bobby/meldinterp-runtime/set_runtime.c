@@ -6,6 +6,10 @@
 
 #include "set_runtime.h"
 
+/******************************************************************************
+@Description: Implementation file for the set data structures used by aggregates.
+*******************************************************************************/
+
 static set_descriptor *int_descriptor = NULL;
 static set_descriptor *float_descriptor = NULL;
 

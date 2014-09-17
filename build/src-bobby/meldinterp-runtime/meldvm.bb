@@ -24,38 +24,93 @@
 // include here to make sure we include the threadypes, etc.
 #include "model.bbh"
 
+/******************************************************************************
+@Description: meldvm.bb is the VM's main file, it initializes the VM,
+introduces and updates axioms, sends tuples to other blocks, and triggers
+the execution of all tuples and rules through the program's main loop.
+*******************************************************************************/
+
+/* Various DEBUG Modes for troubleshooting */
+//#define DEBUG
+#define DEBUG_NEIGHBORHOOD
+#define DEBUG_SEND
+#define DEBUG_RULES
+
 void vm_init(void);
+byte updateRuleState(byte rid);
 
-
-threadvar tuple_t *oldTuples;
-
-threadvar tuple_pqueue *delayedTuples;
-threadvar tuple_queue *tuples;
+/* Queue for tuples to send with delay */
+threadvar tuple_pqueue *delayedTuples; 
+/* Contains a queueu for each type, this is essentially the database */
+threadvar tuple_queue *tuples;	      
+/* Where stratified tuples are enqueued for execution  */
 threadvar tuple_pqueue *newStratTuples;
+/* Where non-stratified tuples are enqueued for execution */
 threadvar tuple_queue *newTuples;
+/* Received tuples are enqueued both to a normal queue
+ * and to this one. Tuples store in this one will be used to remove 
+ * remove tuples from the database.*/
 threadvar tuple_queue receivedTuples[NUM_PORTS];
 
-threadvar meld_int *proved;
-
+/* This block's ID */
 threadvar NodeID blockId;
 
-threadvar persistent_set *persistent;
-
+/* An array of 32 registers (pointers) */
 threadvar Register reg[32];
 
-static tuple_type TYPE_TAP = -1;
-static tuple_type TYPE_NEIGHBOR = -1;
-static tuple_type TYPE_NEIGHBORCOUNT = -1;
-static tuple_type TYPE_VACANT = -1;
-
-//#define DEBUG
-/* #define DEBUG_REGISTERS */
-#define DEBUG_NEIGHBORHOOD
+/* thr\dvar byte retractionOccured = 0; */
+/* thr\dvar byte inNeighborCountUpdate = 0; */
 
 #ifdef BBSIM
 #include <sys/timeb.h>
 #endif
 
+/* Print the content of the newTuples queue */
+void
+print_newTuples(void)
+{
+#ifdef BBSIM
+  pthread_mutex_lock(&(printMutex));
+#endif
+  fprintf(stderr, "\x1b[34m--%d--\tContent of queue newTuples: \n", blockId);
+  tuple_entry *tupleEntry;
+  for (tupleEntry = newTuples->head; 
+       tupleEntry != NULL; 
+       tupleEntry = tupleEntry->next) {
+    tuple_print(tupleEntry->tuple, stderr);
+    fprintf(stderr, " -- isNew = %d\n", tupleEntry->records.count);
+  }
+  fprintf(stderr, "\x1b[0m");
+#ifdef BBSIM
+  pthread_mutex_unlock(&(printMutex));
+#endif
+}
+
+/* Prints the content of the newStartTuples queue */
+void
+print_newStratTuples(void)
+{
+#ifdef BBSIM
+  pthread_mutex_lock(&(printMutex));
+#endif
+  fprintf(stderr, "\x1b[34m--%d--\tContent of queue newStratTuples: \n",
+	  blockId);
+  if (newStratTuples) {
+    tuple_pentry *tupleEntry;
+    for (tupleEntry = newStratTuples->queue; 
+	 tupleEntry != NULL; 
+	 tupleEntry = tupleEntry->next) {
+      tuple_print(tupleEntry->tuple, stderr);
+      fprintf(stderr, " -- isNew = %d\n", tupleEntry->records.count);
+    }
+  }
+  fprintf(stderr, "\x1b[0m");
+#ifdef BBSIM
+  pthread_mutex_unlock(&(printMutex));
+#endif
+}
+
+/* Gets ID of neighbor on face 'face' */
 static inline
 NodeID get_neighbor_ID(int face)
 {
@@ -77,16 +132,31 @@ NodeID get_neighbor_ID(int face)
   }
 }
 
+/* Enqueue a tuple for execution */
 void enqueueNewTuple(tuple_t tuple, record_type isNew)
 {
+  assert (TUPLE_TYPE(tuple) < NUM_TYPES);
+
   if (TYPE_IS_STRATIFIED(TUPLE_TYPE(tuple))) {
-    p_enqueue(newStratTuples, TYPE_STRATIFICATION_ROUND(TUPLE_TYPE(tuple)), tuple, NULL, isNew);
+    /* pthread_mutex_lock(&(printMutex)); */
+    /* fprintf(stderr, "\x1b[1;35m--%d--\tStrat enqueuing tuple ", getBlockId()); */
+    /* tuple_print (tuple, stderr); */
+    /* fprintf(stderr, "\x1b[0m\n"); */
+    /* pthread_mutex_unlock(&(printMutex)); */
+    p_enqueue(newStratTuples, 
+	      TYPE_STRATIFICATION_ROUND(TUPLE_TYPE(tuple)), tuple, 0, isNew);
   }
   else {
+    /* pthread_mutex_lock(&(printMutex)); */
+    /* fprintf(stderr, "\x1b[1;35m--%d--\tBase enqueuing tuple ", getBlockId()); */
+    /* tuple_print (tuple, stderr); */
+    /* fprintf(stderr, "\x1b[0m\n"); */
+    /* pthread_mutex_unlock(&(printMutex)); */
     queue_enqueue(newTuples, tuple, isNew);
   }
 }
 
+/* Enqueue a neighbor or vacant tuple */
 void enqueue_face(NodeID neighbor, meld_int face, int isNew)
 {
   tuple_t tuple = NULL;
@@ -104,6 +174,7 @@ void enqueue_face(NodeID neighbor, meld_int face, int isNew)
   enqueueNewTuple(tuple, (record_type) isNew);
 }
 
+/* Enqueue a neighborCount tuple */
 static
 void enqueue_count(meld_int count, int isNew)
 {
@@ -114,6 +185,7 @@ void enqueue_count(meld_int count, int isNew)
   enqueueNewTuple(tuple, (record_type) isNew);
 }
 
+/* Enqueue a tap tuple and also prints database if DEBUG is ON */
 static
 void enqueue_tap(void)
 {
@@ -121,22 +193,23 @@ void enqueue_tap(void)
 
   enqueueNewTuple(tuple, (record_type) 1);
 
-  //#if DEBUG
+  /* #if DEBUG */
   facts_dump();
-  //#endif
+  /* #endif */
 }
 
+/* Enqueue init tuple, triggers derivation of RULE 0, which derives axioms */
 static
 void enqueue_init(void)
 {
   if(TYPE_INIT == -1)
     return;
 
-  /* tuple_t tuple = tuple_alloc(TYPE_INIT); */
-
-  /* enqueueNewTuple(tuple, (record_type) 1); */
+  tuple_t tuple = tuple_alloc(TYPE_INIT);
+  enqueueNewTuple(tuple, (record_type) 1);
 }
 
+/* Saves the ID of useful types */
 static
 void init_all_consts(void)
 {
@@ -148,36 +221,33 @@ void init_all_consts(void)
       TYPE_TAP = i;
     else if (strcmp(TYPE_NAME(i), "neighbor") == 0)
       TYPE_NEIGHBOR = i;
-    else if (strcmp(TYPE_NAME(i), "neighborCount") == 0)
+    else if ( (strcmp(TYPE_NAME(i), "neighborCount" ) == 0) ||
+	      (strcmp(TYPE_NAME(i), "neighborcount" ) == 0) )
       TYPE_NEIGHBORCOUNT = i;
     else if (strcmp(TYPE_NAME(i), "vacant") == 0)
       TYPE_VACANT = i;
   }	
 }
 
+/* Can be used to directly process neighborCount instead of enqueing it */
+/* static
+void handle_count(meld_int count, int isNew)
+{
+  tuple_t tuple = tuple_alloc(TYPE_NEIGHBORCOUNT);
+
+  SET_TUPLE_FIELD(tuple, 0, &count);
+
+  tuple_handle(tuple, isNew, reg);
+  } */
+
 #ifdef BBSIM
-extern pthread_mutex_t printmutex;
+pthread_mutex_t printMutex;
 #endif
 
+/* The VM's main function */
 void meldMain(void)
 {
-  blockId = getGUID();
-
-  // init stuff
-  tuples = calloc(NUM_TYPES, sizeof(tuple_queue));
-  newTuples = calloc(1, sizeof(tuple_queue));
-  newStratTuples = calloc(1, sizeof(tuple_pqueue));
-  oldTuples = calloc(NUM_TYPES, sizeof(tuple_t));
-  delayedTuples = calloc(1, sizeof(tuple_pqueue));
-  proved = calloc(NUM_TYPES, sizeof(meld_int));
-  memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
-
   vm_init();
-
-#ifdef DEBUG_REGISTERS
-  printf ("\nRegister address range: %#8x - %#8x\n", 
-	  &reg[0], &reg[31]);
-#endif
 
   //block initialization
 #if DEBUG
@@ -187,6 +257,7 @@ void meldMain(void)
   //setColor(0);
   setLED(128,0,128,32);
 
+  /* Enqueue init to derive the program's axioms */
   enqueue_init();
 
   // introduce intial set of axioms
@@ -199,11 +270,6 @@ void meldMain(void)
   for (i = 0; i < NUM_PORTS; i++) {
     neighbors[i] = get_neighbor_ID(i);
 
-/* #ifdef DEBUG_NEIGHBORHOOD */
-/*       printf ("--%d--\tInit neighbor %d on face %d!\n", */
-/* 	      blockId, neighbors[i], i); */
-/* #endif */
-
     enqueue_face(neighbors[i], i, 1);
   }
 
@@ -214,20 +280,42 @@ void meldMain(void)
     if(!queue_is_empty(newTuples)) {
       int isNew = 0;
       tuple_t tuple = queue_dequeue(newTuples, &isNew);
-
+      
       tuple_handle(tuple, isNew, reg);
-    }
-    else if (!p_empty(delayedTuples) && p_peek(delayedTuples)->priority <= getTime()) {
+    } else if (!p_empty(delayedTuples) 
+	       && p_peek(delayedTuples)->priority <= getTime()) {
       tuple_pentry *entry = p_dequeue(delayedTuples);
-
+      
       tuple_send(entry->tuple, entry->rt, 0, entry->records.count);
       free(entry);
     } else if (!(p_empty(newStratTuples))) {
       tuple_pentry *entry = p_dequeue(newStratTuples);
       tuple_handle(entry->tuple, entry->records.count, reg);
-
+      
       free(entry);
     } else {
+      /* If all tuples have been processed
+       * update rule state and process them if they are ready */
+      for (i = 0; i < NUM_RULES; ++i) {
+
+	if (updateRuleState(i)) {
+	  /* Set state byte used by DEBUG */
+	  byte processState = PROCESS_RULE | (i << 4);
+	  
+	  /* Don't process persistent rules (which is useless) 
+	   * as they all have only a RETURN instruction.
+	   */
+	  if (!RULE_ISPERSISTENT(i)) {
+#ifdef DEBUG_RULES
+	    printf ("\n\x1b[35m--%d--\tRule %d READY!\x1b[0m\n", getBlockId(), i);
+#endif
+	    /* Trigger execution */
+	  process_bytecode (NULL, RULE_START(i), 1, reg, processState);
+	  }
+	}
+	/* else: Rule not ready yet, will re-check at next main loop run */
+      }
+
       // if we've processed everything, sleep for the sake of letting other blocks run in the simulator
       delayMS(30);
     }
@@ -255,9 +343,14 @@ void meldMain(void)
 
       enqueue_face(neighbors[i], i, -1);
 
+      /* Delete received tuples from database
+       * This may need to be reviewed, 
+       * I am not sure what LM is supposed to do with received tuples
+       */
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
-	enqueueNewTuple(tuple, (record_type)-1);
+	printf("--%d--\tDelete received\n", blockId);
+	enqueueNewTuple(tuple, (record_type) -1);
       }
 
       neighbors[i] = neighbor;
@@ -287,14 +380,25 @@ void endian_swap(Register* x)
 }
 #endif
 
+/* Receive a tuple and enqueue it to both receivedTuples and newTuples */
 void receive_tuple(int isNew)
 {
   tuple_t rcvdTuple = (tuple_t)thisChunk->data;
   tuple_t tuple;
   size_t tuple_size = TYPE_SIZE(TUPLE_TYPE(rcvdTuple));
-
-  printf ("rcvdTuple type: %d | size: %lu\n", TUPLE_TYPE(rcvdTuple),
-	  tuple_size);
+  
+#ifdef DEBUG_SEND
+#ifdef BBSIM
+  pthread_mutex_lock(&(printMutex));
+#endif
+  printf ("\x1b[33m--%d--\t Tuple received from %d: %s -- isNew = %d\x1b[0m\n",
+	  getBlockId(), get_neighbor_ID(faceNum(thisChunk)), 
+	  tuple_names[TUPLE_TYPE(rcvdTuple)], isNew);
+/* tuple_print (rcvdTuple, stdout); */
+#ifdef BBSIM
+  pthread_mutex_unlock(&(printMutex));
+#endif
+#endif
 
   tuple = malloc(tuple_size);
   memcpy(tuple, rcvdTuple, tuple_size);
@@ -305,11 +409,13 @@ void receive_tuple(int isNew)
   enqueueNewTuple(tuple, (record_type)isNew);
 }
 
+/* Received tuple is a retraction fact */
 void receive_tuple_delete(void)
 {
   receive_tuple(-1);
 }
 
+/* Received tuple is a normal fact */
 void receive_tuple_add(void)
 {
   receive_tuple(1);
@@ -319,7 +425,8 @@ void free_chunk(void) {
   free(thisChunk);
 }
 
-void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
+/* Sends a tuple to Block of ID rt, with or without delay */
+void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
 {
   assert (TUPLE_TYPE(tuple) < NUM_TYPES);
 
@@ -328,7 +435,20 @@ void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
     return;
   }
 
-  NodeID target = MELD_NODE_ID(GET_TUPLE_FIELD(tuple, 0));
+  NodeID target = rt;
+
+#ifdef DEBUG_SEND
+#ifdef BBSIM
+  pthread_mutex_lock(&(printMutex));
+#endif
+  printf ("\x1b[33m--%d--\t Sending tuple: %s to %d -- isNew = %d\x1b[0m\n", 
+	  getBlockId(), tuple_names[TUPLE_TYPE(tuple)], target, isNew);
+  /* tuple_print (tuple, stdout); */
+#ifdef BBSIM
+  pthread_mutex_unlock(&(printMutex));
+#endif
+#endif
+
   if (target == blockId) {
     enqueueNewTuple(tuple, (record_type) isNew);
   }
@@ -364,66 +484,62 @@ void tuple_send(tuple_t tuple, void *rt, meld_int delay, int isNew)
       if (sendMessageToPort(c, face, tuple, TYPE_SIZE(TUPLE_TYPE(tuple)), (MsgHandler)receiver, (GenericHandler)&free_chunk) == 0) {
 	// Send failed :(
 	free(c);
-	fprintf(stderr, "SEND FAILED EVEN THOUGH BLOCK IS PRESENT! from %d to %d\n", (int)blockId, (int)target);
+	fprintf(stderr, "--%d--\tSEND FAILED EVEN THOUGH BLOCK IS PRESENT! TO %d\n", blockId, (int)target);
       };
     }
     else {
-      fprintf(stderr, "UNABLE TO ROUTE MESSAGE! from %d to %d\n", (int)blockId, (int)target);
+      /* This may happen when you delete a block in the simulator */
+      fprintf(stderr, "--%d--\tUNABLE TO ROUTE MESSAGE! To %d\n", (int)blockId, (int)target);
       //exit(EXIT_FAILURE);
     }
     /* TODO-REAL: needs to free on real blinky blocks??? */
   }
 }
 
-void tuple_handle(tuple_t tuple, int isNew, Register *registers)
+/* Check if rule of ID rid is ready to be derived */
+/* Returns 1 if true, 0 otherwise */
+byte
+updateRuleState(byte rid) 
 {
-#if DEBUG
-  printf ("handling: ");
-  tuple_print(tuple, stdout);
-  printf ("\n");
-#endif
-
-
-  tuple_type type = TUPLE_TYPE(tuple);
-
-  assert (type < NUM_TYPES);
-
-  switch (type) {
-  case TYPE_SETCOLOR:
-    if (isNew <= 0) return;
-
-    setLED(*(byte *)GET_TUPLE_FIELD(tuple, 1),
-	   *(byte *)GET_TUPLE_FIELD(tuple, 2),
-	   *(byte *)GET_TUPLE_FIELD(tuple, 3),
-	   *(byte *)GET_TUPLE_FIELD(tuple, 4));
-    FREE_TUPLE(tuple);
-    return;
-
-  case TYPE_SETCOLOR2:
-    if (isNew <= 0) return;
-
-    setColor(MELD_INT(GET_TUPLE_FIELD(tuple, 1)) % NUM_COLORS);
-    FREE_TUPLE(tuple);
-    return;
-
-  default:
-    tuple_do_handle(type, tuple, isNew, registers);
-    return;
+  int i;
+  /* A rule is ready if all included predicates are present in the database */
+  for (i = 0; i < RULE_NUM_INCLPREDS(rid); ++i) {
+    if (TUPLES[RULE_INCLPRED_ID(rid, i)].length == 0)
+      return INACTIVE_RULE;
   }
+
+  /* Rule is ready, enqueue it or process it rightaway */
+  return ACTIVE_RULE;
 }
 
-void
-setColorWrapper (byte color) { setColor (color % NUM_COLORS);}
+/* Simply calls tuple_do_handle located in core.c to handle tuple  */
+void tuple_handle(tuple_t tuple, int isNew, Register *registers)
+{
+  tuple_type type = TUPLE_TYPE(tuple);
+  assert (type < NUM_TYPES);
 
+  /* if (isNew > 0 */
+  /*     && !inNeighborCountUpdate)  */
+  /*   retractionOccured = 1; */
+
+  tuple_do_handle(type, tuple, isNew, registers);
+}
+
+/* Used to call setColor functions from core.c */
+void
+setColorWrapper (byte color) { setColor(color % NUM_COLORS);}
 void
 setLEDWrapper (byte r, byte g, byte b, byte intensity) 
 { setLEDWrapper (r, g, b, intensity);}
+/* Used to get blockId from core.c */
+NodeID 
+getBlockId (void) { return blockId;}
 
 #ifdef BBSIM
 extern int alreadyExecuted(int flag);
 #endif
 
-/* NOTE: this must be executed before running the virtual machine */
+/* VM initialization routine */
 void
 vm_init(void)
 {
@@ -437,7 +553,6 @@ vm_init(void)
 
   init_all_consts();
   init_fields();
-  init_deltas();
   set_init_descriptors();
   list_init_descriptors();
 #if DEBUG
@@ -447,6 +562,29 @@ vm_init(void)
 #ifdef BBSIM
   // indicate that the vm is inited.
   alreadyExecuted(1);
+#endif
+}
+
+/* Called upon block init (block.bb) 
+ * to ensure that data structures are allocated before
+ * VM start in case other blocks send us tuples - Would seg fault otherwise */
+void
+vm_alloc(void)
+{
+  /* Get node ID */
+  blockId = getGUID();
+
+  // init stuff
+  tuples = calloc(NUM_TYPES, sizeof(tuple_queue));
+  newTuples = calloc(1, sizeof(tuple_queue));
+  newStratTuples = calloc(1, sizeof(tuple_pqueue));
+  delayedTuples = calloc(1, sizeof(tuple_pqueue));
+
+  /* Reset received tuples queue */
+  memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
+
+#ifdef BBSIM
+  pthread_mutex_init(&(printMutex), NULL);
 #endif
 }
 

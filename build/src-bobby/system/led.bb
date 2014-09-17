@@ -63,6 +63,7 @@ Color getNextColor()
 void setColor(Color c)
 {
 	currentColor = c;
+
 	setLED(colors[c][0], colors[c][1], colors[c][2], currentIntensity);
 }
 

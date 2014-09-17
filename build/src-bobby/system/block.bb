@@ -60,6 +60,11 @@ void blockTick()
     }
   }
   executeHandlers();	
+
+#ifdef MELD
+  /* databaseConsistencyChecker(); */
+#endif
+
   blockTickRunning = 0;
   
 }
@@ -78,11 +83,9 @@ void initBlock()
 
 	initPorts();
 
-/* DEBUGDEF */
-/* #define DEBUG 5 */
 #ifdef DEBUG
 	initDebug();
-    	printf("System Debug Enabled\r\n");
+    	//printf("System Debug Enabled\r\n");
 #endif
 
 	initDataLink();	
@@ -92,6 +95,11 @@ void initBlock()
 
 	initSystemMessage();
 	initEnsemble();
+
+#ifdef MELD
+	//allocate MeldVM's data structures
+	vm_alloc();
+#endif
 
 	initBlockTick();		// HW INITIALIZATION ROUTINE
 

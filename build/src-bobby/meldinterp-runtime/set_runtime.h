@@ -4,6 +4,10 @@
 
 #include <stddef.h>
 
+/******************************************************************************
+@Description: Header file for the set data structures used by aggregates.
+*******************************************************************************/
+
 typedef void* set_data;
 
 typedef int (*compare_set_fn)(set_data, set_data);
