@@ -158,8 +158,8 @@ CFLAGS = -g$(DEBUG) $(CFLAGS_OPTIONS)
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-#CFLAGS += -Wall -Wstrict-prototypes -Werror
-CFLAGS += -Wall -Wstrict-prototypes
+CFLAGS += -Wall -Wstrict-prototypes -Werror
+#CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
@@ -352,7 +352,7 @@ BLOCKSTUFF += begin gccversion sizebefore build sizeafter end
 
 ############### back to our stuff
 else
-CFLAGS := -g -O1 -Wall -DBBSIM $(CFLAGS_OPTIONS)
+CFLAGS := -g -O0 -Wall -DBBSIM $(CFLAGS_OPTIONS)
 CFLAGS += $(CSTANDARD)
 ALL_CFLAGS = $(CFLAGS)
 CC     := gcc
