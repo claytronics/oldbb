@@ -1,2 +1,6 @@
 .allbbobj
 arch-*/
+\#scg-*
+.#*
+.,*
+
