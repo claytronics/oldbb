@@ -7,10 +7,12 @@
 #include "log.bbh"
 #endif
 
+#include "span.bbh"
+
 threadvar int blockTickRunning = 0;
 extern void vm_alloc(void);
 
-int accelReady=0;
+threadvar int accelReady=0;
 
 // BlockTick
 //
@@ -21,14 +23,6 @@ void blockTick()
 {
   byte i;
   
-#ifdef BBSIM
-  if (this()->destroyed == 1) {
-    // let neighbors know we are gone
-    //tellNeighborsDestroyed(this());
-    // and never do anything again
-    pauseForever();
-  }
-#endif
   //int input;
   blockTickRunning = 1;
   
@@ -62,7 +56,6 @@ void blockTick()
   }
   executeHandlers();	
   blockTickRunning = 0;
-  
 }
 
 
@@ -71,6 +64,9 @@ void initBlock()
 {
 	//software initialization
 	initHandlers();
+
+	// init spanning tree stuff
+	initSpanningTreeInformation();
 
 	//hardware related initialization
 	initTime();
@@ -116,3 +112,9 @@ void initBlock()
 #endif
 }
 
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
