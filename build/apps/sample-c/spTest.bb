@@ -4,41 +4,51 @@
 #include "audio.bbh"
 #include <stdlib.h>
 #include "span.bbh"
+#include "../sim/sim.h"
 
 void handler(void);
-void donefunc(SpanningTree* tree, SpanningTreeStatus status);
-
-byte spFinished;
-
-          
-SpanningTree* tree;
+void donefunc(SpanningTree* treee, SpanningTreeStatus status);
 
 
-void myMain(void)
+
+void 
+myMain(void)
 {
- // setSpanningTreeDebug(1);
-  initSpanningTrees(1);
-  tree = allocateSpanningTree(1);
-  spFinished = 0;
-  createSpanningTree(tree, donefunc, 0);
-  
-  //byte data[1];  
- // data[0] = 2;
-  
+  volatile byte spFinished;
+  SpanningTree* tree;
+  int baseid;
 
-  while( spFinished != 1){ //wait for the tree to be created  and updated the tree every time
-    setColor(AQUA);
-  }
+  delayMS(1000);
+  // setSpanningTreeDebug(1);
+  blockprint(stderr, "init\n");
+  baseid = initSpanningTrees(1);
+  blockprint(stderr, "get\n");
+  tree = getTree(baseid);
+  spFinished = 0;
+  blockprint(stderr, "create\n");
+  createSpanningTree(tree, donefunc, 0);
+  blockprint(stderr, "return\n");
+
+  //byte data[1];  
+  // data[0] = 2;
   
+  while( spFinished != 1){ //wait for the tree to be created  and updated the tree every time
+    char buffer[512];
+    setColor(AQUA);
+    blockprint(stderr, "%d: waiting: %s\n", blockTickRunning, tree2str(buffer, baseid));
+    delayMS(100);
+  }
+  blockprint(stderr, "finished\n");  
   //treeBroadcast(tree,data, 1, handler );
   if ( treeBarrier(tree,1,5000) == 1 )
-  {
-    setColor(GREEN);
-  }  
+    {
+      setColor(GREEN);
+    }  
   else
-  {
-    setColor(INDIGO);
-  }
+    {
+      setColor(INDIGO);
+    }
+  pauseForever();
   while(1);
 }
 
@@ -50,20 +60,21 @@ void handler(void)
 
 
 
-void donefunc(SpanningTree* tree, SpanningTreeStatus status)
+void donefunc(SpanningTree* treee, SpanningTreeStatus status)
 { 
    
+  blockprint(stderr, "DONEFUNC: %d %d\n", treee->spantreeid, status);
 
   if(status == COMPLETED)
   {
-   if (isSpanningTreeRoot(tree) == 1)
+   if (isSpanningTreeRoot(treee) == 1)
   {
     setColor(YELLOW);
   }
   else
   {
     setColor(WHITE);
-    if(tree->numchildren == 0)
+    if(treee->numchildren == 0)
     {
       setColor(PINK);
     }
@@ -83,3 +94,10 @@ userRegistration(void)
 {
   registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);
 }
+
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
