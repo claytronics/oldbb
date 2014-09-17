@@ -31,7 +31,7 @@ install:	$(TARGET)
 	/bin/cp -f $(TARGET) $(BBASE)/bin/arch-$(ARCH)/
 
 $(TARGET):	src
-	$(MAKE) -C src mlton
+	$(MAKE) -C src 
 	cp src/meldCompiler ./$(TARGET)
 
 src:	meldCompiler.tgz

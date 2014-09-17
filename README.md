@@ -1,3 +1,37 @@
+== Running meld programs on the simulator ==
+
+	cd ./build
+	. ./initbb.sh 
+	export BB=SIM
+	cd apps/sample-meld
+	compile-meld.sh <MELD-SRC>
+	./<ARCH>/blinkyblocks -c ../configs/<CONFIG>
+
+Where, 
+
+- `<MELD-SRC>` is a .meld file without its extension, e.g., `LM-programs/ends2`
+- `<ARCH>` is the name of the architecture as determined by `initbb.sh`, e.g., `arch-x86_64-Linux`
+- `<CONFIG>` is the name of a config
+`
+== Getting read to run meld programs ==
+
+- get setup
+
+	cd ./build
+	. ./initbb.sh 
+
+- initbb.sh will output a script to follow to do the install:  E.g.,
+  - mkdir arch-<ARCH>
+  - cd src-bobby
+  - make build
+  - make install
+
+- You might need some packages, e.g., 
+
+-- sudo apt-get install sbcl
+-- sudo apt-get install freeglut3-dev
+
+
 oldbb - modifiedVM - 08/12/14
 ====================================
 The *modifiedVM* branch of oldbb is a fork from the master branch in which the original Meld virtual machine has been revised to allow the execution of _Linear Meld_ onto the Blinky Blocks.  
