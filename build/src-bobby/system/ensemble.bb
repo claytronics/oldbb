@@ -1,6 +1,9 @@
 #include "ensemble.bbh"
 #include "message.bbh"
 #include "data_link.bbh"
+#ifdef BBSIM
+# include "../sim/sim.h"
+#endif
 
 #ifdef CLOCK_SYNC
 #include "clock.bbh"
@@ -210,9 +213,9 @@ void neighborKeepaliveCB(void)
   // message was received.  re-enable timer and continue as normal
   // note that since we always ACK a received message, this will happen even if the other block 
   // does not understand why the keepalive was sent.  however, the other block will restart a handshake.
-/* #ifdef ENSEMBLE_DEBUG */
-/*   printf ("\x1b[34m--%d--\tIn neighborKeepaliveCB\x1b[0m\n", getGUID()); */
-/* #endif */
+#ifdef ENSEMBLE_DEBUG
+  printf ("\x1b[34m--%d--\tIn neighborKeepaliveCB\x1b[0m\n", getGUID());
+#endif
   
   if(chunkResponseType(thisChunk) == MSG_RESP_ACK)
     {
@@ -220,7 +223,7 @@ void neighborKeepaliveCB(void)
     }
   else // neighbor lost!  begin rescanning
     {
-#ifdef ENSEMBLE_DEBUG
+#if defined(ENSEMBLE_DEBUG)||1
 	    printf ("\x1b[33m--%d--\tKeepalive lost!\x1b[0m\n", getGUID());
 #endif
       restartScan(faceNum(thisChunk));
@@ -364,7 +367,7 @@ byte handleNeighborMessage(void)
 	    // pull [your guid][my guid] from the handshake packet - reversed from how it was sent
 	    neighbor = charToGUID(&(thisChunk->data[2]));
 	    me = charToGUID(&(thisChunk->data[4]));
-	    
+	    blockprint(stderr, "N:%d Me:%d my face:%d\n", neighbor, me, faceNum(thisChunk));
 	    // got a sensible response
 	    if(me == getGUID())
 	      {
@@ -473,3 +476,9 @@ void initEnsemble(void)
     }
 }
 
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
