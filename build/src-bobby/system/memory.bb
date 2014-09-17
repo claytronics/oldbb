@@ -5,6 +5,7 @@
 #ifndef _MEMORY_C_
 #define _MEMORY_C_
 
+#include <string.h>
 #include "memory.bbh"
 
 #ifdef TESTING
@@ -194,6 +195,29 @@ _checkMemoryConsistency(byte cfn, int cln)
   //if (used > 12) sendOOM(cln);
 #endif 
 }
+
+#ifdef BBSIM
+char*
+chunk2str(Chunk* chk, char* bp)
+{
+  sprintf(bp, "%c%c %c%c %d -> %p [%p]:", 
+	  chunkInUse(chk) ? 'U' : 'F',
+	  chunkFilling(chk) ? '_' : '-',
+	  (chk->status >> 4) & 1 ? 'N' : ' ',
+	  (chk->status >> 3) & 1 ? 'A' : ' ',
+	  faceNum(chk),
+	  *((MsgHandler*)(chk->handler)),
+	  chk->callback);
+  int i;
+  for (i=0; i<DATA_SIZE; i++) {
+    char buf[12];
+    sprintf(buf, " %02x", chk->data[i]);
+    strcat(bp, buf);
+  }
+  return bp;
+}
+#endif
+
 ////////////////// END PUBLIC FUNCTIONS ///////////////////
 
 #endif
