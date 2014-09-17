@@ -15,12 +15,16 @@ Where,
 `
 == Getting read to run meld programs ==
 
-- Do the initial compile.
+- get setup
 
 	cd ./build
 	. ./initbb.sh 
-	cd src-bobby
-	make
+
+- initbb.sh will output a script to follow to do the install:  E.g.,
+  - mkdir arch-<ARCH>
+  - cd src-bobby
+  - make build
+  - make install
 
 - You might need some packages, e.g., 
 
