@@ -129,5 +129,11 @@ Chunk* getSystemTXChunk(void);
 // returns: pointer-mem available, null-out of memory
 // Chunk* getSendChunk(void);
 
+#ifdef BBSIM
+// for debugging on simulator
+char* chunk2str(Chunk* chk, char* bp);
+#endif
+
+
 #endif
 
