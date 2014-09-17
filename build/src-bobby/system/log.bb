@@ -197,6 +197,7 @@ void spreadPathToHost(PRef excluded)
 	}
 }
 
+#if 0
 static void spread_message(PRef excluded) {
 	byte p;
 
@@ -207,6 +208,7 @@ static void spread_message(PRef excluded) {
 		sendLogChunk(p, thisChunk->data, thisChunk->data[3]);
 	}
 }
+#endif
 
 
 
@@ -450,3 +452,11 @@ void donefunc(SpanningTree* tree, SpanningTreeStatus status)
 }
 */
 ////////////////// END SYSTEM FUNCTIONS ///////////////////
+
+
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
