@@ -24,6 +24,10 @@ if [ $? != 0 ]; then
    echo "Failed to compile file $1.meld"
    exit 1
 fi
+if [ ! -f $PWD/$1.m ]; then
+   echo "Failed to compile file $1.meld"
+   exit 1
+fi
 echo "Compilation done"
 
 echo "Generating .bb file"
