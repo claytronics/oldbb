@@ -1,5 +1,7 @@
 #include "handler.bbh"
 
+#include "../sim/sim.h"
+
 // System struct for managing callbacks.
 // Hardcoded a bit - NUM_HANDLERS must be less than sizeof(handlermask_t)
 threadtype typedef struct _systemhandler { HandleMask HandlerMask; GenericHandler HandlerTable[NUM_HANDLERS]; } SystemHandler;
@@ -35,6 +37,7 @@ void executeHandlers(void)
 				system.HandlerMask &= ~j;
 				
 				// execute callback
+				blockprint(stderr, "Executing system handler %d", i);
 				(*(system.HandlerTable[i]))();
 			}
 
