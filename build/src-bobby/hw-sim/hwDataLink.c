@@ -5,6 +5,7 @@
 #include "../system/ensemble.h"
 #include "../sim/world.h"
 #include "../system/led.bbh"
+#include "../sim/sim.h"
 
 #ifdef CLOCK_SYNC
 #include  "../system/clock.bbh"
@@ -151,6 +152,12 @@ void sendOnSerial(PRef p)
 Chunk* nextPacket(void)
 {
     Block* b = this();
+
+#if 0
+    if (b->globalRq.head != NULL) {
+      blockprint(stderr, "RQ != NULL %x\n", b->globalRq.flags);
+    }
+#endif
 
     BB_LOCK(&(b->neighborMutex));
 
