@@ -47,3 +47,10 @@ void restartScan(PRef);
 void initEnsemble(void);
 
 #endif
+
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
