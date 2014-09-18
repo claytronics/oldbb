@@ -65,6 +65,15 @@ threadvar Register reg[32];
 #include <sys/timeb.h>
 #endif
 
+int myGetTime ()
+{
+	struct timeb t;
+	
+	ftime(&t);
+
+	return t.millitm + 1000 * (t.time % (1 <<  20));
+}
+
 /* Print the content of the newTuples queue */
 void
 print_newTuples(void)

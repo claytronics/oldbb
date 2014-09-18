@@ -429,8 +429,8 @@ instructions.
 #define TYPE_IS_PERSISTENT(x) (TYPE_PROPERTIES(x) & 0x02)
 #define TYPE_IS_LINEAR(x)     (TYPE_PROPERTIES(x) & 0x04)
 #define TYPE_IS_DELETE(x)     (TYPE_PROPERTIES(x) & 0x08)
-#define TYPE_IS_SCHEDULE(x)   (TYPE_PROPERTIES(x) & 0x10)
 #define TYPE_IS_ROUTING(x)    (TYPE_PROPERTIES(x) & 0x20)
+#define TYPE_IS_ACTION(x)     (TYPE_PROPERTIES(x) & 0x10)
 
 /* x is aggregate byte for a type */
 /* Returns aggregate type of aggregate */

@@ -237,16 +237,24 @@ execute_send_delay (const unsigned char *pc,
 		    Register *reg, int isNew)
 {
   ++pc;
-  Register send_reg = reg[SEND_MSG(pc)];
-  NodeID send_rt = reg[SEND_RT(pc)];
+  
+  const byte tpl = SEND_MSG(pc);
+  const byte dst = SEND_RT(pc);
+  Register send_reg = reg[tpl];
+  NodeID send_rt = reg[dst];
+  pc += 2;
   meld_int *delay = eval_int(&pc);
 
 #ifdef DEBUG_INSTRS
-  printf("--%d--\t SEND reg %d TO reg %d WITH DELAY %dms\n", 
-	 getBlockId(), SEND_MSG(pc), SEND_RT(pc), *delay);
+  printf("--%d--\t SEND reg %d TO reg %d(%d) WITH DELAY %dms\n", 
+	 getBlockId(), SEND_MSG(pc), SEND_RT(pc), send_rt, *delay);
 #endif
 
-  tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, *delay, isNew);
+  if(tpl == dst) {
+     tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), getBlockId(), *delay, isNew);
+  } else {
+     tuple_send((tuple_t)MELD_CONVERT_REG_TO_PTR(send_reg), send_rt, *delay, isNew);
+  }
 }
 
 /* Iterate through the database to find a match with tuple read from byte code
@@ -355,18 +363,9 @@ execute_iter (const unsigned char *pc,
   return;
 }
 
-/* Run an action onto the block */
 inline void
-execute_run_action (const unsigned char *pc, 
-		    Register *reg, int isNew) 
+execute_run_action0 (tuple_t action_tuple, tuple_type type, int isNew)
 {
-    ++pc;
-
-    byte reg_index = FETCH(pc);
-
-    tuple_t action_tuple = (tuple_t)reg[reg_index];
-    tuple_type type = TUPLE_TYPE(action_tuple);
-    
     switch (type) {
     case TYPE_SETCOLOR:
       if (isNew > 0) {
@@ -404,6 +403,20 @@ execute_run_action (const unsigned char *pc,
       FREE_TUPLE(action_tuple);
       return;
     }
+}
+
+/* Run an action onto the block */
+inline void
+execute_run_action (const unsigned char *pc, 
+		    Register *reg, int isNew) 
+{
+    ++pc;
+
+    byte reg_index = FETCH(pc);
+
+    tuple_t action_tuple = (tuple_t)reg[reg_index];
+    tuple_type type = TUPLE_TYPE(action_tuple);
+    execute_run_action0(action_tuple, type, isNew); 
 }
 
 inline void
@@ -1744,7 +1757,6 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
     return;
   }
 
-#if 0
   if (isNew == 1) {
 #ifdef BBSIM
     pthread_mutex_lock(&(printMutex));
@@ -1761,7 +1773,15 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
     pthread_mutex_unlock(&(printMutex));
   }
 #endif
-#endif 
+
+
+  if (TYPE_IS_ACTION(type)) {
+     if(isNew > 0)
+        execute_run_action0(tuple, type, isNew);
+     else
+        FREE_TUPLE(tuple);
+     return;
+  }
   
   if (!TYPE_IS_AGG(type) || TYPE_IS_LINEAR(type))
     {
