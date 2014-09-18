@@ -168,6 +168,11 @@ void enqueueNewTuple(tuple_t tuple, record_type isNew)
 /* Enqueue a neighbor or vacant tuple */
 void enqueue_face(NodeID neighbor, meld_int face, int isNew)
 {
+   if(TYPE_VACANT == -1) /* no such predicate in the program */
+      return;
+   if(TYPE_NEIGHBOR == -1) /* no such predicate in the program */
+      return;
+
   tuple_t tuple = NULL;
 
   if (neighbor <= 0) {
@@ -187,6 +192,9 @@ void enqueue_face(NodeID neighbor, meld_int face, int isNew)
 static
 void enqueue_count(meld_int count, int isNew)
 {
+   if(TYPE_NEIGHBORCOUNT == -1) /* no such predicate in the program */
+      return;
+
   tuple_t tuple = tuple_alloc(TYPE_NEIGHBORCOUNT);
 
   SET_TUPLE_FIELD(tuple, 0, &count);
@@ -198,6 +206,9 @@ void enqueue_count(meld_int count, int isNew)
 static
 void enqueue_tap(void)
 {
+   if(TYPE_TAP == -1) /* no such predicate in the program */
+      return;
+
   tuple_t tuple = tuple_alloc(TYPE_TAP);
 
   enqueueNewTuple(tuple, (record_type) 1);
@@ -225,6 +236,7 @@ void init_all_consts(void)
   init_consts();
   
   tuple_type i;
+
   for (i = 0; i < NUM_TYPES; i++) {
     if (strcmp(TYPE_NAME(i), "tap") == 0)
       TYPE_TAP = i;
