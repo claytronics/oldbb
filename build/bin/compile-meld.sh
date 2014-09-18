@@ -18,10 +18,10 @@ fi
 
 sbcl --eval "(load \"$BBASE/meld-compiler/setup\")" \
      --eval "(ql:quickload \"cl-meld\")" \
-     --eval "(cl-meld:meld-compile \"$PWD/$1.meld\" \"$PWD/$1.meld\")" \
+     --eval "(cl-meld:meld-compile \"$PWD/$1.meld\" \"$PWD/$1\")" \
      --no-userinit --non-interactive --noinform --noprint --no-sysinit
 if [ $? != 0 ]; then
-   echo "Failed to compile file $1.meld"
+   echo "Failed to compile file $1.meld (SBCL returned an error)"
    exit 1
 fi
 if [ ! -f $PWD/$1.m ]; then
