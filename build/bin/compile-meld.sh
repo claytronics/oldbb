@@ -9,6 +9,26 @@ usage(){
 
 [[ $# -eq 0 ]] && usage
 
+case "$1" in
+   /*)
+     FILE=$1;;
+   *)
+     FILE=$PWD/$1;;
+esac
+case "$1" in
+   *meld)
+      FILE=$FILE;;
+   *)
+   echo "not"
+      FILE=$FILE.meld;;
+esac
+
+if [ ! -f $FILE ]; then
+   echo "File $FILE does not exist."
+   exit 1
+fi
+OUTPUT=$PWD/$1
+
 echo "Running make a first time"
 make -C $BBASE/src-bobby
 if [ $? != 0 ]; then
@@ -18,22 +38,22 @@ fi
 
 sbcl --eval "(load \"$BBASE/meld-compiler/setup\")" \
      --eval "(ql:quickload \"cl-meld\")" \
-     --eval "(cl-meld:meld-compile \"$PWD/$1.meld\" \"$PWD/$1\")" \
+     --eval "(cl-meld:meld-compile \"$FILE\" \"$OUTPUT\")" \
      --no-userinit --non-interactive --noinform --noprint --no-sysinit
 if [ $? != 0 ]; then
-   echo "Failed to compile file $1.meld (SBCL returned an error)"
+   echo "Failed to compile file $FILE (SBCL returned an error)"
    exit 1
 fi
-if [ ! -f $PWD/$1.m ]; then
-   echo "Failed to compile file $1.meld"
+if [ ! -f $OUTPUT.m ]; then
+   echo "Failed to compile file $FILE.meld"
    exit 1
 fi
 echo "Compilation done"
 
 echo "Generating .bb file"
-$BBASE/src-bobby/meldinterp-runtime/LMParser $PWD/$1.m
+$BBASE/src-bobby/meldinterp-runtime/LMParser $OUTPUT.m
 if [ $? != 0 ]; then
-   echo "Failed to parse byte-code file $1.m"
+   echo "Failed to parse byte-code file $OUTPUT.m"
    exit 1
 fi
 
@@ -45,7 +65,7 @@ else
   dir=$BBASE/apps/sample-meld/arch-$ARCH/meldinterp-runtime
 fi
 mkdir -p $dir
-mv $1.bb $dir/blinkyblocks.bb || exit 1
+mv $OUTPUT.bb $dir/blinkyblocks.bb || exit 1
 
 echo "Compiling the VM with the LM program"
 make -C $BBASE/apps/sample-meld
