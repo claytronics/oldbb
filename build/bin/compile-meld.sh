@@ -38,7 +38,7 @@ fi
 
 sbcl --eval "(load \"$BBASE/meld-compiler/setup\")" \
      --eval "(ql:quickload \"cl-meld\")" \
-     --eval "(cl-meld:meld-compile \"$FILE\" \"$OUTPUT\")" \
+     --eval "(cl-meld:meld-compile-exit \"$FILE\" \"$OUTPUT\")" \
      --no-userinit --non-interactive --noinform --noprint --no-sysinit
 if [ $? != 0 ]; then
    echo "Failed to compile file $FILE (SBCL returned an error)"
