@@ -21,3 +21,4 @@ C > 1
 !middle(X)
    -o !nearEnding(X),
       !setColor2(X, 3).
+

@@ -1816,6 +1816,12 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 	    
 		return;
 	      }
+
+         if(isNew > 0 && !TYPE_IS_LINEAR(type)) {
+            /* tuple found, no need to rederive */
+            FREE_TUPLE(tuple);
+            return;
+         }
 	    }
 	}
 

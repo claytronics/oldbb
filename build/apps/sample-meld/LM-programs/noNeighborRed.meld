@@ -1,4 +1,4 @@
 type neighborCount(node, int).
-type vacant(node, int).
 
-neighborCount(A, 0) -o setColor2(A, 5).
+!neighborCount(A, N), N > 1 -o !setColor2(A, 1).
+!neighborCount(A, 0) -o !setColor2(A, 5).

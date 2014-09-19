@@ -168,21 +168,21 @@ void enqueueNewTuple(tuple_t tuple, record_type isNew)
 /* Enqueue a neighbor or vacant tuple */
 void enqueue_face(NodeID neighbor, meld_int face, int isNew)
 {
-   if(TYPE_VACANT == -1) /* no such predicate in the program */
-      return;
-   if(TYPE_NEIGHBOR == -1) /* no such predicate in the program */
-      return;
-
   tuple_t tuple = NULL;
 
   if (neighbor <= 0) {
-    tuple = tuple_alloc(TYPE_VACANT);
-    SET_TUPLE_FIELD(tuple, 0, &face);
+     if(TYPE_VACANT == -1) /* no such predicate in the program */
+        return;
+     tuple = tuple_alloc(TYPE_VACANT);
+     SET_TUPLE_FIELD(tuple, 0, &face);
   }
   else {
-    tuple = tuple_alloc(TYPE_NEIGHBOR);
-    SET_TUPLE_FIELD(tuple, 0, &neighbor);
-    SET_TUPLE_FIELD(tuple, 1, &face);
+     if(TYPE_NEIGHBOR == -1) /* no such predicate in the program */
+        return;
+
+     tuple = tuple_alloc(TYPE_NEIGHBOR);
+     SET_TUPLE_FIELD(tuple, 0, &neighbor);
+     SET_TUPLE_FIELD(tuple, 1, &face);
   }
 
   enqueueNewTuple(tuple, (record_type) isNew);
