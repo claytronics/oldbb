@@ -1751,209 +1751,209 @@ void aggregate_recalc(tuple_entry *agg, Register *reg,
  */
 void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 {
-  if(type == TYPE_TERMINATE) {
-    FREE_TUPLE(tuple);
-    TERMINATE_CURRENT();
-    return;
-  }
+   if(type == TYPE_TERMINATE) {
+      FREE_TUPLE(tuple);
+      TERMINATE_CURRENT();
+      return;
+   }
 
-  if (isNew == 1) {
+   if (isNew == 1) {
 #ifdef BBSIM
-    pthread_mutex_lock(&(printMutex));
-    fprintf(stderr, "\x1b[1;32m--%d--\tExecuting tuple ", getBlockId());
-    tuple_print (tuple, stderr);
-    fprintf(stderr, "\x1b[0m\n");
-    pthread_mutex_unlock(&(printMutex));
-  }
-  if (isNew == -1) {
-    pthread_mutex_lock(&(printMutex));
-    fprintf(stderr, "\x1b[1;31m--%d--\tDeleting tuple ", getBlockId());
-    tuple_print (tuple, stderr);
-    fprintf(stderr, "\x1b[0m\n");
-    pthread_mutex_unlock(&(printMutex));
-  }
+      pthread_mutex_lock(&(printMutex));
+      fprintf(stderr, "\x1b[1;32m--%d--\tExecuting tuple ", getBlockId());
+      tuple_print (tuple, stderr);
+      fprintf(stderr, "\x1b[0m\n");
+      pthread_mutex_unlock(&(printMutex));
+   }
+   if (isNew == -1) {
+      pthread_mutex_lock(&(printMutex));
+      fprintf(stderr, "\x1b[1;31m--%d--\tDeleting tuple ", getBlockId());
+      tuple_print (tuple, stderr);
+      fprintf(stderr, "\x1b[0m\n");
+      pthread_mutex_unlock(&(printMutex));
+   }
 #endif
 
 
-  if (TYPE_IS_ACTION(type)) {
-     if(isNew > 0)
-        execute_run_action0(tuple, type, isNew);
-     else
-        FREE_TUPLE(tuple);
-     return;
-  }
-  
-  if (!TYPE_IS_AGG(type) || TYPE_IS_LINEAR(type))
-    {
+   if (TYPE_IS_ACTION(type)) {
+      if(isNew > 0)
+         execute_run_action0(tuple, type, isNew);
+      else
+         FREE_TUPLE(tuple);
+      return;
+   }
+
+   if (!TYPE_IS_AGG(type) || TYPE_IS_LINEAR(type))
+   {
       tuple_queue *queue = &TUPLES[type];
       tuple_entry** current;
       tuple_entry* cur;
-		
+
       for (current = &queue->head;
-	   *current != NULL;
-	   current = &(*current)->next)
-	{
-	  cur = *current;
+            *current != NULL;
+            current = &(*current)->next)
+      {
+         cur = *current;
 
-	  if (memcmp(cur->tuple,
-		     tuple,
-		     TYPE_SIZE(type)) == 0)
-	    {
-	      cur->records.count += isNew;
-	  
-	      if (cur->records.count <= 0) {
-		/* Remove fact from database */
-		if (!TYPE_IS_LINEAR(type))
-		  process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), -1, 
-				   reg, PROCESS_TUPLE);
-	    
-		fprintf(stdout, 
-			"\x1b[1;32m--%d--\tDelete Iter success for  %s\x1b[0m\n", 
-			getBlockId(), tuple_names[type]);
-		FREE_TUPLE(queue_dequeue_pos(queue, current));
-		/* Also free retraction fact */
-		FREE_TUPLE(tuple);
-	    
-		return;
-	      }
+         if (memcmp(cur->tuple,
+                  tuple,
+                  TYPE_SIZE(type)) == 0)
+         {
+            cur->records.count += isNew;
 
-         if(isNew > 0 && !TYPE_IS_LINEAR(type)) {
-            /* tuple found, no need to rederive */
-            FREE_TUPLE(tuple);
-            return;
+            if (cur->records.count <= 0) {
+               /* Remove fact from database */
+               if (!TYPE_IS_LINEAR(type))
+                  process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), isNew, 
+                        reg, PROCESS_TUPLE);
+
+               fprintf(stdout, 
+                     "\x1b[1;32m--%d--\tDelete Iter success for  %s\x1b[0m\n", 
+                     getBlockId(), tuple_names[type]);
+               FREE_TUPLE(queue_dequeue_pos(queue, current));
+               /* Also free retraction fact */
+               FREE_TUPLE(tuple);
+
+               return;
+            }
+
+            if(isNew > 0 && !TYPE_IS_LINEAR(type)) {
+               /* tuple found, no need to rederive */
+               FREE_TUPLE(tuple);
+               return;
+            }
          }
-	    }
-	}
+      }
 
       // if deleting, return
       if (isNew <= 0) {
-	fprintf(stdout, "\x1b[1;31m--%d--\tDelete Iter failure for %s\x1b[0m\n", getBlockId(), tuple_names[type]);
-	FREE_TUPLE(tuple);
-	return;
+         fprintf(stdout, "\x1b[1;31m--%d--\tDelete Iter failure for %s\x1b[0m\n", getBlockId(), tuple_names[type]);
+         FREE_TUPLE(tuple);
+         return;
       }
-      
+
       queue_enqueue(queue, tuple, (record_type) isNew);
       process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), 
-		       isNew, reg, PROCESS_TUPLE);    
+            isNew, reg, PROCESS_TUPLE);    
       return;
-    }
+   }
 
-  unsigned char type_aggregate = TYPE_AGGREGATE(type);
-  unsigned char field_aggregate = AGG_FIELD(type_aggregate);
+   unsigned char type_aggregate = TYPE_AGGREGATE(type);
+   unsigned char field_aggregate = AGG_FIELD(type_aggregate);
 
-  tuple_entry **current;
-  tuple_entry *cur;
-  tuple_queue *queue = &(TUPLES[type]);
-	
-  for (current = &queue->head;
-       (*current) != NULL;
-       current = &(*current)->next)
-    {
+   tuple_entry **current;
+   tuple_entry *cur;
+   tuple_queue *queue = &(TUPLES[type]);
+
+   for (current = &queue->head;
+         (*current) != NULL;
+         current = &(*current)->next)
+   {
       cur = *current;
-    
+
       size_t sizeBegin = TYPE_FIELD_SIZE + TYPE_ARG_OFFSET(type, field_aggregate);
       char *start = (char*)(cur->tuple);
 
       if(memcmp(start, tuple, sizeBegin))
-	continue;
+         continue;
 
       /*
-	size_t sizeOffset = sizeBegin + TYPE_ARG_SIZE(type, field_aggregate);
-	size_t sizeEnd = TYPE_SIZE(type) - sizeOffset;
+         size_t sizeOffset = sizeBegin + TYPE_ARG_SIZE(type, field_aggregate);
+         size_t sizeEnd = TYPE_SIZE(type) - sizeOffset;
 
-	if (memcmp(start + sizeOffset, (char*)tuple + sizeOffset, sizeEnd))
-	continue;*/
+         if (memcmp(start + sizeOffset, (char*)tuple + sizeOffset, sizeEnd))
+         continue;*/
 
       tuple_queue *agg_queue = cur->records.agg_queue;
 
       /* AGG_FIRST aggregate optimization */
       if(AGG_AGG(type_aggregate) == AGG_FIRST
-	 && isNew > 0
-	 && !queue_is_empty(agg_queue))
-	{
-	  FREE_TUPLE(tuple);
-	  return;
-	}
+            && isNew > 0
+            && !queue_is_empty(agg_queue))
+      {
+         FREE_TUPLE(tuple);
+         return;
+      }
 
       tuple_entry** current2;
       tuple_entry* cur2;
-		
+
       for (current2 = &agg_queue->head;
-	   *current2 != NULL;
-	   current2 = &(*current2)->next)
-	{
-	  cur2 = *current2;
+            *current2 != NULL;
+            current2 = &(*current2)->next)
+      {
+         cur2 = *current2;
 
-	  if (memcmp(cur2->tuple, tuple, TYPE_SIZE(type)) == 0)
-	    {
-	      cur2->records.count += isNew;
+         if (memcmp(cur2->tuple, tuple, TYPE_SIZE(type)) == 0)
+         {
+            cur2->records.count += isNew;
 
-	      if (cur2->records.count <= 0) {
-		// remove it
-		FREE_TUPLE(queue_dequeue_pos(agg_queue, current2));
+            if (cur2->records.count <= 0) {
+               // remove it
+               FREE_TUPLE(queue_dequeue_pos(agg_queue, current2));
 
-		if (queue_is_empty(agg_queue)) {
-		  /* aggregate is removed */
-		  void *aggTuple = queue_dequeue_pos(queue, current);
-						
-		  /* delete queue */
-		  free(agg_queue);
+               if (queue_is_empty(agg_queue)) {
+                  /* aggregate is removed */
+                  void *aggTuple = queue_dequeue_pos(queue, current);
 
-		  process_bytecode(aggTuple, TYPE_START(TUPLE_TYPE(aggTuple)), 
-				   -1, reg, PROCESS_TUPLE);
-		  aggregate_free(aggTuple, field_aggregate, AGG_AGG(type_aggregate));
-		  FREE_TUPLE(aggTuple);
-		} else
-		  aggregate_recalc(cur, reg, false);
-	      } else
-		aggregate_recalc(cur, reg, false);
+                  /* delete queue */
+                  free(agg_queue);
 
-		fprintf(stdout, 
-			"\x1b[1;32m--%d--\tAgg delete Iter success for %s\x1b[0m\n", 
-			getBlockId(), tuple_names[type]);
+                  process_bytecode(aggTuple, TYPE_START(TUPLE_TYPE(aggTuple)), 
+                        -1, reg, PROCESS_TUPLE);
+                  aggregate_free(aggTuple, field_aggregate, AGG_AGG(type_aggregate));
+                  FREE_TUPLE(aggTuple);
+               } else
+                  aggregate_recalc(cur, reg, false);
+            } else
+               aggregate_recalc(cur, reg, false);
 
-	      FREE_TUPLE(tuple);
-	      return;
-	    }
-	}
+            fprintf(stdout, 
+                  "\x1b[1;32m--%d--\tAgg delete Iter success for %s\x1b[0m\n", 
+                  getBlockId(), tuple_names[type]);
+
+            FREE_TUPLE(tuple);
+            return;
+         }
+      }
 
       // if deleting, return
       if (isNew <= 0) {
-	fprintf(stdout, 
-		"\x1b[1;32m--%d--\tAgg delete Iter failure for %s\x1b[0m\n", 
-		getBlockId(), tuple_names[type]);
+         fprintf(stdout, 
+               "\x1b[1;32m--%d--\tAgg delete Iter failure for %s\x1b[0m\n", 
+               getBlockId(), tuple_names[type]);
 
-	FREE_TUPLE(tuple);
-	return;
+         FREE_TUPLE(tuple);
+         return;
       }
 
       queue_enqueue(agg_queue, tuple, (record_type) isNew);
       aggregate_recalc(cur, reg, false);
-		
+
       return;
-    }
+   }
 
-  // if deleting, return
-  if (isNew <= 0) {
-    FREE_TUPLE(tuple);
-    return;
-  }
+   // if deleting, return
+   if (isNew <= 0) {
+      FREE_TUPLE(tuple);
+      return;
+   }
 
-  // So now we know we have a new tuple
-  tuple_t tuple_cpy = ALLOC_TUPLE(TYPE_SIZE(type));
-  memcpy(tuple_cpy, tuple, TYPE_SIZE(type));
+   // So now we know we have a new tuple
+   tuple_t tuple_cpy = ALLOC_TUPLE(TYPE_SIZE(type));
+   memcpy(tuple_cpy, tuple, TYPE_SIZE(type));
 
-  /* create aggregate queue */
-  tuple_queue *agg_queue = malloc(sizeof(tuple_queue));
-  
-  queue_init(agg_queue);
-  
-  queue_enqueue(agg_queue, tuple, (record_type) isNew);
-  tuple_entry *entry =
-    queue_enqueue(&TUPLES[type], tuple_cpy, (record_type)agg_queue);
+   /* create aggregate queue */
+   tuple_queue *agg_queue = malloc(sizeof(tuple_queue));
 
-  aggregate_recalc(entry, reg, true);
-  process_bytecode(tuple, TYPE_START(type), isNew, reg, PROCESS_TUPLE);
+   queue_init(agg_queue);
+
+   queue_enqueue(agg_queue, tuple, (record_type) isNew);
+   tuple_entry *entry =
+      queue_enqueue(&TUPLES[type], tuple_cpy, (record_type)agg_queue);
+
+   aggregate_recalc(entry, reg, true);
+   process_bytecode(tuple, TYPE_START(type), isNew, reg, PROCESS_TUPLE);
 }
 
 int 

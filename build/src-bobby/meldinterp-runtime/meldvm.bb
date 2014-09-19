@@ -368,11 +368,15 @@ void meldMain(void)
        * This may need to be reviewed, 
        * I am not sure what LM is supposed to do with received tuples
        */
+#if 0
       while(!queue_is_empty(&(receivedTuples[i]))) {
 	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
-	printf("--%d--\tDelete received\n", blockId);
+	printf("--%d--\tDelete received ", blockId);
+   tuple_print(tuple, stdout);
+   printf("\n");
 	enqueueNewTuple(tuple, (record_type) -1);
       }
+#endif
 
       neighbors[i] = neighbor;
       enqueue_face(neighbors[i], i, 1);
@@ -421,9 +425,11 @@ void receive_tuple(int isNew)
 #endif
 #endif
 
+  /*
   tuple = malloc(tuple_size);
   memcpy(tuple, rcvdTuple, tuple_size);
   queue_enqueue(&receivedTuples[faceNum(thisChunk)], tuple, (record_type)isNew);
+  */
 
   tuple = malloc(tuple_size);
   memcpy(tuple, rcvdTuple, tuple_size);
@@ -601,8 +607,10 @@ vm_alloc(void)
   newStratTuples = calloc(1, sizeof(tuple_pqueue));
   delayedTuples = calloc(1, sizeof(tuple_pqueue));
 
+#if 0
   /* Reset received tuples queue */
   memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
+#endif
 
 #ifdef BBSIM
   pthread_mutex_init(&(printMutex), NULL);
