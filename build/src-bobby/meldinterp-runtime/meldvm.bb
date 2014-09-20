@@ -432,13 +432,12 @@ void receive_tuple(int isNew)
         queue_enqueue(queue, tuple, (record_type)isNew);
      } else {
         // delete tuple from queue because it must invalidate some other tuple
-        tuple_entry *tupleEntry;
-        for (tupleEntry = queue->head; 
-          tupleEntry != NULL; 
-          tupleEntry = tupleEntry->next)
-        {
-          if(memcmp(tupleEntry->tuple, rcvdTuple, tuple_size) == 0) {
-             FREE_TUPLE(queue_dequeue_pos(queue, &tupleEntry));
+        tuple_entry **current;
+        for (current = &queue->head;
+            *current != NULL;
+            current = &(*current)->next) {
+          if(memcmp((*current)->tuple, rcvdTuple, tuple_size) == 0) {
+             FREE_TUPLE(queue_dequeue_pos(queue, current));
              break;
           }
         }
