@@ -304,9 +304,9 @@ void meldMain(void)
       
       tuple_handle(tuple, isNew, reg);
     } else if (!p_empty(delayedTuples) 
-	       && p_peek(delayedTuples)->priority <= getTime()) {
+	       && p_peek(delayedTuples)->priority <= myGetTime()) {
       tuple_pentry *entry = p_dequeue(delayedTuples);
-      
+
       tuple_send(entry->tuple, entry->rt, 0, entry->records.count);
       free(entry);
     } else if (!(p_empty(newStratTuples))) {
@@ -408,7 +408,8 @@ void receive_tuple(int isNew)
 {
   tuple_t rcvdTuple = (tuple_t)thisChunk->data;
   tuple_t tuple;
-  size_t tuple_size = TYPE_SIZE(TUPLE_TYPE(rcvdTuple));
+  tuple_type type = TUPLE_TYPE(rcvdTuple);
+  size_t tuple_size = TYPE_SIZE(type);
   
 #ifdef DEBUG_SEND
 #ifdef BBSIM
@@ -423,14 +424,14 @@ void receive_tuple(int isNew)
 #endif
 #endif
 
-  if(TYPE_IS_PERSISTENT(TUPLE_TYPE(rcvdTuple))) {
+  if(!TYPE_IS_LINEAR(type) && !TYPE_IS_ACTION(type)) {
      tuple_queue *queue = receivedTuples + faceNum(thisChunk);
-     if(isNew > 1) {
+     if(isNew > 0) {
         tuple = malloc(tuple_size);
         memcpy(tuple, rcvdTuple, tuple_size);
         queue_enqueue(queue, tuple, (record_type)isNew);
      } else {
-        // delete tuple from queue
+        // delete tuple from queue because it must invalidate some other tuple
         tuple_entry *tupleEntry;
         for (tupleEntry = queue->head; 
           tupleEntry != NULL; 
@@ -471,7 +472,7 @@ void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
   assert (TUPLE_TYPE(tuple) < NUM_TYPES);
 
   if (delay > 0) {
-    p_enqueue(delayedTuples, getTime() + delay, tuple, rt, (record_type) isNew);
+    p_enqueue(delayedTuples, myGetTime() + delay, tuple, rt, (record_type) isNew);
     return;
   }
 

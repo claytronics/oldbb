@@ -12,7 +12,7 @@
 *******************************************************************************/
 
 /* Uncomment to print content of input file */
-#define DEBUG_PARSER
+// #define DEBUG_PARSER
 
 /* Function prototypes */
 byte readType (FILE *pFile);
