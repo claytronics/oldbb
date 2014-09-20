@@ -582,6 +582,7 @@ char* arg2String(tuple_t tuple, byte index);
 tuple_entry* queue_enqueue(tuple_queue *queue, tuple_t tuple, record_type isNew);
 bool queue_is_empty(tuple_queue *queue);
 tuple_t queue_dequeue(tuple_queue *queue, int *isNew);
+tuple_t queue_dequeue_pos(tuple_queue *queue, tuple_entry **pos);
 tuple_t queue_pop_tuple(tuple_queue *queue);
 void queue_push_tuple(tuple_queue *queue, tuple_entry *entry);
 

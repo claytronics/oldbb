@@ -40,8 +40,6 @@ tuple_type TYPE_NEIGHBOR = -1;
 tuple_type TYPE_VACANT = -1;
 tuple_type TYPE_TAP = -1;
 
-static tuple_t queue_dequeue_pos(tuple_queue *queue, tuple_entry **pos);
-
 inline byte val_is_float(const byte x) { return x == 0x00; }
 inline byte val_is_int(const byte x) { return x == 0x01; }
 inline byte val_is_field(const byte x) { return x == 0x02; }
@@ -1259,7 +1257,7 @@ queue_pop_tuple(tuple_queue *queue)
   return entry;
 }
 
-static tuple_t
+tuple_t
 queue_dequeue_pos(tuple_queue *queue, tuple_entry **pos)
 {
   tuple_entry *entry = *pos;

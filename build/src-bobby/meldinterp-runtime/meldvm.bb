@@ -368,15 +368,13 @@ void meldMain(void)
        * This may need to be reviewed, 
        * I am not sure what LM is supposed to do with received tuples
        */
-#if 0
       while(!queue_is_empty(&(receivedTuples[i]))) {
-	tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
-	printf("--%d--\tDelete received ", blockId);
-   tuple_print(tuple, stdout);
-   printf("\n");
-	enqueueNewTuple(tuple, (record_type) -1);
+         tuple_t tuple = queue_dequeue(&receivedTuples[i], NULL);
+         printf("--%d--\tDelete received ", blockId);
+         tuple_print(tuple, stdout);
+         printf("\n");
+         enqueueNewTuple(tuple, (record_type) -1);
       }
-#endif
 
       neighbors[i] = neighbor;
       enqueue_face(neighbors[i], i, 1);
@@ -425,11 +423,26 @@ void receive_tuple(int isNew)
 #endif
 #endif
 
-  /*
-  tuple = malloc(tuple_size);
-  memcpy(tuple, rcvdTuple, tuple_size);
-  queue_enqueue(&receivedTuples[faceNum(thisChunk)], tuple, (record_type)isNew);
-  */
+  if(TYPE_IS_PERSISTENT(TUPLE_TYPE(rcvdTuple))) {
+     tuple_queue *queue = receivedTuples + faceNum(thisChunk);
+     if(isNew > 1) {
+        tuple = malloc(tuple_size);
+        memcpy(tuple, rcvdTuple, tuple_size);
+        queue_enqueue(queue, tuple, (record_type)isNew);
+     } else {
+        // delete tuple from queue
+        tuple_entry *tupleEntry;
+        for (tupleEntry = queue->head; 
+          tupleEntry != NULL; 
+          tupleEntry = tupleEntry->next)
+        {
+          if(memcmp(tupleEntry->tuple, rcvdTuple, tuple_size) == 0) {
+             FREE_TUPLE(queue_dequeue_pos(queue, &tupleEntry));
+             break;
+          }
+        }
+     }
+  }
 
   tuple = malloc(tuple_size);
   memcpy(tuple, rcvdTuple, tuple_size);
@@ -607,10 +620,8 @@ vm_alloc(void)
   newStratTuples = calloc(1, sizeof(tuple_pqueue));
   delayedTuples = calloc(1, sizeof(tuple_pqueue));
 
-#if 0
   /* Reset received tuples queue */
   memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
-#endif
 
 #ifdef BBSIM
   pthread_mutex_init(&(printMutex), NULL);
