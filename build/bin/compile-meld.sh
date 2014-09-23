@@ -36,18 +36,31 @@ if [ $? != 0 ]; then
    exit 1
 fi
 
+compile_file=`mktemp`
 sbcl --eval "(load \"$BBASE/meld-compiler/setup\")" \
      --eval "(ql:quickload \"cl-meld\")" \
      --eval "(cl-meld:meld-compile-exit \"$FILE\" \"$OUTPUT\")" \
-     --no-userinit --non-interactive --noinform --noprint --no-sysinit
+     --no-userinit --non-interactive --noinform --noprint \
+     --no-sysinit 2>&1 | tee $compile_file
 if [ $? != 0 ]; then
+   rm -f $compile_file
    echo "Failed to compile file $FILE (SBCL returned an error)"
    exit 1
 fi
 if [ ! -f $OUTPUT.m ]; then
+   rm -f $compile_file
    echo "Failed to compile file $FILE.meld"
    exit 1
 fi
+if grep -q "WARNING" $compile_file; then
+   echo "Compiler returned warnings!"
+   read -p "Continue? y/n " yn
+   if [ "$yn" != "y" ]; then
+      rm -f $compile_file
+      exit 1
+   fi
+fi
+rm -f $compile_file
 echo "Compilation done"
 
 echo "Generating .bb file"
