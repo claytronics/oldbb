@@ -27,6 +27,7 @@ handshake from the other block */
 threadvar byte ignoredHandshakeCount[NUM_PORTS];
 
 byte getNeighborCount(void);
+byte isPortVacant(PRef pnum);
 
 // simple functions to access GUID of geographic neighbors
 Uid down(void);
