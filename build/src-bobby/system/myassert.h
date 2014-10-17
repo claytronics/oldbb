@@ -4,6 +4,17 @@
 #undef assert
 #endif
 
-# define assert(e)	((e) ? (void)0 : __myassert(__FILE__, __LINE__, #e))
-void __myassert(char* file, int line, char* exp);
+// ----------- ASSERT
+#ifdef TESTING 
+void _assert(byte condition, byte fn, int ln);
+# define assert(x) _assert(x, FILENUM, __LINE__)
+#else
+# ifdef BBSIM
+   void _myassert(char* file, int ln, char* cond);
+#  define assert(e) ((e) ? (void)0 : _myassert(__FILE__, __LINE__, #e))
+# else 
+#  define assert(x)
+# endif
+#endif
+
 #endif
