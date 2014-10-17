@@ -1,10 +1,15 @@
 #include "message.bbh"
 #include "led.bbh"
 
+#ifdef BBSIM
+# include "../sim/sim.h"
+#endif
+
 #ifdef TESTING
 #define FILENUM 3
 #include "log.bbh"
 #endif
+#include "myassert.h"
 
 byte 
 sendMessageToUid(Chunk* c, Uid dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb)
@@ -29,23 +34,23 @@ sendMessageToPort(Chunk* c, PRef dest, byte * msg, byte length, MsgHandler mh, G
 {
   // NOTE: Can no longer support BROADCAST since requires 6 memory chunks passed in
   
-#ifdef TESTING
   assert(c != 0);
-#endif
     
+
   if(dest == BROADCAST) {
+    char buffer[512];
+    blockprint(stderr, "tried to broadcast: %s\n", chunk2str(c, buffer));
     return 0;
-  } else {
-    if(dest < NUM_PORTS) {
-      if(setupChunk(c,dest, msg, length, mh, cb) == 0) {
-        return 0;
-      }
-      queueChunk(c);
-      return 1;
-    }
+  } 
+
+  assert(dest < NUM_PORTS);
+  if(setupChunk(c,dest, msg, length, mh, cb) == 0) {
+    char buffer[512];
+    blockprint(stderr, "setupchunk failed: %s\n", chunk2str(c, buffer));
+    return 0;
   }
-    
-  return 0;
+  queueChunk(c);
+  return 1;
 }
 
 
@@ -130,6 +135,16 @@ void _assert
     delayMS(1000);
   }
 } 
+#endif
+
+#ifdef BBSIM
+#include "../sim/sim.h"
+
+void _myassert(char* file, int ln, char* cond)
+{
+  blockprint(stderr, "Assert Failed:%s:%d:%s\n", file, ln, cond);
+  *(int *)(0) = 1;
+}
 #endif
 
 // Local Variables:
