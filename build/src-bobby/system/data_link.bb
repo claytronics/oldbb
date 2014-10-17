@@ -152,6 +152,13 @@ void flushSendQueue(PRef p)
 }
 ///////////////// END PROTECTED FUNCTIONS /////////////////
 
+// turn on TEST_CHUNK_USAGE if you want to stamp packets with the id
+// of sender and which sent packet it was.  Writes into data space, so
+// be careful!
+#ifdef TEST_CHUNK_USAGE
+threadvar int sentNum = 0;
+#endif
+
 //////////////////// PUBLIC FUNCTIONS /////////////////////
 // correctly formats/prepares all components of the chunk for sending
 // inputs:  c - chunk to format
@@ -189,6 +196,13 @@ byte setupChunk(Chunk* c, PRef p, byte * msg, byte length, MsgHandler mh, Generi
   // 'zero' out extra bytes (use ff's)
   memset((c->data)+length, 0xFF, DATA_SIZE-length);
     
+#ifdef TEST_CHUNK_USAGE
+  // HACK FOR TESTING
+  byte foo = getGUID()&0xff;
+  c->data[DATA_SIZE-1] = foo;
+  c->data[DATA_SIZE-2] = sentNum++;
+#endif
+
   return 1;
 }
 
