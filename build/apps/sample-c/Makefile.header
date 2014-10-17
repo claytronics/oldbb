@@ -476,7 +476,7 @@ $(TARCH)/.tmp:
 # necessary for Make to be able to compile the .c files in the
 # $(TARCH)/system for some reason I don't currently understand
 
--include .allbbobj
+#-include .allbbobj
 .allbbobj:	$(BBINCLUDE) $(ALLBBSRC) $(MELDBBSRC)
 	$(BB2C) $(BB2C_FLAGS) -c "$(CFLAGS) -Isim -I$(TARCH)" --basePath $(BBASE)/src-bobby -d $(TARCH) --sethPath $(ALLBBSRC) $(MELDBBSRC)
 	touch .allbbobj
