@@ -60,8 +60,8 @@ static void installThread(Block *b)
 	assert(ptr == NULL && pthread_setspecific(key, b) == 0);
 }
 
-int maxThis;
-Block** allThis = NULL;
+static int maxThis = 0;
+static Block** allThis = NULL;
 
 static void* launchBlockProgram(Block *b)
 {
@@ -69,11 +69,21 @@ static void* launchBlockProgram(Block *b)
 
   pthread_mutex_lock(&printmutex);
   fprintf(stderr, "Block id: %s\n", nodeIDasString(b->id, 0));
-  if (b->id >= maxThis) {
+  while (b->id >= maxThis) {
+    int old = maxThis;
     maxThis = (maxThis+1)*2;
-    allThis = realloc(allThis, sizeof(maxThis)*sizeof(Block*));
+    //fprintf(stderr, "Realloc: %d -> %d (for %s)\n", old, maxThis, nodeIDasString(b->id, 0));
+    allThis = realloc(allThis, maxThis*sizeof(Block*));
+    while (old < maxThis) allThis[old++] = 0;
   }
   allThis[b->id] = b;
+  if (0)
+  {
+    int i;
+    for (i=0; i<maxThis; i++) {
+      fprintf(stderr, "%d: %p\n", i, allThis[i]);
+    }
+  }
   pthread_mutex_unlock(&printmutex);
 
   // call user program
@@ -124,7 +134,7 @@ saveTickCount(int copyflag)
     pthread_mutex_unlock(&printmutex);
     return;
   }
-  fprintf(stderr, "STC: %d %d\n", copyflag, tickCount[1]);
+  //fprintf(stderr, "STC: %d %d\n", copyflag, tickCount[1]);
   int j;
   for (j=1; j<maxId; j++) {
     if (copyflag) {
@@ -164,7 +174,7 @@ void* callBlockTick(Block *b)
         memset(destroyedBlocks+maxBlock, 0, (newmax-maxBlock)*sizeof(int));
         maxBlock = newmax;
       }
-      fprintf(stderr, "REALLOC:%d, %d, %d\n", id, maxId, maxBlock);
+      //fprintf(stderr, "REALLOC:%d, %d, %d\n", id, maxId, maxBlock);
       pthread_mutex_unlock(&printmutex);
     }
     tickCount[id]++;
