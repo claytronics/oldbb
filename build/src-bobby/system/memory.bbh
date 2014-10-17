@@ -110,7 +110,7 @@ void initializeMemory(void);
 void freeChunk(Chunk *);
 
 // check memory consistency
-void _checkMemoryConsistency(byte cfn, int cln);
+void _checkMemoryConsistency(byte show, byte cfn, int cln);
 
 //#define getSystemRXChunk() _getSystemRXChunk(FILENUM, __LINE__)
 //Chunk* _getSystemRXChunk(byte f, int l);
