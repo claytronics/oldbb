@@ -28,13 +28,19 @@ struct _spanningtree{
   byte lastNeighborCount;	 // last time I checked, how many neighbors I had
   Timeout spantimeout;
   // info to handle barriers
-  byte barrierNumber;
+  byte barrierNumber;		 /* number of the barrier we are currently executing */
+  byte waitingForBarrier;	 /* number of children that have already entered */
 }; 
 
 typedef struct _basicMsg {
   byte spid;			 /* tree it */
   char value[2];		 /* value of sender */
 } BasicMsg;
+
+typedef struct _barrierMsg {
+  byte spid;			 /* tree we are operating on */
+  byte num;			 /* number of this barrier */
+} BarrierMsg;
 
 threaddef #define MAX_SPANTREE_ID 16
 
@@ -148,6 +154,9 @@ alreadyInYourTree(void)
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
   PRef senderPort = faceNum(thisChunk); /* face we got sender's msg from */
+  uint16_t senderValue = charToGUID((byte*)&(msg->value));
+  if (senderValue != st->value) return; /* this is now old information */
+
   assert(st->outstanding > 0);
   st->outstanding--;
   st->neighbors[senderPort] = NoLink;
@@ -207,12 +216,17 @@ beMyChild(void)
     checkStatus(st);
     return;
   } else if (senderValue == st->value) {
-    // I am already in a tree with this value
-    st->neighbors[senderPort] = NoLink;
+    // I am already in a tree with this value (before I set this to
+    // not being a link I need to make sure that this wasn't a slow
+    // link where we are going to send a bemychild msg back to this
+    // node)
+    if (st->neighbors[senderPort] != Slow) {
+      st->neighbors[senderPort] = NoLink;
+    }
     sendMySpChunk(senderPort, 
-                  thisChunk->data, 
-                  sizeof(BasicMsg), 
-                  (MsgHandler)&alreadyInYourTree);
+		  thisChunk->data, 
+		  sizeof(BasicMsg), 
+		  (MsgHandler)&alreadyInYourTree);
     return;
   } else if (senderValue < st->value) {
     // I am in a better tree, tell sender no luck
@@ -297,7 +311,8 @@ void
 checkStatus(SpanningTree* st)
 {
   if (st->outstanding == 0) st->state = STABLE;
-  blockprint(stderr, "Status: %s\n", state2str(st->state));
+  char buffer[512];
+  blockprint(stderr, "Status: %s: %s\n", state2str(st->state), tree2str(buffer, st->spantreeid));
 }
 
 // called when we are starting to enter a new tree.  Reset everything
@@ -328,14 +343,14 @@ startAskingNeighors(SpanningTree* st, byte gen)
     if (gen != st->bmcGeneration) {
       // another bemychild msg came in with a better value for a tree, so abort the rest of this one.
       char buffer[512];
-      blockprint("Aborting asking neighbors: %d->%d: %s\n", gen, st->bmcGeneration, tree2str(buffer, st->spantreeid));
+      blockprint(stderr, "Aborting asking neighbors: %d->%d: %s\n", gen, st->bmcGeneration, tree2str(buffer, st->spantreeid));
       return;
     }
     if (isPortVacant(i)) {
       if (!((st->neighbors[i] == Vacant)||(st->neighbors[i] == Unknown))) {
 	// system thinks port is vacant, but i don't???
 	char buffer[512];
-	blockprint("%d is %s, but system thinks it is vacant\nstate is: %s", i, nstate2str(st->neighbors[i]), tree2str(buffer, st->spantreeid));
+	blockprint(stderr, "%d is %s, but system thinks it is vacant\nstate is: %s", i, nstate2str(st->neighbors[i]), tree2str(buffer, st->spantreeid));
       }
       assert((st->neighbors[i] == Vacant)||(st->neighbors[i] == Unknown));
       st->neighbors[i] = Vacant;
@@ -470,14 +485,74 @@ byte isSpanningTreeRoot(SpanningTree* spt)
   return (spt->kind == Root);
 }
 
-// wait til everyone gets to a barrier.  I.e., every node in spanning
-// tree calls this function with the same id.  Will not return until
-// done or timeout secs have elapsed.  If timeout is 0, never timeout.
-// return 1 if timedout, 0 if ok.
-int 
-treeBarrier(SpanningTree* spt, byte id, int timeout)
+// my and all my children have entered barrier
+void
+upBarrier(void)
 {
-  return 1;
+  BarrierMsg* msg = (BarrierMsg*)thisChunk;
+  SpanningTree* st = trees[msg->spid];
+  if (msg->num == st->barrierNumber) {
+    st->outstanding--;
+    return;
+  }
+  // I haven't entered the barrier that my child has, record it
+  assert(msg->num == (st->barrierNumber+1));
+  st->waitingForBarrier++;
+}
+
+// my parent says everyone has entered barrier, I can leave it now
+void
+downBarrier(void)
+{
+  BarrierMsg* msg = (BarrierMsg*)thisChunk;
+  SpanningTree* st = trees[msg->spid];
+  st->outstanding++;
+}
+
+
+// wait til everyone gets to a barrier.  I.e., every node in spanning
+// tree calls this function.  Will not return until done or timeout
+// secs have elapsed.  If timeout is 0, never timeout.  return 1 if
+// timedout, 0 if ok.
+int 
+treeBarrier(SpanningTree* spt, int timeout)
+{
+  spt->barrierNumber++;		 /* indicate we are entering a new barrier */
+  spt->outstanding = spt->numchildren; /* how many children I am waiting for */
+  BarrierMsg msg;
+  msg.spid = spt->spantreeid;
+  msg.num = spt->barrierNumber;
+
+  blockprint(stderr, "StartBarrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
+  // check to see if any children got here before me
+  spt->outstanding -= spt->waitingForBarrier;
+  spt->waitingForBarrier = 0;
+
+  // now we wait for all our children to report they have entered barrier
+  while (spt->outstanding > 0) delayMS(100);
+
+  blockprint(stderr, "ChildBarrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
+
+  // at this point all of my children have entered barrier.  Tell my
+  // parent and then wait for him to report back to me that I can
+  // continue
+  if (spt->kind != Root) {
+    sendMySpChunk(spt->myParent, (byte*)&msg, sizeof(BarrierMsg), (MsgHandler)&upBarrier);
+    while (spt->outstanding == 0) delayMS(100);
+  }
+
+  blockprint(stderr, "ParntBarrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
+
+  // now tell all my children that they are done
+  int i;
+  for (i=0; i<NUM_PORTS; i++) {
+    if (spt->neighbors[i] != Child) continue;
+    sendMySpChunk(i, (byte*)&msg, sizeof(BarrierMsg), (MsgHandler)&downBarrier);
+  }
+
+  blockprint(stderr, "Done-Barrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
+
+  return 0;
 }
  
 ////////////////////////////////////////////////////////////////
@@ -550,7 +625,7 @@ myMain(void)
   }
   blockprint(stderr, "finished\n");  
   //treeBroadcast(tree,data, 1, handler );
-  if ( treeBarrier(tree,1,5000) == 1 )
+  if ( treeBarrier(tree,5000) == 1 )
     {
       setColor(GREEN);
     }  
