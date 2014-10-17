@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+$reduce = 0;
+
 my %list = ();
 my @input = ();
 while (<>) {
@@ -13,16 +15,17 @@ while (<>) {
 }
 $str = "";
 foreach $key (sort keys %list) {
-    $str .= "nm arch-x86_64-Linux/spTest | grep $key; "
+    $str .= "nm arch-x86_64-Linux/newspan | grep $key; "
 }
 $result = `$str`;
 @lines = split("\n", $result);
 foreach $line (@lines) {
     ($adr, $name) = $line =~ /0+([0-9a-f]+) T ([^ \t\r\n]+)/;
-    print "0x$adr $name\n";
+#    print "0x$adr $name\n";
     $list{$adr} = $name;
 }
 $lastline = "";
+%prev = ();
 foreach $line (@input) {
     while ($line =~ /0x[0-9a-f]+/) {
 	my ($x) = $line =~ /(0x[0-9a-f]+)/;
@@ -30,10 +33,17 @@ foreach $line (@input) {
 	$y = $list{$x};
 	$line =~ s/0x$x/$y/;
     }
-    if ($lastline ne $line) {
-	print $line;
-	$lastline = $line;
+    ($lastline eq $line) && next;
+    if ($reduce && ($line =~ /^[0-9]+:(.*)/)) {
+	($node, $rest) = $line =~ /^([0-9]+):(.*)/;
+	if ($prev{$node} eq $rest) {
+	    $line = "";
+	} else {
+	    $prev{$node} = $rest;
+	}
     }
+    print $line;
+    $lastline = $line;
 }
 exit(0);
 
