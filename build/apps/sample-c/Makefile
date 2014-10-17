@@ -2,7 +2,7 @@
 # below here should be in an include file
 ##################################################
 
-SOURCE := spTest.bb
+SOURCE := newspan.bb
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
