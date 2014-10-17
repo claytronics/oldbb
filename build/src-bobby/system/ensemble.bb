@@ -476,6 +476,12 @@ void initEnsemble(void)
     }
 }
 
+byte 
+isPortVacant(PRef pnum)
+{
+  return thisNeighborhood.n[pnum] == VACANT;
+}
+
 // Local Variables:
 // mode: c
 // tab-width: 8
