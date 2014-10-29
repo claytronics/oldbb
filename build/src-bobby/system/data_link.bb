@@ -22,6 +22,7 @@
 #endif
 
 #include "../sim/sim.h"
+#include "block.bbh" 
 
 // global receive queue for packets
 // move to network layer???

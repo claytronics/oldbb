@@ -25,6 +25,7 @@
 #endif
 
 #include "myassert.h"
+#include "block.bbh"
 
 threaddef #define NUM_RXCHUNKS 36
 threaddef #define NUM_TXCHUNKS 36
@@ -243,6 +244,11 @@ chunk2str(Chunk* chk, char* bp)
   }
   return bp;
 }
+#else
+
+char*
+chunk2str(Chunk* chk, char* bp){}
+
 #endif
 
 ////////////////// END PUBLIC FUNCTIONS ///////////////////

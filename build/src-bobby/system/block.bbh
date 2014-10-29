@@ -43,6 +43,9 @@ void initBlock(void);   // calls initial register magic, other setup
 #ifdef BBSIM
 void pauseForever(void);
 void tellNeighborsDestroyed(Block *b);
+#define blockprint(...) blockprint(__VA_ARGS__)
+#else
+#define blockprint(...)
 #endif
 
 #endif

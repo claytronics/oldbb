@@ -1,6 +1,7 @@
 #include "hardwaretime.bbh"
 #include "../hw-api/hwTime.h"
 #include "assert.h"
+#include "block.bbh"
 
 threadvar Timeout* thisTimeout;		// global var referencing current timeout struct for callbacks
 threadvar Timeout* timeoutList;	// semi-private data, do not modify outside of this file

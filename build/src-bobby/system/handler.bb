@@ -1,5 +1,5 @@
 #include "handler.bbh"
-
+#include "block.bbh"
 #include "../sim/sim.h"
 
 // System struct for managing callbacks.

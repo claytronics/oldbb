@@ -1,5 +1,6 @@
 #include "message.bbh"
 #include "led.bbh"
+#include "block.bbh"
 
 #ifdef BBSIM
 # include "../sim/sim.h"

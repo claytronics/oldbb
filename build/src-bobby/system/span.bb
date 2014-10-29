@@ -1,6 +1,7 @@
 #include "span.bbh"
 #include "block.bbh"
 #include "../sim/sim.h"
+#include "myassert.h"
 
 ////////////////////////////////////////////////////////////////
 // private functions for spanning tree code, see below for public interface
@@ -366,7 +367,7 @@ void screwyou(void)
       st->outstanding--;
       // don't call adjust child, don't want to change my state
       byte data[1];
-      data[0] = spId;
+      data[0] = 0;//spId;
       sendMySpChunk(faceNum(thisChunk), data, 1, (MsgHandler)&pleaseTryMe); 
     }
   }

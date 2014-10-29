@@ -11,6 +11,7 @@
 #ifdef LOG_DEBUG
 #include "log.bbh"
 #endif
+#include "block.bbh"
 
 /* #define ENSEMBLE_DEBUG */
 
