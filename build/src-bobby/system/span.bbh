@@ -5,62 +5,145 @@
 #define __SPAN_H__
 
 #include "block.bbh"
+#include "block_config.bbh"
+#include "memory.bbh"
+#include "audio.bbh"
+#include <stdlib.h>
+#include "../sim/sim.h"
+#include "myassert.h"
 
-threadtype typedef enum { FREE, STARTED, DONE, HAVEPARENT, WAITING, FORMED } SpanTreeState;
-threadtype typedef enum { COMPLETED, TIMEDOUT, WAIT } SpanningTreeStatus;
+#define DEBUGSPAN 0
+
+threadtype typedef enum { MAYBESTABLE, STABLE, WAITING, CANCELED } SpanTreeState;
+threadtype typedef enum { Root, Interior, Leaf } SpanTreeKind;
+threadtype typedef enum { Vacant, Parent, Child, NoLink, Unknown, Slow } SpanTreeNeighborKind;
+
 threadtype typedef struct _spanningtree SpanningTree;
-threadtype typedef void (*SpanningTreeHandler)(SpanningTree* treee, SpanningTreeStatus status);
+threadtype typedef void (*SpanningTreeHandler)(SpanningTree* treee, SpanTreeState kind);
 
 struct _spanningtree{
-  PRef myParent;			/* port for my parent if there is on, else 255 == I am root  */
-  byte numchildren;		/* number of children I have */
-  PRef myChildren[NUM_PORTS];	/* ports for my children, if there are any.  0 = not my child or unknown, 1 = my child, 2 = need retry */
-  byte spantreeid;		/* the id of this spanning tree */
-  SpanTreeState state;			/* state i am in in forming the spanning tree */
-  uint16_t value;				/* used in the creation of spanning trees, the name of the root */
-  int outstanding;			/* used to count messages */
-  SpanningTreeHandler mydonefunc;
-  SpanningTreeStatus status;
+  PRef myParent;    // port for my parent if there is one, else 255 == I am root
+  byte numchildren;   /* number of children I have */
+  SpanTreeNeighborKind neighbors[NUM_PORTS];  // what kind of node is my neighbor on each port 
+  byte spantreeid;    // the id of this spanning tree
+  SpanTreeState state;    // state i am in in forming the spanning tree
+  SpanTreeKind kind;    // kind of node I am
+  uint16_t value;     // used in the creation of spanning trees, the name of the root
+  byte bmcGeneration;   // track number of bmc calls that I recieved
+  int outstanding;    // used to count messages when we are in Waiting state
+  byte stableChildren;    // number of children that have told me they are stable with my value
+  SpanningTreeHandler mydonefunc; // handler to call when we reach first stable state
   MsgHandler broadcasthandler;
+  byte lastNeighborCount;  // last time I checked, how many neighbors I had
   Timeout spantimeout;
+  // info to handle barriers
+  byte barrierNumber;    /* number of the barrier we are currently executing */
+  byte waitingForBarrier;  /* number of children that have already entered */
 }; 
 
-// must be called at program start, before ever trying to create a spanning tree
-void initSpanningTreeInformation(void);
+typedef struct _basicMsg {
+  byte spid;       /* tree it */
+  char value[2];     /* value of sender */
+} BasicMsg;
 
-// get tree structure for a given id
-SpanningTree* getTree(int id);
+typedef struct _barrierMsg {
+  byte spid;       /* tree we are operating on */
+  byte num;      /* number of this barrier */
+} BarrierMsg;
 
-// for debugging to have some determinism
-// 0 -> no debugging, random ids
-// 1 -> above + colors for states
-// 2 -> above + send log msgs back to host
-void setSpanningTreeDebug(int val);
+threaddef #define MAX_SPANTREE_ID 16
 
-// allocate a set of num spanning trees.  If num is 0, use system default.
+
+
+// allocate a set of <num> spanning trees.  If num is 0, use system default.
 // returns the base of num spanning tree to be used ids.
 int initSpanningTrees(int num);
 
-// start a spanning tree with id#, id, where I am the root.  Must be starte by only one node.
-// if timeout == 0, never time out
-void startTreeByParent(SpanningTree* treee, byte id, SpanningTreeHandler donefunc, int timeout);
 
-// start a spanning tree with a random root, more than one node can initiate this.  
-// if timeout == 0, never time out
-// have to use a while loop inside the user program to wait for a spanning tree to be finished
-void createSpanningTree(SpanningTree* treee, SpanningTreeHandler donefunc, int timeout);
+// return the tree structure for a given tree id
+SpanningTree* getTree(int id);
 
-// send msg in data to everyone in the spanning tree, call handler when everyone has gotten the msg
-void treeBroadcast(SpanningTree* treee, byte* data, byte size, MsgHandler handler);
+
+
+// start a spanning tree with a random root, all nodes must initiate this.
+// if timeout == 0, never time out
+void createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout);
+
 
 // wait til everyone gets to a barrier.  I.e., every node in spanning
-// tree calls this function with the same id.  Will not return until
-// done or timeout secs have elapsed.  If timeout is 0, never timeout.
-// return 1 if timedout, 0 if ok.
-int treeBarrier(SpanningTree* treee, byte spId, int timeout);
+// tree calls this function.  Will not return until done or timeout
+// secs have elapsed.  If timeout is 0, never timeout.  return 1 if
+// timedout, 0 if ok.
+int 
+treeBarrier(SpanningTree* spt, int timeout);
 
-// find out if I am root
-byte isSpanningTreeRoot(SpanningTree* treee);
+//-----------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------//
+//--------------------OLD CODE-------------------------------------------------//
+//-----------------------------------------------------------------------------//
+//-----------------------------------------------------------------------------//
 
-char* tree2str(char* buffer, byte id);
+
+
+
+
+// #include "block.bbh"
+
+// threadtype typedef enum { FREE, STARTED, DONE, HAVEPARENT, WAITING, FORMED } SpanTreeState;
+// threadtype typedef enum { COMPLETED, TIMEDOUT, WAIT } SpanningTreeStatus;
+// threadtype typedef struct _spanningtree SpanningTree;
+// threadtype typedef void (*SpanningTreeHandler)(SpanningTree* treee, SpanningTreeStatus status);
+
+// struct _spanningtree{
+//   PRef myParent;			/* port for my parent if there is on, else 255 == I am root  */
+//   byte numchildren;		/* number of children I have */
+//   PRef myChildren[NUM_PORTS];	/* ports for my children, if there are any.  0 = not my child or unknown, 1 = my child, 2 = need retry */
+//   byte spantreeid;		/* the id of this spanning tree */
+//   SpanTreeState state;			/* state i am in in forming the spanning tree */
+//   uint16_t value;				/* used in the creation of spanning trees, the name of the root */
+//   int outstanding;			/* used to count messages */
+//   SpanningTreeHandler mydonefunc;
+//   SpanningTreeStatus status;
+//   MsgHandler broadcasthandler;
+//   Timeout spantimeout;
+// }; 
+
+// // must be called at program start, before ever trying to create a spanning tree
+// void initSpanningTreeInformation(void);
+
+// // get tree structure for a given id
+// SpanningTree* getTree(int id);
+
+// // for debugging to have some determinism
+// // 0 -> no debugging, random ids
+// // 1 -> above + colors for states
+// // 2 -> above + send log msgs back to host
+// void setSpanningTreeDebug(int val);
+
+// // allocate a set of num spanning trees.  If num is 0, use system default.
+// // returns the base of num spanning tree to be used ids.
+// int initSpanningTrees(int num);
+
+// // start a spanning tree with id#, id, where I am the root.  Must be starte by only one node.
+// // if timeout == 0, never time out
+// void startTreeByParent(SpanningTree* treee, byte id, SpanningTreeHandler donefunc, int timeout);
+
+// // start a spanning tree with a random root, more than one node can initiate this.  
+// // if timeout == 0, never time out
+// // have to use a while loop inside the user program to wait for a spanning tree to be finished
+// void createSpanningTree(SpanningTree* treee, SpanningTreeHandler donefunc, int timeout);
+
+// // send msg in data to everyone in the spanning tree, call handler when everyone has gotten the msg
+// void treeBroadcast(SpanningTree* treee, byte* data, byte size, MsgHandler handler);
+
+// // wait til everyone gets to a barrier.  I.e., every node in spanning
+// // tree calls this function with the same id.  Will not return until
+// // done or timeout secs have elapsed.  If timeout is 0, never timeout.
+// // return 1 if timedout, 0 if ok.
+// int treeBarrier(SpanningTree* treee, byte spId, int timeout);
+
+// // find out if I am root
+// byte isSpanningTreeRoot(SpanningTree* treee);
+
+// char* tree2str(char* buffer, byte id);
 #endif
