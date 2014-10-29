@@ -17,6 +17,9 @@ threadvar int maxSpanId = 0;
 
 
 
+// to know if all get into a barrier 
+threadvar int allHaveBarrier = 0;
+threadvar int reachBarrier = 0;
 
 
 //-----------------PRIVATE FUNCTIONS FOR SPANNING TREE -------------
