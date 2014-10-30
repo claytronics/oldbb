@@ -34,6 +34,9 @@ void treeStable(void);
 void childrenInSameTree(void);
 void yesWeAreInSameTree(void);
 
+void treeBroadcastMsg(void);
+void treeBroadcastBackMsg(void);
+
 // General routines
 void startAskingNeighors(SpanningTree* st, byte gen);
 void resetNeighbors(SpanningTree* st);
@@ -678,6 +681,86 @@ treeBarrier(SpanningTree* spt, int timeout)
   return 0;
 }
  
+//send msg in data to everyone in the spanning tree, call handler
+// when everyone has gotten the msg
+void 
+treeBroadcast(SpanningTree* treee, byte* data, byte size, MsgHandler handler)
+{  
+  //wait for the creation of the spanning in case it is not finished
+  delayMS(500); 
+  // start broadcast
+  byte id = treee->spantreeid;      
+  trees[id]->broadcasthandler = handler;
+     
+  //the root will send the data its children and it will be propagate
+  //until the leaves
+  if( isSpanningTreeRoot(trees[id]) == 1) {
+    byte buf[size + 2];
+    buf[0] = id;
+    buf[1] = size;
+    memcpy(buf+2, data, size*sizeof(byte));
+    byte p;
+    for( p = 0; p < NUM_PORTS;p++){
+    //   if (trees[id]->myChildren[p] == 1) {
+    //     sendMySpChunk(p, buf, size + 2 , (MsgHandler)&treeBroadcastMsg); 
+    //   }
+    }
+  }
+  trees[id]->outstanding = trees[id]->numchildren;
+}
+
+
+//handler for sending the data to all the tree
+void 
+treeBroadcastMsg(void)
+{
+  byte  spID = thisChunk->data[0];
+  byte  size = thisChunk->data[1];
+  byte buf[size + 2];
+  buf[0] = spID;
+  buf[1] = size;
+  //the data will start from buf[2] if users want to use it
+  memcpy(buf+2, thisChunk->data+2, size*sizeof(byte));
+  byte p; 
+  // for( p = 0; p < NUM_PORTS;p++){ //send data to all the children
+  //   if (trees[spID]->myChildren[p] == 1) {	
+  //     sendMySpChunk(p, buf, size + 2, (MsgHandler)&treeBroadcastMsg); 
+  //   }
+  // }
+  if( trees[spID]->numchildren == 0 ){
+    byte data[1];
+    data[0] = spID;
+    sendMySpChunk(trees[spID]->myParent, 
+                  data, 
+                  1, 
+                  (MsgHandler)&treeBroadcastBackMsg); 
+    trees[spID]->broadcasthandler();
+  } 
+}
+
+//back message handler, when the block receive all the message from
+//its children execute the broadcasthandler
+void 
+treeBroadcastBackMsg(void)
+{
+  byte  spID = thisChunk->data[0];
+  if(trees[spID]->outstanding != 0) {
+    trees[spID]->outstanding --;
+  }
+  if( trees[spID]->outstanding == 0 ) {
+    if(isSpanningTreeRoot(trees[spID]) != 1) {
+      byte data[1];
+      data[0] = spID;
+      sendMySpChunk(trees[spID]->myParent, 
+                    data, 
+                    1, 
+                    (MsgHandler)&treeBroadcastBackMsg); 
+      trees[spID]->broadcasthandler();
+    } else {
+      trees[spID]->broadcasthandler();
+    }
+  }
+}
 
 
 

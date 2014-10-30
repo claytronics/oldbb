@@ -77,6 +77,11 @@ void createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int tim
 int 
 treeBarrier(SpanningTree* spt, int timeout);
 
+// send msg in data to everyone in the spanning tree, call handler
+// when everyone has gotten the msg
+void 
+treeBroadcast(SpanningTree* treee, byte* data, byte size, MsgHandler handler);
+
 //-----------------------------------------------------------------------------//
 //-----------------------------------------------------------------------------//
 //--------------------OLD CODE-------------------------------------------------//
