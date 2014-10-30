@@ -701,9 +701,9 @@ treeBroadcast(SpanningTree* treee, byte* data, byte size, MsgHandler handler)
     memcpy(buf+2, data, size*sizeof(byte));
     byte p;
     for( p = 0; p < NUM_PORTS;p++){
-    //   if (trees[id]->myChildren[p] == 1) {
-    //     sendMySpChunk(p, buf, size + 2 , (MsgHandler)&treeBroadcastMsg); 
-    //   }
+      if (trees[id]->neighbors[p] == Child) {
+        sendMySpChunk(p, buf, size + 2 , (MsgHandler)&treeBroadcastMsg); 
+      }
     }
   }
   trees[id]->outstanding = trees[id]->numchildren;
@@ -722,6 +722,7 @@ treeBroadcastMsg(void)
   //the data will start from buf[2] if users want to use it
   memcpy(buf+2, thisChunk->data+2, size*sizeof(byte));
   byte p; 
+  //TODO
   // for( p = 0; p < NUM_PORTS;p++){ //send data to all the children
   //   if (trees[spID]->myChildren[p] == 1) {	
   //     sendMySpChunk(p, buf, size + 2, (MsgHandler)&treeBroadcastMsg); 
