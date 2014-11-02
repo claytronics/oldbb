@@ -10,30 +10,26 @@
 
 void push(byte data, CircBuf * b)
 { 
-  #ifndef BBSIM
+#ifndef BBSIM
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
   {
-  #endif
-
+#endif
     b->buf[b->end++] = data;
 
-    if(b->end == CIRC_BUF_LEN)
-    {
+    if(b->end == CIRC_BUF_LEN) {
       b->end = 0;
     }
 
-    if(b->end == b->start)
-    {
+    if(b->end == b->start) {
       b->start++;
 	
-      if(b->start == CIRC_BUF_LEN)
-	  {
-	    b->start = 0;
-	  }
+      if(b->start == CIRC_BUF_LEN) {
+	b->start = 0;
+      }
     }
-  #ifndef BBSIM
+#ifndef BBSIM
   }
-  #endif
+#endif
 }
 
 int pop(CircBuf * b)
@@ -63,10 +59,16 @@ int pop(CircBuf * b)
 
 byte isEmpty(CircBuf * b)
 {
-  if(b->start == b->end)
-  {
+  if(b->start == b->end) {
     return 1;
   }
   return 0;
 }
 
+
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
