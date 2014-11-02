@@ -45,6 +45,26 @@ typedef struct _barrierMsg {
   byte num;			 /* number of this barrier */
 } BarrierMsg;
 
+typedef void (*BroadcastHandler)(byte* msg);
+
+typedef struct {
+  union {
+    struct {
+      BroadcastHandler handler;
+      byte spid;
+      byte len;
+      byte data;
+    } header;
+    byte data[16];
+  } packet;
+} BroadcastMsg;
+
+#define offsetof(st, m) ((size_t)(&((st *)0)->m))
+
+#define BroadcastPayloadSize ((byte)(16-offsetof(BroadcastMsg, packet.header.data)))
+#define BroadcastHeaderSize  (byte)(offsetof(BroadcastMsg, packet.header.data))
+#define BroadcastDataOffset(m) (&((m)->packet.data[BroadcastHeaderSize]))
+
 threaddef #define MAX_SPANTREE_ID 16
 
 // set by setSpanningTreeDebug
@@ -708,6 +728,60 @@ treeBarrier(SpanningTree* spt, int timeout)
   return 0;
 }
  
+void finishTreeBroadcast(int revd, int fromFace, BroadcastMsg* msg);
+
+// broadcast a message to all nodes in tree.
+// can be called by any node.
+// returns as soon as it sends its messages, i.e., no ack
+void
+treeBroadcast(SpanningTree* spt, byte* data, byte size, BroadcastHandler mh)
+{
+  BroadcastMsg msg;
+  blockprint(stderr, "max size of bcast is %d\n", BroadcastPayloadSize);
+  assert(size <= BroadcastPayloadSize);
+  memset(&msg, 0, sizeof(BroadcastMsg));
+  msg.packet.header.spid = spt->spantreeid;
+  msg.packet.header.handler = mh;
+  msg.packet.header.len = size;
+  memcpy(BroadcastDataOffset(&msg), data, size);
+  (*mh)(BroadcastDataOffset(&msg));
+  finishTreeBroadcast(0, 0, &msg);
+}
+
+void
+handleBroadcast(void)
+{
+  BroadcastMsg* msg = (BroadcastMsg*)thisChunk;
+  PRef fromFace = faceNum(thisChunk); /* face we got sender's msg from */
+  BroadcastHandler mh = msg->packet.header.handler;
+  (*mh)(BroadcastDataOffset(msg));
+  finishTreeBroadcast(1, fromFace, msg);
+}
+
+// called as the last step of any msg being broadcast through the spanning tree
+void
+finishTreeBroadcast(int revd, int fromFace, BroadcastMsg* msg)
+{
+  SpanningTree* spt = trees[msg->packet.header.spid];
+  assert(spt != NULL);
+  int size = BroadcastHeaderSize+msg->packet.header.len;
+  int i;
+  for (i=0; i<NUM_PORTS; i++) {
+    if (revd && (i == fromFace)) continue;
+    if ((spt->neighbors[i] == Child)||(spt->neighbors[i] == Parent)) {
+      sendMySpChunk(i, (byte*)msg, size, (MsgHandler)handleBroadcast); 
+    }
+  }
+}
+
+// called by root to count nodes in tree
+int
+treeCount(SpanningTree* spt, int timeout)
+{
+  return 1;
+}
+
+
 ////////////////////////////////////////////////////////////////
 // test program
 ////////////////////////////////////////////////////////////////
@@ -716,37 +790,37 @@ void handler(void);
 
 void donefunc(SpanningTree* spt, SpanTreeState status)
 { 
-   
   blockprint(stderr, "DONEFUNC: %d %d\n", spt->spantreeid, status);
+}
 
-  if(status == STABLE)    {
-    if (isSpanningTreeRoot(spt) == 1){
-      setColor(YELLOW);
-    }else{
-      setColor(WHITE);
-      if(spt->numchildren == 0){
-	setColor(PINK);
-      }
-    }
-  }else{ 
-    setColor(RED);
-  }
+threadvar uint16_t rootId;
+threadvar byte gotmsg = 0;
 
+void
+setRootColor(byte* msg)
+{
+  setColor(AQUA);
+  rootId = charToGUID(msg);  
+  blockprint(stderr, "Setting root's id to %d\n", rootId);
+  gotmsg = 1;
+}
+
+void
+setChildColor(byte* msg)
+{
+  setColor(YELLOW);
 }
 
 void 
 myMain(void)
 {
-  volatile byte spFinished;
   SpanningTree* tree;
   int baseid;
 
-  delayMS(1000);
   // setSpanningTreeDebug(1);
   blockprint(stderr, "init\n");
   baseid = initSpanningTrees(1);
   tree = getTree(baseid);
-  spFinished = 0;
   createSpanningTree(tree, donefunc, 0);
   blockprint(stderr, "return\n");
   setColor(AQUA);
@@ -765,6 +839,27 @@ myMain(void)
   treeBarrier(tree, 0);
   setColor(GREEN);
 
+  delayMS(1000);
+
+  byte data[2];
+  int myid = getGUID();
+  GUIDIntoChar(myid, data);
+  if (isSpanningTreeRoot(tree)) {
+    blockprint(stderr, "Root is %d\n", myid);
+    treeBroadcast(tree, data, 2, setRootColor);
+    setColor(AQUA);
+    rootId = myid;
+    gotmsg = 1;
+  }
+  while (gotmsg == 0) delayMS(1000);
+  blockprint(stderr, "The root's id is: %d\n", rootId);
+  delayMS(1000);
+  if ((myid == 5)&&(!isSpanningTreeRoot(tree))) {
+    treeBroadcast(tree, data, 2, setChildColor);
+  } else if ((myid == 4)&&(rootId == 5)) {
+    treeBroadcast(tree, data, 2, setChildColor);
+  }
+  
   pauseForever();
   while(1);
 }
