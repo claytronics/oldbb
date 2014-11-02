@@ -7,7 +7,7 @@
 #include "log.bbh"
 #endif
 
-#include "span.bbh"
+//#include "span.bbh"
 
 threadvar int blockTickRunning = 0;
 extern void vm_alloc(void);
@@ -58,6 +58,7 @@ void blockTick()
   blockTickRunning = 0;
 }
 
+void initSpanningTreeInformation(void);
 
 // Ties all the horrifying subfunctions together into one simple function
 void initBlock()
