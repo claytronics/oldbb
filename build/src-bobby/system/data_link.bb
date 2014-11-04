@@ -303,7 +303,7 @@ byte handleOneMessage()
     {
       char buffer[256];
       chunk2str(thisChunk, buffer);
-      blockprint(stderr, "HOM: [%s]\n", buffer);
+      DEBUGPRINT(1, "HOM: [%s]\n", buffer);
     }
 
     // call handler
