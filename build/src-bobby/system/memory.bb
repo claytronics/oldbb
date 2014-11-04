@@ -41,6 +41,17 @@ threadvar Chunk txChunks[NUM_TXCHUNKS];
 threadvar blockConf EEMEM nv_conf;
 threadvar blockConf conf;
 
+void
+initChunk(Chunk* cp)
+{
+    cp->status = CHUNK_FREE;
+    cp->next = NULL;
+    int j;
+    for (j=0; j<DATA_SIZE; j++) cp->data[j] = 0;
+    cp->callback = 0;
+    *((MsgHandler*)cp->handler) = 0;
+}
+
 //////////////////// PUBLIC FUNCTIONS /////////////////////
 // set-up memory
 void initializeMemory(void)
@@ -51,19 +62,18 @@ void initializeMemory(void)
     // clear all status bits for receive chunks
     for( i=0; i<NUM_RXCHUNKS; i++ )
     {
-        rxChunks[i].status = CHUNK_FREE;
-	rxChunks[i].next = NULL;
+        initChunk(rxChunks+i);
     }
     
     // clear all status bits for send chunks
     for( i=0; i<NUM_TXCHUNKS; i++ )
     {
-        txChunks[i].status = CHUNK_FREE;
-	txChunks[i].next = NULL;
+        initChunk(txChunks+i);
     }
 
     // init allocation counters
     allocated = 0;
+
 
     // load config data
     //TODO: re-enable
