@@ -22,6 +22,8 @@ static void *launchBlockProgram(Block *b);
 static void *callBlockTick(Block *b);
 static void installThread(Block *b);
 
+void (*onBlockTick)(void) = 0;
+
 Block *this(void)
 {
 	Block* ptr = (Block *) pthread_getspecific(key);
@@ -157,7 +159,11 @@ void* callBlockTick(Block *b)
   // just keep looping and call blockTick
   while(1) {
     usleep(1000);
-
+    IFSIMDEBUG(0) {
+      if (onBlockTick != 0) {
+        (*onBlockTick)();
+      }
+    }
     int id = getGUID();
     if (id >= maxId) {
       // make sure we have room to record the info about this block
