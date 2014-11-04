@@ -19,6 +19,7 @@ char* progname;			/* name of this program */
 char* configname = 0;		/* name of config file */
 int numberOfRobots = 0;		/* number of blinkblocks in system */
 bool debug = false;             /* debug-mode */
+int simDebugLevel = 0;             /* used for debug messages in simulation */
 
 int lastBlockId = 0;
 
@@ -46,6 +47,7 @@ void help(void)
   fprintf(stderr, "\t-c <name>:\tfile with initial configuration\n");
   fprintf(stderr, "\t-r generates a random block configuration\n");
   fprintf(stderr, "\t-d debug statements enabled\n");
+  fprintf(stderr, "\t-D <level> set debug level\n");
   fprintf(stderr, "\t-n disables graphics\n");
 
   exit(0);
@@ -61,6 +63,25 @@ pthread_cond_t destroycond = PTHREAD_COND_INITIALIZER;
 
 void blockprint(FILE* f, char* fmt, ...)
 {
+  va_list ap;
+  //  char buffer[128];
+
+  va_start(ap,fmt);
+  pthread_mutex_lock(&printmutex);
+//  debuginfo(this(), buffer);
+//  fprintf(f, "%s:(%s) ", nodeIDasString(this()->id, 0), buffer);
+  fprintf(f, "%s:", nodeIDasString(this()->id, 0));
+  vfprintf(f, fmt, ap);
+  fflush(f);
+  pthread_mutex_unlock(&printmutex);
+  va_end(ap);
+}
+
+// print this out if level <= simDebugLevel
+void debugprint(int level, FILE* f, char* fmt, ...)
+{
+  if (level > simDebugLevel) return;
+
   va_list ap;
   //  char buffer[128];
 
@@ -100,6 +121,10 @@ int main(int argc, char** argv)
       break;
     case 'd':
       debug = true;
+      break;
+    case 'D':
+      argc--;  argv++;
+      simDebugLevel = atoi(argv[0]);
       break;
     case 'n':
       graphics = false;
