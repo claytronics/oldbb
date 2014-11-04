@@ -4,6 +4,7 @@
 #ifdef BBSIM
 # include "../sim/sim.h"
 #endif
+#include "myassert.h"
 
 #ifdef CLOCK_SYNC
 #include "clock.bbh"
@@ -299,6 +300,8 @@ byte handleNeighborMessage(void)
       return 0;
     }
 
+  assert(faceNum(thisChunk) < NUM_PORTS);
+
 /* #ifdef ENSEMBLE_DEBUG */
 /*   printf ("\x1b[34m--%d--\tIn handleNeighborMessage\x1b[0m\n", getGUID()); */
 /* #endif */
@@ -336,6 +339,7 @@ byte handleNeighborMessage(void)
 	      }
 
 	    /* Reset count*/
+            assert(faceNum(thisChunk) < NUM_PORTS);
 	    ignoredHandshakeCount[faceNum(thisChunk)] = 0;
 
 	    // callback will add neighbor or restart scanning, as necessary
