@@ -21,4 +21,9 @@ extern void (*onBlockTick)(void);
 
 #endif
 
+Block* port2block(Block* b, PRef p);
+Uid port2id(Block* b, PRef p);
+
+
+
 #endif
