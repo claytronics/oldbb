@@ -276,6 +276,38 @@ void yieldTil(Time x)
 }
 
 
+////////////////
+// useful for debugging on simulator
+
+#include "../system/ensemble.h"
+#include "../system/myassert.h"
+
+Block* 
+port2block(Block* b, PRef p)
+{
+  Uid n = b->thisNeighborhood.n[p];
+  if (n == VACANT) return NULL;
+  Block* block;
+  Q_FOREACH(block, getBlockList(), blockLink)
+    {
+      if (block->id == n)
+        return block;
+    }
+  Q_ENDFOREACH(getBlockList());
+  assert(0);
+  return NULL;
+}
+
+Uid 
+port2id(Block* b, PRef p)
+{
+  Uid n = b->thisNeighborhood.n[p];
+  return n;
+}
+
+
+
+
 // Local Variables:
 // mode: c
 // tab-width: 8
