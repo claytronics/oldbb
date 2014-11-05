@@ -300,7 +300,7 @@ byte handleOneMessage()
         return 0;
     }
 
-    {
+    IFSIMDEBUG(1) {
       char buffer[256];
       chunk2str(thisChunk, buffer);
       DEBUGPRINT(1, "HOM: [%s]\n", buffer);
