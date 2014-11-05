@@ -8,6 +8,9 @@
 
 #define DEBUGSPAN 0
 
+#ifndef _SPAN_BBH_
+#define _SPAN_BBH_
+
 threadtype typedef enum { INITED = 0, MAYBESTABLE, STABLE, WAITING, CANCELED } SpanTreeState;
 threadtype typedef enum { Root, Interior, Leaf } SpanTreeKind;
 threadtype typedef enum { Vacant, Parent, Child, NoLink, Unknown, Slow } SpanTreeNeighborKind;
@@ -35,6 +38,20 @@ struct _spanningtree{
   byte barrierNumber;		 /* number of the barrier we are currently executing */
   byte waitingForBarrier;	 /* number of children that have already entered */
 }; 
+
+char* kind2str(SpanTreeKind x);
+
+#endif
+
+
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
+
+
 
 typedef struct _basicMsg {
   byte spid;			 /* tree id */
@@ -110,7 +127,7 @@ retrySlowBlocks(void)
   // msg from someone while we are in this function
   haveTimeout = 0;
 
-  DEBUGPRINT(0, "In Not Ready Timeout\n");
+  DEBUGPRINT(1, "In Not Ready Timeout\n");
   int rsbCounter = 0;
 
   // now search all trees for children that might not have been ready before
@@ -133,12 +150,12 @@ retrySlowBlocks(void)
 	GUIDIntoChar(spt->value, (byte*)&(msg.value));
 	assert(spt->value == oldvalue);
         sendMySpChunk(i, (byte*)&msg, sizeof(BasicMsg), (MsgHandler)&beMyChild); 
-        DEBUGPRINT(0, "NRT -> port %d\n", i);
+        DEBUGPRINT(1, "NRT -> port %d\n", i);
 	rsbCounter++;
       }
     }
   }
-  DEBUGPRINT(0, "NRT sent %d msgs\n", rsbCounter);
+  DEBUGPRINT(1, "NRT sent %d msgs\n", rsbCounter);
 }
 
 // sent from a neighbor that hasn't set up his spanningtree structure
@@ -334,7 +351,7 @@ void childrenInSameTree(void)
 
 ////////////////////////////////////////////////////////////////
 
-static char* kind2str(SpanTreeKind x)
+char* kind2str(SpanTreeKind x)
 {
   switch (x) {
   case Root: return "Root";
@@ -589,7 +606,7 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
   {
     char buffer[1024];
     tree2str(buffer, spt->spantreeid);
-    IFSIMDEBUG(0) blockprint(stderr, "Starting: %s\n", buffer);
+    IFSIMDEBUG(1) blockprint(stderr, "Starting: %s\n", buffer);
   }
   startAskingNeighors(spt, 0);
 
@@ -677,17 +694,19 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
     }
     setColor(ORANGE);
     // now wait on parent to confirm all subtrees report ok
-    while ((spt->state == MAYBESTABLE) && (spt->outstanding == 0)) {
-      if (spt->kind == Root) break;
+    while ((oldvalue == spt->value) && (spt->state == MAYBESTABLE) && (spt->outstanding == 0)) {
       IFSIMDEBUG(1) {
 	char buffer[512];
 	blockprint(stderr, "Waiting 3 on Parent check: %s\n", tree2str(buffer, spt->spantreeid));
       }
+      if (spt->kind == Root) break;
       delayMS(50);
     }
+    if (oldvalue != spt->value) continue;
     if (spt->state != MAYBESTABLE) continue;
+    assert((spt->outstanding == 1)||(spt->kind == Root));
     setColor(PINK);
-    // parent says, everyone agreed
+    // either I am root, or my parent says, everyone agreed
     for (i=0; i<NUM_PORTS; i++) {
       if (spt->neighbors[i] == Child) {
 	sendMySpChunk(i, 
@@ -698,8 +717,10 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
     }
     spt->state = STABLE;
   }
-  char buffer[512];
-  blockprint(stderr, "ALL DONE - RETURNING: %s\n", tree2str(buffer, spt->spantreeid));
+  IFSIMDEBUG(1) {
+    char buffer[512];
+    blockprint(stderr, "ALL DONE - RETURNING: %s\n", tree2str(buffer, spt->spantreeid));
+  }
 }
 
 // start a spanning tree with a random root, all nodes must initiate this.
@@ -881,9 +902,11 @@ treeBarrier(SpanningTree* spt, int timeout)
   msg.spid = spt->spantreeid;
   msg.num = spt->barrierNumber;
 
-  char buffer[512];
-  blockprint(stderr, "Starting Barrier: %s\n", tree2str(buffer, spt->spantreeid));
-  blockprint(stderr, "StartBarrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
+  IFSIMDEBUG(1) {
+    char buffer[512];
+    blockprint(stderr, "Starting Barrier: %s\n", tree2str(buffer, spt->spantreeid));
+    blockprint(stderr, "StartBarrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
+  }
   // check to see if any children got here before me
   spt->outstanding -= spt->waitingForBarrier;
   spt->waitingForBarrier = 0;
@@ -891,7 +914,7 @@ treeBarrier(SpanningTree* spt, int timeout)
   // now we wait for all our children to report they have entered barrier
   while (spt->outstanding > 0) delayMS(100);
 
-  blockprint(stderr, "ChildBarrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
+  DEBUGPRINT(1, "ChildBarrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
 
   // at this point all of my children have entered barrier.  Tell my
   // parent and then wait for him to report back to me that I can
@@ -901,7 +924,7 @@ treeBarrier(SpanningTree* spt, int timeout)
     while (spt->outstanding == 0) delayMS(100);
   }
 
-  blockprint(stderr, "ParntBarrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
+  DEBUGPRINT(1, "ParntBarrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
 
   // now tell all my children that they are done
   int i;
@@ -910,7 +933,7 @@ treeBarrier(SpanningTree* spt, int timeout)
     sendMySpChunk(i, (byte*)&msg, sizeof(BarrierMsg), (MsgHandler)&downBarrier);
   }
 
-  blockprint(stderr, "Done-Barrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
+  DEBUGPRINT(1, "Done-Barrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
 
   return 0;
 }
@@ -924,7 +947,7 @@ void
 treeBroadcast(SpanningTree* spt, byte* data, byte size, BroadcastHandler mh)
 {
   BroadcastMsg msg;
-  blockprint(stderr, "max size of bcast is %d\n", BroadcastPayloadSize);
+  DEBUGPRINT(1, "max size of bcast is %d\n", BroadcastPayloadSize);
   assert(size <= BroadcastPayloadSize);
   memset(&msg, 0, sizeof(BroadcastMsg));
   msg.packet.header.spid = spt->spantreeid;
@@ -1005,7 +1028,7 @@ stablize(void)
 {
   byte lastCount = 0;
   int counter = 0;
-  while (counter++ < 10) {
+  while (counter++ < 20) {
     if (lastCount != getNeighborCount()) {
       lastCount = getNeighborCount();
       counter = 0;
@@ -1022,7 +1045,9 @@ myMain(void)
 
   stablize();
 
-  onBlockTick = showStatus;
+  IFSIMDEBUG(1) {
+    onBlockTick = showStatus;
+  }
   // setSpanningTreeDebug(1);
   blockprint(stderr, "init\n");
   baseid = initSpanningTrees(1);
@@ -1084,6 +1109,8 @@ userRegistration(void)
 
 threadvar int stcounter = 0;
 
+void showTree(SpanningTree* st);
+
 void
 showStatus(void)
 {
@@ -1094,10 +1121,25 @@ showStatus(void)
     for (i=0; i<MAX_SPANTREE_ID; i++) {
       if (trees[i] != 0) {
         DEBUGPRINT(0, "btstat: %s\n", tree2str(buffer, i));
+        showTree(trees[i]);
       }
     }
   }
 }
+
+extern void showTreeNodes(Block* block, int id, char* bp, int depth);
+
+
+void
+showTree(SpanningTree* st)
+{
+  if (st->kind != Root) return;
+  char buffer[2048];
+  showTreeNodes(this(), st->spantreeid, buffer, 0);
+  blockprint(stderr, "Current Tree:\n%s\n", buffer);
+}
+
+#include "../../tree.h"
 
 // Local Variables:
 // mode: c
