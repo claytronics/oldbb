@@ -62,12 +62,14 @@ void initializeMemory(void)
     // clear all status bits for receive chunks
     for( i=0; i<NUM_RXCHUNKS; i++ )
     {
+        //blockprint(stderr, "RX:%d:%p\n", i, rxChunks+i);
         initChunk(rxChunks+i);
     }
     
     // clear all status bits for send chunks
     for( i=0; i<NUM_TXCHUNKS; i++ )
     {
+        //blockprint(stderr, "TX:%d:%p\n", i, rxChunks+i);
         initChunk(txChunks+i);
     }
 
@@ -237,7 +239,8 @@ BROWN);
 char*
 chunk2str(Chunk* chk, char* bp)
 {
-  sprintf(bp, "%c%c %c%c %d -> %p [%p]:", 
+  sprintf(bp, "%p %c%c %c%c %d -> %p [%p]:", 
+          chk,
 	  chunkInUse(chk) ? 'U' : 'F',
 	  chunkFilling(chk) ? '_' : '-',
 	  (chk->status >> 4) & 1 ? 'N' : ' ',
