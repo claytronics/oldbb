@@ -59,6 +59,7 @@ void blockTick()
 }
 
 void initSpanningTreeInformation(void);
+void initSpanNbrsHandler(void);
 
 // Ties all the horrifying subfunctions together into one simple function
 void initBlock()
@@ -111,6 +112,9 @@ void initBlock()
 #ifndef BBSIM
     initHWMic();
 #endif
+
+    // finally, add neighbor change handler for spanning trees
+    initSpanNbrsHandler();
 }
 
 // Local Variables:
