@@ -38,7 +38,7 @@ void executeHandlers(void)
 				system.HandlerMask &= ~j;
 				
 				// execute callback
-				DEBUGPRINT(0, "Executing sys handler %d -> %p\n", i, system.HandlerTable[i]);
+				DEBUGPRINT(1, "Executing sys handler %d -> %p\n", i, system.HandlerTable[i]);
 				(*(system.HandlerTable[i]))();
 			}
 
