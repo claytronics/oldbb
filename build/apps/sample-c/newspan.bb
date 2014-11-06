@@ -51,8 +51,6 @@ char* kind2str(SpanTreeKind x);
 // c-basic-offset: 2
 // End:
 
-
-
 typedef struct _basicMsg {
   byte spid;			 /* tree id */
   char value[2];		 /* value of sender */
@@ -429,9 +427,8 @@ checkStatus(SpanningTree* st)
   if (st->outstanding == 0) {
     st->state = MAYBESTABLE;
     setColor(YELLOW);
-
-  }
-  else {
+    
+  } else {
     st->state = WAITING;
     setColor(RED);
   }
@@ -531,6 +528,43 @@ initSpanningTreeInformation(void)
   }
 }
 
+threadvar GenericHandler oldNbrChgHander;
+
+// called when there has been a change in who is my neighbor
+// ONLY WORKS FOR ADDING NEIGHBORS!!
+void
+neighborsChanged(void)
+{
+  int ns = getNeighborCount();
+  int i; 
+  for (i=0; i<MAX_SPANTREE_ID; i++) {
+    SpanningTree* spt = trees[i];
+    if (spt == NULL) continue;
+    while (spt->lastNeighborCount != ns) {
+      DEBUGPRINT(0, "new neighbors added!  was:%d, now: %d\n", spt->lastNeighborCount, ns);
+      int i;
+      for (i=0; i<NUM_PORTS; i++) {
+        if (!isPortVacant(i) && (spt->neighbors[i] == VACANT)) 
+          spt->neighbors[i] = Unknown;
+      }
+      spt->state = WAITING;
+      startAskingNeighors(spt, spt->bmcGeneration);
+      spt->lastNeighborCount = ns;
+      ns = getNeighborCount();
+    }
+  }
+  // call next in chain
+  if (oldNbrChgHander) (*oldNbrChgHander)();
+}
+
+void 
+initSpanNbrsHandler(void)
+{
+  oldNbrChgHander = unregisterHandler(EVENT_NEIGHBOR_CHANGE);
+  registerHandler(EVENT_NEIGHBOR_CHANGE, (GenericHandler)neighborsChanged);
+}
+
+
 // allocate a set of <num> spanning trees.  If num is 0, use system default.
 // returns the base of num spanning tree to be used ids.
 int 
@@ -561,6 +595,7 @@ getTree(int id)
   return ret;
 }
 
+#if 0
 // check to see if our neighborhood has changed.  At this point we only handle the addition of new neighbors.
 bool
 checkNeighborhood(SpanningTree* spt)
@@ -583,11 +618,14 @@ checkNeighborhood(SpanningTree* spt)
   }
   return false;
 }
+#endif
 
 // start a spanning tree with a random root, all nodes must initiate this.
 // if timeout == 0, never time out
+// if howStart == 0 -> all participate, 1 -> only 1 node which will be root
+// if howStart == 0 & makeMeRoot == 1, then gaurantee that this node is root.  Only 1 can have makeMeRoot
 void 
-createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
+createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout, byte howStart, byte makeMeRoot)
 {
   assert(spt->state == WAITING);
 
@@ -596,13 +634,14 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
   // set the state to WAITING
   spt->state = WAITING;
   spt->kind = Root;
-  spt->startedByRoot = 0;
+  spt->startedByRoot = howStart;
   //done function for the spanning tree
   spt->mydonefunc = donefunc;
 
   // pick a tree->value = rand()<<8|myid 
   // (unless debug mode, then it is just id)
-  spt->value = (0 & rand()<<8)|getGUID();
+  spt->value = (0 & rand()<<7)|getGUID();
+  if (makeMeRoot || howStart) spt->value |= 0x80;
   {
     char buffer[1024];
     tree2str(buffer, spt->spantreeid);
@@ -623,7 +662,7 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
   // now we wait til we reach the STABLE state
   while (spt->state != STABLE) {
     // check to see if our neighborhood has changed
-    checkNeighborhood(spt);
+    //checkNeighborhood(spt);
 
     int counter = 0;
     while (spt->state != MAYBESTABLE) {
@@ -635,7 +674,7 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
 	}
       }
       delayMS(100);
-      checkNeighborhood(spt);
+      //checkNeighborhood(spt);
     }
     // we might be stable, so check all neighbors first
     assert(spt->outstanding == 0);
@@ -661,7 +700,10 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
       }
     }
     if (spt->value != oldvalue) continue;
-    if (checkNeighborhood(spt)) continue;
+    // we might have had a neighbor change event
+    if (spt->state == WAITING) continue;
+
+    // same tree val and no neighbor change, so wait til all neighbors respond with insametree or not
     while ((spt->outstanding > 0) && (spt->state == MAYBESTABLE)) {
       IFSIMDEBUG(1) {
 	char buffer[512];
@@ -671,6 +713,9 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
     }
     setColor(GREEN);
     if (oldvalue != spt->value) continue;
+    // we might have had a neighbor change event
+    if (spt->state == WAITING) continue;
+
     // all my neighbors agree on same value
     assert(spt->state == MAYBESTABLE);
     while ((oldvalue == spt->value) && (spt->stableChildren < spt->numchildren)) {
@@ -682,7 +727,9 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
     }
     spt->stableChildren = 0;
     if (oldvalue != spt->value) continue;
-    if (checkNeighborhood(spt)) continue;
+    // we might have had a neighbor change event
+    if (spt->state == WAITING) continue;
+
     // all my children also agree on same value
     assert(spt->state == MAYBESTABLE);
     assert(spt->outstanding == 0);
@@ -722,142 +769,6 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
     blockprint(stderr, "ALL DONE - RETURNING: %s\n", tree2str(buffer, spt->spantreeid));
   }
 }
-
-// start a spanning tree with a random root, all nodes must initiate this.
-// if timeout == 0, never time out
-void 
-createSpanningTreeHere(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout)
-{
-  assert(spt->state == WAITING);
-
-  setColor(WHITE);
-  assert(trees[spt->spantreeid] == spt);
-  // set the state to WAITING
-  spt->state = WAITING;
-  spt->kind = Root;
-  spt->startedByRoot = 1;
-  //done function for the spanning tree
-  spt->mydonefunc = donefunc;
-
-  // pick a tree->value = rand()<<8|myid 
-  // (unless debug mode, then it is just id)
-  spt->value = (1<<8)|((0 & rand()<<7)|getGUID());
-  {
-    char buffer[1024];
-    tree2str(buffer, spt->spantreeid);
-    IFSIMDEBUG(0) blockprint(stderr, "Starting: %s\n", buffer);
-  }
-  startAskingNeighors(spt, 0);
-
-#if 0
-  // if timeout > 0, set a timeout
-  if(timeout > 0) {
-    spt->spantimeout.callback = (GenericHandler)(&spCreation);
-    spt->spantimeout.arg = spId;
-    spt->spantimeout.calltime = getTime() + timeout;
-    registerTimeout(&(spt->spantimeout)); 
-  }
-#endif
-       
-  // now we wait til we reach the STABLE state
-  while (spt->state != STABLE) {
-    // check to see if our neighborhood has changed
-    checkNeighborhood(spt);
-
-    int counter = 0;
-    while (spt->state != MAYBESTABLE) {
-      if (DEBUGSPAN) {
-	if (counter++ > 30) {
-	  char buffer[256];
-	  blockprint(stderr, "creating Waiting: %s\n", tree2str(buffer, spt->spantreeid));
-	  counter = 0;
-	}
-      }
-      delayMS(100);
-      checkNeighborhood(spt);
-    }
-    // we might be stable, so check all neighbors first
-    assert(spt->outstanding == 0);
-    int oldvalue = spt->value;
-    int i;
-    BasicMsg msg;
-    msg.spid = spt->spantreeid;
-    GUIDIntoChar(spt->value, (byte*)&(msg.value));
-    msg.flag = spt->startedByRoot;
-    for (i=0; i<NUM_PORTS; i++) {
-      if (spt->value != oldvalue) {
-	// someone changed me, I wasn't stable
-	char buffer[512];
-	blockprint(stderr, "value changed from %d: %s\n", oldvalue, tree2str(buffer, spt->spantreeid));
-	break;
-      }
-      if (spt->neighbors[i] != Vacant) {
-	spt->outstanding++;
-	sendMySpChunk(i, 
-		      (byte*)&msg, 
-		      sizeof(BasicMsg), 
-		      (MsgHandler)&areWeInSameTree);
-      }
-    }
-    if (spt->value != oldvalue) continue;
-    if (checkNeighborhood(spt)) continue;
-    while ((spt->outstanding > 0) && (spt->state == MAYBESTABLE)) {
-      IFSIMDEBUG(1) {
-	char buffer[512];
-	blockprint(stderr, "Waiting 1 on Neighborhood check: %s\n", tree2str(buffer, spt->spantreeid));
-      }
-      delayMS(50);
-    }
-    setColor(GREEN);
-    if (oldvalue != spt->value) continue;
-    // all my neighbors agree on same value
-    assert(spt->state == MAYBESTABLE);
-    while ((oldvalue == spt->value) && (spt->stableChildren < spt->numchildren)) {
-      IFSIMDEBUG(1) {
-	char buffer[512];
-	blockprint(stderr, "Waiting 2 on Children check: %s\n", tree2str(buffer, spt->spantreeid));
-      }
-      delayMS(50);
-    }
-    spt->stableChildren = 0;
-    if (oldvalue != spt->value) continue;
-    if (checkNeighborhood(spt)) continue;
-    // all my children also agree on same value
-    assert(spt->state == MAYBESTABLE);
-    assert(spt->outstanding == 0);
-    if (spt->kind != Root) {
-      sendMySpChunk(spt->myParent, 
-		    (byte*)&msg, 
-		    sizeof(BasicMsg), 
-		    (MsgHandler)&childrenInSameTree);
-    }
-    setColor(ORANGE);
-    // now wait on parent to confirm all subtrees report ok
-    while ((spt->state == MAYBESTABLE) && (spt->outstanding == 0)) {
-      if (spt->kind == Root) break;
-      IFSIMDEBUG(1) {
-	char buffer[512];
-	blockprint(stderr, "Waiting 3 on Parent check: %s\n", tree2str(buffer, spt->spantreeid));
-      }
-      delayMS(50);
-    }
-    if (spt->state != MAYBESTABLE) continue;
-    setColor(PINK);
-    // parent says, everyone agreed
-    for (i=0; i<NUM_PORTS; i++) {
-      if (spt->neighbors[i] == Child) {
-	sendMySpChunk(i, 
-		      (byte*)&msg, 
-		      sizeof(BasicMsg), 
-		      (MsgHandler)&treeStable);
-      }
-    }
-    spt->state = STABLE;
-  }
-  char buffer[512];
-  blockprint(stderr, "ALL DONE - RETURNING: %s\n", tree2str(buffer, spt->spantreeid));
-}
-
 
 byte isSpanningTreeRoot(SpanningTree* spt)
 {
@@ -984,11 +895,62 @@ finishTreeBroadcast(int revd, int fromFace, BroadcastMsg* msg)
   }
 }
 
+////////////////////////////////////////////////////////////////
+// code for counting nodes in spanning tree
+// code does NOT allow two spanning trees to execute this code at once
+//
+
+typedef struct {
+  byte spid;
+  int count;
+} CountMsg;
+
+
+threadvar byte collectedCountChildren = 0;
+threadvar byte collectedCount = 0;
+
+void sendUpMsg(SpanningTree* spt, int count);
+
+void
+upCount(void)
+{
+  CountMsg* msg = (CountMsg*)thisChunk;
+  collectedCountChildren++;
+  collectedCount += msg->count;
+  SpanningTree* spt = trees[msg->spid];
+  if ((spt->kind != Root) && (collectedCountChildren == spt->numchildren)) sendUpMsg(spt, collectedCount+1);
+}
+
+void
+sendUpMsg(SpanningTree* spt, int count)
+{
+  CountMsg cm;
+  cm.spid = spt->spantreeid;
+  cm.count = count;
+  sendMySpChunk(spt->myParent,  (byte*)&cm, sizeof(CountMsg), (MsgHandler)&upCount);
+}
+
+
+void
+getCount(BroadcastMsg *msg)
+{
+  collectedCount = 0;
+  collectedCountChildren = 0;
+  SpanningTree* spt = trees[msg->packet.header.spid];
+  if (spt->kind == Leaf) sendUpMsg(spt, 1);
+}
+
 // called by root to count nodes in tree
 int
 treeCount(SpanningTree* spt, int timeout)
 {
-  return 1;
+  byte data[2];
+  
+  collectedCount = 0;
+  collectedCountChildren = 0;
+  treeBroadcast(spt, data, 1, (BroadcastHandler)getCount);
+  while (collectedCountChildren != spt->numchildren) delayMS(10);
+  return collectedCount+1;
 }
 
 
@@ -1028,7 +990,7 @@ stablize(void)
 {
   byte lastCount = 0;
   int counter = 0;
-  while (counter++ < 20) {
+  while (counter++ < 1) {
     if (lastCount != getNeighborCount()) {
       lastCount = getNeighborCount();
       counter = 0;
@@ -1052,7 +1014,7 @@ myMain(void)
   blockprint(stderr, "init\n");
   baseid = initSpanningTrees(1);
   tree = getTree(baseid);
-  createSpanningTree(tree, donefunc, 0);
+  createSpanningTree(tree, donefunc, 0, 0, 0);
   blockprint(stderr, "return\n");
   setColor(AQUA);
   
@@ -1091,6 +1053,12 @@ myMain(void)
     treeBroadcast(tree, data, 2, setChildColor);
   }
   
+  // get count of nodes
+  if (isSpanningTreeRoot(tree)) {
+    int count = treeCount(tree, 0);
+    blockprint(stderr, "Number of nodes in tree = %d\n", count);
+  }
+
   pauseForever();
   while(1);
 }
