@@ -1,6 +1,7 @@
 #include "handler.bbh"
 
 #include "../sim/sim.h"
+#include "myassert.h"
 
 // System struct for managing callbacks.
 // Hardcoded a bit - NUM_HANDLERS must be less than sizeof(handlermask_t)
@@ -37,7 +38,7 @@ void executeHandlers(void)
 				system.HandlerMask &= ~j;
 				
 				// execute callback
-				blockprint(stderr, "Executing system handler %d", i);
+				DEBUGPRINT(0, "Executing sys handler %d -> %p\n", i, system.HandlerTable[i]);
 				(*(system.HandlerTable[i]))();
 			}
 
@@ -94,20 +95,16 @@ int registerHandler(Event e, GenericHandler callback)
 // will unregister a valid callback for a valid event, setting it to NULL.
 // must unregister a valid handler before re-registering.
 // returns 1 on success, 0 on failure.
-int unregisterHandler(Event e)
+GenericHandler
+unregisterHandler(Event e)
 {
-	if(e < NUM_HANDLERS)
-	{
-		if(system.HandlerTable[e] == NULL)
-		{
-			return 0;
-		}
-		
-		system.HandlerTable[e] = NULL;
-		return 1;
-	}
-	
-	return 0;
+  if(e < NUM_HANDLERS) {
+    GenericHandler old = system.HandlerTable[e];
+    system.HandlerTable[e] = NULL;
+    return old;
+  }
+  assert(0);
+  return NULL;
 }
 
 void callHandler(Event e)
@@ -120,3 +117,11 @@ void callHandler(Event e)
 		}
 	}
 }
+
+
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
