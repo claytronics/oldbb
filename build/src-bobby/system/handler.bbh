@@ -112,7 +112,7 @@ int registerHandler(Event, GenericHandler);
 // will unregister a valid callback for a valid event, setting it to NULL.
 // must unregister a valid handler before re-registering.
 // returns 1 on success, 0 on failure.
-int unregisterHandler(Event);
+GenericHandler unregisterHandler(Event);
 
 // CallHandler
 // Will call a handler registered to a given system event, if non-NULL
