@@ -371,7 +371,7 @@ byte handleNeighborMessage(void)
 	    // pull [your guid][my guid] from the handshake packet - reversed from how it was sent
 	    neighbor = charToGUID(&(thisChunk->data[2]));
 	    me = charToGUID(&(thisChunk->data[4]));
-	    blockprint(stderr, "N:%d Me:%d my face:%d\n", neighbor, me, faceNum(thisChunk));
+	    DEBUGPRINT(1, "N:%d Me:%d my face:%d\n", neighbor, me, faceNum(thisChunk));
 	    // got a sensible response
 	    if(me == getGUID())
 	      {
