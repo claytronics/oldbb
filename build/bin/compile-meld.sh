@@ -87,5 +87,7 @@ if [ $? != 0 ]; then
    exit 1
 fi
 
-echo "Run $BBASE/apps/sample-meld/arch-$ARCH/blinkyblocks -c $BBASE/apps/configs/line.txt"
+if [ "$BB" != "block" ]; then
+   echo "==========> Run $BBASE/apps/sample-meld/arch-$ARCH/blinkyblocks -c $BBASE/apps/configs/line.txt"
+fi
 echo "Done."
