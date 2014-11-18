@@ -65,12 +65,12 @@ echo "Compilation done"
 
 echo "Generating .bb file"
 $BBASE/src-bobby/meldinterp-runtime/LMParser $OUTPUT.m
-if [ $? != 0 ]; then
+if [[ $? != 0 ]]; then
    echo "Failed to parse byte-code file $OUTPUT.m"
    exit 1
 fi
 
-if [ "$BB" == "block" ]; then
+if [[ "$BB" == "block" ]]; then
   echo "Moving .bb file to arch-blocks"
   dir=$BBASE/apps/sample-meld/arch-blocks/meldinterp-runtime
 else
