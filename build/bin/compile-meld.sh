@@ -36,7 +36,7 @@ if [ $? != 0 ]; then
    exit 1
 fi
 
-compile_file=`mktemp`
+compile_file=`mktemp -t compile`
 sbcl --eval "(load \"$BBASE/meld-compiler/setup\")" \
      --eval "(ql:quickload \"cl-meld\")" \
      --eval "(cl-meld:meld-compile-exit \"$FILE\" \"$OUTPUT\")" \
