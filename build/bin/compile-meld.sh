@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 usage(){
     echo "Usage: compile-meld.sh meldfile (without extension)"
