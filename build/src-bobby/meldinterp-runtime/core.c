@@ -1755,15 +1755,14 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
       return;
    }
 
-   if (isNew == 1) {
 #ifdef BBSIM
+   if (isNew == 1) {
       pthread_mutex_lock(&(printMutex));
       fprintf(stderr, "\x1b[1;32m--%d--\tExecuting tuple ", getBlockId());
       tuple_print (tuple, stderr);
       fprintf(stderr, "\x1b[0m\n");
       pthread_mutex_unlock(&(printMutex));
-   }
-   if (isNew == -1) {
+   } else if (isNew == -1) {
       pthread_mutex_lock(&(printMutex));
       fprintf(stderr, "\x1b[1;31m--%d--\tDeleting tuple ", getBlockId());
       tuple_print (tuple, stderr);
@@ -1972,9 +1971,9 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
   if (PROCESS_TYPE(state) == PROCESS_TUPLE)
     printf ("\n--%d--\tPROCESS TUPLE %s -- isNew = %d\n", 
 	    getBlockId(), tuple_names[TUPLE_TYPE(tuple)], isNew);
+  else
 #endif
-
-  else if (PROCESS_TYPE(state) == PROCESS_ITER) {
+  if (PROCESS_TYPE(state) == PROCESS_ITER) {
     printf ("--%d--\t PROCESS ITER %s\n", getBlockId(), 
 	    tuple_names[TUPLE_TYPE(tuple)]);
   }

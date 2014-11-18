@@ -67,11 +67,15 @@ threadvar Register reg[32];
 
 int myGetTime ()
 {
+#ifdef BBSIM
 	struct timeb t;
 	
 	ftime(&t);
 
 	return t.millitm + 1000 * (t.time % (1 <<  20));
+#else
+   return getTime();
+#endif
 }
 
 /* Print the content of the newTuples queue */
