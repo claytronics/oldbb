@@ -260,7 +260,7 @@ execute_send_delay (const unsigned char *pc,
  */
 void
 execute_iter (const unsigned char *pc, 
-	      Register *reg, int isNew)
+	      Register *reg, int isNew, int isLinear)
 {
   const unsigned char *inner_jump = pc + ITER_INNER_JUMP(pc);
   const tuple_type type = ITER_TYPE(pc);
@@ -348,7 +348,7 @@ execute_iter (const unsigned char *pc,
        * Otherwise, look for another match.
        */
       if (RET_RET == process_bytecode(next_tuple, inner_jump, 
-				      isNew, reg, PROCESS_ITER)) {
+				      isNew, isLinear || TYPE_IS_LINEAR(TUPLE_TYPE(next_tuple)), reg, PROCESS_ITER)) {
 	free(list);
 	return;
       }
@@ -1728,12 +1728,12 @@ void aggregate_recalc(tuple_entry *agg, Register *reg,
   if(first_run)
     memcpy(acc_area, accumulator, size);
   else if (aggregate_changed(agg_type, acc_area, accumulator)) {
-    process_bytecode(agg->tuple, TYPE_START(type), -1, reg, PROCESS_TUPLE);
+    process_bytecode(agg->tuple, TYPE_START(type), -1, NOT_LINEAR, reg, PROCESS_TUPLE);
     aggregate_free(agg->tuple, agg_field, agg_type);
     memcpy(acc_area, accumulator, size);
     if (total_copy > 0) /* copy right side from target tuple */
       memcpy(((unsigned char *)agg->tuple) + size_offset, ((unsigned char *)target_tuple) + size_offset, total_copy);
-    process_bytecode(agg->tuple, TYPE_START(type), 1, reg, PROCESS_TUPLE);
+    process_bytecode(agg->tuple, TYPE_START(type), 1, NOT_LINEAR, reg, PROCESS_TUPLE);
   }
 
   free(accumulator);
@@ -1801,8 +1801,8 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
             if (cur->records.count <= 0) {
                /* Remove fact from database */
                if (!TYPE_IS_LINEAR(type))
-                  process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), isNew, 
-                        reg, PROCESS_TUPLE);
+                  process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), isNew,
+                        NOT_LINEAR, reg, PROCESS_TUPLE);
 
                fprintf(stdout, 
                      "\x1b[1;32m--%d--\tDelete Iter success for  %s\x1b[0m\n", 
@@ -1831,7 +1831,7 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 
       queue_enqueue(queue, tuple, (record_type) isNew);
       process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), 
-            isNew, reg, PROCESS_TUPLE);    
+            isNew, TYPE_IS_LINEAR(TUPLE_TYPE(tuple)), reg, PROCESS_TUPLE);    
       return;
    }
 
@@ -1897,7 +1897,7 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
                   free(agg_queue);
 
                   process_bytecode(aggTuple, TYPE_START(TUPLE_TYPE(aggTuple)), 
-                        -1, reg, PROCESS_TUPLE);
+                        -1, NOT_LINEAR, reg, PROCESS_TUPLE);
                   aggregate_free(aggTuple, field_aggregate, AGG_AGG(type_aggregate));
                   FREE_TUPLE(aggTuple);
                } else
@@ -1950,12 +1950,12 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
       queue_enqueue(&TUPLES[type], tuple_cpy, (record_type)agg_queue);
 
    aggregate_recalc(entry, reg, true);
-   process_bytecode(tuple, TYPE_START(type), isNew, reg, PROCESS_TUPLE);
+   process_bytecode(tuple, TYPE_START(type), isNew, NOT_LINEAR, reg, PROCESS_TUPLE);
 }
 
 int 
 process_bytecode (tuple_t tuple, const unsigned char *pc,
-		  int isNew, Register *reg, byte state)
+		  int isNew, int isLinear, Register *reg, byte state)
 {
 #ifdef DEBUG_INSTRS
 
@@ -2018,14 +2018,14 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     case PERS_ITER_INSTR: 		/* 0x02 */ 
       {
 	const byte *npc = pc + ITER_OUTER_JUMP(pc);
-	execute_iter (pc, reg, isNew);
+	execute_iter (pc, reg, isNew, isLinear);
 	pc = npc; goto eval_loop;
       }
 
     case LINEAR_ITER_INSTR: 		/* 0x05 */ 
       {
 	const byte *npc = pc + ITER_OUTER_JUMP(pc);
-	execute_iter (pc, reg, isNew);
+	execute_iter (pc, reg, isNew, isLinear);
 	pc = npc; goto eval_loop;
       }
 

@@ -453,6 +453,10 @@ instructions.
 #define INACTIVE_RULE 0x0
 #define ACTIVE_RULE   0x1
 
+/* Constants for isLinear */
+#define NOT_LINEAR 0
+#define IS_LINEAR 1
+
 /* Return types for process function */
 #define RET_RET 0
 #define RET_NEXT 1
@@ -568,7 +572,7 @@ tuple_dump(void *tuple)
 
 /* ************* MISC FUNCTION PROTOTYPES ************* */
 int process_bytecode(tuple_t tuple, const unsigned char *pc,
-		  int isNew, Register *reg, byte state);
+		  int isNew, int isLinear, Register *reg, byte state);
 
 void init_fields(void);
 void init_consts(void);

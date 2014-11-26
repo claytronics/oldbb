@@ -335,7 +335,7 @@ void meldMain(void)
 	    printf ("\n\x1b[35m--%d--\tRule %d READY!\x1b[0m\n", getBlockId(), i);
 #endif
 	    /* Trigger execution */
-	  process_bytecode (NULL, RULE_START(i), 1, reg, processState);
+	  process_bytecode (NULL, RULE_START(i), 1, NOT_LINEAR, reg, processState);
 	  }
 	}
 	/* else: Rule not ready yet, will re-check at next main loop run */
