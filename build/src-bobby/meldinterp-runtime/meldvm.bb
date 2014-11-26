@@ -12,6 +12,10 @@
 #else
 #endif
 
+#ifdef LOG_DEBUG
+#include "../system/log.bbh"
+#endif
+
 #include "../system/defs.bbh"
 
 #include "set_runtime.h"
@@ -32,9 +36,9 @@ the execution of all tuples and rules through the program's main loop.
 
 /* Various DEBUG Modes for troubleshooting */
 //#define DEBUG
-#define DEBUG_NEIGHBORHOOD
-#define DEBUG_SEND
-#define DEBUG_RULES
+//#define DEBUG_NEIGHBORHOOD
+//#define DEBUG_SEND
+//#define DEBUG_RULES
 
 void vm_init(void);
 byte updateRuleState(byte rid);
@@ -149,7 +153,11 @@ NodeID get_neighbor_ID(int face)
 void enqueueNewTuple(tuple_t tuple, record_type isNew)
 {
   assert (TUPLE_TYPE(tuple) < NUM_TYPES);
-
+  #ifdef LOG_DEBUG
+  //char s[30];
+  //snprintf(s, 30*sizeof(char), "b %p %p", newTuples->head, newTuples->tail);
+  //printDebug(s);
+  #endif
   if (TYPE_IS_STRATIFIED(TUPLE_TYPE(tuple))) {
     /* pthread_mutex_lock(&(printMutex)); */
     /* fprintf(stderr, "\x1b[1;35m--%d--\tStrat enqueuing tuple ", getBlockId()); */
@@ -166,7 +174,12 @@ void enqueueNewTuple(tuple_t tuple, record_type isNew)
     /* fprintf(stderr, "\x1b[0m\n"); */
     /* pthread_mutex_unlock(&(printMutex)); */
     queue_enqueue(newTuples, tuple, isNew);
-  }
+  }  
+  #ifdef LOG_DEBUG
+  //snprintf(s, 30*sizeof(char), "a %p %p %p", newTuples->head, newTuples->head->next, newTuples->tail);
+  //printDebug(s);
+  #endif
+
 }
 
 /* Enqueue a neighbor or vacant tuple */
@@ -282,6 +295,8 @@ void meldMain(void)
   //setColor(0);
   setLED(128,0,128,32);
 
+  //print_program_info();
+
   /* Enqueue init to derive the program's axioms */
   enqueue_init();
 
@@ -304,9 +319,28 @@ void meldMain(void)
 
     if(!queue_is_empty(newTuples)) {
       int isNew = 0;
+
+      #ifdef LOG_DEBUG
+      char s[50];
+      snprintf(s, 50*sizeof(char), "1 %p %p", newTuples->head, newTuples->tail);
+      printDebug(s);
+      #endif
+
       tuple_t tuple = queue_dequeue(newTuples, &isNew);
-      
+
+
+      #ifdef LOG_DEBUG
+      {snprintf(s, 50*sizeof(char), "2 %p %p %s", newTuples->head, newTuples->tail, TYPE_NAME(TUPLE_TYPE(tuple)));
+      printDebug(s);}
+      #endif
+
       tuple_handle(tuple, isNew, reg);
+      
+      #ifdef LOG_DEBUG
+      {snprintf(s, 50*sizeof(char), "3 %p %p %s", newTuples->head, newTuples->tail, TYPE_NAME(TUPLE_TYPE(tuple)));
+      printDebug(s);}
+      #endif
+
     } else if (!p_empty(delayedTuples) 
 	       && p_peek(delayedTuples)->priority <= myGetTime()) {
       tuple_pentry *entry = p_dequeue(delayedTuples);

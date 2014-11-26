@@ -36,6 +36,7 @@ threadtype typedef struct _tuple_pentry { Time priority; struct _tuple_pentry *n
 threadtype typedef struct {struct _tuple_pentry *queue;} tuple_pqueue;
 
 threadextern tuple_queue *tuples;
+threadextern tuple_queue *newTuples;
 
 /* This one is unused */
 /* threadtype typedef struct _persistent_set { void *array; int total; int current; } persistent_set; */
