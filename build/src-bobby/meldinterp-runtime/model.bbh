@@ -15,10 +15,16 @@ types used by the VM.
 
 /* Meld Types */
 threadtype typedef void* tuple_t;
+threadtype typedef short tuple_type;
+#ifdef BBSIM
 threadtype typedef int32_t meld_int;
 threadtype typedef double meld_float;
-threadtype typedef short tuple_type;
 threadtype typedef unsigned long int Register;
+#else
+threadtype typedef int16_t meld_int;
+threadtype typedef uint16_t meld_float;
+threadtype typedef uint16_t Register;
+#endif
 
 /* Meld Structures */
 threadtype typedef struct _tuple_entry tuple_entry;

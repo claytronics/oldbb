@@ -65,7 +65,7 @@ threadvar Register reg[32];
 #include <sys/timeb.h>
 #endif
 
-int myGetTime ()
+Time myGetTime ()
 {
 #ifdef BBSIM
 	struct timeb t;
