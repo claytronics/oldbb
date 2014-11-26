@@ -14,9 +14,6 @@
 
 #include "../system/defs.bbh"
 
-#include "set_runtime.h"
-#include "list_runtime.h"
-
 //#include "util.h"
 
 #include "core.h"
@@ -597,8 +594,6 @@ vm_init(void)
 
   init_all_consts();
   init_fields();
-  set_init_descriptors();
-  list_init_descriptors();
 #if DEBUG
   print_program_info();
 #endif

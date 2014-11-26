@@ -3,8 +3,6 @@
 #include "core.h"
 #include "model.h"
 
-#include "set_runtime.h"
-#include "list_runtime.h"
 #include <stdlib.h>
 #include <math.h>
 #include <stdlib.h>
@@ -1435,18 +1433,10 @@ static inline
 bool aggregate_accumulate(int agg_type, void *acc, void *obj, int count)
 {
   switch (agg_type) {
-  case AGG_SET_UNION_INT: {
-    Set *set = MELD_SET(acc);
-    set_int_insert(set, MELD_INT(obj));
-    set_print(set);
-    return false;
-  }
-  case AGG_SET_UNION_FLOAT: {
-    Set *set = MELD_SET(acc);
-    set_float_insert(set, MELD_FLOAT(obj));
-    set_print(set);
-    return false;
-  }
+  case AGG_SET_UNION_INT:
+  case AGG_SET_UNION_FLOAT:
+     assert(false);
+     return false;
 
   case AGG_FIRST:
     return false;
@@ -1487,51 +1477,10 @@ bool aggregate_accumulate(int agg_type, void *acc, void *obj, int count)
     MELD_FLOAT(acc) += MELD_FLOAT(obj) * (meld_float)count;
     return false;
 
-  case AGG_SUM_LIST_INT: {
-    List *result_list = MELD_LIST(acc);
-    List *other_list = MELD_LIST(obj);
-
-    if(list_total(result_list) != list_total(other_list)) {
-      fprintf(stderr, "lists differ in size for accumulator AGG_SUM_LIST_INT:"
-	      " %d vs %d\n", list_total(result_list), list_total(other_list));
-      exit(1);
-    }
-
-    list_iterator it_result = list_get_iterator(result_list);
-    list_iterator it_other = list_get_iterator(other_list);
-
-    while(list_iterator_has_next(it_result)) {
-      list_iterator_int(it_result) += list_iterator_int(it_other) * (meld_int)count;
-
-      it_other = list_iterator_next(it_other);
-      it_result = list_iterator_next(it_result);
-    }
-			
+  case AGG_SUM_LIST_INT:
+  case AGG_SUM_LIST_FLOAT:
+    assert(false);
     return false;
-  }
-	  
-  case AGG_SUM_LIST_FLOAT: {
-    List *result_list = MELD_LIST(acc);
-    List *other_list = MELD_LIST(obj);
-
-    if(list_total(result_list) != list_total(other_list)) {
-      fprintf(stderr, "lists differ in size for accumulator AGG_SUM_LIST_FLOAT: "
-	      "%d vs %d\n", list_total(result_list), list_total(other_list));
-      exit(1);
-    }
-
-    list_iterator it_result = list_get_iterator(result_list);
-    list_iterator it_other = list_get_iterator(other_list);
-
-    while(list_iterator_has_next(it_result)) {
-      list_iterator_float(it_result) += list_iterator_float(it_other) * (meld_float)count;
-
-      it_result = list_iterator_next(it_result);
-      it_other = list_iterator_next(it_other);
-    }
-			
-    return false;
-  }
   }
 
   assert(0);
@@ -1556,32 +1505,12 @@ aggregate_changed(int agg_type, void *v1, void *v2)
     return MELD_FLOAT(v1) != MELD_FLOAT(v2);
 
   case AGG_SET_UNION_INT:
-  case AGG_SET_UNION_FLOAT: {
-    Set *setOld = MELD_SET(v1);
-    Set *setNew = MELD_SET(v2);
-
-    if(!set_equal(setOld, setNew))
-      return true;
-
-    /* delete new set union */
-    set_delete(setNew);
+  case AGG_SET_UNION_FLOAT:
     return false;
-  }
-    break;
 
   case AGG_SUM_LIST_INT:
-  case AGG_SUM_LIST_FLOAT: {
-    List *listOld = MELD_LIST(v1);
-    List *listNew = MELD_LIST(v2);
-
-    if(!list_equal(listOld, listNew))
-      return true;
-
-    /* delete new list */
-    list_delete(listNew);
+  case AGG_SUM_LIST_FLOAT:
     return false;
-  }
-    break;
 
   default:
     assert(0);
@@ -1613,52 +1542,12 @@ aggregate_seed(int agg_type, void *acc, void *start, int count, size_t size)
   case AGG_SUM_FLOAT:
     MELD_FLOAT(acc) = MELD_FLOAT(start) * count;
     return;
-  case AGG_SET_UNION_INT: {
-    Set *set = set_int_create();
-    set_int_insert(set, MELD_INT(start));
-    set_print(set);
-    MELD_SET(acc) = set;
+  case AGG_SET_UNION_INT:
+  case AGG_SET_UNION_FLOAT:
+  case AGG_SUM_LIST_INT:
+  case AGG_SUM_LIST_FLOAT:
+    assert(false);
     return;
-  }
-  case AGG_SET_UNION_FLOAT: {
-    Set *set = set_float_create();
-    set_float_insert(set, MELD_FLOAT(start));
-    set_print(set);
-    MELD_SET(acc) = set;
-    return;
-  }
-  case AGG_SUM_LIST_INT: {
-    List *result_list = list_int_create();
-    List *start_list = MELD_LIST(start);
-
-    /* add values to result_list */
-    list_iterator it;
-    for(it = list_get_iterator(start_list); list_iterator_has_next(it);
-	it = list_iterator_next(it))
-      {
-	meld_int total = list_iterator_int(it) * (meld_int)count;
-	list_int_push_tail(result_list, total);
-      }
-
-    MELD_LIST(acc) = result_list;
-    return;
-  }
-  case AGG_SUM_LIST_FLOAT: {
-    List *result_list = list_float_create();
-    List *start_list = MELD_LIST(start);
-
-    /* add values to result_list */
-    list_iterator it;
-    for(it = list_get_iterator(start_list); list_iterator_has_next(it);
-	it = list_iterator_next(it))
-      {
-	meld_float total = list_iterator_float(it) * (meld_float)count;
-	list_float_push_tail(result_list, total);
-      }
-
-    MELD_LIST(acc) = result_list;
-    return;
-  }
   }
 
   assert(0);
@@ -1682,12 +1571,9 @@ aggregate_free(tuple_t tuple, unsigned char field_aggregate,
 
   case AGG_SET_UNION_INT:
   case AGG_SET_UNION_FLOAT:
-    set_delete(MELD_SET(GET_TUPLE_FIELD(tuple, field_aggregate)));
-    break;
-
   case AGG_SUM_LIST_INT:
   case AGG_SUM_LIST_FLOAT:
-    list_delete(MELD_LIST(GET_TUPLE_FIELD(tuple, field_aggregate)));
+    assert(false);
     break;
 
   default:
@@ -2541,23 +2427,11 @@ tuple_print(tuple_t tuple, FILE *fp)
       fprintf(fp, "%d", *(uint16_t*)field);
       break;
     case FIELD_LIST_INT:
-      fprintf(fp, "list_int[%d][%p]", list_total(MELD_LIST(field)),
-	      MELD_LIST(field));
-      break;
     case FIELD_LIST_FLOAT:
-      fprintf(fp, "list_float[%d][%p]", list_total(MELD_LIST(field)),
-	      MELD_LIST(field));
-      break;
     case FIELD_LIST_ADDR:
-      fprintf(fp, "list_addr[%p]", *(void **)field);
-      break;
     case FIELD_SET_INT:
-      fprintf(fp, "set_int[%d][%p]", set_total(MELD_SET(field)),
-	      MELD_SET(field));
-      break;
     case FIELD_SET_FLOAT:
-      fprintf(fp, "set_float[%d][%p]", set_total(MELD_SET(field)),
-	      MELD_SET(field));
+      assert(false);
       break;
     case FIELD_TYPE:
       fprintf(fp, "%s", TYPE_NAME(MELD_INT(field)));

@@ -1,5 +1,4 @@
 #include "extern_functions.bbh"
-#include "list_runtime.h"
 #include <stdio.h>
 
 /******************************************************************************
