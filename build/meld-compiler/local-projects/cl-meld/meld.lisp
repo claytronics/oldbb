@@ -51,9 +51,7 @@
       (output-invalid-error (c) (format t "Output error: ~a~%" (text c)))))
 
 (defun meld-compile-exit (file out &optional (is-data-p nil))
-   (if (meld-compile file out is-data-p)
-    (sb-ext:exit :code 0)
-    (sb-ext:exit :code 1)))
+ (sb-ext:quit :unix-status (if (meld-compile file out is-data-p) 0 1)))
 
 (defun meld-clear-variables ()
 	(setf *ast* nil)
