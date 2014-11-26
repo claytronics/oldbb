@@ -464,6 +464,7 @@ instructions.
 #define RET_NEXT 1
 #define RET_LINEAR 2
 #define RET_DERIVED 3
+#define RET_NO_RET 4
 #define RET_ERROR -1
 
 /* ************* EVAL FUNCTIONS ************* */

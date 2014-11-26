@@ -258,7 +258,7 @@ execute_send_delay (const unsigned char *pc,
 /* Iterate through the database to find a match with tuple read from byte code
  * If there are matches, process the inside of the ITER with all matches sequentially.
  */
-void
+int
 execute_iter (const unsigned char *pc, 
 	      Register *reg, int isNew, int isLinear)
 {
@@ -292,7 +292,7 @@ execute_iter (const unsigned char *pc,
 
   if(length == 0) {
     /* no need to execute any further code, just jump! */
-    return;
+    return RET_NO_RET;
   }
 
   /* iterate over all tuples of the appropriate type */
@@ -307,33 +307,33 @@ execute_iter (const unsigned char *pc,
 
     /* check to see if it matches */
     for (k = 0; k < num_args; ++k) {
-      const unsigned char fieldnum = ITER_MATCH_FIELD(tmppc);
-      const unsigned char fieldtype = TYPE_ARG_TYPE(type, fieldnum);
-      const unsigned char type_size = TYPE_ARG_SIZE(type, fieldnum);
-      const unsigned char value_type = ITER_MATCH_VAL(tmppc);
+       const unsigned char fieldnum = ITER_MATCH_FIELD(tmppc);
+       const unsigned char fieldtype = TYPE_ARG_TYPE(type, fieldnum);
+       const unsigned char type_size = TYPE_ARG_SIZE(type, fieldnum);
+       const unsigned char value_type = ITER_MATCH_VAL(tmppc);
 
-      Register *field = GET_TUPLE_FIELD(next_tuple, fieldnum);
-      Register *val;      
+       Register *field = GET_TUPLE_FIELD(next_tuple, fieldnum);
+       Register *val;      
 
-      if (val_is_int (value_type)) {
-	tmppc += 2;
-	val = eval_int(&tmppc);
-      } else if (val_is_float (value_type)) {
-	tmppc += 2;
-	val = eval_float(&tmppc);
-      } else if (val_is_field (value_type)) {
-	tmppc += 2;
-	byte reg_index = FETCH(tmppc+1);
-	tuple_t tpl = (tuple_t)reg[reg_index];
-	val = eval_field(tpl, &tmppc);
-      }  else {
-	/* Don't know what to do */
-	fprintf (stderr, "Type %d not supported yet - don't know what to do.\n", fieldtype);
-	assert (0);
-	exit (2);
-      }
+       if (val_is_int (value_type)) {
+          tmppc += 2;
+          val = eval_int(&tmppc);
+       } else if (val_is_float (value_type)) {
+          tmppc += 2;
+          val = eval_float(&tmppc);
+       } else if (val_is_field (value_type)) {
+          tmppc += 2;
+          byte reg_index = FETCH(tmppc+1);
+          tuple_t tpl = (tuple_t)reg[reg_index];
+          val = eval_field(tpl, &tmppc);
+       }  else {
+          /* Don't know what to do */
+          fprintf (stderr, "Type %d not supported yet - don't know what to do.\n", fieldtype);
+          assert (0);
+          exit (2);
+       }
 
-      matched = matched && (memcmp(field, val, type_size) == 0);
+       matched = matched && (memcmp(field, val, type_size) == 0);
     }
 
 #ifdef DEBUG_INSTRS
@@ -347,10 +347,19 @@ execute_iter (const unsigned char *pc,
       /* Process it - And if we encounter a return instruction, return 
        * Otherwise, look for another match.
        */
-      if (RET_RET == process_bytecode(next_tuple, inner_jump, 
-				      isNew, isLinear || TYPE_IS_LINEAR(TUPLE_TYPE(next_tuple)), reg, PROCESS_ITER)) {
-	free(list);
-	return;
+      int ret = process_bytecode(next_tuple, inner_jump, 
+				      isNew, isLinear || TYPE_IS_LINEAR(TUPLE_TYPE(next_tuple)), reg, PROCESS_ITER);
+      if(ret == RET_LINEAR) {
+         free(list);
+         return ret;
+      }
+      if(isLinear && ret == RET_DERIVED) {
+         free(list);
+         return ret;
+      }
+      if(ret == RET_RET) {
+         free(list);
+         return ret;
       }
     }
   }
@@ -358,7 +367,7 @@ execute_iter (const unsigned char *pc,
   free(list);
 
   /* process next instructions */
-  return;
+  return RET_NO_RET;
 }
 
 inline void
@@ -2004,7 +2013,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	      && RULE_ISPERSISTENT(RULE_NUMBER(state))) )
 	  printf ("--%d--\tRETURN\n", getBlockId());
 #endif
-	return RET_RET;
+      return RET_RET;
       }
 
     case NEXT_INSTR: 		/* 0x1 */
@@ -2015,18 +2024,27 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	return RET_NEXT;
       }
 
+#define DECIDE_NEXT_ITER()                      \
+         if(ret == RET_LINEAR)                  \
+            return RET_LINEAR;                  \
+         if(ret == RET_DERIVED && isLinear)     \
+            return RET_DERIVED;                 \
+         if(ret == RET_RET)                     \
+            return RET_RET;                     \
+         pc = npc; goto eval_loop;
+
     case PERS_ITER_INSTR: 		/* 0x02 */ 
       {
-	const byte *npc = pc + ITER_OUTER_JUMP(pc);
-	execute_iter (pc, reg, isNew, isLinear);
-	pc = npc; goto eval_loop;
+         const byte *npc = pc + ITER_OUTER_JUMP(pc);
+         const int ret = execute_iter (pc, reg, isNew, isLinear);
+         DECIDE_NEXT_ITER();
       }
 
     case LINEAR_ITER_INSTR: 		/* 0x05 */ 
       {
-	const byte *npc = pc + ITER_OUTER_JUMP(pc);
-	execute_iter (pc, reg, isNew, isLinear);
-	pc = npc; goto eval_loop;
+         const byte *npc = pc + ITER_OUTER_JUMP(pc);
+         const int ret = execute_iter (pc, reg, isNew, isLinear);
+         DECIDE_NEXT_ITER();
       }
 
     case NOT_INSTR: 		/* 0x07 */ 
@@ -2046,6 +2064,7 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
     case RESET_LINEAR_INSTR: /* 0x0e */
       {
          int ret = process_bytecode(tuple, pc + RESET_LINEAR_BASE, isNew, NOT_LINEAR, reg, PROCESS_ITER);
+         (void)ret;
          pc += RESET_LINEAR_JUMP(pc);
          goto eval_loop;
       }
