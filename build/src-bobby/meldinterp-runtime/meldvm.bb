@@ -18,9 +18,6 @@
 
 #include "../system/defs.bbh"
 
-#include "set_runtime.h"
-#include "list_runtime.h"
-
 //#include "util.h"
 
 #include "core.h"
@@ -369,7 +366,7 @@ void meldMain(void)
 	    printf ("\n\x1b[35m--%d--\tRule %d READY!\x1b[0m\n", getBlockId(), i);
 #endif
 	    /* Trigger execution */
-	  process_bytecode (NULL, RULE_START(i), 1, reg, processState);
+	  process_bytecode (NULL, RULE_START(i), 1, NOT_LINEAR, reg, processState);
 	  }
 	}
 	/* else: Rule not ready yet, will re-check at next main loop run */
@@ -631,8 +628,6 @@ vm_init(void)
 
   init_all_consts();
   init_fields();
-  set_init_descriptors();
-  list_init_descriptors();
 #if DEBUG
   print_program_info();
 #endif

@@ -321,6 +321,8 @@ instructions.
 #define CALL_ARGS(x)  (extern_functs_args[CALL_ID(x)])
 #define CALL_FUNC(x)  (extern_functs[CALL_ID(x)])
 
+#define RESET_LINEAR_JUMP(x) (*(uint32_t*)(pc + 1))
+
 /* ************* TUPLE MACROS ************* */
 
 /* Here is the format of a tuple:
@@ -453,11 +455,16 @@ instructions.
 #define INACTIVE_RULE 0x0
 #define ACTIVE_RULE   0x1
 
+/* Constants for isLinear */
+#define NOT_LINEAR 0
+#define IS_LINEAR 1
+
 /* Return types for process function */
 #define RET_RET 0
 #define RET_NEXT 1
 #define RET_LINEAR 2
 #define RET_DERIVED 3
+#define RET_NO_RET 4
 #define RET_ERROR -1
 
 /* ************* EVAL FUNCTIONS ************* */
@@ -568,7 +575,7 @@ tuple_dump(void *tuple)
 
 /* ************* MISC FUNCTION PROTOTYPES ************* */
 int process_bytecode(tuple_t tuple, const unsigned char *pc,
-		  int isNew, Register *reg, byte state);
+		  int isNew, int isLinear, Register *reg, byte state);
 
 void init_fields(void);
 void init_consts(void);
