@@ -150,11 +150,7 @@ NodeID get_neighbor_ID(int face)
 void enqueueNewTuple(tuple_t tuple, record_type isNew)
 {
   assert (TUPLE_TYPE(tuple) < NUM_TYPES);
-  #ifdef LOG_DEBUG
-  //char s[30];
-  //snprintf(s, 30*sizeof(char), "b %p %p", newTuples->head, newTuples->tail);
-  //printDebug(s);
-  #endif
+
   if (TYPE_IS_STRATIFIED(TUPLE_TYPE(tuple))) {
     /* pthread_mutex_lock(&(printMutex)); */
     /* fprintf(stderr, "\x1b[1;35m--%d--\tStrat enqueuing tuple ", getBlockId()); */
@@ -171,12 +167,7 @@ void enqueueNewTuple(tuple_t tuple, record_type isNew)
     /* fprintf(stderr, "\x1b[0m\n"); */
     /* pthread_mutex_unlock(&(printMutex)); */
     queue_enqueue(newTuples, tuple, isNew);
-  }  
-  #ifdef LOG_DEBUG
-  //snprintf(s, 30*sizeof(char), "a %p %p %p", newTuples->head, newTuples->head->next, newTuples->tail);
-  //printDebug(s);
-  #endif
-
+  }
 }
 
 /* Enqueue a neighbor or vacant tuple */
@@ -317,26 +308,9 @@ void meldMain(void)
     if(!queue_is_empty(newTuples)) {
       int isNew = 0;
 
-      #ifdef LOG_DEBUG
-      char s[50];
-      snprintf(s, 50*sizeof(char), "1 %p %p", newTuples->head, newTuples->tail);
-      printDebug(s);
-      #endif
-
       tuple_t tuple = queue_dequeue(newTuples, &isNew);
 
-
-      #ifdef LOG_DEBUG
-      {snprintf(s, 50*sizeof(char), "2 %p %p %s", newTuples->head, newTuples->tail, TYPE_NAME(TUPLE_TYPE(tuple)));
-      printDebug(s);}
-      #endif
-
       tuple_handle(tuple, isNew, reg);
-      
-      #ifdef LOG_DEBUG
-      {snprintf(s, 50*sizeof(char), "3 %p %p %s", newTuples->head, newTuples->tail, TYPE_NAME(TUPLE_TYPE(tuple)));
-      printDebug(s);}
-      #endif
 
     } else if (!p_empty(delayedTuples) 
 	       && p_peek(delayedTuples)->priority <= myGetTime()) {
@@ -653,10 +627,15 @@ vm_alloc(void)
   newStratTuples = calloc(1, sizeof(tuple_pqueue));
   delayedTuples = calloc(1, sizeof(tuple_pqueue));
 
+  assert(tuples!=NULL);
+  assert(newTuples!=NULL);
+  assert(newStratTuples!=NULL);
+  assert(delayedTuples!=NULL);
+
   /* Reset received tuples queue */
   memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
 
-#ifdef BBSIM
+ #ifdef BBSIM
   pthread_mutex_init(&(printMutex), NULL);
 #endif
 }

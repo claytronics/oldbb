@@ -1728,26 +1728,10 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
          return;
       }
 
-      #ifdef LOG_DEBUG
-      char s[50];
-      {snprintf(s, 50*sizeof(char), "4 %p %p %s", newTuples->head, newTuples->tail, TYPE_NAME(TUPLE_TYPE(tuple)));
-      printDebug(s);}
-      #endif
-      
       queue_enqueue(queue, tuple, (record_type) isNew);
-     
-#ifdef LOG_DEBUG
-      {snprintf(s, 50*sizeof(char), "5 %p %p %s", newTuples->head, newTuples->tail, TYPE_NAME(TUPLE_TYPE(tuple)));
-      printDebug(s);}
-      #endif
 
       process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), 
-            isNew, TYPE_IS_LINEAR(TUPLE_TYPE(tuple)), reg, PROCESS_TUPLE);    
-      
-#ifdef LOG_DEBUG
-      {snprintf(s, 50*sizeof(char), "6 %p %p %s", newTuples->head, newTuples->tail, TYPE_NAME(TUPLE_TYPE(tuple)));
-      printDebug(s);}
-      #endif
+            isNew, TYPE_IS_LINEAR(TUPLE_TYPE(tuple)), reg, PROCESS_TUPLE);
 
       return;
    }
