@@ -321,6 +321,8 @@ instructions.
 #define CALL_ARGS(x)  (extern_functs_args[CALL_ID(x)])
 #define CALL_FUNC(x)  (extern_functs[CALL_ID(x)])
 
+#define RESET_LINEAR_JUMP(x) (*(uint32_t*)(pc + 1))
+
 /* ************* TUPLE MACROS ************* */
 
 /* Here is the format of a tuple:

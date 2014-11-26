@@ -2042,6 +2042,17 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	execute_send (pc, reg, isNew);
 	pc = npc; goto eval_loop;
       }
+
+    case RESET_LINEAR_INSTR: /* 0x0e */
+      {
+         int ret = process_bytecode(tuple, pc + RESET_LINEAR_BASE, isNew, NOT_LINEAR, reg, PROCESS_ITER);
+         pc += RESET_LINEAR_JUMP(pc);
+         goto eval_loop;
+      }
+      break;
+
+    case END_LINEAR_INSTR: /* 0x0f */
+      return RET_LINEAR;
       
     case RULE_INSTR: 		/* 0x10 */ 
       {
