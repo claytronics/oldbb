@@ -10,6 +10,10 @@
 #include "../system/myassert.h"
 #include <stdio.h>
 
+#ifdef LOG_DEBUG
+// not compiling ...
+//#include "../system/log.bbh"
+#endif
 /******************************************************************************
 @Description: core.c represents the core of the VM as its name implies. 
 It contains all the function implementations for the following tasks:
@@ -22,7 +26,7 @@ execution.
 - Handling aggregates.
 *******************************************************************************/
 
-#define DEBUG_INSTRS
+//#define DEBUG_INSTRS
 /* #define DEBUG_ALLOCS */
 #define inline 
 
@@ -1725,8 +1729,10 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
       }
 
       queue_enqueue(queue, tuple, (record_type) isNew);
+
       process_bytecode(tuple, TYPE_START(TUPLE_TYPE(tuple)), 
-            isNew, TYPE_IS_LINEAR(TUPLE_TYPE(tuple)), reg, PROCESS_TUPLE);    
+            isNew, TYPE_IS_LINEAR(TUPLE_TYPE(tuple)), reg, PROCESS_TUPLE);
+
       return;
    }
 
@@ -1848,6 +1854,202 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
    process_bytecode(tuple, TYPE_START(type), isNew, NOT_LINEAR, reg, PROCESS_TUPLE);
 }
 
+#ifdef LOG_DEBUG
+#define MAX_NAME_SIZE 30
+void
+print_bytecode(const unsigned char *pc) {
+  char  s[MAX_NAME_SIZE];
+  
+  snprintf(s, MAX_NAME_SIZE*sizeof(char), "%u", (unsigned) pc - (unsigned) meld_prog);
+printDebug(s);
+
+ switch (*(const unsigned char*)pc) {
+    case RETURN_INSTR: 		/* 0x0 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "RETURN_INSTR");
+      break;
+    case NEXT_INSTR: 		/* 0x1 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "NEXT_INSTR");
+      break;
+    case PERS_ITER_INSTR: 		/* 0x02 */ 
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "PERS_ITER_INSTR");
+      break;
+    case LINEAR_ITER_INSTR: 		/* 0x05 */ 
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "LINEAR_ITER_INSTR");
+      break;
+    case NOT_INSTR: 		/* 0x07 */ 
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "NOT_INSTR");
+      break;
+    case SEND_INSTR: 		/* 0x08 */ 
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "SEND_INSTR");
+      break;
+    case RULE_INSTR: 		/* 0x10 */ 
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "RULE_INSTR");
+      break;
+    case RULE_DONE_INSTR: 		/* 0x11 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "RULE_DONE_INSTR");
+      break;
+    case SEND_DELAY_INSTR: 		/* 0x15 */ 
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "SEND_DELAY_INSTR");
+      break;
+    case RETURN_LINEAR_INSTR:		/* 0xd0 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "RETURN_LINEAR_INSTR");
+      break;
+    case RETURN_DERIVED_INSTR:		/* 0xf0 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "RETURN_DERIVED_INSTR");
+      break;
+    case MVINTFIELD_INSTR: 		/* 0x1e */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVINTFIELD_INSTR");
+      break;
+    case MVFIELDFIELD_INSTR: 		/* 0x21 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVFIELDFIELD_INSTR");
+      break;
+    case MVFIELDREG_INSTR: 		/* 0x22 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVFIELDREG_INSTR");
+      break;
+    case MVPTRREG_INSTR: 		/* 0x23 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVPTRREG_INSTR");
+      break;
+    case MVREGFIELD_INSTR: 		/* 0x26 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVFIELDREG_INSTR");
+    case MVHOSTFIELD_INSTR: 		/* 0x28 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVHOSTFIELD_INSTR");
+      break;
+      /* NOT TESTED */
+    case MVFLOATFIELD_INSTR: 		/* 0x2d */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVFLOATFIELD_INSTR");
+      break;
+      /* NOT TESTED */
+    case MVFLOATREG_INSTR: 		/* 0x2e */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVFLOATREG_INSTR");
+      break;
+      /* NOT TESTED */
+    case MVHOSTREG_INSTR: 		/* 0x37 */
+       snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVHOSTREG_INSTR");
+       break;
+    case ADDRNOTEQUAL_INSTR: 		/* 0x38 */
+       snprintf(s, MAX_NAME_SIZE*sizeof(char), "ADDRNOTEQUAL_INSTR");
+       break;
+    case ADDREQUAL_INSTR: 		/* 0x39 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "ADDREQUAL_INSTR");
+      break;
+    case INTMINUS_INSTR: 		/* 0x3a */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTMINUS_INSTR");
+      break;
+    case INTEQUAL_INSTR: 		/* 0x3b */
+       snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTEQUAL_INSTR");
+      break;
+    case INTNOTEQUAL_INSTR: 		/* 0x3c */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTNOTEQUAL_INSTR");
+      break;
+
+    case INTPLUS_INSTR: 		/* 0x3d */
+       snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTPLUS_INSTR");
+      break;
+    case INTLESSER_INSTR: 		/* 0x3e */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTLESSER_INSTR");
+      break;
+
+    case INTGREATEREQUAL_INSTR: 		/* 0x3f */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTGREATEREQUAL_INSTR");
+      break;
+    case ALLOC_INSTR: 		/* 0x40 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "ALLOC_INSTR");
+      break;
+      /* NOT TESTED */
+    case BOOLOR_INSTR: 		/* 0x41 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "BOOLOR_INSTR");
+      break;
+
+    case INTLESSEREQUAL_INSTR: 		/* 0x42 */
+       snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTLESSEREQUAL_INSTR");
+      break;
+    case INTGREATER_INSTR: 		/* 0x43 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTEGREATER_INSTR");
+      break;
+    case INTMUL_INSTR: 		/* 0x44 */
+       snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTMUL_INSTR");
+      break;
+    case INTDIV_INSTR: 		/* 0x45 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTDIV_INSTR");
+      break;
+    case FLOATPLUS_INSTR: 		/* 0x46 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "FLOATPLUS_INSTR");
+      break;
+    case FLOATMINUS_INSTR: 		/* 0x47 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "FLOATMINUS_INSTR");
+      break;
+    case FLOATMUL_INSTR: 		/* 0x48 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "FLOATMUL_INSTR");
+      break;
+    case FLOATDIV_INSTR: 		/* 0x49 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "FLOATDIV_INSTR");
+      break;
+    case FLOATEQUAL_INSTR: 		/* 0x4a */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "FLOATEQUAL_INSTR");
+      break;
+    case FLOATNOTEQUAL_INSTR: 		/* 0x4b */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "FLOATNOTEQUAL_INSTR");
+      break;
+    case FLOATLESSER_INSTR: 		/* 0x4c */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "FLOATLESSER_INSTR");
+      break;
+    case FLOATLESSEREQUAL_INSTR: 	/* 0x4d */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "FLOATLESSEREQUAL_INSTR");
+      break;
+    case FLOATGREATER_INSTR: 		/* 0x4e */
+       snprintf(s, MAX_NAME_SIZE*sizeof(char), "FLOATGREATER_INSTR");
+      break;
+    case FLOATGREATEREQUAL_INSTR: 	/* 0x4f */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "FLOATGREATEREQUAL_INSTR");
+      break;
+    case MVREGREG_INSTR: 		/* 0x50 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVREGREG_INSTR");
+      break;
+    case BOOLEQUAL_INSTR: 		/* 0x51 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "BOOLEQUAL_INSTR");
+      break;
+
+    case BOOLNOTEQUAL_INSTR: 		/* 0x51 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "BOOLNOTEQUAL_INSTR");
+      break;
+    case IF_INSTR: 		/* 0x60 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "IF_INSTR");
+      break;
+    case CALL1_INSTR: 		/* 0x69 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "CALL1_INSTR");
+      break;
+    case ADDLINEAR_INSTR: 		/* 0x77 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "ADDLINEAR_INSTR");
+      break;
+    case ADDPERS_INSTR: 		/* 0x78 */
+            snprintf(s, MAX_NAME_SIZE*sizeof(char), "ADDPERS_INSTR");
+      break;
+    case RUNACTION_INSTR: 		/* 0x79 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "RUNACTION_INSTR");
+      break;
+    case UPDATE_INSTR: 		/* 0x7b */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), " UPDATE_INSTR");
+      break;
+    case REMOVE_INSTR: 		/* 0x80 */
+       snprintf(s, MAX_NAME_SIZE*sizeof(char), "REMOVE_INSTR");
+      break;
+    case IF_ELSE_INSTR: 		/* 0x81 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "IF_ELSE_");
+      break;
+	/* NOT TESTED */
+      case JUMP_INSTR:
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "JUMP_INSTR");
+      break;
+    case INTMOD_INSTR: 		/* 0x3d */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "INTMOD_INSTR");
+      break;
+    default:
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "UNKNOWN");
+    }
+   printDebug(s);
+} 
+#endif
+
 int 
 process_bytecode (tuple_t tuple, const unsigned char *pc,
 		  int isNew, int isLinear, Register *reg, byte state)
@@ -1891,6 +2093,11 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 
   for (;;) {
   eval_loop:
+#ifdef LOG_DEBUG
+    //print_bytecode(pc);
+#endif
+    //printf("offset: %u\n", (unsigned) pc - (unsigned) meld_prog);
+    
     switch (*(const unsigned char*)pc) {
     case RETURN_INSTR: 		/* 0x0 */
       {
@@ -2415,7 +2622,7 @@ tuple_print(tuple_t tuple, FILE *fp)
     switch(TYPE_ARG_TYPE(tuple_type, j)) {
     case FIELD_INT:
 #ifndef BBSIM
-      fprintf(fp, "%ld", MELD_INT(field));
+      //fprintf(fp, "%ld", MELD_INT(field));
 #else
       fprintf(fp, "%d", MELD_INT(field));
 #endif
@@ -2490,6 +2697,7 @@ void facts_dump(void)
   }
 }
 
+#define MAX_STRING_SIZE 100
 /* Print program info, this was designed for the oldVM, not sure if it works or not,
  * looks like it should.
  */
@@ -2497,28 +2705,45 @@ void
 print_program_info(void)
 {
   int i;
+  char s[MAX_STRING_SIZE];
+  char tmp[MAX_STRING_SIZE];
+
   for(i = 0; i < NUM_TYPES; ++i) {
-    printf("Tuple (%s:%d:%d) ", tuple_names[i], i, TYPE_SIZE(i));
-    
-    printf("[");
+    sprintf(s, "Tuple (%s:%d:%d) ", tuple_names[i], i, TYPE_SIZE(i));
+    //printf("Tuple (%s:%d:%d) ", tuple_names[i], i, TYPE_SIZE(i));
+
+    strcat(s,"[");
     if(TYPE_IS_AGG(i))
-      printf("agg");
+      strcat(s,"agg");
     if(TYPE_IS_LINEAR(i))
-      printf("linear");
+      strcat(s,"linear");
     else 
-      printf("per");
+      strcat(s,"per");
     if(TYPE_IS_ROUTING(i))
-      printf("route");
-    printf("] ");
+      strcat(s,"route");
+    strcat(s,"] ");
     
-    printf("num_args:%d off:%d ; args(offset, arg_size): ",
-	   TYPE_NUMARGS(i), TYPE_OFFSET(i));
-		
+    
+    //printf("num_args:%d off:%d ; args(offset, arg_size): ",
+    //	   TYPE_NUMARGS(i), TYPE_OFFSET(i));
+    
+    snprintf(tmp, MAX_STRING_SIZE*sizeof(char),"num_args:%d off:%d ; args(offset, arg_size): ",
+    	   TYPE_NUMARGS(i), TYPE_OFFSET(i));
+    strcat(s,tmp);
+
     int j;
     for (j = 0; j < TYPE_NUMARGS(i); ++j) {
-      printf(" %d:%d", TYPE_ARG_OFFSET(i, j), TYPE_ARG_SIZE(i, j));
+      //printf(" %d:%d", TYPE_ARG_OFFSET(i, j), TYPE_ARG_SIZE(i, j));
+      snprintf(tmp, MAX_STRING_SIZE*sizeof(char), " %d:%d", TYPE_ARG_OFFSET(i, j), TYPE_ARG_SIZE(i, j));
+      strcat(s,tmp);
     }
-    printf("\n");
+    
+    s[MAX_STRING_SIZE-1] = '\0';
+    #ifdef LOG_DEBUG
+    printDebug(s);
+    #else
+    printf("%s\n",s);
+    #endif
   }
 }
 

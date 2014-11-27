@@ -12,6 +12,10 @@
 #else
 #endif
 
+#ifdef LOG_DEBUG
+#include "../system/log.bbh"
+#endif
+
 #include "../system/defs.bbh"
 
 //#include "util.h"
@@ -29,9 +33,9 @@ the execution of all tuples and rules through the program's main loop.
 
 /* Various DEBUG Modes for troubleshooting */
 //#define DEBUG
-#define DEBUG_NEIGHBORHOOD
-#define DEBUG_SEND
-#define DEBUG_RULES
+//#define DEBUG_NEIGHBORHOOD
+//#define DEBUG_SEND
+//#define DEBUG_RULES
 
 void vm_init(void);
 byte updateRuleState(byte rid);
@@ -279,6 +283,8 @@ void meldMain(void)
   //setColor(0);
   setLED(128,0,128,32);
 
+  //print_program_info();
+
   /* Enqueue init to derive the program's axioms */
   enqueue_init();
 
@@ -301,9 +307,11 @@ void meldMain(void)
 
     if(!queue_is_empty(newTuples)) {
       int isNew = 0;
+
       tuple_t tuple = queue_dequeue(newTuples, &isNew);
-      
+
       tuple_handle(tuple, isNew, reg);
+
     } else if (!p_empty(delayedTuples) 
 	       && p_peek(delayedTuples)->priority <= myGetTime()) {
       tuple_pentry *entry = p_dequeue(delayedTuples);
@@ -619,16 +627,26 @@ vm_alloc(void)
   newStratTuples = calloc(1, sizeof(tuple_pqueue));
   delayedTuples = calloc(1, sizeof(tuple_pqueue));
 
+  assert(tuples!=NULL);
+  assert(newTuples!=NULL);
+  assert(newStratTuples!=NULL);
+  assert(delayedTuples!=NULL);
+
   /* Reset received tuples queue */
   memset(receivedTuples, 0, sizeof(tuple_queue) * NUM_PORTS);
 
-#ifdef BBSIM
+ #ifdef BBSIM
   pthread_mutex_init(&(printMutex), NULL);
 #endif
 }
 
 #ifndef BBSIM
 void __myassert(char* file, int line, char* exp) {
+//  #ifdef LOG_DEBUG
+//  {
+//	char
+//  }
+//  #endif
   while (1) {
     setColor(RED); delayMS(50); setColor(BLUE); delayMS(50);}
 }

@@ -96,11 +96,6 @@ void initBlock()
 	initSystemMessage();
 	initEnsemble();
 
-#ifdef MELD
-	//allocate MeldVM's data structures
-	vm_alloc();
-#endif
-
 	initBlockTick();		// HW INITIALIZATION ROUTINE
 
 	initHWAccel();
@@ -110,6 +105,10 @@ void initBlock()
 	initLogDebug();
 #endif
 
+#ifdef MELD
+	//allocate MeldVM's data structures
+	vm_alloc();
+#endif
 	delayMS(50);
 #ifdef CLOCK_SYNC
 	initClock();

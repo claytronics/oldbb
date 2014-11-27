@@ -13,6 +13,6 @@ SOURCE := blinkyblocks.meld
 #ALLO +=
 #MELDO += 
 
-CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
+#CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
 
 include Makefile.header
