@@ -642,6 +642,11 @@ vm_alloc(void)
 
 #ifndef BBSIM
 void __myassert(char* file, int line, char* exp) {
+//  #ifdef LOG_DEBUG
+//  {
+//	char
+//  }
+//  #endif
   while (1) {
     setColor(RED); delayMS(50); setColor(BLUE); delayMS(50);}
 }
