@@ -22,9 +22,9 @@ threadtype typedef int32_t meld_int;
 threadtype typedef double meld_float;
 threadtype typedef unsigned long int Register;
 #else
-threadtype typedef int16_t meld_int;
-threadtype typedef uint16_t meld_float;
-threadtype typedef uint16_t Register;
+threadtype typedef int32_t meld_int;
+threadtype typedef uint32_t meld_float;
+threadtype typedef uint32_t Register;
 #endif
 
 /* Meld Structures */
