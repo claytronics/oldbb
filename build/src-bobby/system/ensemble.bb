@@ -23,17 +23,15 @@ threadvar byte ignoredHandshakeCount[NUM_PORTS];
 void GUIDIntoChar(Uid id, byte * c)
 {
   c[0] = (id >> 8) & 0x00FF;
-  c[1] = (id & 0x00FF); 
+  c[1] = (id & 0x00FF);
 }
 
 // takes a passed in character array and returns a UID representing the array.  Assumes 2-byte GUIDs.
 Uid charToGUID(byte * c)
 {
   Uid tmp;
-
   tmp = (Uid)(c[0]) << 8;
   tmp |= c[1];
-
   return tmp;
 }
 

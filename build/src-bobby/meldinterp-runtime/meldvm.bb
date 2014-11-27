@@ -307,11 +307,8 @@ void meldMain(void)
 
     if(!queue_is_empty(newTuples)) {
       int isNew = 0;
-
       tuple_t tuple = queue_dequeue(newTuples, &isNew);
-
       tuple_handle(tuple, isNew, reg);
-
     } else if (!p_empty(delayedTuples) 
 	       && p_peek(delayedTuples)->priority <= myGetTime()) {
       tuple_pentry *entry = p_dequeue(delayedTuples);
@@ -329,6 +326,7 @@ void meldMain(void)
       for (i = 0; i < NUM_RULES; ++i) {
 
 	if (updateRuleState(i)) {
+
 	  /* Set state byte used by DEBUG */
 	  byte processState = PROCESS_RULE | (i << 4);
 	  
@@ -432,7 +430,7 @@ void receive_tuple(int isNew)
   pthread_mutex_unlock(&(printMutex));
 #endif
 #endif
-
+  
   if(!TYPE_IS_LINEAR(type) && !TYPE_IS_ACTION(type)) {
      tuple_queue *queue = receivedTuples + faceNum(thisChunk);
      if(isNew > 0) {
@@ -497,7 +495,6 @@ void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
   pthread_mutex_unlock(&(printMutex));
 #endif
 #endif
-
   if (target == blockId) {
     enqueueNewTuple(tuple, (record_type) isNew);
   }
@@ -521,6 +518,8 @@ void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
       Chunk *c=calloc(sizeof(Chunk), 1);
       MsgHandler receiver;
 
+      assert(c != NULL);
+
       if (isNew > 0) {
 	receiver = (MsgHandler)receive_tuple_add;
       }
@@ -534,7 +533,7 @@ void tuple_send(tuple_t tuple, NodeID rt, meld_int delay, int isNew)
 	// Send failed :(
 	free(c);
 	fprintf(stderr, "--%d--\tSEND FAILED EVEN THOUGH BLOCK IS PRESENT! TO %d\n", blockId, (int)target);
-      };
+      }
     }
     else {
       /* This may happen when you delete a block in the simulator */
@@ -618,6 +617,7 @@ vm_init(void)
 void
 vm_alloc(void)
 {
+
   /* Get node ID */
   blockId = getGUID();
 
@@ -642,11 +642,13 @@ vm_alloc(void)
 
 #ifndef BBSIM
 void __myassert(char* file, int line, char* exp) {
-//  #ifdef LOG_DEBUG
-//  {
-//	char
-//  }
-//  #endif
+#ifdef LOG_DEBUG
+{
+	char str[50];
+	sprintf(str, "assert %s:%d %s", file, line, exp);
+	printDebug(str);
+}
+#endif
   while (1) {
     setColor(RED); delayMS(50); setColor(BLUE); delayMS(50);}
 }

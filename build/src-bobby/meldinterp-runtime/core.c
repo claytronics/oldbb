@@ -1,4 +1,3 @@
-
 #include "api.h"
 #include "core.h"
 #include "model.h"
@@ -489,7 +488,6 @@ execute_mvintreg (const unsigned char *pc, Register *reg)
   printf ("--%d--\t MOVE INT %d TO reg %d\n", 
 	  getBlockId(), MELD_INT(src), reg_index);
 #endif
-
   size_t size = sizeof(Register);
   memcpy(dst, src, size);
 }
@@ -560,7 +558,6 @@ execute_mvfieldreg (const unsigned char *pc, Register *reg)
 #else
   (void)field_num;
 #endif
-
   size_t size = TYPE_ARG_SIZE(TUPLE_TYPE(tpl), field_num);
   memcpy(dst, src, size);
 }
@@ -872,10 +869,10 @@ execute_intgreater (const unsigned char *pc, Register *reg)
   Register *arg2 = eval_reg (reg2, &pc, reg);
   Register *dest = eval_reg (reg3, &pc, reg);
   *dest = (MELD_INT(arg1) > MELD_INT(arg2));
-#ifdef DEBUG_INSTRS
+  #ifdef DEBUG_INSTRS
   printf ("--%d--\t INT reg %d GREATER THAN reg %d TO reg %d\n", 
 	  getBlockId(), reg1, reg2, reg3);
-#endif
+  #endif
 }
 
 inline void
@@ -1647,8 +1644,8 @@ void aggregate_recalc(tuple_entry *agg, Register *reg,
  * process it with a isNew of -1 to perform retraction, and free both tuples.
  */
 void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
-{
-   if(type == TYPE_TERMINATE) {
+{  
+  if(type == TYPE_TERMINATE) {
       FREE_TUPLE(tuple);
       TERMINATE_CURRENT();
       return;
@@ -1669,7 +1666,6 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
       pthread_mutex_unlock(&(printMutex));
    }
 #endif
-
 
    if (TYPE_IS_ACTION(type)) {
       if(isNew > 0)
@@ -2093,11 +2089,11 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 
   for (;;) {
   eval_loop:
+#ifdef DEBUG_INSTRS
 #ifdef LOG_DEBUG
-    //print_bytecode(pc);
+    print_bytecode(pc);
 #endif
-    //printf("offset: %u\n", (unsigned) pc - (unsigned) meld_prog);
-    
+#endif    
     switch (*(const unsigned char*)pc) {
     case RETURN_INSTR: 		/* 0x0 */
       {
@@ -2605,33 +2601,33 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
   }
 }
 
+#define MAX_STRING_SIZE 200
 /* Prints a tuple */
 void
 tuple_print(tuple_t tuple, FILE *fp)
 {
   unsigned char tuple_type = TUPLE_TYPE(tuple);
   int j;
+  char str[MAX_STRING_SIZE];
+  char tmp[MAX_STRING_SIZE];
 
-  fprintf(fp, "%s(", TYPE_NAME(tuple_type));
+  sprintf(str,"%s(", TYPE_NAME(tuple_type));
+
   for(j = 0; j < TYPE_NUMARGS(tuple_type); ++j) {
     void *field = GET_TUPLE_FIELD(tuple, j);
 
     if (j > 0)
-      fprintf(fp, ", ");
+      strcat(str, ", ");
 
     switch(TYPE_ARG_TYPE(tuple_type, j)) {
     case FIELD_INT:
-#ifndef BBSIM
-      //fprintf(fp, "%ld", MELD_INT(field));
-#else
-      fprintf(fp, "%d", MELD_INT(field));
-#endif
+      sprintf(tmp, "%d", MELD_INT(field));
       break;
     case FIELD_FLOAT:
-      fprintf(fp, "%f", (double)MELD_FLOAT(field));
+      sprintf(tmp, "%f", (double)MELD_FLOAT(field));
       break;
     case FIELD_ADDR:
-      fprintf(fp, "%d", *(uint16_t*)field);
+      sprintf(tmp, "%u", *(uint16_t*)field);
       break;
     case FIELD_LIST_INT:
     case FIELD_LIST_FLOAT:
@@ -2641,26 +2637,34 @@ tuple_print(tuple_t tuple, FILE *fp)
       assert(false);
       break;
     case FIELD_TYPE:
-      fprintf(fp, "%s", TYPE_NAME(MELD_INT(field)));
+      sprintf(tmp, "%s", TYPE_NAME(MELD_INT(field)));
       break;
     case FIELD_BOOL:
       if (MELD_BOOL(field))
-	fprintf(fp, "true");
+	sprintf(tmp, "true");
       else
-	fprintf(fp, "false");
+	sprintf(tmp, "false");
       break;
     default:
       assert(0);
       break;
     }
+    strcat(str,tmp);
   }
-  fprintf(fp, ")");
+  strcat(str, ")");
+#ifdef LOG_DEBUG
+  printDebug(str);
+#else
+  fprintf(fp,"%s",str);
+#endif
 }
 
 /* Prints the content of the whole database */
 void facts_dump(void)
 {
   int i;
+  char str[MAX_STRING_SIZE];
+  char tmp[MAX_STRING_SIZE];
 
   for (i = 0; i < NUM_TYPES; i++) {
     // don't print fact types that don't exist
@@ -2673,31 +2677,47 @@ void facts_dump(void)
       continue;
     */
 
-    fprintf(stderr, "tuple %s (type %d, size: %d)\n", 
-	    tuple_names[i], i, TYPE_SIZE(i));
+    snprintf(str,MAX_STRING_SIZE*sizeof(char),
+	     "tuple %s (type %d, size: %d)", 
+	     tuple_names[i], i, TYPE_SIZE(i));
+    #ifdef LOG_DEBUG
+    printDebug(str);
+    #else
+    fprintf(stderr, "%s\n",str);
+    #endif
     tuple_entry *tupleEntry;
     for (tupleEntry = TUPLES[i].head; tupleEntry != NULL; tupleEntry = tupleEntry->next) {
-      fprintf(stderr, "  ");
+      sprintf(str,"  ");
       tuple_print(tupleEntry->tuple, stderr);
       if (TYPE_IS_AGG(i)) {
-	fprintf(stderr, "\n    [[[");
+	strcat(str, "\n    [[[");
 	tuple_entry *tpE;
 	for (tpE = tupleEntry->records.agg_queue->head;
 	     tpE != NULL;
 	     tpE = tpE->next) {
 	  tuple_print(tpE->tuple, stderr);
-	  fprintf(stderr, "x%d\n       ", tpE->records.count);
+	  sprintf(tmp, "x%d\n       ", tpE->records.count);
+	  strcat(str,tmp);
 	}
-	fprintf(stderr, "\b\b\b]]]\n");
+	strcat(str, "\b\b\b]]]");
+#ifdef LOG_DEBUG
+	printDebug(str);
+#else
+	fprintf(stderr, "%s\n",str);
+#endif
       }
       else {
-	fprintf(stderr, "x%d\n", tupleEntry->records.count);
+	sprintf(str, "x%d", tupleEntry->records.count);
+#ifdef LOG_DEBUG
+	printDebug(str);
+#else
+	fprintf(stderr, "%s\n",str);
+#endif
       }
     }
   }
 }
 
-#define MAX_STRING_SIZE 100
 /* Print program info, this was designed for the oldVM, not sure if it works or not,
  * looks like it should.
  */
