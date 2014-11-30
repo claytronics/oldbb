@@ -1,0 +1,157 @@
+#ifndef _SPAN_BBH_
+#define _SPAN_BBH_
+
+#include "block.bbh"
+#include "block_config.bbh"
+#include "memory.bbh"
+#include "audio.bbh"
+#include <stdlib.h>
+#include "../sim/sim.h"
+#include "myassert.h"
+
+#define DEBUGSPAN 0
+
+
+threadtype typedef enum { INITED = 0, MAYBESTABLE, STABLE, WAITING, CANCELED } SpanTreeState;
+threadtype typedef enum { Root, Interior, Leaf } SpanTreeKind;
+threadtype typedef enum { Vacant, Parent, Child, NoLink, Unknown, Slow } SpanTreeNeighborKind;
+
+threadtype typedef struct _spanningtree SpanningTree;
+threadtype typedef void (*SpanningTreeHandler)(SpanningTree* treee, SpanTreeState kind);
+
+struct _spanningtree{
+	PRef myParent; 		// port for my parent if there is one, else 255 == I am root
+	byte numchildren;		/* number of children I have */
+	SpanTreeNeighborKind neighbors[NUM_PORTS];	// what kind of node is my neighbor on each port 
+	byte spantreeid;		// the id of this spanning tree
+	SpanTreeState state;		// state i am in in forming the spanning tree
+	SpanTreeKind kind;		// kind of node I am
+	uint16_t value; 		// used in the creation of spanning trees, the name of the root
+	byte bmcGeneration;		// track number of bmc calls that I recieved
+	int outstanding;		// used to count messages when we are in Waiting state
+	byte stableChildren;		// number of children that have told me they are stable with my value
+	byte startedByRoot;           /* 1 -> started by a single node, 0 -> started by all */
+	SpanningTreeHandler mydonefunc;	// handler to call when we reach first stable state
+	MsgHandler broadcasthandler;
+	byte lastNeighborCount;	 // last time I checked, how many neighbors I had
+	Timeout spantimeout;
+	// info to handle barriers
+	byte barrierNumber;		 /* number of the barrier we are currently executing */
+	byte waitingForBarrier;	 /* number of children that have already entered */
+}; 
+
+char* kind2str(SpanTreeKind x);
+
+
+
+// Local Variables:
+// mode: c
+// tab-width: 8
+// indent-tabs-mode: nil
+// c-basic-offset: 2
+// End:
+
+typedef struct _basicMsg {
+	byte spid;			 /* tree id */
+	char value[2];		 /* value of sender */
+	byte flag;                     /* 1 -> started by single node, 0 -> all nodes participating */
+} BasicMsg;
+
+typedef struct _barrierMsg {
+	byte spid;			 /* tree we are operating on */
+	byte num;			 /* number of this barrier */
+} BarrierMsg;
+
+typedef void (*BroadcastHandler)(byte* msg);
+
+typedef struct {
+	union {
+		struct {
+			BroadcastHandler handler;
+			byte spid;
+			byte len;
+			byte data;
+		} header;
+		byte data[16];
+	} packet;
+} BroadcastMsg;
+
+#define offsetof(st, m) ((size_t)(&((st *)0)->m))
+
+#define BroadcastPayloadSize ((byte)(16-offsetof(BroadcastMsg, packet.header.data)))
+#define BroadcastHeaderSize  (byte)(offsetof(BroadcastMsg, packet.header.data))
+#define BroadcastDataOffset(m) (&((m)->packet.data[BroadcastHeaderSize]))
+
+threaddef #define MAX_SPANTREE_ID 16
+
+// set by setSpanningTreeDebug
+threadvar int debugmode = 0;
+
+// list of ptrs to spanning tree structures
+threadvar SpanningTree* trees[MAX_SPANTREE_ID];
+
+// number of already allocated spanning tree structures.
+threadvar int maxSpanId = 0;
+
+
+threadvar Timeout nryTimeout;
+threadvar byte haveTimeout = 0;
+
+
+
+typedef struct {
+	byte spid;
+	int count;
+} CountMsg;
+
+
+void initSpanningTreeInformation(void);
+
+
+void neighborsChanged(void);
+
+
+void initSpanNbrsHandler(void);
+
+
+
+int initSpanningTrees(int num);
+
+SpanningTree* getTree(int id);
+
+void createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout, byte howStart, byte makeMeRoot);
+
+
+byte isSpanningTreeRoot(SpanningTree* spt);
+
+
+void upBarrier(void);
+
+
+void downBarrier(void);
+
+
+int treeBarrier(SpanningTree* spt, int timeout);
+
+
+void finishTreeBroadcast(int revd, int fromFace, BroadcastMsg* msg);
+
+void treeBroadcast(SpanningTree* spt, byte* data, byte size, BroadcastHandler mh);
+
+
+void handleBroadcast(void);
+
+
+void sendUpMsg(SpanningTree* spt, int count);
+
+
+void upCount(void);
+
+
+void getCount(BroadcastMsg *msg);
+
+
+int treeCount(SpanningTree* spt, int timeout);
+
+
+#endif
