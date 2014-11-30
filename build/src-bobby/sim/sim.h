@@ -1,6 +1,8 @@
 #ifndef _SIM_H_
 #define _SIM_H_
 
+#include "block.h"
+
 #ifdef BBSIM
 
 extern int simDebugLevel;

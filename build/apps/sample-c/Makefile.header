@@ -158,7 +158,8 @@ CFLAGS = -g$(DEBUG) $(CFLAGS_OPTIONS)
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-CFLAGS += -Wall -Wstrict-prototypes -Werror
+#CFLAGS += -Wall -Wstrict-prototypes -Werror
+CFLAGS += -Wall -Wstrict-prototypes
 #CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))

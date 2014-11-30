@@ -18,6 +18,7 @@ message.bb
 microphone.bb
 queues.bb
 serial.bb
+span.bb
 system.bb
 accelerometer.bbh
 audio.bbh
@@ -40,6 +41,7 @@ message.bbh
 microphone.bbh
 queues.bbh
 serial.bbh
+span.bbh
 system.bbh
 myassert.h
 

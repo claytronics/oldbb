@@ -2,7 +2,9 @@
 # below here should be in an include file
 ##################################################
 
-SOURCE := newspan.bb
+#SOURCE := newspan.bb
+#SOURCE := test.bb
+SOURCE := new.bb
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
