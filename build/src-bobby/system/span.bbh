@@ -6,7 +6,9 @@
 #include "memory.bbh"
 #include "audio.bbh"
 #include <stdlib.h>
-#include "../sim/sim.h"
+#ifdef BBSIM
+# include "../sim/sim.h"
+#endif
 #include "myassert.h"
 
 #define DEBUGSPAN 0
