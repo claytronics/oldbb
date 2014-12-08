@@ -8,8 +8,8 @@ threadvar Timer* timerList;		// semi-private data, do not modify outside of this
 
 #ifdef BBSIM
 extern void yieldTil(Time x);
-#include "../sim/sim.h"
 #endif
+#include "../sim/sim.h"
 
 void delayMS(int ms) 
 {
