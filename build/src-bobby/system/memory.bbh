@@ -17,7 +17,7 @@
 #ifndef BBSIM
 #define EEMEM __attribute__((section(".eeprom")))
 #else
-threaddef #define EEMEM 
+#define EEMEM 			/* removed threadvar decl */
 #endif
 
 
