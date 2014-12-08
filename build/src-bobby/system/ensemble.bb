@@ -1,9 +1,7 @@
 #include "ensemble.bbh"
 #include "message.bbh"
 #include "data_link.bbh"
-#ifdef BBSIM
-# include "../sim/sim.h"
-#endif
+#include "../sim/sim.h"
 #include "myassert.h"
 
 #ifdef CLOCK_SYNC
