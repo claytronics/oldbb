@@ -3,22 +3,22 @@
 // Define all Memory Management protocols
 
 #ifndef _MEMORY_H_
-#define _MEMORY_H_
+# define _MEMORY_H_
 
-#include "defs.bbh"
-#include <stdio.h>
-#include "handler.bbh"
-#include "../hw-api/hwMemory.h"
+# include "defs.bbh"
+# include <stdio.h>
+# include "handler.bbh"
+# include "../hw-api/hwMemory.h"
 
 // Use this to define variables in EEPROM space
 //
 //  example:  color EEMEM nv_lastcolor;  -> creates a variable of size color in EEPROM
 //  Then you can store/restore using the address of your variable.
-#ifndef BBSIM
-#define EEMEM __attribute__((section(".eeprom")))
-#else
-#define EEMEM 			/* removed threadvar decl */
-#endif
+# ifndef BBSIM
+#  define EEMEM __attribute__((section(".eeprom")))
+# else
+   threaddef #define EEMEM
+# endif
 
 
 /*
@@ -129,11 +129,12 @@ Chunk* getSystemTXChunk(void);
 // returns: pointer-mem available, null-out of memory
 // Chunk* getSendChunk(void);
 
-#ifdef BBSIM
+# ifdef BBSIM
 // for debugging on simulator
 char* chunk2str(Chunk* chk, char* bp);
-#endif
+# endif
 
+// for safety
 
 #endif
 
