@@ -21,9 +21,7 @@
   #include "message.bbh"
 #endif
 
-#ifdef BBSIM
-# include "../sim/sim.h"
-#endif
+#include "../sim/sim.h"
 
 // global receive queue for packets
 // move to network layer???
@@ -302,11 +300,13 @@ byte handleOneMessage()
         return 0;
     }
 
+#ifdef BBSIM
     IFSIMDEBUG(1) {
       char buffer[256];
       chunk2str(thisChunk, buffer);
       DEBUGPRINT(1, "HOM: [%s]\n", buffer);
     }
+#endif
 
     // call handler
     if( *((MsgHandler*)thisChunk->handler) == RES_SYS_HANDLER ) 
