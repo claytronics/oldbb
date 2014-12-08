@@ -1,6 +1,9 @@
 #include "span.bbh"
 #include "block.bbh"
-#include "../sim/sim.h"
+
+#ifdef BBSIM
+# include "../sim/sim.h"
+#endif
 
 // Message Handlers
 void beMyChild(void);
