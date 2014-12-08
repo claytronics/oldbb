@@ -21,7 +21,9 @@
   #include "message.bbh"
 #endif
 
-#include "../sim/sim.h"
+#ifdef BBSIM
+# include "../sim/sim.h"
+#endif
 
 // global receive queue for packets
 // move to network layer???
