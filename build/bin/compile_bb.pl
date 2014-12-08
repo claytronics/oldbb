@@ -335,7 +335,7 @@ while ($#files >= 0) {
 			}
    		} elsif (/#define/) {
 				&procline;
-	    } elsif (/#include ".*\.bbh"/) {
+	    } elsif (/#\s*include ".*\.bbh"/) {
 		s/.bbh"/.h"/;
 	    	print G "$_\n";
 	    } elsif (/#/) {
