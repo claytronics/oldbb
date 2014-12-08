@@ -59,9 +59,12 @@ myMain(void)
 
   stablize();
 
+#ifdef BBSIM
   IFSIMDEBUG(1) {
     onBlockTick = showStatus;
   }
+#endif
+
   // setSpanningTreeDebug(1);
   blockprint(stderr, "init\n");
   baseid = initSpanningTrees(1);
@@ -111,8 +114,10 @@ myMain(void)
     blockprint(stderr, "Number of nodes in tree = %d\n", count);
   }
 
+#ifdef BBSIM
   pauseForever();
   while(1);
+#endif
 }
 
 
@@ -134,6 +139,7 @@ void showTree(SpanningTree* st);
 void
 showStatus(void)
 {
+#ifdef BBSIM
   char buffer[512];
   if (stcounter++ > 1000) {
     stcounter = 0;
@@ -145,21 +151,27 @@ showStatus(void)
       }
     }
   }
+#endif
 }
 
+#ifdef BBSIM
 extern void showTreeNodes(Block* block, int id, char* bp, int depth);
-
+#endif
 
 void
 showTree(SpanningTree* st)
 {
+#ifdef BBSIM
   if (st->kind != Root) return;
   char buffer[2048];
   showTreeNodes(this(), st->spantreeid, buffer, 0);
   blockprint(stderr, "Current Tree:\n%s\n", buffer);
+#endif
 }
 
-#include "../../tree.h"
+#ifdef BBSIM
+# include "../../tree.h"
+#endif
 
 // Local Variables:
 // mode: c
