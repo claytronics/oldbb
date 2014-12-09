@@ -8,9 +8,7 @@
 #include <string.h>
 #include "memory.bbh"
 
-#ifdef BBSIM
 #include "../sim/sim.h"
-#endif
 
 #define FILENUM 1
 #define checkMemoryConsistency(x) _checkMemoryConsistency(x, FILENUM, __LINE__)

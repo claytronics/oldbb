@@ -1,9 +1,24 @@
 #include "span.bbh"
 #include "block.bbh"
 
-#ifdef BBSIM
 # include "../sim/sim.h"
-#endif
+
+
+
+// set by setSpanningTreeDebug
+threadvar int debugmode = 0;
+
+// list of ptrs to spanning tree structures
+threadvar SpanningTree* trees[MAX_SPANTREE_ID];
+
+// number of already allocated spanning tree structures.
+threadvar int maxSpanId = 0;
+
+
+threadvar Timeout nryTimeout;
+threadvar byte haveTimeout = 0;
+
+
 
 // Message Handlers
 void beMyChild(void);
@@ -368,7 +383,7 @@ byte sendMySpChunk(byte myport, byte *data, byte size, MsgHandler mh)
 { 
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   Chunk *c=getSystemTXChunk();
-
+#ifdef BBSIM
   IFSIMDEBUG(1) {
     char buffer[128];
   
@@ -384,6 +399,7 @@ byte sendMySpChunk(byte myport, byte *data, byte size, MsgHandler mh)
     DEBUGPRINT(1, "== %d->%p [%s]   %s using %p\n", 
                myport, mh, buffer, tbuff, c);
   }
+#endif
   if (sendMessageToPort(c, myport, data, size, mh, (GenericHandler)freeSpChunk) == 0) {
     freeChunk(c);
     blockprint(stderr, "FAILED TO SEND\n");
@@ -440,10 +456,13 @@ startAskingNeighors(SpanningTree* st, byte gen)
   for (int i=0; i<NUM_PORTS; i++) {
     if (gen != st->bmcGeneration) {
       // another bemychild msg came in with a better value for a tree, so abort the rest of this one.
+#ifdef BBSIM
+	    
       IFSIMDEBUG(0) {
         char buffer[512];
         blockprint(stderr, "Aborting asking neighbors: %d->%d: %s\n", gen, st->bmcGeneration, tree2str(buffer, st->spantreeid));
       }
+#endif
       return;
     }
     if (isPortVacant(i)) {
@@ -632,7 +651,10 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout,
   {
     char buffer[1024];
     tree2str(buffer, spt->spantreeid);
+#ifdef BBSIM
+    
     IFSIMDEBUG(1) blockprint(stderr, "Starting: %s\n", buffer);
+#endif
   }
   startAskingNeighors(spt, 0);
 
@@ -692,10 +714,13 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout,
 
     // same tree val and no neighbor change, so wait til all neighbors respond with insametree or not
     while ((spt->outstanding > 0) && (spt->state == MAYBESTABLE)) {
+#ifdef BBSIM
+	    
       IFSIMDEBUG(1) {
 	char buffer[512];
 	blockprint(stderr, "Waiting 1 on Neighborhood check: %s\n", tree2str(buffer, spt->spantreeid));
       }
+#endif
       delayMS(50);
     }
     setColor(GREEN);
@@ -706,10 +731,13 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout,
     // all my neighbors agree on same value
     assert(spt->state == MAYBESTABLE);
     while ((oldvalue == spt->value) && (spt->stableChildren < spt->numchildren)) {
+#ifdef BBSIM
+	    
       IFSIMDEBUG(1) {
 	char buffer[512];
 	blockprint(stderr, "Waiting 2 on Children check: %s\n", tree2str(buffer, spt->spantreeid));
       }
+#endif
       delayMS(50);
     }
     spt->stableChildren = 0;
@@ -729,10 +757,13 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout,
     setColor(ORANGE);
     // now wait on parent to confirm all subtrees report ok
     while ((oldvalue == spt->value) && (spt->state == MAYBESTABLE) && (spt->outstanding == 0)) {
+#ifdef BBSIM
+	    
       IFSIMDEBUG(1) {
 	char buffer[512];
 	blockprint(stderr, "Waiting 3 on Parent check: %s\n", tree2str(buffer, spt->spantreeid));
       }
+#endif
       if (spt->kind == Root) break;
       delayMS(50);
     }
@@ -751,10 +782,13 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout,
     }
     spt->state = STABLE;
   }
+#ifdef BBSIM
+  
   IFSIMDEBUG(1) {
     char buffer[512];
     blockprint(stderr, "ALL DONE - RETURNING: %s\n", tree2str(buffer, spt->spantreeid));
   }
+#endif
 }
 
 byte isSpanningTreeRoot(SpanningTree* spt)
@@ -803,12 +837,14 @@ treeBarrier(SpanningTree* spt, int timeout)
   BarrierMsg msg;
   msg.spid = spt->spantreeid;
   msg.num = spt->barrierNumber;
+#ifdef BBSIM
 
   IFSIMDEBUG(1) {
     char buffer[512];
     blockprint(stderr, "Starting Barrier: %s\n", tree2str(buffer, spt->spantreeid));
     blockprint(stderr, "StartBarrier:%d out:%d wait:%d\n", spt->barrierNumber, spt->outstanding, spt->waitingForBarrier);
   }
+#endif
   // check to see if any children got here before me
   spt->outstanding -= spt->waitingForBarrier;
   spt->waitingForBarrier = 0;

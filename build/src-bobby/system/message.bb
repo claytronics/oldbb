@@ -1,9 +1,7 @@
 #include "message.bbh"
 #include "led.bbh"
 
-#ifdef BBSIM
 # include "../sim/sim.h"
-#endif
 
 #ifdef TESTING
 #define FILENUM 3

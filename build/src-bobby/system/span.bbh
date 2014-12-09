@@ -86,19 +86,6 @@ typedef struct {
 
 threaddef #define MAX_SPANTREE_ID 16
 
-// set by setSpanningTreeDebug
-threadvar int debugmode = 0;
-
-// list of ptrs to spanning tree structures
-threadvar SpanningTree* trees[MAX_SPANTREE_ID];
-
-// number of already allocated spanning tree structures.
-threadvar int maxSpanId = 0;
-
-
-threadvar Timeout nryTimeout;
-threadvar byte haveTimeout = 0;
-
 
 
 typedef struct {
