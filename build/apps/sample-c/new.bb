@@ -60,6 +60,16 @@ stablize(void)
   }
 }
 
+threadvar uint16_t nodecount = 0;
+
+
+void
+setCount(byte* msg)
+{
+  nodecount = *((uint16_t*)msg);
+}
+
+
 void 
 myMain(void)
 {
@@ -134,6 +144,8 @@ myMain(void)
 	  delayMS(2000);
 
     int count = treeCount(tree, 0);
+    nodecount = count;
+    treeBroadcast(tree, &nodecount, 2, setCount);
     blockprint(stderr, "Number of nodes in tree = %d\n", count);
 
   	setColor(GREEN);
@@ -168,7 +180,14 @@ myMain(void)
     delayMS(1000);
     setColor(GREEN);
   }
+  while (nodecount == 0) delayMS(10);
 
+  setColor(BLUE);
+  while (1) {
+    setColor(YELLOW);
+    delayMS(1000);
+    setColor(BLUE);
+  }
 #ifdef BBSIM
   pauseForever();
   while(1);
