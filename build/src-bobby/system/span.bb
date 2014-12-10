@@ -162,6 +162,7 @@ youAreMyParent(void)
   st->neighbors[senderPort] = Child;
   st->numchildren++;
   if (st->kind == Leaf) st->kind = Interior;
+  setColor(PURPLE);
   checkStatus(st);
 }
 
@@ -179,6 +180,8 @@ alreadyInYourTree(void)
   assert(st->outstanding > 0);
   st->outstanding--;
   st->neighbors[senderPort] = NoLink;
+
+  setColor(BROWN);
   checkStatus(st);
 }
 
@@ -243,6 +246,8 @@ beMyChild(void)
     st->kind = Leaf; 
     // now talk to all other neighbors and ask them to be my children
     startAskingNeighors(st, st->bmcGeneration);
+
+    setColor(RED);
     checkStatus(st);
     return;
   } else if (senderValue == st->value) {
@@ -416,11 +421,11 @@ checkStatus(SpanningTree* st)
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   if (st->outstanding == 0) {
     st->state = MAYBESTABLE;
-    setColor(YELLOW);
+    setColor(ORANGE);
     
   } else {
     st->state = WAITING;
-    setColor(RED);
+    setColor(BLUE);
   }
   char buffer[512];
   DEBUGPRINT(1, "Status: %s: %s\n", state2str(st->state), tree2str(buffer, st->spantreeid));
@@ -960,13 +965,22 @@ void
 getCount(BroadcastMsg *msg)
 {
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
+  setColor(PINK);
+  delayMS(2000);
 
   collectedCount = 0;
   collectedCountChildren = 0;
   SpanningTree* spt = trees[msg->packet.header.spid];
   printf("%d : msg->packet.header.spid = %d\n",getGUID(),msg->packet.header.spid);
   printf("spt %p\n",spt);
-  if (spt->kind == Leaf) sendUpMsg(spt, 1);
+  if (spt->kind == Leaf) {
+	  setColor(BROWN);
+	  delayMS(2000);
+	  sendUpMsg(spt, 1);
+  }
+  else {
+	setColor(RED);
+  }
 }
 
 // called by root to count nodes in tree
@@ -980,7 +994,17 @@ treeCount(SpanningTree* spt, int timeout)
   collectedCount = 0;
   collectedCountChildren = 0;
   treeBroadcast(spt, data, 1, (BroadcastHandler)getCount);
-  while (collectedCountChildren != spt->numchildren) delayMS(10);
+  setColor(GREEN);
+  while (collectedCountChildren != spt->numchildren){
+	  if(collectedCountChildren == 0) { setColor(RED);}
+	  else if(collectedCountChildren == 1) { setColor(PINK);}
+	  else if(collectedCountChildren == 2) { setColor(BROWN);}
+	  else if(collectedCountChildren == 3) { setColor(AQUA);}
+	  else if(collectedCountChildren == 4) { setColor(YELLOW);}
+	  else { setColor(YELLOW);}
+	  delayMS(10);
+  }
+  setColor(RED);
   return collectedCount+1;
 }
 
