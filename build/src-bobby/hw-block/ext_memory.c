@@ -1,5 +1,6 @@
 #include "ext_memory.h"
 #include <avr/io.h>
+#include "../system/noprintf.h"
 
 uint8_t spiTxRx(uint8_t input)
 {

@@ -12,4 +12,6 @@
 //  Note: outputting non-printable characters on the port, or trying to use the bottom as normal not recommended.
 void initDebug(void);
 
+#include "noprintf.h"
+
 #endif

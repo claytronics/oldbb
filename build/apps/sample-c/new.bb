@@ -5,6 +5,7 @@
 #include "../sim/sim.h"
 #include "myassert.h"
 #include "span.bbh"
+
 ////////////////////////////////////////////////////////////////
 // test program
 ////////////////////////////////////////////////////////////////
@@ -59,16 +60,6 @@ stablize(void)
     delayMS(100);
   }
 }
-
-threadvar uint16_t nodecount = 0;
-
-
-void
-setCount(byte* msg)
-{
-  nodecount = *((uint16_t*)msg);
-}
-
 
 void 
 myMain(void)
@@ -167,7 +158,7 @@ myMain(void)
     setColor(GREEN);
 
     nodecount = count;
-    treeBroadcast(tree, &nodecount, 2, setCount);
+    treeBroadcast(tree, (byte*)&nodecount, 2, setCount);
     blockprint(stderr, "Number of nodes in tree = %d\n", count);
   }
 

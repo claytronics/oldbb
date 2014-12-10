@@ -27,4 +27,6 @@
 
 # endif
 
+#include "../system/noprintf.h"
+
 #endif

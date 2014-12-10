@@ -5,3 +5,10 @@ void initDebug()
 {
   initHWDebug();
 }
+
+#ifndef BBSIM
+void 
+xprintf(void* f, ...)
+{
+}
+#endif
