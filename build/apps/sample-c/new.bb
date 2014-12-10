@@ -1,4 +1,3 @@
-#include "block.bbh"
 #include "block_config.bbh"
 #include "memory.bbh"
 #include "audio.bbh"
@@ -9,6 +8,16 @@
 ////////////////////////////////////////////////////////////////
 // test program
 ////////////////////////////////////////////////////////////////
+
+threadvar volatile uint16_t nodecount = 0;
+
+void
+setCount(byte* msg)
+{
+	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
+  nodecount = *((uint16_t*)msg);
+  blockprint(stderr, "nodecount = %d\n", nodecount);
+}
 
 void handler(void);
 
@@ -80,7 +89,7 @@ myMain(void)
     }  
   else
     {
-      setColor(RED);
+      setColor(YELLOW);
     }
   treeBarrier(tree, 0);
   setColor(YELLOW);
@@ -107,11 +116,57 @@ myMain(void)
   } else if ((myid == 4)&&(rootId == 5)) {
     treeBroadcast(tree, data, 2, setChildColor);
   }
-  
+
+
+  treeBarrier(tree, 0);
+  setColor(RED);
+  delayMS(1000);
+
+
+  treeBarrier(tree, 0);
+  setColor(GREEN);
+  delayMS(1000);
+ 
+  /*---------------------------------------------------
+  // get count of nodes
+  if (isSpanningTreeRoot(tree)) {
+  	setColor(YELLOW);
+	  delayMS(2000);
+
+    int count = treeCount(tree, 0);
+    blockprint(stderr, "Number of nodes in tree = %d\n", count);
+
+  	setColor(GREEN);
+  }
+  treeBarrier(tree, 0);
+  setColor(GREEN);
+  delayMS(1000);
+//---------------------------------------------*/
+
   // get count of nodes
   if (isSpanningTreeRoot(tree)) {
     int count = treeCount(tree, 0);
+
+    blockprint(stderr,"-------------------------\n");
+    setColor(RED);
+    delayMS(1000);
+    setColor(YELLOW);
+    delayMS(1000);
+    setColor(GREEN);
+
+    nodecount = count;
+    treeBroadcast(tree, &nodecount, 2, setCount);
     blockprint(stderr, "Number of nodes in tree = %d\n", count);
+  }
+
+
+  while (nodecount == 0) delayMS(10);
+
+  setColor(GREEN);
+  while (1) {
+    setColor(YELLOW);
+    delayMS(1000);
+    setColor(GREEN);
   }
 
 #ifdef BBSIM
