@@ -44,6 +44,7 @@ void checkStatus(SpanningTree* st);
 void
 retrySlowBlocks(void)
 {
+	printDebug("5");
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   // indicate timeout is inactive now (in case we get a notReadyYet
   // msg from someone while we are in this function
@@ -86,6 +87,7 @@ retrySlowBlocks(void)
 void
 retrySlowBlocks(void)
 {
+	printDebug("6");
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   // indicate timeout is inactive now (in case we get a notReadyYet
   // msg from someone while we are in this function
@@ -161,8 +163,9 @@ youAreMyParent(void)
   st->outstanding--;
   st->neighbors[senderPort] = Child;
   st->numchildren++;
-  if (st->kind == Leaf) st->kind = Interior;
+  if (st->kind == Leaf){ printDebug("$"),st->kind = Interior;}
   setColor(PURPLE);
+  printDebug("1");
   checkStatus(st);
 }
 
@@ -182,6 +185,7 @@ alreadyInYourTree(void)
   st->neighbors[senderPort] = NoLink;
 
   setColor(BROWN);
+  printDebug("2");
   checkStatus(st);
 }
 
@@ -207,6 +211,7 @@ sorry(void)
 void
 beMyChild(void)
 {
+	printDebug("4");
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -222,8 +227,10 @@ beMyChild(void)
   } 
   // tree has been inited.  Check to see how this tree is being created.
   if (msg->flag && (st->state == INITED)) {
+	 printDebug("q");
     // setup tree.  This creation request orginates from a single node
     st->state = WAITING;
+    printDebug("!");
     st->kind = Root;
     st->mydonefunc = 0;
     st->value = (0 & rand()<<8)|getGUID();
@@ -232,6 +239,7 @@ beMyChild(void)
   // lets see what we should do
   uint16_t senderValue = charToGUID((byte*)&(msg->value));
   if (senderValue > st->value) {
+	  printDebug("L");
     // I will become sender's child
     st->bmcGeneration++;		 /* track that we just got a bemychild call that we are acting on */
     st->value = senderValue;
@@ -243,14 +251,20 @@ beMyChild(void)
                   sizeof(BasicMsg), 
                   (MsgHandler)&youAreMyParent);
     // set kind of node
+    printDebug("@");
     st->kind = Leaf; 
     // now talk to all other neighbors and ask them to be my children
     startAskingNeighors(st, st->bmcGeneration);
+    /*if((getGUID()==9)&&(st->kind == Leaf)){
+	    printDebug("s");
+    }*/
 
     setColor(RED);
+  printDebug("3");
     checkStatus(st);
     return;
   } else if (senderValue == st->value) {
+	  printDebug("e");
     // I am already in a tree with this value (before I set this to
     // not being a link I need to make sure that this wasn't a slow
     // link where we are going to send a bemychild msg back to this
@@ -264,6 +278,7 @@ beMyChild(void)
 		  (MsgHandler)&alreadyInYourTree);
     return;
   } else if (senderValue < st->value) {
+	  printDebug("r");
     // I am in a better tree, tell sender no luck
     sendMySpChunk(senderPort, 
                   thisChunk->data, 
@@ -425,6 +440,7 @@ checkStatus(SpanningTree* st)
     
   } else {
     st->state = WAITING;
+    printDebug("checkstatus");
     setColor(BLUE);
   }
   char buffer[512];
@@ -451,6 +467,7 @@ resetNeighbors(SpanningTree* st)
 void
 startAskingNeighors(SpanningTree* st, byte gen)
 {
+	printDebug("7");
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg msg;
   msg.spid = st->spantreeid;
@@ -540,6 +557,8 @@ threadvar GenericHandler oldNbrChgHander;
 void
 neighborsChanged(void)
 {
+#if 0
+	printDebug("8");
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   int ns = getNeighborCount();
   int i; 
@@ -560,6 +579,7 @@ neighborsChanged(void)
     }
   }
   // call next in chain
+#endif
   if (oldNbrChgHander) (*oldNbrChgHander)();
 }
 
@@ -644,6 +664,7 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout,
   assert(trees[spt->spantreeid] == spt);
   // set the state to WAITING
   spt->state = WAITING;
+  printDebug("#");
   spt->kind = Root;
   spt->startedByRoot = howStart;
   //done function for the spanning tree
@@ -894,10 +915,16 @@ treeBroadcast(SpanningTree* spt, byte* data, byte size, BroadcastHandler mh)
   assert(size <= BroadcastPayloadSize);
   memset(&msg, 0, sizeof(BroadcastMsg));
   msg.packet.header.spid = spt->spantreeid;
+	char m[4];
+	sprintf(m,"m%d",msg.packet.header.spid);
+	printDebug(m);
+
   msg.packet.header.handler = mh;
   msg.packet.header.len = size;
   memcpy(BroadcastDataOffset(&msg), data, size);
   (*mh)(BroadcastDataOffset(&msg));
+	//sprintf(m,"n%d",msg.packet.header.spid);
+	//printDebug(m);
   finishTreeBroadcast(0, 0, &msg);
 }
 
@@ -918,6 +945,7 @@ finishTreeBroadcast(int revd, int fromFace, BroadcastMsg* msg)
 {
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   SpanningTree* spt = trees[msg->packet.header.spid];
+  
   assert(spt != NULL);
   int size = BroadcastHeaderSize+msg->packet.header.len;
   int i;
@@ -970,16 +998,33 @@ getCount(BroadcastMsg *msg)
 
   collectedCount = 0;
   collectedCountChildren = 0;
-  SpanningTree* spt = trees[msg->packet.header.spid];
+  //SpanningTree* spt = trees[msg->packet.header.spid];
+  SpanningTree* spt = trees[0];
+  char m[4];
+  sprintf(m,"s%d",spt->spantreeid);
+  printDebug(m);
   printf("%d : msg->packet.header.spid = %d\n",getGUID(),msg->packet.header.spid);
   printf("spt %p\n",spt);
+  char a[3];
+  a[0] = '%';
+  a[1] = 'U';
+  if(spt->kind == Leaf)  a[1] = 'L';
+  if(spt->kind == Root)  a[1] = 'R';
+  if(spt->kind == Interior)  a[1] = 'I';
+  a[2] = '\0';
+  printDebug(a);
   if (spt->kind == Leaf) {
 	  setColor(BROWN);
-	  delayMS(2000);
+	  //delayMS(2000);
 	  sendUpMsg(spt, 1);
+	printDebug("leaf");
   }
   else {
-	setColor(RED);
+	setColor(PURPLE);
+	if(getGUID() == 9){
+		setColor(YELLOW);
+	}
+	printDebug("not leaf");
   }
 }
 
@@ -987,6 +1032,10 @@ getCount(BroadcastMsg *msg)
 int
 treeCount(SpanningTree* spt, int timeout)
 {
+  char m[4];
+  sprintf(m,"s%d",spt->spantreeid);
+  printDebug(m);
+	printDebug("tc");
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   byte data[2];
   printf("tree count for tree = %d\n",spt->spantreeid);
@@ -994,14 +1043,15 @@ treeCount(SpanningTree* spt, int timeout)
   collectedCount = 0;
   collectedCountChildren = 0;
   treeBroadcast(spt, data, 1, (BroadcastHandler)getCount);
-  setColor(GREEN);
+  //setColor(GREEN);
   while (collectedCountChildren != spt->numchildren){
-	  if(collectedCountChildren == 0) { setColor(RED);}
+	  /*
+	  if(collectedCountChildren == 0) { setColor(GREEN);}
 	  else if(collectedCountChildren == 1) { setColor(PINK);}
 	  else if(collectedCountChildren == 2) { setColor(BROWN);}
 	  else if(collectedCountChildren == 3) { setColor(AQUA);}
 	  else if(collectedCountChildren == 4) { setColor(YELLOW);}
-	  else { setColor(YELLOW);}
+	  else { setColor(YELLOW);}*/
 	  delayMS(10);
   }
   setColor(RED);
