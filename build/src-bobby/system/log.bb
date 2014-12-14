@@ -9,7 +9,7 @@
 #include "ensemble.bbh"
 #include "data_link.bbh"
 #include "serial.bbh"
-//#include "span.bbh"
+#include "span.bbh"
 
 #define FILENUM 4
 
@@ -43,6 +43,18 @@ threadvar byte seq = 0; // sequence number for avoiding loops when broadcasting 
 //SpanningTree* tree;
 //byte spFinished;
 //void donefunc(SpanningTree* tree, SpanningTreeStatus status);
+
+void donefunc(SpanningTree* spt, SpanTreeState status)
+{ 
+  //blockprint(stderr, "DONEFUNC: %d %d\n", spt->spantreeid, status);
+}
+
+//Spanning tree related
+
+SpanningTree* dbg_tree;
+
+
+
 
 //////////////////// PUBLIC FUNCTIONS /////////////////////
 // Send a log string to host
@@ -143,30 +155,33 @@ void initLogDebug(void)
 		delayMS(500);
 	}
 	srand(getGUID());
+	//Add spanning tree here
+	  SpanningTree* tree;
+	  int baseid;
+	  //blockprint(stderr, "init\n");
+	  baseid = initSpanningTrees(1);
+	  tree = getTree(baseid);
+	  createSpanningTree(tree, donefunc, 0, 0, 0);
+	  //blockprint(stderr, "return\n");
+	  setColor(AQUA);
+	  
+	  //blockprint(stderr, "finished\n");  
+	  if ( treeBarrier(tree,5000) == 1 )
+	    {
+	      setColor(GREEN);
+	    }  
+	  else
+	    {
+	      setColor(YELLOW);
+	    }
+	  treeBarrier(tree, 0);
+	  setColor(WHITE);
+	  char m[2];
+	  m[0] = 'd';
+	  m[1] = '\0';
+	  printDebug(m);
+	  
 
-
-
-/*
-  initSpanningTrees(1);
-  tree = allocateSpanningTree(1);
-
-  spFinished = 0;
-  createSpanningTree(tree, donefunc, 0);
-  
-  while( spFinished != 1){
-    setColor(AQUA);
-    
-  }
-  
-  //treeBroadcast(tree,data, 1, handler );
-  if ( treeBarrier(tree,1,5000) == 1 )
-  {
-    setColor(GREEN);
-  }  
-  else
-  {
-    setColor(INDIGO);
-  }*/
 }
 
 byte isHostPort(PRef p)
