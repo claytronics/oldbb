@@ -16,7 +16,7 @@ SOURCE := new.bb
 #MELDO +=
 
 #CFLAGS_OPTIONS = -DCLOCK_SYNC
-#CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
+CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
 #CFLAGS_OPTIONS += -DTESTING
 
 include Makefile.header

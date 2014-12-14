@@ -151,33 +151,37 @@ myMain(void)
     int count = treeCount(tree, 0);
 
     blockprint(stderr,"-------------------------\n");
-    setColor(RED);
-    delayMS(1000);
-    setColor(YELLOW);
-    delayMS(1000);
-    setColor(GREEN);
+    //setColor(RED);
+    //delayMS(1000);
+    //setColor(YELLOW);
+    //delayMS(1000);
+    //setColor(GREEN);
 
-    nodecount = count;
-    treeBroadcast(tree, (byte*)&nodecount, 2, setCount);
+    //nodecount = count;
+    //treeBroadcast(tree, (byte*)&nodecount, 2, setCount);
     blockprint(stderr, "Number of nodes in tree = %d\n", count);
+    char m[4];
+    sprintf(m,"##%d",count);
+    printDebug(m);
   }
 
 
-  while (nodecount == 0) delayMS(10);
+  //while (nodecount == 0) delayMS(10);
 
-  setColor(GREEN);
+  /*setColor(GREEN);
   while (1) {
     setColor(YELLOW);
     delayMS(1000);
     setColor(GREEN);
   }
   while (nodecount == 0) delayMS(10);
-
+	*/
   setColor(BLUE);
   while (1) {
     setColor(YELLOW);
     delayMS(1000);
     setColor(BLUE);
+    delayMS(1000);
   }
 #ifdef BBSIM
   pauseForever();
