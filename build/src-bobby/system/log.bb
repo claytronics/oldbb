@@ -55,13 +55,19 @@ void donefunc(SpanningTree* spt, SpanTreeState status)
 SpanningTree* dbg_tree;
 
 // spanning tree broadcast message
-
+int node_count = 0;
 void
-setthisColor(byte* msg)
+get_the_count(byte* msg)
 {
-  setColor(AQUA);
-  //rootId = charToGUID(msg);  
-  //blockprint(stderr, "Setting root's id to %d\n", rootId);
+  if(!dbg_tree)return;
+  if (isSpanningTreeRoot(dbg_tree)) {
+    //int count =0 ;// = treeCount(dbg_tree, 0);
+    //int count = treeCount(dbg_tree, 0);
+    char m[5];
+    sprintf(m,"##%d",node_count);
+    printDebug(m);	
+  }
+  //treeBarrier(dbg_tree, 0);
 }
 
 
@@ -143,6 +149,7 @@ void initLogDebug(void)
 {
 	//byte buf[2];
 
+	 char p[5];
 	toHost = UNDEFINED_HOST;
 	PCConnection = 0;
 
@@ -188,6 +195,16 @@ void initLogDebug(void)
 	    }
 	  treeBarrier(tree, 0);
 	  setColor(WHITE);
+
+	  if (isSpanningTreeRoot(tree)) {
+	    node_count = treeCount(tree, 0);
+	    printDebug("td");
+	    sprintf(p,"@@%d",node_count);
+	    printDebug(p);
+	    
+
+	  }
+	  treeBarrier(tree, 0);
 	  char m[2];
 	  m[0] = 'd';
 	  m[1] = '\0';
@@ -326,7 +343,7 @@ commandHandler(void)
 			{
 				if(dbg_tree!=NULL){
   					byte d_data[2];
-					treeBroadcast(dbg_tree, d_data, 2, setthisColor);
+					treeBroadcast(dbg_tree, d_data, 2, get_the_count);
 					break;
 				}
 			}
