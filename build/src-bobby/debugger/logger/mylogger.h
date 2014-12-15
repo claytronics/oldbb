@@ -10,6 +10,7 @@ void stringifyLogs(void);
 void sendColorCmd(int);
 void sendIDToSet(uint16_t idToSet);
 void sendResetCmd(void);
+void send_tree_count(void);
 
 static int kbhit(void);
 
