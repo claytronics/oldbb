@@ -33,6 +33,8 @@ extern char* portname;
 extern string defaultportname;
 extern int baudrate;
 
+int tree_cnt;
+
 int main(int argc, char **argv) 
 {
 
@@ -367,7 +369,7 @@ void process_command(int fd,char *command)
 	//printf("function to perform = %s\n",function);
 
 	if(!strcmp(function,"reset")){
-		//printf("Got reset command\n");
+		printf("Got reset command\n");
 		sendResetCmd();
 
 		receiveLogs();
@@ -381,6 +383,11 @@ void process_command(int fd,char *command)
 	}
 	else if (!strcmp(function,"memory_read")) {
 		//send_read_memory();
+	}
+	else if(!strcmp(function,"num_tree")){
+		printf("Got the num_tree count");
+		send_tree_count();
+		
 	}
 	else if (!strcmp(function,"debug_logs")) {
 		serve_json(fd,(char *)log_message.c_str());
