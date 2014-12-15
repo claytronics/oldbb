@@ -21,6 +21,8 @@
 #define COLOR_SET	0x10
 #define ENSEMBLE_RESET	0x11
 #define SET_ID	        0x12
+#define ENSEMBLE_COUNT  0x14
+
 
 
 #define NUM_COLORS	9
@@ -57,6 +59,8 @@ void stringifyLogs(void);
 void sendColorCmd(int);
 void sendIDToSet(uint16_t idToSet);
 void sendResetCmd(void);
+void send_tree_count(void);
+
 
 //void send_read_register(void);
 
@@ -158,6 +162,22 @@ void sendResetCmd(void)
 	printf("Resetting the system\n");
 	c.send();
 }
+
+void send_tree_count(void)
+{
+  byte data[3];
+	
+  data[0] = LOG_MSG;
+  data[1] = LOG_CMD;
+  data[2] = ENSEMBLE_COUNT;
+	
+  Chunk c(data, 3);
+
+  printf("getting tree count\n");
+  c.send();
+
+}
+
 
 /*************************************************************************/
 
