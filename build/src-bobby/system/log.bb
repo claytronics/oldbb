@@ -27,6 +27,7 @@
 #define COLOR_SET	0x10
 #define ENSEMBLE_RESET	0x11
 #define SET_ID          0x12
+#define TREE_COUNT	0x14
 
 static byte getSize(char* str);
 static void freeLogChunk(void);
@@ -53,7 +54,15 @@ void donefunc(SpanningTree* spt, SpanTreeState status)
 
 SpanningTree* dbg_tree;
 
+// spanning tree broadcast message
 
+void
+setthisColor(byte* msg)
+{
+  setColor(AQUA);
+  //rootId = charToGUID(msg);  
+  //blockprint(stderr, "Setting root's id to %d\n", rootId);
+}
 
 
 //////////////////// PUBLIC FUNCTIONS /////////////////////
@@ -162,6 +171,9 @@ void initLogDebug(void)
 	  baseid = initSpanningTrees(1);
 	  tree = getTree(baseid);
 	  createSpanningTree(tree, donefunc, 0, 0, 0);
+	  //
+	   dbg_tree = tree;
+	  
 	  //blockprint(stderr, "return\n");
 	  setColor(AQUA);
 	  
@@ -310,6 +322,14 @@ commandHandler(void)
 		case SET_ID:
 			callHandler(EVENT_COMMAND_RECEIVED);
 			break;
+		case TREE_COUNT:
+			{
+				if(dbg_tree!=NULL){
+  					byte d_data[2];
+					treeBroadcast(dbg_tree, d_data, 2, setthisColor);
+					break;
+				}
+			}
 		case ENSEMBLE_RESET:
 			setColor(GREEN);
 			//printDebug("RESET");
