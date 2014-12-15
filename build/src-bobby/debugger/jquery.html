@@ -17,6 +17,13 @@ $(document).ready(function(){
 
 			});
 
+		$("#Tree").click(function() {
+			alert("Getting the count of blinky blocks");
+			$.get("/a/num_tree",function(data,status){
+				alert("Got Count");
+				});
+
+			});
 
 		$("#Submit").click(function() {
 			var url = $("#url").val();
@@ -62,7 +69,9 @@ $(document).ready(function(){
 			<button id="Submit">Submit</button>
 			<div>
 			<button id=Reset>RESET</button>
+			<button id="Tree">Tree</button>
 			</div>
+
 			</div>
 
 			</div>
