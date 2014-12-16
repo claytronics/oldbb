@@ -308,6 +308,12 @@ void insertLogChunk(Chunk *c) {
 			fprintf(stderr, "Assert triggered on block %d. File: %d Line: %d\n", (int)blockId, (int)fileNumber, (int)lineNumber);
 			return;
 		}
+		else if (c->data[1] == ENSEMBLE_COUNT) {
+			blockId = (c->data[2] << 8) | c->data[3];
+			uint8_t tree_count = c->data[4];
+			fprintf(stderr, "treecount = %d\n",tree_count);
+			return;
+		}
 		logs.insert(blockId, messageId, fragmentId, size, string(s));
 	}
 }
