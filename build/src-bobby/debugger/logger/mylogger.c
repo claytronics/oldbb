@@ -38,7 +38,8 @@ char* prog = 0;
 
 byte testMode = 0;
 int seq = 1;
-
+volatile uint8_t tree_count = 0;
+volatile uint8_t resp_rxed;
 //std::string log_message;
 
 pthread_mutex_t serialMutex;
@@ -310,8 +311,9 @@ void insertLogChunk(Chunk *c) {
 		}
 		else if (c->data[1] == ENSEMBLE_COUNT) {
 			blockId = (c->data[2] << 8) | c->data[3];
-			uint8_t tree_count = c->data[4];
+			tree_count = c->data[4];
 			fprintf(stderr, "treecount = %d\n",tree_count);
+			resp_rxed = 1;
 			return;
 		}
 		logs.insert(blockId, messageId, fragmentId, size, string(s));
