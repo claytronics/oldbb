@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "logtable.h"
+#include <sstream>
 
 
 using namespace std;
@@ -105,6 +106,21 @@ bool Message::isCompleted() {
 
 void Message::print() {
     cout << "[" << block->id << ", msg:" << (unsigned int) id+1 <<  "] " << str << endl;
+}
+
+string  Message::print_s() {
+#if 0
+	string result;
+	result = "";
+	result ="[" + std::to_string( block->id);
+	cout <<result<<endl;
+	//return result + ", msg:" + ((unsigned int) (id+1) )+  "] " + str + endl;
+	return result + ", msg:" +   "] " + str + "\n";
+#endif
+	std::stringstream ss;
+	ss << "[" << block->id << ", msg:" << (unsigned int) id+1 <<  "] " << str << endl;
+	string str = ss.str();
+	return str;
 }
 
 /********************************************************
@@ -265,8 +281,9 @@ void LogTable::stringifyCompleted() {
 				msg->assemble();
 				//msg->print();
 				//appending all the logs to this string that can be sent as the response
-				log_message= log_message + msg->str;
-				cout<<msg->str<<endl;
+				log_message= log_message + msg->print_s();
+				//cout<<msg->str<<endl;
+				msg->print();
 				//cout <<"log_message :"<< log_message<<endl;
 				b->nbRec++;
 			}
