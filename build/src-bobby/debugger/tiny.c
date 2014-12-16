@@ -35,7 +35,8 @@ std::string log_message;
 extern char* portname;
 extern string defaultportname;
 extern int baudrate;
-extern uint8_t tree_count;
+extern volatile uint8_t resp_rxed;
+extern volatile uint8_t tree_count;
 
 int tree_cnt;
 
@@ -50,6 +51,7 @@ string  print_json(string key,string value) {
 int main(int argc, char **argv) 
 {
 	cout<<print_json("Name","Mihir")<<endl;
+	///sem_init(&mutex, 0, 1);
 
 	pthread_t tid;
 
@@ -382,6 +384,7 @@ void *thread(void *vargp) /* Thread routine */
 
 void process_command(int fd,char *command)
 {
+	resp_rxed = 0;
 	//printf("%d:%s(%s)\n",__LINE__,__FUNCTION__,command);
 	char *ptr;
 	char  function[MAXLINE];
@@ -411,11 +414,22 @@ void process_command(int fd,char *command)
 		//send_read_memory();
 	}
 	else if(!strcmp(function,"num_tree")){
-		printf("Got the num_tree count");
+		printf("Got the num_tree count\n");
+		send_tree_count();
+		printf("waiting\n");
+		while(!resp_rxed);
+		tree_count = 3;
+		resp_rxed = 0;
+		printf("response_rxed\n");
 		string value;
-		value = tree_count;
-		cout<<print_json("count",(string)value)<<endl;
-		send_json(fd,(char *)print_json("count",value).c_str());
+		std::stringstream ss;
+		printf("tree_cnt ==== %d\n",tree_count);
+		ss << tree_count;
+		cout <<"tree_count"<<tree_count<<endl;
+		value = ss.str();
+		cout<<print_json("count","2")<<endl;
+		printf("tree_cnt ==== %d\n",tree_count);
+		send_json(fd,(char *)print_json("count","2").c_str());
 		
 	}
 	else if (!strcmp(function,"debug_logs")) {
