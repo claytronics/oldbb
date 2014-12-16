@@ -56,6 +56,7 @@ public:
     ~Message();
     void assemble();
     void print();
+    std::string print_s();
     void setSize(uint8_t s);
     void insert(Fragment *f);
     bool isCompleted();
