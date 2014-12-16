@@ -62,9 +62,9 @@ get_the_count(byte* msg)
   if(!dbg_tree)return;
   if (isSpanningTreeRoot(dbg_tree)) {
     //int count =0 ;// = treeCount(dbg_tree, 0);
-    //int count = treeCount(dbg_tree, 0);
+    int count = treeCount(dbg_tree, 0);
     char m[5];
-    sprintf(m,"##%d",node_count);
+    sprintf(m,"$%d",count);
     printDebug(m);	
   }
   //treeBarrier(dbg_tree, 0);
@@ -172,12 +172,46 @@ void initLogDebug(void)
 	}
 	srand(getGUID());
 	//Add spanning tree here
+#if 0
+	if(PCConnection)
+	{
+		setColor(GREEN);
+		delayMS(1000);
+	}
+	else{
+		int count = 10;
+		while(count){
+			setColor(BLUE);
+			delayMS(1000);
+			setColor(RED);
+			delayMS(1000);
+			count--;
+		}
+	}
+#endif
 	  SpanningTree* tree;
 	  int baseid;
 	  //blockprint(stderr, "init\n");
 	  baseid = initSpanningTrees(1);
 	  tree = getTree(baseid);
-	  createSpanningTree(tree, donefunc, 0, 0, 0);
+	  if(PCConnection){
+		  createSpanningTree(tree, donefunc, 0, 0, 1);
+	  }
+	  else{
+		  createSpanningTree(tree, donefunc, 0, 0, 0);
+	  }
+
+#if 0
+	  if((PCConnection )&& (isSpanningTreeRoot(tree))){
+		  setColor(PURPLE);
+		  delayMS(1000);
+		  setColor(PINK);
+		  delayMS(1000);
+		  setColor(PURPLE);
+		  delayMS(1000);
+	  }
+#endif
+
 	  //
 	   dbg_tree = tree;
 	  
@@ -195,7 +229,7 @@ void initLogDebug(void)
 	    }
 	  treeBarrier(tree, 0);
 	  setColor(WHITE);
-
+#if 0
 	  if (isSpanningTreeRoot(tree)) {
 	    node_count = treeCount(tree, 0);
 	    printDebug("td");
@@ -204,13 +238,13 @@ void initLogDebug(void)
 	    
 
 	  }
+#endif
 	  treeBarrier(tree, 0);
 	  char m[2];
 	  m[0] = 'd';
 	  m[1] = '\0';
 	  printDebug(m);
 	  
-
 }
 
 byte isHostPort(PRef p)
@@ -302,6 +336,38 @@ reportAssert(byte fn, int ln)
 	return; 
 }
 
+
+	void
+report_something(byte what, int how_much)
+{
+#if 0
+	Chunk* c = &emergencyChunk;
+	emergencyChunk.next = NULL;
+	emergencyChunk.status = CHUNK_USED;
+	byte buf[DATA_SIZE];
+	buf[0] = LOG_MSG;
+	buf[1] = LOG_ASSERT; 
+	GUIDIntoChar(getGUID(), &(buf[2]));
+	buf[4] = fn;
+	buf[5] = 0xff & (ln>>8);
+	buf[6] = ln & 0xff;
+	sendMessageToPort(c, toHost, buf, 7, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeLogChunk);
+#endif
+	printDebug("rs");
+	byte buf[DATA_SIZE];
+	if (toHost == UNDEFINED_HOST)
+	{
+		return 0;
+	}
+
+	buf[0] = LOG_MSG;
+	buf[1] = what;
+	GUIDIntoChar(getGUID(), &(buf[2]));
+	buf[4] = how_much;
+	sendLogChunk(toHost, buf, 5);
+
+}
+
 // --------------- CHUNK SENDING FUNCTIONS
 
 	byte 
@@ -342,8 +408,14 @@ commandHandler(void)
 		case TREE_COUNT:
 			{
 				if(dbg_tree!=NULL){
-  					byte d_data[2];
-					treeBroadcast(dbg_tree, d_data, 2, get_the_count);
+					  if (isSpanningTreeRoot(dbg_tree)&&PCConnection) {
+					    int count = treeCount(dbg_tree, 0);
+					    char m[5];
+					    sprintf(m,"$%d",count);
+					    printDebug(m);	
+					    report_something(TREE_COUNT,count);
+					    
+					  }
 					break;
 				}
 			}
@@ -388,6 +460,8 @@ handleLogMessage(void)
 			setColor(WHITE);
 			toHost = faceNum(thisChunk);			
 			PCConnection = 1;
+			//setColor(BLUE);
+			//delayMS(1000);
 			spreadPathToHost(faceNum(thisChunk));
 			break;
 		case LOG_PATH_TO_HOST:
@@ -414,6 +488,9 @@ handleLogMessage(void)
 			if(toHost != UNDEFINED_HOST) forwardToHost(thisChunk);
 			break;
 		case LOG_OUT_OF_MEMORY:
+			if(toHost != UNDEFINED_HOST) forwardToHost(thisChunk);
+			break;
+		case TREE_COUNT:
 			if(toHost != UNDEFINED_HOST) forwardToHost(thisChunk);
 			break;
 	}	
