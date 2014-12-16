@@ -18,3 +18,5 @@ int mylogger(int argc, char** argv);
 
 void send_read_memory(uint16_t address,uint16_t num_bytes) ;
 void send_read_register(uint16_t address) ;
+
+uint8_t tree_count=0;
