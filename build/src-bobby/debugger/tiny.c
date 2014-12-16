@@ -6,6 +6,7 @@
 #include "./logger/mylogger.h"
 #include <string>
 #include <iostream>
+#include <sstream>
 #define DEBUG 2 
 #define DYNAMIC 1
 #define STATIC 0
@@ -26,17 +27,29 @@ void *thread(void *vargp);
 
 void serve_json(int fd,char *content);
 
+void send_json(int fd,char *content);
+
 
 std::string log_message;
 
 extern char* portname;
 extern string defaultportname;
 extern int baudrate;
+extern uint8_t tree_count;
 
 int tree_cnt;
 
+
+string  print_json(string key,string value) {
+	std::stringstream ss;
+	ss << "{\"" << key<<"\":\""<<value<<"\"}";
+	string str = ss.str();
+	return str;
+}
+
 int main(int argc, char **argv) 
 {
+	cout<<print_json("Name","Mihir")<<endl;
 
 	pthread_t tid;
 
@@ -272,6 +285,19 @@ void serve_json(int fd,char *content)
 	Rio_writen(fd, content, strlen(content));
 }
 
+
+void send_json(int fd,char *content)
+{
+	char *srcp, filetype[MAXLINE], buf[MAXBUF];
+	strcpy(filetype, "application/json");
+	sprintf(buf, "HTTP/1.0 200 OK\r\n");
+	sprintf(buf, "%sServer: Tiny Web Server\r\n", buf);
+	sprintf(buf, "%sContent-length: %d\r\n", buf, strlen(content));
+	sprintf(buf, "%sContent-type: %s\r\n\r\n", buf, filetype);
+	Rio_writen(fd, buf, strlen(buf));
+	Rio_writen(fd, content, strlen(content));
+}
+
 /*
  * get_filetype - derive file type from file name
  */
@@ -386,7 +412,10 @@ void process_command(int fd,char *command)
 	}
 	else if(!strcmp(function,"num_tree")){
 		printf("Got the num_tree count");
-		send_tree_count();
+		string value;
+		value = tree_count;
+		cout<<print_json("count",(string)value)<<endl;
+		send_json(fd,(char *)print_json("count",value).c_str());
 		
 	}
 	else if (!strcmp(function,"debug_logs")) {
@@ -395,5 +424,7 @@ void process_command(int fd,char *command)
 	}
 
 }	
+
+
 
 /* $end clienterror */
