@@ -235,7 +235,6 @@ void stringifyLogs(void)
 		logs.removeCompleted();
 	} 
 
-	log_message+="{}]}";
 }
 void usage(void) {
 	printf("%s: [-p portname]\n-l: log\n -t : test mode \n-s [period in ms]: time synchronization\ndefault port: /dev/ttyUSB0\nBaudrate: 38400\n", prog);

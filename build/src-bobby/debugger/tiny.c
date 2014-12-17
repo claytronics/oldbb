@@ -433,8 +433,9 @@ void process_command(int fd,char *command)
 		
 	}
 	else if (!strcmp(function,"debug_logs")) {
-		serve_json(fd,(char *)log_message.c_str());
-		log_message = "";
+		send_json(fd,(char *)(log_message+"{}]}").c_str());
+		log_message = "{\"messages\":[";
+
 	}
 
 }	
