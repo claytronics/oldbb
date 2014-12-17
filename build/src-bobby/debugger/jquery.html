@@ -26,11 +26,16 @@ $(document).ready(function(){
 				//alert(data.count);
 				var i;
 				for(i = 0 ; i < data.count;i++){
-					var d_id = i+1;
-					$( "#block"+i+"" ).append("<div id='block"+d_id+"'>" );
-        				//$( "<div id='block"+i+"'>" ).append( "#block"+d_id+"'>" );
-					$("#block"+i+"").append("<p>your block "+i+" logs here</p>");
-        				//$( "<div id='answerdiv-"+d_id+"'>This is div with id "+d_id+"</div>" ).insertAfter( "#answerdiv-"+i );
+				var d_id = i+1;
+				$( "#block"+i+"" ).append("<div id='block"+d_id+"'>" );
+				//$( "<div id='block"+i+"'>" ).append( "#block"+d_id+"'>" );
+				$("#block"+i+"").append("<p>your block "+i+" logs here</p>");
+				$("#block"+d_id+"").ready(function() {
+					console.log("I am ready"+d_id);	
+					});
+
+				var myVar=setInterval(function(){update_logs()},1000);
+				//$( "<div id='answerdiv-"+d_id+"'>This is div with id "+d_id+"</div>" ).insertAfter( "#answerdiv-"+i );
 				}
 				});
 
@@ -54,12 +59,21 @@ $(document).ready(function(){
 
 
 		function update_logs() {
-			$.get("/a/debug_logs?",function(data,status){
-					$("#TEXT2").html(function(i,orig_text){return (orig_text+data).replace(/\n/g,"<br>")});
+			$.getJSON("/a/debug_logs?",function(data,status){
+					//$("#TEXT2").html(function(i,orig_text){return (orig_text+data).replace(/\n/g,"<br>")});
+					//$("#TEXT2").html(data);
+					//console.log(data.messages.length);
+					var i = 0;
+					if(data.messages.length != 1){
+
+					for(i = 0 ; i < data.messages.length-1;i++){
+					console.log(data.messages[i]);
+					}
+					}
 					});
 		}
 
-		var myVar=setInterval(function(){update_logs()},1000);
+		//var myVar=setInterval(function(){update_logs()},1000);
 
 });
 
@@ -78,7 +92,7 @@ enter the url <input id=url type=text></input>
 <button id="Submit">Submit</button>
 <div>
 <button id=Reset>RESET</button>
-<button id="Tree">Tree</button>
+<button id="Tree">Start Logging</button>
 </div>
 
 </div>
