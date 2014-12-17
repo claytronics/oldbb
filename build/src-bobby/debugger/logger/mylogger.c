@@ -198,7 +198,7 @@ void receiveLogs(void)
 	} 
 }
 
-
+#if 0 //original
 void stringifyLogs(void)
 {
 	log_message = "";
@@ -216,7 +216,27 @@ void stringifyLogs(void)
 		logs.removeCompleted();
 	} 
 }
+#endif
 
+void stringifyLogs(void)
+{
+	log_message = "{\"messages\":[";
+	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	while(1) {
+		Chunk *ch = Chunk::read();
+		if ( ch != NULL) {
+			if (ch->data[0] == LOG_MSG) {			
+				insertLogChunk(ch);
+			}
+			delete ch;
+		}
+		//logs.printAll();
+		logs.stringifyCompleted();
+		logs.removeCompleted();
+	} 
+
+	log_message+="{}]}";
+}
 void usage(void) {
 	printf("%s: [-p portname]\n-l: log\n -t : test mode \n-s [period in ms]: time synchronization\ndefault port: /dev/ttyUSB0\nBaudrate: 38400\n", prog);
 	exit(1);

@@ -107,7 +107,7 @@ bool Message::isCompleted() {
 void Message::print() {
     cout << "[" << block->id << ", msg:" << (unsigned int) id+1 <<  "] " << str << endl;
 }
-
+#if 0
 string  Message::print_s() {
 #if 0
 	string result;
@@ -119,6 +119,23 @@ string  Message::print_s() {
 #endif
 	std::stringstream ss;
 	ss << "[" << block->id << ", msg:" << (unsigned int) id+1 <<  "] " << str << endl;
+	string str = ss.str();
+	return str;
+}
+#endif
+
+
+string  Message::print_s() {
+#if 0
+	string result;
+	result = "";
+	result ="[" + std::to_string( block->id);
+	cout <<result<<endl;
+	//return result + ", msg:" + ((unsigned int) (id+1) )+  "] " + str + endl;
+	return result + ", msg:" +   "] " + str + "\n";
+#endif
+	std::stringstream ss;
+	ss << "{\"block\":\"" << block->id << "\",\"msgid\":\"" << (unsigned int) id+1 <<  "\",\"msg\":\"" << str <<"\"},"<< endl;
 	string str = ss.str();
 	return str;
 }
