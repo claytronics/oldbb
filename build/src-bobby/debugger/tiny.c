@@ -31,11 +31,13 @@ void send_json(int fd,char *content);
 
 
 std::string log_message;
+std::string attendance;
 
 extern char* portname;
 extern string defaultportname;
 extern int baudrate;
 extern volatile uint8_t resp_rxed;
+extern volatile uint8_t attendance_rxed;
 extern volatile uint8_t tree_count;
 
 int tree_cnt;
@@ -418,7 +420,7 @@ void process_command(int fd,char *command)
 		send_tree_count();
 		printf("waiting\n");
 		while(!resp_rxed);
-		tree_count = 3;
+		tree_count = 2;
 		resp_rxed = 0;
 		printf("response_rxed\n");
 		string value;
@@ -430,6 +432,24 @@ void process_command(int fd,char *command)
 		cout<<print_json("count","2")<<endl;
 		printf("tree_cnt ==== %d\n",tree_count);
 		send_json(fd,(char *)print_json("count","2").c_str());
+		
+	}
+	else if(!strcmp(function,"num_tree")){
+		printf("Got the attendance\n");
+		ask_attendence();
+		printf("waiting\n");
+		while(!attendance_rxed);
+		attendance_rxed = 0;
+		printf("attendance_rxed\n");
+		//string value;
+		//std::stringstream ss;
+		//printf("tree_cnt ==== %d\n",tree_count);
+		//ss << tree_count;
+		//cout <<"tree_count"<<tree_count<<endl;
+		//value = ss.str();
+		//cout<<print_json("count",attendace)<<endl;
+		//printf("tree_cnt ==== %d\n",tree_count);
+		send_json(fd,(char *)attendance.c_str());
 		
 	}
 	else if (!strcmp(function,"debug_logs")) {

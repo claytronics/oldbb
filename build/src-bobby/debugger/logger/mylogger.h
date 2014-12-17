@@ -21,3 +21,5 @@ void send_read_register(uint16_t address) ;
 
 extern volatile uint8_t tree_count;
 extern volatile uint8_t resp_rxed;
+extern volatile uint8_t attendance_rxed;
+extern std::string attendance;

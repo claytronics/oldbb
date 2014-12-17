@@ -22,6 +22,7 @@
 #define ENSEMBLE_RESET	0x11
 #define SET_ID	        0x12
 #define ENSEMBLE_COUNT  0x14
+#define SEND_ATTENDANCE 0x15
 
 
 
@@ -79,15 +80,15 @@ mylogger(int argc, char** argv)
 	//readParameters(argc, argv);
 
 	/*portname = (char*) defaultportname.c_str();
-	cout<<"portname"<<portname;
+	  cout<<"portname"<<portname;
 
-	if( !Chunk::initSerial(portname, baudrate)  ) {
-		exit(1);
-	}
+	  if( !Chunk::initSerial(portname, baudrate)  ) {
+	  exit(1);
+	  }
 
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
-	sendIAmHost();
-	printf("%s:%d\n",__FUNCTION__,__LINE__);
+	  printf("%s:%d\n",__FUNCTION__,__LINE__);
+	  sendIAmHost();
+	  printf("%s:%d\n",__FUNCTION__,__LINE__);
 
 	//receiveLogs();
 
@@ -166,17 +167,27 @@ void sendResetCmd(void)
 
 void send_tree_count(void)
 {
-  byte data[3];
-	
-  data[0] = LOG_MSG;
-  data[1] = LOG_CMD;
-  data[2] = ENSEMBLE_COUNT;
-	
-  Chunk c(data, 3);
+	byte data[3];
 
-  printf("getting tree count\n");
-  c.send();
+	data[0] = LOG_MSG;
+	data[1] = LOG_CMD;
+	data[2] = ENSEMBLE_COUNT;
 
+	Chunk c(data, 3);
+
+	printf("getting tree count\n");
+	c.send();
+
+}
+
+//ask for the number of blocks present in the ensemble
+void ask_attendence() {
+	byte data[4];
+	data[0] = log_MSG;
+	data[1] = LOG_CMD;
+	data[2] = SEND_ATTENDANCE;
+	Chunk c(data, 3);
+	c.send();
 }
 
 
@@ -301,6 +312,8 @@ void insertLogChunk(Chunk *c) {
 	uint8_t offset = 6;
 	char s[DATA_SIZE+1];
 
+	uint8_t iter;
+
 	if (c->data[0] == LOG_MSG) {
 		if (c->data[1] == LOG_DATA) {
 			blockId = (c->data[2] << 8) | c->data[3];
@@ -335,6 +348,28 @@ void insertLogChunk(Chunk *c) {
 			resp_rxed = 1;
 			return;
 		}
+		else if (c->data[1] == SEND_ATTENDANCE) {
+			blockId = (c->data[2] << 8) | c->data[3];
+			blockId_arr[iter] = blockId;
+			iter++;
+
+			if(iter == tree_count){
+				attendance = "{\"blocks\":[";
+				int c;
+				for(c = 0 ; c < tree_count;c++){
+					std::stringstream ss;
+					ss<<blockId_arr[c];
+					attendance += ss.str();
+					if(c<tree_count-1){
+					attendance += ",";
+					}
+				}
+				attendance += "]}";
+				attendance_rxed = 1;	
+			}
+
+		}
+
 		logs.insert(blockId, messageId, fragmentId, size, string(s));
 	}
 }
@@ -354,47 +389,37 @@ static int kbhit(void){
 	return status;
 }
 /*
-void send_read_register(uint16_t address) {
+   void send_read_register(uint16_t address) {
 
-	byte data[5];
+   byte data[5];
 
-	data[0] = LOG_MSG;
-	data[1] = LOG_CMD;
-	data[2] = REGISTER_READ;
-	data[3] = LSB(address);
-	data[4] = MSB(address);
-	Chunk c(data, 5);
+   data[0] = LOG_MSG;
+   data[1] = LOG_CMD;
+   data[2] = REGISTER_READ;
+   data[3] = LSB(address);
+   data[4] = MSB(address);
+   Chunk c(data, 5);
 
-	printf("Sending read_register(0x%x)\n", address);
-	c.send();
-}
-*/
+   printf("Sending read_register(0x%x)\n", address);
+   c.send();
+   }
+ */
 /*
-void send_read_memory(uint16_t address,uint16_t num_bytes) {
-	byte data[5];
+   void send_read_memory(uint16_t address,uint16_t num_bytes) {
+   byte data[5];
 
-	data[0] = LOG_MSG;
-	data[1] = LOG_CMD;
-	data[2] = MEM_READ;
-	data[3] = LSB(address);
-	data[4] = MSB(address);
-	data[5] = LSB(num_bytes);
-	data[6] = MSB(num_bytes);
-	Chunk c(data, 7);
+   data[0] = LOG_MSG;
+   data[1] = LOG_CMD;
+   data[2] = MEM_READ;
+   data[3] = LSB(address);
+   data[4] = MSB(address);
+   data[5] = LSB(num_bytes);
+   data[6] = MSB(num_bytes);
+   Chunk c(data, 7);
 
-	printf("Sending read_memory(address %x)(num bytes %d)\n", address,num_bytes);
-	c.send();
+   printf("Sending read_memory(address %x)(num bytes %d)\n", address,num_bytes);
+   c.send();
 
-}
-*/
+   }
+ */
 
-//ask for the number of blocks present in the ensemble
-/*void ask_attendence() {
-	byte data[4];
-	data[0] = log_MSG;
-	data[1] = LOG_CMD;
-	data[2] = SEND_ATTENDANCE;
-	data[3] = 4;
-	Chunk c(data, 4);
-	c.send();
-}*/

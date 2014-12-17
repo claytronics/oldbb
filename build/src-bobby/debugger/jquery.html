@@ -24,22 +24,42 @@ $(document).ready(function(){
 				var text = data; 
 				//var obj = JSON.parse(text);
 				//alert(data.count);
-				var i;
-				for(i = 0 ; i < data.count;i++){
-				var d_id = i+1;
-				$( "#block"+i+"" ).append("<div id='block"+d_id+"'>" );
+				//var i;
+				//for(i = 0 ; i < data.count;i++){
+				//var d_id = i+1;
+				//$( "#block"+i+"" ).append("<div id='block"+d_id+"'>" );
 				//$( "<div id='block"+i+"'>" ).append( "#block"+d_id+"'>" );
-				$("#block"+i+"").append("<p>your block "+i+" logs here</p>");
-				$("#block"+d_id+"").ready(function() {
-					console.log("I am ready"+d_id);	
+				//$("#block"+i+"").append("<p>your block "+i+" logs here</p>");
+				//$("#block"+d_id+"").ready(function() {
+				//	console.log("I am ready"+d_id);	
+				//	});
+
+				$.getJSON("/a/num_attendance",function(data2,status){
+					console.log(data2);
+					var text = data2; 
+					//var obj = JSON.parse(text);
+					//alert(data2.count);
+					var i;
+					for(i = 0 ; i < data2.count;i++){
+					var d_id = i+1;
+					$( "#block"+i+"" ).append("<div id='block"+d_id+"'>" );
+					//$( "<div id='block"+i+"'>" ).append( "#block"+d_id+"'>" );
+					$("#block"+i+"").append("<p>your block "+i+" logs here</p>");
+					$("#block"+d_id+"").ready(function() {
+						console.log("I am ready"+d_id);	
+						});
+
+					var myVar=setInterval(function(){update_logs()},1000);
+					//$( "<div id='answerdiv-"+d_id+"'>This is div with id "+d_id+"</div>" ).insertAfter( "#answerdiv-"+i );
+					}
 					});
 
 				var myVar=setInterval(function(){update_logs()},1000);
 				//$( "<div id='answerdiv-"+d_id+"'>This is div with id "+d_id+"</div>" ).insertAfter( "#answerdiv-"+i );
 				}
-				});
-
 			});
+
+		});
 
 		$("#Submit").click(function() {
 				var url = $("#url").val();
