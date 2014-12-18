@@ -44,6 +44,7 @@ void checkStatus(SpanningTree* st);
 void
 retrySlowBlocks(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   // indicate timeout is inactive now (in case we get a notReadyYet
   // msg from someone while we are in this function
@@ -86,6 +87,7 @@ retrySlowBlocks(void)
 void
 retrySlowBlocks(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   // indicate timeout is inactive now (in case we get a notReadyYet
   // msg from someone while we are in this function
@@ -131,6 +133,7 @@ retrySlowBlocks(void)
 void
 notReadyYet(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -147,6 +150,7 @@ notReadyYet(void)
 void
 youAreMyParent(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -171,6 +175,7 @@ youAreMyParent(void)
 void
 alreadyInYourTree(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -182,7 +187,7 @@ alreadyInYourTree(void)
   st->outstanding--;
   st->neighbors[senderPort] = NoLink;
 
-  setColor(BROWN);
+  //setColor(BROWN);
   printDebug("2");
   checkStatus(st);
 }
@@ -191,6 +196,7 @@ alreadyInYourTree(void)
 void
 sorry(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -209,6 +215,7 @@ sorry(void)
 void
 beMyChild(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -283,6 +290,7 @@ beMyChild(void)
 void 
 yesWeAreInSameTree(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -296,6 +304,7 @@ yesWeAreInSameTree(void)
 void 
 areWeInSameTree(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -312,6 +321,7 @@ areWeInSameTree(void)
 // my parent claims everyone agrees, we are done!
 void treeStable(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -328,6 +338,7 @@ void treeStable(void)
 // one of my children says its subtree is all in same tree
 void childrenInSameTree(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg* msg = (BasicMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -342,6 +353,7 @@ void childrenInSameTree(void)
 
 char* kind2str(SpanTreeKind x)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   switch (x) {
   case Root: return "Root";
@@ -353,6 +365,7 @@ char* kind2str(SpanTreeKind x)
 
 static char* state2str(SpanTreeState x)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   switch (x) {
   case INITED: return "INITED";
@@ -366,6 +379,7 @@ static char* state2str(SpanTreeState x)
 
 static char* nstate2str(SpanTreeNeighborKind x)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   switch (x) {
   case Vacant: return "Vacant";
@@ -382,6 +396,7 @@ static char* nstate2str(SpanTreeNeighborKind x)
 static void
 freeSpChunk(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   freeChunk(thisChunk);
   thisChunk->status = CHUNK_FREE;
@@ -389,6 +404,7 @@ freeSpChunk(void)
 
 byte sendMySpChunk(byte myport, byte *data, byte size, MsgHandler mh) 
 { 
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   Chunk *c=getSystemTXChunk();
 #ifdef BBSIM
@@ -421,6 +437,7 @@ byte sendMySpChunk(byte myport, byte *data, byte size, MsgHandler mh)
 void
 checkStatus(SpanningTree* st)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   if (st->outstanding == 0) {
     st->state = MAYBESTABLE;
@@ -428,7 +445,7 @@ checkStatus(SpanningTree* st)
     
   } else {
     st->state = WAITING;
-    printDebug("checkstatus");
+    //printDebug("checkstatus");
     setColor(PURPLE);
   }
   char buffer[512];
@@ -439,6 +456,7 @@ checkStatus(SpanningTree* st)
 void
 resetNeighbors(SpanningTree* st)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   for (int i=0; i<NUM_PORTS; i++) {
     st->neighbors[i] = Unknown;
@@ -455,6 +473,7 @@ resetNeighbors(SpanningTree* st)
 void
 startAskingNeighors(SpanningTree* st, byte gen)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BasicMsg msg;
   msg.spid = st->spantreeid;
@@ -499,6 +518,7 @@ startAskingNeighors(SpanningTree* st, byte gen)
 char* 
 tree2str(char* buffer, byte id)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   SpanningTree* st = trees[id];
   if (st == NULL) {
@@ -530,6 +550,7 @@ tree2str(char* buffer, byte id)
 void
 initSpanningTreeInformation(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   int i;
   for (i=0; i<MAX_SPANTREE_ID; i++) {
@@ -544,6 +565,7 @@ threadvar GenericHandler oldNbrChgHander;
 void
 neighborsChanged(void)
 {
+	//printDebug(__FUNCTION__);
 #if 0
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   int ns = getNeighborCount();
@@ -572,6 +594,7 @@ neighborsChanged(void)
 void 
 initSpanNbrsHandler(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   oldNbrChgHander = unregisterHandler(EVENT_NEIGHBOR_CHANGE);
   registerHandler(EVENT_NEIGHBOR_CHANGE, (GenericHandler)neighborsChanged);
@@ -583,6 +606,7 @@ initSpanNbrsHandler(void)
 int 
 initSpanningTrees(int num)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   if((maxSpanId + num) < MAX_SPANTREE_ID) {
     int i; 
@@ -603,6 +627,7 @@ initSpanningTrees(int num)
 SpanningTree*
 getTree(int id)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   assert(id < MAX_SPANTREE_ID);
   SpanningTree* ret = trees[id];
@@ -615,6 +640,7 @@ getTree(int id)
 bool
 checkNeighborhood(SpanningTree* spt)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   int ns = getNeighborCount();
   if (spt->lastNeighborCount != ns) {
@@ -643,6 +669,7 @@ checkNeighborhood(SpanningTree* spt)
 void 
 createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout, byte howStart, byte makeMeRoot)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   assert(spt->state == WAITING);
 
@@ -804,6 +831,7 @@ createSpanningTree(SpanningTree* spt, SpanningTreeHandler donefunc, int timeout,
 
 byte isSpanningTreeRoot(SpanningTree* spt)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   return (spt->kind == Root);
 }
@@ -812,6 +840,7 @@ byte isSpanningTreeRoot(SpanningTree* spt)
 void
 upBarrier(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BarrierMsg* msg = (BarrierMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -828,6 +857,7 @@ upBarrier(void)
 void
 downBarrier(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BarrierMsg* msg = (BarrierMsg*)thisChunk;
   SpanningTree* st = trees[msg->spid];
@@ -842,6 +872,7 @@ downBarrier(void)
 int 
 treeBarrier(SpanningTree* spt, int timeout)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   spt->barrierNumber++;		 /* indicate we are entering a new barrier */
   spt->outstanding = spt->numchildren; /* how many children I am waiting for */
@@ -894,6 +925,7 @@ treeBarrier(SpanningTree* spt, int timeout)
 void
 treeBroadcast(SpanningTree* spt, byte* data, byte size, BroadcastHandler mh)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BroadcastMsg msg;
   DEBUGPRINT(1, "max size of bcast is %d\n", BroadcastPayloadSize);
@@ -903,6 +935,9 @@ treeBroadcast(SpanningTree* spt, byte* data, byte size, BroadcastHandler mh)
   msg.packet.header.handler = mh;
   msg.packet.header.len = size;
   memcpy(BroadcastDataOffset(&msg), data, size);
+  if(mh == getCount){
+	  printDebug("tt");
+  }
   (*mh)(BroadcastDataOffset(&msg));
   finishTreeBroadcast(0, 0, &msg);
 }
@@ -910,6 +945,7 @@ treeBroadcast(SpanningTree* spt, byte* data, byte size, BroadcastHandler mh)
 void
 handleBroadcast(void)
 {
+	//printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   BroadcastMsg* msg = (BroadcastMsg*)thisChunk;
   PRef fromFace = faceNum(thisChunk); /* face we got sender's msg from */
@@ -948,6 +984,7 @@ threadvar byte collectedCount = 0;
 void
 upCount(void)
 {
+	printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   CountMsg* msg = (CountMsg*)thisChunk;
   collectedCountChildren++;
@@ -959,6 +996,7 @@ upCount(void)
 void
 sendUpMsg(SpanningTree* spt, int count)
 {
+	printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   CountMsg cm;
   cm.spid = spt->spantreeid;
@@ -970,9 +1008,12 @@ sendUpMsg(SpanningTree* spt, int count)
 void
 getCount(BroadcastMsg *msg)
 {
+	printDebug(__FUNCTION__);
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   setColor(PINK);
+#if 0
   delayMS(2000);
+#endif
 
   collectedCount = 0;
   collectedCountChildren = 0;
@@ -984,18 +1025,32 @@ getCount(BroadcastMsg *msg)
 	  setColor(BROWN);
 	  //delayMS(2000);
 	  sendUpMsg(spt, 1);
-	printDebug("leaf");
+	//printDebug("leaf");
   }
   else {
-	setColor(BROWN);
+	setColor(BLUE);
 	printDebug("not leaf");
   }
+#if 0
+  int cnt = 2;
+  while(cnt){
+	  setColor(RED);
+	  delayMS(1000);
+	  setColor(BLUE);
+	  delayMS(1000);
+	  cnt--;
+  }
+#endif
+	  setColor(BLUE);
+	  delayMS(1000);
 }
 
 // called by root to count nodes in tree
 int
 treeCount(SpanningTree* spt, int timeout)
 {
+#if 0
+	printDebug(__FUNCTION__);
 	printDebug("tc");
 	fprintf(stdout,"%d: %s\n",getGUID(),__FUNCTION__);
   byte data[2];
@@ -1014,8 +1069,10 @@ treeCount(SpanningTree* spt, int timeout)
 	  else { setColor(YELLOW);}*/
 	  delayMS(10);
   }
-  setColor(RED);
+  setColor(BROWN);
   return collectedCount+1;
+#endif
+  return 2;
 }
 
 
