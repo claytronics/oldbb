@@ -28,6 +28,7 @@
 #define ENSEMBLE_RESET	0x11
 #define SET_ID          0x12
 #define TREE_COUNT	0x14
+#define SEND_ATTENDANCE 0x15
 
 static byte getSize(char* str);
 static void freeLogChunk(void);
@@ -47,7 +48,7 @@ threadvar byte seq = 0; // sequence number for avoiding loops when broadcasting 
 
 void donefunc(SpanningTree* spt, SpanTreeState status)
 { 
-  //blockprint(stderr, "DONEFUNC: %d %d\n", spt->spantreeid, status);
+	//blockprint(stderr, "DONEFUNC: %d %d\n", spt->spantreeid, status);
 }
 
 //Spanning tree related
@@ -56,20 +57,26 @@ SpanningTree* dbg_tree;
 
 // spanning tree broadcast message
 int node_count = 0;
-void
+	void
 get_the_count(byte* msg)
 {
-  if(!dbg_tree)return;
-  if (isSpanningTreeRoot(dbg_tree)) {
-    //int count =0 ;// = treeCount(dbg_tree, 0);
-    int count = treeCount(dbg_tree, 0);
-    char m[5];
-    sprintf(m,"$%d",count);
-    printDebug(m);	
-  }
-  //treeBarrier(dbg_tree, 0);
+	if(!dbg_tree)return;
+	if (isSpanningTreeRoot(dbg_tree)) {
+		//int count =0 ;// = treeCount(dbg_tree, 0);
+		int count = treeCount(dbg_tree, 0);
+		char m[5];
+		sprintf(m,"$%d",count);
+		printDebug(m);	
+	}
+	//treeBarrier(dbg_tree, 0);
 }
 
+	void
+attendence(byte* msg)
+{
+	printDebug("PR");
+	report_something(SEND_ATTENDANCE,0);
+}
 
 //////////////////// PUBLIC FUNCTIONS /////////////////////
 // Send a log string to host
@@ -149,7 +156,7 @@ void initLogDebug(void)
 {
 	//byte buf[2];
 
-	 char p[5];
+	char p[5];
 	toHost = UNDEFINED_HOST;
 	PCConnection = 0;
 
@@ -189,62 +196,62 @@ void initLogDebug(void)
 		}
 	}
 #endif
-	  SpanningTree* tree;
-	  int baseid;
-	  //blockprint(stderr, "init\n");
-	  baseid = initSpanningTrees(1);
-	  tree = getTree(baseid);
-	  if(PCConnection){
-		  createSpanningTree(tree, donefunc, 0, 0, 1);
-	  }
-	  else{
-		  createSpanningTree(tree, donefunc, 0, 0, 0);
-	  }
+	SpanningTree* tree;
+	int baseid;
+	//blockprint(stderr, "init\n");
+	baseid = initSpanningTrees(1);
+	tree = getTree(baseid);
+	if(PCConnection){
+		createSpanningTree(tree, donefunc, 0, 0, 1);
+	}
+	else{
+		createSpanningTree(tree, donefunc, 0, 0, 0);
+	}
 
 #if 0
-	  if((PCConnection )&& (isSpanningTreeRoot(tree))){
-		  setColor(PURPLE);
-		  delayMS(1000);
-		  setColor(PINK);
-		  delayMS(1000);
-		  setColor(PURPLE);
-		  delayMS(1000);
-	  }
+	if((PCConnection )&& (isSpanningTreeRoot(tree))){
+		setColor(PURPLE);
+		delayMS(1000);
+		setColor(PINK);
+		delayMS(1000);
+		setColor(PURPLE);
+		delayMS(1000);
+	}
 #endif
 
-	  //
-	   dbg_tree = tree;
-	  
-	  //blockprint(stderr, "return\n");
-	  setColor(AQUA);
-	  
-	  //blockprint(stderr, "finished\n");  
-	  if ( treeBarrier(tree,5000) == 1 )
-	    {
-	      setColor(GREEN);
-	    }  
-	  else
-	    {
-	      setColor(YELLOW);
-	    }
-	  treeBarrier(tree, 0);
-	  setColor(WHITE);
+	//
+	dbg_tree = tree;
+
+	//blockprint(stderr, "return\n");
+	setColor(AQUA);
+
+	//blockprint(stderr, "finished\n");  
+	if ( treeBarrier(tree,5000) == 1 )
+	{
+		setColor(GREEN);
+	}  
+	else
+	{
+		setColor(YELLOW);
+	}
+	treeBarrier(tree, 0);
+	setColor(WHITE);
 #if 0
-	  if (isSpanningTreeRoot(tree)) {
-	    node_count = treeCount(tree, 0);
-	    printDebug("td");
-	    sprintf(p,"@@%d",node_count);
-	    printDebug(p);
-	    
+	if (isSpanningTreeRoot(tree)) {
+		node_count = treeCount(tree, 0);
+		printDebug("td");
+		sprintf(p,"@@%d",node_count);
+		printDebug(p);
 
-	  }
+
+	}
 #endif
-	  treeBarrier(tree, 0);
-	  char m[2];
-	  m[0] = 'd';
-	  m[1] = '\0';
-	  printDebug(m);
-	  
+	treeBarrier(tree, 0);
+	char m[2];
+	m[0] = 'd';
+	m[1] = '\0';
+	printDebug(m);
+
 }
 
 byte isHostPort(PRef p)
@@ -408,16 +415,28 @@ commandHandler(void)
 		case TREE_COUNT:
 			{
 				if(dbg_tree!=NULL){
-					  if (isSpanningTreeRoot(dbg_tree)&&PCConnection) {
-					    int count = treeCount(dbg_tree, 0);
-					    char m[5];
-					    sprintf(m,"$%d",count);
-					    printDebug(m);	
-					    report_something(TREE_COUNT,count);
-					    
-					  }
-					break;
+					if (isSpanningTreeRoot(dbg_tree)&&PCConnection) {
+						int count = treeCount(dbg_tree, 0);
+						char m[5];
+						sprintf(m,"$%d",count);
+						printDebug(m);	
+						report_something(TREE_COUNT,count);
+
+					}
 				}
+				break;
+			}
+
+		case SEND_ATTENDANCE:
+			{
+				if(dbg_tree!=NULL){
+					byte data[2];
+					printDebug("SA");
+					if (PCConnection) {
+						treeBroadcast(dbg_tree, data, 2, attendence);
+					}
+				}
+				break;
 			}
 		case ENSEMBLE_RESET:
 			setColor(GREEN);
@@ -432,12 +451,12 @@ commandHandler(void)
 			//jumpToBootSection();
 			//asm("JMP 0x0");
 			/*asm volatile ( 
-					"clr r1" "\n\t"
-					"push r1" "\n\t"
-					"push r1" "\n\t" 
-					"ret"     "\n\t" 
-					::); 
-			for(;;);*/
+			  "clr r1" "\n\t"
+			  "push r1" "\n\t"
+			  "push r1" "\n\t" 
+			  "ret"     "\n\t" 
+			  ::); 
+			  for(;;);*/
 			break;
 			/*case SEND_ATTENDANCE:
 			  printDebug("");//just sending a dummy message to latch the addresses from the response
@@ -491,6 +510,9 @@ handleLogMessage(void)
 			if(toHost != UNDEFINED_HOST) forwardToHost(thisChunk);
 			break;
 		case TREE_COUNT:
+			if(toHost != UNDEFINED_HOST) forwardToHost(thisChunk);
+			break;
+		case SEND_ATTENDANCE:
 			if(toHost != UNDEFINED_HOST) forwardToHost(thisChunk);
 			break;
 	}	
@@ -553,33 +575,33 @@ static byte getSize(char* str) {
 }
 
 /*
-void donefunc(SpanningTree* tree, SpanningTreeStatus status)
-{ 
-   
+   void donefunc(SpanningTree* tree, SpanningTreeStatus status)
+   { 
 
-  if(status == COMPLETED)
-  {
+
+   if(status == COMPLETED)
+   {
    if (isSpanningTreeRoot(tree) == 1)
-  {
-    setColor(YELLOW);
-  }
-  else
-  {
-    setColor(WHITE);
-    if(tree->numchildren == 0)
-    {
-      setColor(PINK);
-    }
-  }
-  }
-  
-  else
-  { 
-    setColor(RED);
-  }
+   {
+   setColor(YELLOW);
+   }
+   else
+   {
+   setColor(WHITE);
+   if(tree->numchildren == 0)
+   {
+   setColor(PINK);
+   }
+   }
+   }
 
-}
-*/
+   else
+   { 
+   setColor(RED);
+   }
+
+   }
+ */
 ////////////////// END SYSTEM FUNCTIONS ///////////////////
 
 
