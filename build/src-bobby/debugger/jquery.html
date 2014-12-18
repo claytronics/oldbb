@@ -42,14 +42,14 @@ $(document).ready(function(){
 					console.log(data2);
 					var i;
 					for(i = 0 ; i < data2.blocks.length;i++){
-					//console.log(data2.blocks[i]);
-					if(i == 0)
-					{
-					$( "#block"+i+"" ).append("<div id='block"+data2.blocks[i]+"'>" );
-					}
-					else{
-					$( "#block"+data2.blocks[i-1]+"" ).append("<div id='block"+data2.blocks[i]+"'>" );
-					}
+					$( "#TEXT" ).append("<div id='block"+data2.blocks[i]+"'></div>" );
+					//if(i == 0)
+					//{
+					//$( "#block"+i+"" ).append("<div id='block"+data2.blocks[i]+"'></div>" );
+					//}
+					//else{
+					//$( "#block"+data2.blocks[i-1]+"" ).append("<div id='block"+data2.blocks[i]+"'></div>" );
+					//}
 					}
 					});
 
@@ -87,10 +87,7 @@ $(document).ready(function(){
 
 					for(i = 0 ; i < data.messages.length-1;i++){
 					console.log(data.messages[i]);
-					//$( "#block"+data.block+"" ).html(function(i,orig_text){return (orig_text+"block "+data.block+" msgid "+data.msgid+" msg "+data.msg+"<br>")});
-					//$( "#TEXT2" ).html(function(i,orig_text){return (orig_text+"block "+data.messages[i].block+" msgid "+data.messages[i].msgid+" msg "+data.messages[i].msg+"<br>")});
-					//$( "#block"+data.block+"" ).html(function(i,orig_text){return (orig_text+"block "+data.block+" msgid "+data.msgid+" msg "+data.msg+"<br>").replace(/\n/g,"<br>")});
-					$( "#block"+data.messages[i].block+"" ).html(function(i,orig_text){return (orig_text+"block "+data.messages[i].block+" msgid "+data.messages[i].msgid+" msg "+data.messages[i].msg+"<br>")});
+					$( "#block"+data.messages[i].block+"" ).append("block "+data.messages[i].block+" msgid "+data.messages[i].msgid+" msg "+data.messages[i].msg+"<br>");
 					}
 					}
 					});
