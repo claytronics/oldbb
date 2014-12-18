@@ -1072,7 +1072,7 @@ treeCount(SpanningTree* spt, int timeout)
   setColor(BROWN);
   return collectedCount+1;
 #endif
-  return 2;
+  return 3;
 }
 
 
