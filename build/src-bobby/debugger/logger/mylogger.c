@@ -370,6 +370,7 @@ void insertLogChunk(Chunk *c) {
 				}
 				attendance += "]}";
 				attendance_rxed = 1;	
+				iter=0;
 			}
 
 		}
