@@ -1,5 +1,14 @@
 <html>
 <head>
+<style> 
+.block {
+border: 2px solid #a1a1a1;
+padding: 10px 40px; 
+background: #dddddd;
+width: 300px;
+       border-radius: 25px;
+}
+</style>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css">
 <script src="//code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
@@ -9,56 +18,34 @@
 $(document).ready(function(){
 		$( "#tabs" ).tabs();
 
-		$("#Reset").click(function() {
-			alert("Resetting the blinky blocks");
-			$.get("/a/reset",function(data,status){
-				alert("Reset Done");
-				});
+		//$("#Reset").click(function() {
+		//	alert("Resetting the blinky blocks");
+		//	$.get("/a/reset",function(data,status){
+		//		alert("Reset Done");
+		//		});
 
-			});
+		//	});
 
 		$("#Tree").click(function() {
-			alert("Getting the count of blinky blocks");
+			alert("view your logs in the debugger window");
 			$.getJSON("/a/num_tree",function(data,status){
 				console.log(data);
-				//var text = data; 
-				//console.out(text);
-				//var obj = JSON.parse(text);
-				//alert(data.count);
-				//			var i;
-				//			for(i = 0 ; i < data.count;i++){
-				//			var d_id = i+1;
-				//			$( "#block"+i+"" ).append("<div id='block"+d_id+"'>" );
-				//			$("#block"+i+"").append("<p>your block "+i+" logs here</p>");
-				//			$("#block"+d_id+"").ready(function() {
-				//				console.log("I am ready"+d_id);	
-				//				});
-				//
-				//			//var myVar=setInterval(function(){update_logs()},1000);
-				//			}
 
 
 				$.getJSON("/a/num_attendance",function(data2,status){
 					console.log(data2);
 					var i;
 					for(i = 0 ; i < data2.blocks.length;i++){
-					$( "#TEXT" ).append("<div id='block"+data2.blocks[i]+"'></div>" );
-					//if(i == 0)
-					//{
-					//$( "#block"+i+"" ).append("<div id='block"+data2.blocks[i]+"'></div>" );
-					//}
-					//else{
-					//$( "#block"+data2.blocks[i-1]+"" ).append("<div id='block"+data2.blocks[i]+"'></div>" );
-					//}
+					$( "#TEXT" ).append("<div id='block"+data2.blocks[i]+"' class='block'></div>" );
 					}
 					});
 
 
-			});
+				});
 			var myVar=setInterval(function(){update_logs()},1000);
 
 
-		});
+			});
 
 		$("#Submit").click(function() {
 				var url = $("#url").val();
@@ -69,7 +56,6 @@ $(document).ready(function(){
 				}
 				alert("url "+url);
 				$.get(url,function(data,status){
-					//alert(data);
 					$("#TEXT2").html(function(i,orig_text){return (orig_text+data)});
 					});
 
@@ -79,9 +65,6 @@ $(document).ready(function(){
 
 		function update_logs() {
 			$.getJSON("/a/debug_logs?",function(data,status){
-					//$("#TEXT2").html(function(i,orig_text){return (orig_text+data).replace(/\n/g,"<br>")});
-					//$("#TEXT2").html(data);
-					//console.log(data.messages.length);
 					var i = 0;
 					if(data.messages.length != 1){
 
@@ -108,11 +91,12 @@ $(document).ready(function(){
 enter the url <input id=url type=text></input>
 <button id="Submit">Submit</button>
 <div>
-<button id=Reset>RESET</button>
+<!--<button id=Reset>RESET</button>-->
 <button id="Tree">Start Logging</button>
 </div>
 
 </div>
+<img src="cmu.jpg" alt="Mountain View" style="width:160px;height:90px">
 
 </div>
 <div id="tabs-2">
@@ -127,9 +111,5 @@ enter the url <input id=url type=text></input>
 </div>
 </div>
 </div>
-<!--<div id = content>
-<div = contents>
-</div>
-</div>-->
 </body>
 </html>
