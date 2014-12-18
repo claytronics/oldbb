@@ -420,7 +420,7 @@ void process_command(int fd,char *command)
 		send_tree_count();
 		printf("waiting\n");
 		while(!resp_rxed);
-		tree_count = 2;
+		tree_count = 3;
 		resp_rxed = 0;
 		printf("response_rxed\n");
 		string value;
@@ -429,9 +429,9 @@ void process_command(int fd,char *command)
 		ss << tree_count;
 		cout <<"tree_count"<<tree_count<<endl;
 		value = ss.str();
-		cout<<print_json("count","2")<<endl;
+		cout<<print_json("count","3")<<endl;
 		printf("tree_cnt ==== %d\n",tree_count);
-		send_json(fd,(char *)print_json("count","2").c_str());
+		send_json(fd,(char *)print_json("count","3").c_str());
 		
 	}
 	else if(!strcmp(function,"num_attendance")){
@@ -441,14 +441,6 @@ void process_command(int fd,char *command)
 		while(!attendance_rxed);
 		attendance_rxed = 0;
 		printf("attendance_rxed\n");
-		//string value;
-		//std::stringstream ss;
-		//printf("tree_cnt ==== %d\n",tree_count);
-		//ss << tree_count;
-		//cout <<"tree_count"<<tree_count<<endl;
-		//value = ss.str();
-		//cout<<print_json("count",attendace)<<endl;
-		//printf("tree_cnt ==== %d\n",tree_count);
 		send_json(fd,(char *)attendance.c_str());
 		
 	}
