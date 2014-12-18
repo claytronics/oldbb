@@ -1,4 +1,5 @@
 #include "chunk.h"
+#include <string>
 
 void usage(void);
 void readParameters(int argc, char** argv);
@@ -11,6 +12,7 @@ void sendColorCmd(int);
 void sendIDToSet(uint16_t idToSet);
 void sendResetCmd(void);
 void send_tree_count(void);
+void ask_attendence(void);
 
 static int kbhit(void);
 

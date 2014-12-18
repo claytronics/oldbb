@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 #include <iostream>
 #include <pthread.h>
+#include <sstream>
 
 #include "string.h"
 #include "hostserial.h"
@@ -41,8 +42,9 @@ byte testMode = 0;
 int seq = 1;
 volatile uint8_t tree_count = 0;
 volatile uint8_t resp_rxed;
+volatile uint8_t attendance_rxed;
 //std::string log_message;
-
+uint16_t blockId_arr[100];
 pthread_mutex_t serialMutex;
 pthread_mutex_t circbuffMutex;
 pthread_mutex_t responseMutex;
@@ -181,9 +183,9 @@ void send_tree_count(void)
 }
 
 //ask for the number of blocks present in the ensemble
-void ask_attendence() {
+void ask_attendence(void) {
 	byte data[4];
-	data[0] = log_MSG;
+	data[0] = LOG_MSG;
 	data[1] = LOG_CMD;
 	data[2] = SEND_ATTENDANCE;
 	Chunk c(data, 3);
@@ -312,7 +314,7 @@ void insertLogChunk(Chunk *c) {
 	uint8_t offset = 6;
 	char s[DATA_SIZE+1];
 
-	uint8_t iter;
+	static uint8_t iter;
 
 	if (c->data[0] == LOG_MSG) {
 		if (c->data[1] == LOG_DATA) {
@@ -350,10 +352,12 @@ void insertLogChunk(Chunk *c) {
 		}
 		else if (c->data[1] == SEND_ATTENDANCE) {
 			blockId = (c->data[2] << 8) | c->data[3];
+			printf("got attendance %d -> %d",iter,blockId);
 			blockId_arr[iter] = blockId;
 			iter++;
 
 			if(iter == tree_count){
+				printf("iter reached");
 				attendance = "{\"blocks\":[";
 				int c;
 				for(c = 0 ; c < tree_count;c++){

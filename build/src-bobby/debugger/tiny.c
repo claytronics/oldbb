@@ -434,7 +434,7 @@ void process_command(int fd,char *command)
 		send_json(fd,(char *)print_json("count","2").c_str());
 		
 	}
-	else if(!strcmp(function,"num_tree")){
+	else if(!strcmp(function,"num_attendance")){
 		printf("Got the attendance\n");
 		ask_attendence();
 		printf("waiting\n");
