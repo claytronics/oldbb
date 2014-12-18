@@ -57,19 +57,6 @@ SpanningTree* dbg_tree;
 
 // spanning tree broadcast message
 int node_count = 0;
-	void
-get_the_count(byte* msg)
-{
-	if(!dbg_tree)return;
-	if (isSpanningTreeRoot(dbg_tree)) {
-		//int count =0 ;// = treeCount(dbg_tree, 0);
-		int count = treeCount(dbg_tree, 0);
-		char m[5];
-		sprintf(m,"$%d",count);
-		printDebug(m);	
-	}
-	//treeBarrier(dbg_tree, 0);
-}
 
 	void
 attendence(byte* msg)
@@ -179,23 +166,6 @@ void initLogDebug(void)
 	}
 	srand(getGUID());
 	//Add spanning tree here
-#if 0
-	if(PCConnection)
-	{
-		setColor(GREEN);
-		delayMS(1000);
-	}
-	else{
-		int count = 10;
-		while(count){
-			setColor(BLUE);
-			delayMS(1000);
-			setColor(RED);
-			delayMS(1000);
-			count--;
-		}
-	}
-#endif
 	SpanningTree* tree;
 	int baseid;
 	//blockprint(stderr, "init\n");
@@ -208,18 +178,6 @@ void initLogDebug(void)
 		createSpanningTree(tree, donefunc, 0, 0, 0);
 	}
 
-#if 0
-	if((PCConnection )&& (isSpanningTreeRoot(tree))){
-		setColor(PURPLE);
-		delayMS(1000);
-		setColor(PINK);
-		delayMS(1000);
-		setColor(PURPLE);
-		delayMS(1000);
-	}
-#endif
-
-	//
 	dbg_tree = tree;
 
 	//blockprint(stderr, "return\n");
@@ -236,16 +194,6 @@ void initLogDebug(void)
 	}
 	treeBarrier(tree, 0);
 	setColor(WHITE);
-#if 0
-	if (isSpanningTreeRoot(tree)) {
-		node_count = treeCount(tree, 0);
-		printDebug("td");
-		sprintf(p,"@@%d",node_count);
-		printDebug(p);
-
-
-	}
-#endif
 	treeBarrier(tree, 0);
 	char m[2];
 	m[0] = 'd';
