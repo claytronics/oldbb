@@ -252,6 +252,10 @@ void init_all_consts(void)
       TYPE_NEIGHBORCOUNT = i;
     else if (strcmp(TYPE_NAME(i), "vacant") == 0)
       TYPE_VACANT = i;
+    else if (strcmp(TYPE_NAME(i), "setcolor") == 0)
+      TYPE_SETCOLOR = i;
+    else if (strcmp(TYPE_NAME(i), "setcolor2") == 0 )
+      TYPE_SETCOLOR2 = i;
   }	
 }
 

@@ -40,6 +40,8 @@ tuple_type TYPE_NEIGHBORCOUNT = -1;
 tuple_type TYPE_NEIGHBOR = -1;
 tuple_type TYPE_VACANT = -1;
 tuple_type TYPE_TAP = -1;
+tuple_type TYPE_SETCOLOR = -1;
+tuple_type TYPE_SETCOLOR2 = -1;
 
 inline byte val_is_float(const byte x) { return x == 0x00; }
 inline byte val_is_int(const byte x) { return x == 0x01; }
@@ -374,17 +376,8 @@ execute_iter (const unsigned char *pc,
 inline void
 execute_run_action0 (tuple_t action_tuple, tuple_type type, int isNew)
 {
-  
-    if(strcmp(tuple_names[type], "setcolor") == 0) {
-        type = TYPE_SETCOLOR;
-    } else if (strcmp(tuple_names[type], "setcolor2") == 0 ) {
-        type = TYPE_SETCOLOR2;
-    }
-
-    switch (type) {
-    case TYPE_SETCOLOR:
+   if (type == TYPE_SETCOLOR) {
       if (isNew > 0) {
-    
 #ifdef DEBUG_INSTRS
 	printf ("--%d--\t RUN ACTION: %s(currentNode, %d, %d, %d, %d)\n", 
 		getBlockId(), tuple_names[type], 
@@ -401,10 +394,7 @@ execute_run_action0 (tuple_t action_tuple, tuple_type type, int isNew)
 		      *(byte *)GET_TUPLE_FIELD(action_tuple, 3));
       }
       FREE_TUPLE(action_tuple);
-      return;
-   
-    case TYPE_SETCOLOR2:
-      printf("process setColor2\n");
+   } else if (type == TYPE_SETCOLOR2) {
       if (isNew > 0) {
 #ifdef DEBUG_INSTRS
 	printf ("--%d--\t RUN ACTION: %s(currentNode, %d)\n", 
@@ -415,10 +405,8 @@ execute_run_action0 (tuple_t action_tuple, tuple_type type, int isNew)
 	/* Don't call it directly to avoid having to import led.bbh */
 	setColorWrapper(MELD_INT(GET_TUPLE_FIELD(action_tuple, 0)));
       }
-      
       FREE_TUPLE(action_tuple);
-      return;
-    }
+   }
 }
 
 /* Run an action onto the block */

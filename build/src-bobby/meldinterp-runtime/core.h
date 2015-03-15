@@ -506,9 +506,6 @@ instructions.
 
 /* ************* STATIC OR USEFUL PREDICATE IDs ************* */
 
-#define TYPE_SETCOLOR 2
-#define TYPE_SETCOLOR2 7
-
 extern tuple_type TYPE_INIT;
 extern tuple_type TYPE_EDGE;
 extern tuple_type TYPE_TERMINATE;
@@ -516,6 +513,8 @@ extern tuple_type TYPE_NEIGHBORCOUNT;
 extern tuple_type TYPE_NEIGHBOR;
 extern tuple_type TYPE_VACANT;
 extern tuple_type TYPE_TAP;
+extern tuple_type TYPE_SETCOLOR;
+extern tuple_type TYPE_SETCOLOR2;
 
 /* ************* EXTERN DECLARATIONS  ************* */
 

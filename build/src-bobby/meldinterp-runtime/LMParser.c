@@ -450,6 +450,7 @@ main (int argc, char* argv[])
 
 	byte aggField = agg & 0xf; 
 	byte type = ((0xf0 & agg) >> 4);
+
 	if (prop & PRED_AGG) {
 #ifdef DEBUG_PARSER
 	  printf ("    Aggregate: \n");
