@@ -374,6 +374,13 @@ execute_iter (const unsigned char *pc,
 inline void
 execute_run_action0 (tuple_t action_tuple, tuple_type type, int isNew)
 {
+  
+    if(strcmp(tuple_names[type], "setcolor") == 0) {
+        type = TYPE_SETCOLOR;
+    } else if (strcmp(tuple_names[type], "setcolor2") == 0 ) {
+        type = TYPE_SETCOLOR2;
+    }
+
     switch (type) {
     case TYPE_SETCOLOR:
       if (isNew > 0) {
@@ -397,6 +404,7 @@ execute_run_action0 (tuple_t action_tuple, tuple_type type, int isNew)
       return;
    
     case TYPE_SETCOLOR2:
+      printf("process setColor2\n");
       if (isNew > 0) {
 #ifdef DEBUG_INSTRS
 	printf ("--%d--\t RUN ACTION: %s(currentNode, %d)\n", 
@@ -1668,7 +1676,7 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 #endif
 
    if (TYPE_IS_ACTION(type)) {
-      if(isNew > 0)
+     if(isNew > 0)
          execute_run_action0(tuple, type, isNew);
       else
          FREE_TUPLE(tuple);
@@ -1904,6 +1912,9 @@ printDebug(s);
       break;
     case MVPTRREG_INSTR: 		/* 0x23 */
       snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVPTRREG_INSTR");
+      break;
+    case MVFIELDFIELDR_INSTR: 		/* 0x25 */
+      snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVFIELDFIELDR_INSTR");
       break;
     case MVREGFIELD_INSTR: 		/* 0x26 */
       snprintf(s, MAX_NAME_SIZE*sizeof(char), "MVFIELDREG_INSTR");
@@ -2217,12 +2228,13 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
       }
 
     case MVFIELDFIELD_INSTR: 		/* 0x21 */
+    case MVFIELDFIELDR_INSTR: 		/* 0x25 */
       {
 	const byte *npc = pc + MVFIELDFIELD_BASE;
 	execute_mvfieldfield (pc, reg);
 	pc = npc; goto eval_loop;
       }
-   
+
     case MVFIELDREG_INSTR: 		/* 0x22 */
       {
 	const byte *npc = pc + MVFIELDREG_BASE;
@@ -2239,7 +2251,6 @@ process_bytecode (tuple_t tuple, const unsigned char *pc,
 	/* TODO: Do something if used elsewhere than axiom derivation */
 	pc = npc; goto eval_loop;
       }
-
     case MVREGFIELD_INSTR: 		/* 0x26 */
       {
 	const byte *npc = pc + MVREGFIELD_BASE;

@@ -65,7 +65,7 @@ instructions.
 #define MVFIELDREG_INSTR       0x22
 #define MVPTRREG_INSTR         0x23
 #define MVNILREG_INSTR         0x24 /* niy */
-#define MVFIELDFIELDR_INSTR    0x25 /* niy */
+#define MVFIELDFIELDR_INSTR    0x25
 #define MVREGFIELD_INSTR       0x26
 #define MVREGFIELDR_INSTR      0x27 /* niy */
 #define MVHOSTFIELD_INSTR      0x28

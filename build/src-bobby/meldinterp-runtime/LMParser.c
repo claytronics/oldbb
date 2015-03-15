@@ -12,7 +12,7 @@
 *******************************************************************************/
 
 /* Uncomment to print content of input file */
-// #define DEBUG_PARSER
+//#define DEBUG_PARSER
 
 /* Function prototypes */
 byte readType (FILE *pFile);
@@ -77,12 +77,11 @@ main (int argc, char* argv[])
       else printf ("magics OK\n");
 #endif
 
-      /* Check file version: 0.11 is the only supported version for now */
+      /* Check file version: 0.12 is the only supported version for now */
       uint32_t majorVersion, minorVersion;
       fread (&majorVersion, 4, 1, pMeldProg);
       fread (&minorVersion, 4, 1, pMeldProg);
-
-      if ( (!VERSION_AT_LEAST(0, 11)) || VERSION_AT_LEAST(0, 12) ) {
+      if ( !VERSION_AT_LEAST(0, 12) || VERSION_AT_LEAST(0, 13) ) {
 	perror ("Unsupported byte code version");
 	exit(-2);
       }
@@ -481,6 +480,10 @@ main (int argc, char* argv[])
 	printf ("    Stratification level: %d\n", stratLevel);
 #endif
 
+	/* skip index */
+	byte fieldIndex;
+	fread(&fieldIndex, 1, 1, pMeldProg);
+
 	/* Number of fields (# of arguments) */
 	byte numFields;
 	fread (&numFields, 1, 1, pMeldProg);
@@ -488,6 +491,7 @@ main (int argc, char* argv[])
 #ifdef DEBUG_PARSER
 	printf ("    Number of fields: %d\n", numFields);
 #endif
+
 
 	/* Argument types */
 #ifdef DEBUG_PARSER
@@ -506,6 +510,7 @@ main (int argc, char* argv[])
 
 	/* Predicate name string */
 	predicates[i].pName = malloc (PRED_NAME_SIZE_MAX + 1);
+	
 	fread (predicates[i].pName, 1, PRED_NAME_SIZE_MAX, pMeldProg);
 
 	/* PTHY: Using %s returns a seg fault for some reason,
@@ -606,11 +611,16 @@ main (int argc, char* argv[])
 #endif
       for (i = 0; i < numPredicates; ++i) {
 	uint32_t bytecodeSize = predicates[i].codeSize;
-	predicates[i].pBytecode = malloc (bytecodeSize);
-
-	fread (predicates[i].pBytecode, 1, bytecodeSize, pMeldProg);
-	
-	skipNodeReferences (pMeldProg);
+	if (bytecodeSize > 0) {  
+	  predicates[i].pBytecode = malloc (bytecodeSize);
+	  fread (predicates[i].pBytecode, 1, bytecodeSize, pMeldProg);
+	  skipNodeReferences (pMeldProg);
+	} else {
+	  //predicates[i].pBytecode = NULL;
+	  predicates[i].codeSize = 1;
+	  predicates[i].pBytecode = malloc (bytecodeSize);
+	  predicates[i].pBytecode[0] = 0;
+	}
       }
 
       /* ************* RULE INFORMATION ************* */
@@ -637,8 +647,9 @@ main (int argc, char* argv[])
 	skipNodeReferences(pMeldProg);
 
 	/* Read persistence */
-	fread (&rules[i].persistence, 1, 1, pMeldProg);
-	
+	//fread (&rules[i].persistence, 1, 1, pMeldProg);
+	rules[i].persistence = 0;
+
 	/* Max number of preds by rule for parser set at 32 for now
 	 * Check LMParser.h / rule struct to upgrade it if needed */
 	fread (&rules[i].numInclPreds, 4, 1, pMeldProg);
@@ -793,11 +804,16 @@ main (int argc, char* argv[])
       fprintf (pBBFile, "\n/* PREDICATE BYTECODE */");
       for (i = 0; i < numPredicates; ++i) {
 	fprintf (pBBFile, "\n/* Predicate %d: */", i);
-        byte *pc =  predicates[i].pBytecode;
-	for (j = 0; j < predicates[i].codeSize; j++) {
-	  fprintf (pBBFile, "%#x, ", *pc);
-	  ++pc;
-	}
+	if (predicates[i].codeSize > 0) {
+	  byte *pc =  predicates[i].pBytecode;
+	  for (j = 0; j < predicates[i].codeSize; j++) {
+	    fprintf (pBBFile, "%#x, ", *pc);
+	    ++pc;
+	  }
+	}/* else {
+	  fprintf(pBBFile, "%#x, ", 0);
+	  //++pc;
+	  }*/
       }
 
       /* ************* PRINT RULE BYTE CODE ************* */
