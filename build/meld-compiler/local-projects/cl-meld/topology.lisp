@@ -17,7 +17,12 @@
 (defun number-of-nodes (nodes) (hash-table-count nodes))
 
 (defmacro iterate-nodes ((fake real nodes) &body body)
-   `(iterate-hash (,nodes ,real ,fake) ,@body))
+   (alexandria:with-gensyms (ls)
+      `(let ((,ls (loop for value being the hash-values of ,nodes
+                        using (hash-key key)
+                        collect (cons value key))))
+         (loop for (,fake . ,real) in (sort ,ls #'< :key #'car)
+               do ,@body))))
 
 (defun flip-nodes (hash expr)
    (transform-expr #'addr-p #'(lambda (expr)
@@ -53,7 +58,7 @@
 
 (defun find-edge-set (routes)
    (letret (hash (make-edge-set))
-		(do-const-axioms (:subgoal subgoal)
+		(do-node-const-axioms (:subgoal subgoal)
 			(when (link-subgoal-p subgoal routes)
 				(add-edge-to-set hash (get-link-info subgoal))))))
       
@@ -154,7 +159,7 @@
 
 (defun do-topology-ordering ()
 	(setf *nodes* (reverse *nodes*))
-	(let* ((found (find-if #'priority-cluster-p *priorities*))
+	(let* ((found (find-if #'priority-cluster-p *directives*))
 		  	 (ordering-type (if found (priority-cluster-type found) *ordering-type*)))
    	(case ordering-type
 	     (:naive (naive-ordering *nodes*))
@@ -172,9 +177,9 @@
 		;(loop for key being the hash-keys of mapping
 	   ;     using (hash-value value)
 	   ;     do (format t "The value associated with the key ~S is ~S~%" key value))
-      (do-axioms (:clause clause)
+      (do-all-var-axioms (:clause clause)
          (flip-nodes mapping clause))
-		(do-const-axioms (:subgoal subgoal)
+		(do-all-const-axioms (:subgoal subgoal)
 			(flip-nodes mapping subgoal))
 		(do-constant-list *consts* (:constant c)
 			(flip-nodes mapping c))

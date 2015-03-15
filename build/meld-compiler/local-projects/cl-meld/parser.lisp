@@ -9,18 +9,22 @@
 	("\\]"                           (return (values :rsparen $@)))
 	("\\{"                           (return (values :lcparen $@)))
 	("\\}"                           (return (values :rcparen $@)))
+   ("\\~"                           (return (values :tilde $@)))
    ("\\."                           (return (values :dot $@)))
 	("@initial"								(return (values :initial-priority $@)))
 	("@static"								(return (values :static-priority $@)))
 	("@cluster"								(return (values :cluster-priority $@)))
 	("@random"								(return (values :random-priority $@)))
+   ("@no_initial_priorities"        (return (values :no-initial-priorities $@)))
 	("@asc"									(return (values :asc $@)))
 	("@desc"									(return (values :desc $@)))
 	("@type"									(return (values :priority-type $@)))
 	("@order"								(return (values :priority-order $@)))
 	("@\\+[0-9]+s"							(return (values :delay-seconds $@)))
 	("@\\+[0-9]+ms"						(return (values :delay-ms $@)))
+   ("@host"                         (return (values :host $@)))
 	("@world"                        (return (values :world $@)))
+   ("@cpus"                         (return (values :cpus $@)))
 	("@arg[0-9]"							(return (values :arg $@)))
 	("@"                             (return (values :local $@)))
 	("-o"                            (return (values :lolli $@)))
@@ -35,9 +39,9 @@
 	("\\)"			                  (return (values :rparen $@)))
 	("\\|\\|"								(return (values :or $@)))
 	("\\|"                           (return (values :bar $@)))
+   ("\\&\\&"                        (return (values :and $@)))
 	("\\/\\*.*\\*\\/"                (return (values :comment)))
-	("\\<-"                          (return (values :input $@)))
-	("\\->"                          (return (values :output $@)))
+   ("\\+\\+"                          (return (values :append $@)))
 	("\\+"                           (return (values :plus $@)))
 	("\\-"                    		   (return (values :minus $@)))
 	("\\*"                           (return (values :mul $@)))
@@ -56,6 +60,11 @@
 	("[A-Z]([a-z]|[0-9]|[A-Z]|\_)*"	(return (values :variable $@))))
 	
 (defparameter *line-number* 0)
+(defparameter *parsed-header* nil)
+
+(defparameter *parser-typedef-types* nil)
+(defun add-typedef (name typ)
+   (setf (gethash name *parser-typedef-types*) typ))
 
 (define-condition parse-failure-error (error)
    ((text :initarg :text :reader text) (line :initarg :line :reader line)))
@@ -72,39 +81,48 @@
 		(lambda ()
 			(multiple-value-bind (typ rest) (funcall lexer)
 				(if (eq typ :const)
-					(lex-const rest ("type" :type)
-								 		("exists" :exists)
-										("immediate" :immediate)
-										("extern" :extern)
-										("const" :const-decl)
-										("bool" :type-bool)
-										("int" :type-int)
-										("float" :type-float)
-										("node" :type-addr)
-										("string" :type-string)
-										("list" :type-list)
-										("include" :include)
-										("random" :random)
-										("route" :route)
-										("action" :action)
-										("linear" :linear)
-										("export" :export)
-										("import" :import)
-										("from" :from)
-										("as" :as)
-										("let" :let)
-										("in" :in)
-										("end" :end)
-										("if" :if)
-										("then" :then)
-										("fun" :fun)
-										("else" :else)
-										("otherwise" :otherwise)
-										("min" :min)
-										("priority" :prio)
-										("true" :true)
-										("false" :false)
-										("nil" :nil))
+              (multiple-value-bind (ty found-p) (gethash rest *parser-typedef-types*)
+                  (cond
+                   (found-p (values :type-name rest))
+                   ((has-node-type-p rest) (values :node-type rest))
+                   (t
+                    (lex-const rest ("type" :type)
+                     ("exists" :exists)
+                     ("extern" :extern)
+                     ("const" :const-decl)
+                     ("bool" :type-bool)
+                     ("int" :type-int)
+                     ("float" :type-float)
+                     ("node" :type-addr)
+                     ("thread" :type-thread)
+                     ("string" :type-string)
+                     ("list" :type-list)
+                     ("array" :type-array)
+                     ("include" :include)
+                     ("random" :random)
+                     ("route" :route)
+                     ("action" :action)
+                     ("linear" :linear)
+                     ("export" :export)
+                     ("import" :import)
+                     ("custom" :custom)
+                     ("from" :from)
+                     ("as" :as)
+                     ("let" :let)
+                     ("ins" :ins)
+                     ("in" :in)
+                     ("end" :end)
+                     ("if" :if)
+                     ("then" :then)
+                     ("fun" :fun)
+                     ("else" :else)
+                     ("otherwise" :otherwise)
+                     ("min" :min)
+                     ("priority" (if *parsed-header* :const :prio))
+                     ("index" (if *parsed-header* :const :index))
+                     ("true" :true)
+                     ("false" :false)
+                     ("nil" :nil)))))
 					(values typ rest *line-number*))))))
 					
 (defun make-var-parser (var)
@@ -130,6 +148,12 @@
 	(let* ((remain1 (subseq str 2))
 			 (remain (subseq remain1 0 (- (length remain1) 2))))
 		(parse-integer remain)))
+
+(defun parse-call (name args)
+ (cond
+  ((has-function-call-p name)
+   (make-callf name args))
+  (t (make-call name args))))
 
 (defvar *parsed-consts* nil)
 (defun lookup-const-def (name)
@@ -165,6 +189,11 @@
          (return-from has-function-call-p t)))
    nil)
 
+(defparameter *seen-subgoals* nil)
+(defun add-seen-subgoal (name)
+   (unless (member name *seen-subgoals* :test #'string-equal)
+    (push name *seen-subgoals*)))
+
 (defvar *needed-externs* nil)
 (defun add-needed-extern (extern-name) (push extern-name *needed-externs*))
 
@@ -175,6 +204,12 @@
 
 (defvar *parser-imported-predicates* nil)
 (defun add-imported-predicate (imp) (push imp *parser-imported-predicates*))
+
+(defvar *parser-node-types* nil)
+(defun add-node-type (name)
+   (push name *parser-node-types*))
+(defun has-node-type-p (name)
+   (member name *parser-node-types* :test #'string-equal))
    
 (defun generate-part-expression (final-type body fun-args args)
    (let ((this-fun-arg (first fun-args))
@@ -234,39 +269,45 @@
          (error (make-condition 'parse-failure-error :text (tostring "aggregate declaration not recognized ~a" str) :line *line-number*)))))
 
 (define-parser meld-parser
+   (:muffle-conflicts t)
  	(:start-symbol program)
  	
- 	(:precedence ((:left :mul :div :mod) (:left :or :plus :minus)))
+ 	(:precedence ((:left :mul :div :mod :in :ins) (:left :plus :minus :append) (:right :and) (:right :or) (:left :otherwise)))
  	
 	(:terminals (:const :type :true :false :variable :number :string :lparen :rparen
-								:bar :arrow :dot :comma :type-bool :type-int :type-addr
+								:bar :arrow :dot :comma :type-bool :type-int :type-addr :type-thread
 								:type-float :type-string :plus :minus :mul :mod :div
 								:lesser :lesser-equal :greater :greater-equal :equal
-								:extern :const-decl :arg
-								:lsparen :rsparen :nil :bar :type-list :local
-								:route :include :file :world :action
-								:output :input :immediate :linear
-								:dollar :lcparen :rcparen :lolli
-								:bang :to :let :in :fun :end :colon
+								:extern :const-decl :arg :tilde :append
+								:lsparen :rsparen :nil :type-list :local
+                        :type-array
+								:route :include :file :world :cpus :action
+								:linear :dollar :lcparen :rcparen :lolli
+								:bang :to :let :in :ins :fun :end :colon
 								:not-equal :if :then :else :otherwise :prio :random
-								:min :asc :desc :or :export :import :as :from
+								:min :asc :desc :or :and :export :custom :import :as :from
 								:exists :initial-priority :priority-type :priority-order
 								:delay-seconds :delay-ms :question-mark
 								:static-priority :cluster-priority
-								:random-priority :lpaco))
+								:random-priority :lpaco :host :index :type-name
+                        :no-initial-priorities :node-type))
 
 	(program
-	  (includes definitions priorities externs consts funs statements #L(make-ast  !2 ; definitions
-	                                                               !4 ; externs
-	                                                               (remove-if #'is-axiom-p !7) ; clauses
-	                                                               (filter #'is-axiom-p !7) ; axioms
-	                                                               !6 ; functions
-	                                                               (defined-nodes-list) ; nodes
-																						!3 ; priorities
-																						!5 ; consts
-																						*parser-exported-predicates*
-																						*parser-imported-predicates*
-																						*max-arg-needed*))) ;; args-needed
+	  (includes definitions directives externs consts
+      funs before-statement statements #L(make-ast  !2 ; definitions
+                           !4 ; externs
+                           (remove-if #'is-axiom-p !8) ; clauses
+                           (filter #'is-axiom-p !8) ; axioms
+                           !6 ; functions
+                           (defined-nodes-list) ; nodes
+                           !3 ; directives
+                           !5 ; consts
+                           *parser-exported-predicates*
+                           *parser-imported-predicates*
+                           *max-arg-needed*))) ;; args-needed
+
+   (before-statement
+      (#'(lambda () (setf *parsed-header* t))))
 
 	(includes
 	   ()
@@ -284,6 +325,21 @@
 	 (definition definitions #'(lambda (d ls) (if (null d) ls (cons d ls)))))
 
    (definition
+      (:type-addr const :dot #'(lambda (n node-name d)
+                              (declare (ignore n d))
+                              (when (has-node-type-p node-name)
+                                 (error (make-condition 'parse-failure-error :text (tostring "repeated node type ~a" node-name) :line *line-number*)))
+                              (add-node-type node-name)
+                              nil))
+      (:type atype const :dot #'(lambda (ty orig-type name d)
+                                    (declare (ignore ty d))
+                                    (multiple-value-bind (ty found-p) (gethash name *parser-typedef-types*)
+                                       (declare (ignore ty))
+                                       (when found-p
+                                        (error (make-condition 'parse-failure-error :text (tostring "repeated type ~a" name) :line *line-number*))))
+                                    (add-typedef name orig-type)
+                                    nil))
+                                                            
 		(:import predicate-options const type-args-part :as const :from const :dot #'(lambda (i opts name args as imported-name fr file d)
 																											(declare (ignore i as d fr))
 																											(add-imported-predicate (make-import name imported-name file))
@@ -293,15 +349,23 @@
 																					(declare (ignore ty d))
 																					(parser-make-definition name args opts))))
 
-	(priorities
+	(directives
 		()
-		(priority priorities #'cons))
+      (index directives #'cons)
+		(priority directives #'cons))
+
+   (index
+      (:index :const :div :number :dot #'(lambda (i name s field d)
+                                          (declare (ignore i s d))
+                                          (make-index name (parse-integer field)))))
 	
 	(priority
 		(:prio :static-priority :dot #'(lambda (p s d) (declare (ignore p s d)) (make-priority-static)))
 		(:prio :cluster-priority :static-priority :dot
 				#'(lambda (p i s d) (declare (ignore p i s d))
 					(make-priority-cluster :in-file)))
+      (:prio :no-initial-priorities :dot #'(lambda (p n d) (declare (ignore p n d))
+                                       (make-priority-no-initial)))
 		(:prio :cluster-priority :random-priority :dot
 				#'(lambda (p i s d) (declare (ignore p i s d))
 					(make-priority-cluster :random)))
@@ -374,26 +438,33 @@
 
    (type-decl
     (atype #'identity)
-    (aggregate-decl atype aggregate-mods #'make-aggregate))
+    (atype variable #'(lambda (typ name) (declare (ignore name)) typ))
+    (aggregate-decl atype #'make-aggregate))
     
    (aggregate-decl
 		(:min (return-const :min))
       (const #L(parse-agg-decl !1)))
 
-   (aggregate-mods
-     ()
-     (:lsparen :immediate :rsparen (return-const :immediate))
-     (:lsparen :input const :rsparen #'(lambda (l i name r) (declare (ignore l i r)) (list :input name)))
-     (:lsparen :output const :rsparen #'(lambda (l i name r) (declare (ignore l i r)) (list :output name))))
-
 	(atype
 	 base-type
+    (:node-type #'(lambda (name)
+                    (unless (has-node-type-p name)
+                        (error (make-condition 'parse-failure-error :text (tostring "invalid node type ~a" name) :line *line-number*)))
+                    (make-type-node name)))
+    (:type-name #'(lambda (name)
+               (multiple-value-bind (typ found-p) (gethash name *parser-typedef-types*)
+                (unless found-p
+                 (error (make-condition 'parse-failure-error :text (tostring "invalid type name ~a" name) :line *line-number*)))
+                typ)))
 	 (:lpaco type-list :rparen #'(lambda (l tl r)
 												(declare (ignore l r))
 												(make-struct-type tl)))
 	 (:type-list atype #'(lambda (l ty)
 	                           (declare (ignore l))
-										(make-list-type ty))))
+										(make-list-type ty)))
+    (:type-array atype #'(lambda (a ty)
+                               (declare (ignore a))
+                               (make-array-type ty))))
 										
 	(type-list
 		(atype #'list)
@@ -403,6 +474,7 @@
 	 (:type-bool (return-const :type-bool))
  	 (:type-int (return-const :type-int))
  	 (:type-float (return-const :type-float))
+    (:type-thread (return-const :type-thread))
  	 (:type-addr (return-const :type-addr))
 	 (:type-string (return-const :type-string)))
 	   
@@ -452,7 +524,7 @@
 		(conditional #'identity)
 		(subhead-term #'identity)
 		(comprehension #'identity)
-		(aggregate-thing #'identity))
+		(aggregate-construct #'identity))
 		
    (term
 		(head-term #'identity)
@@ -461,6 +533,7 @@
 	(exists
 		(:exists variable-list :dot :lparen terms :rparen #'(lambda (e var-list d l terms r)
 													(declare (ignore e d l r))
+                                       (setf *has-exists-p* t)
 													(make-exist var-list terms))))
 	(subgoal
 	   (inner-subgoal  #'identity)
@@ -480,9 +553,11 @@
 	 (inner-subgoal
 	    (const :lparen args :rparen #'(lambda (name x args y)
 	                                       (declare (ignore x y))
+                                          (add-seen-subgoal name)
 	                                       (make-subgoal name args)))
 		 (const :lparen args :rparen tuple-delay #'(lambda (name x args y delay)
 																(declare (ignore x y))
+                                                (add-seen-subgoal name)
 																(let ((sub (make-subgoal name args)))
 																	(subgoal-add-delay sub delay)
 																	sub))))
@@ -509,7 +584,7 @@
 		(variable #'list)
 	   (variable :comma variable-list #'(lambda (v c l) (declare (ignore c)) (cons v l))))
 	
-	(aggregate-thing
+	(aggregate-construct
 		(:lsparen multiple-aggregate-spec :bar terms :bar terms :rsparen
 			#'(lambda (l specs b1 body b2 head r)
 					(declare (ignore l b1 b2 r))
@@ -518,16 +593,24 @@
 			#'(lambda (l specs b1 vlist b2 body b3 head r)
 				(declare (ignore l r b1 b2 b3 r))
 				(make-agg-construct specs vlist body head)))
+      (:lsparen multiple-aggregate-spec :bar variable-list :bar terms :bar terms :bar terms :rsparen
+         #'(lambda (l specs b1 vlist b2 body b3 head0 b4 head r)
+            (declare (ignore l r b1 b2 b3 b4 r))
+            (make-agg-construct specs vlist body head head0)))
+      (:lsparen multiple-aggregate-spec :bar terms :bar terms :bar terms :rsparen
+         #'(lambda (l specs b1 body b2 head0 b3 head r)
+            (declare (ignore l r b1 b2 b3 r))
+            (make-agg-construct specs nil body head head0)))
 	   (:lsparen multiple-aggregate-spec :bar variable-list :bar terms :rsparen
 	         #'(lambda (l specs b1 vlist b2 terms r) (declare (ignore l r b1 b2))
-	               (make-agg-construct specs vlist terms)))
-		)
+	               (make-agg-construct specs vlist terms))))
 		
 	(multiple-aggregate-spec
 		(aggregate-spec #L(list !1))
 		(aggregate-spec :comma multiple-aggregate-spec #L(cons !1 !3)))
 		
 	(aggregate-spec
+      (:custom const expr :to variable #L(make-agg-spec :custom !5 (list !2 !3)))
 		(aggregate-mod :to variable #L(make-agg-spec (parse-agg-construct !1) !3)))
 	
 	(aggregate-mod
@@ -547,12 +630,7 @@
 		(:true (return-const (make-bool t)))
 		(:false (return-const (make-bool nil)))
 		(:string #'(lambda (x) (make-string-constant (subseq x 1 (1- (length x)))))) ;; need to trim the first and final ""
-	   (const :lparen args :rparen #'(lambda (name l args r) (declare (ignore l r))
-	            (cond
-	               ((has-function-call-p name)
-							(make-callf name args))
-	                  ;(generate-expression-by-function-call it args))
-	               (t (make-call name args)))))
+	   (const :lparen args :rparen #'(lambda (name l args r) (declare (ignore l r)) (parse-call name args)))
 	   (const #L(if (has-const-def-p !1)
 						(make-get-constant !1)
 						(error (make-condition 'parse-failure-error :text (tostring "constant not recognized: \"~a\"" !1) :line *line-number*))))
@@ -562,6 +640,9 @@
 		(:lpaco expr-list :rparen #'(lambda (l ls r) (declare (ignore l r)) (make-struct ls)))
 	   (:type-float :lparen expr :rparen #'(lambda (f l expr r) (declare (ignore f l r)) (make-convert-float expr)))
 	   (:world (return-const (make-world)))
+      (:cpus (return-const (make-cpus)))
+      (:host (return-const (make-host)))
+      (expr :append expr #L(make-call "lappend" (list !1 !3)))
 	   (expr :minus expr #'make-minus)
 	   (expr :mul expr #'make-mul)
 	   (expr :mod expr #'make-mod)
@@ -594,15 +675,19 @@
 		(expr :comma expr-list #'(lambda (x c xs) (declare (ignore c)) (cons x xs))))
 		
    (cmp
+      (expr :in expr #L(make-call "lexists" (list !3 !1)))
+      (expr :ins expr #L(make-call "lexistss" (list !3 !1)))
+	   (const :lparen args :rparen #'(lambda (name l args r) (declare (ignore l r)) (parse-call name args)))
+      (:tilde cmp #L(make-not !2))
 		(cmp :or cmp #'make-or)
+      (cmp :and cmp #'make-and)
 		(:lparen cmp :rparen #'(lambda (l cmp r) (declare (ignore l r)) cmp))
       (expr :equal expr #'make-equal)
       (expr :not-equal expr #'make-not-equal)
       (expr :lesser expr #'make-lesser)
       (expr :lesser-equal expr #'make-lesser-equal)
       (expr :greater expr #'make-greater)
-      (expr :greater-equal expr #'make-greater-equal)
-		)
+      (expr :greater-equal expr #'make-greater-equal))
 
 	(number
 		(:number #L(parse-number !1)))
@@ -615,12 +700,16 @@
 	 
 (defmacro with-parse-context (&body body)
    `(let ((*parsed-consts* nil)
+          (*seen-subgoals* nil)
+          (*parser-typedef-types* (make-hash-table :test #'equal))
+          (*parser-node-types* nil)
 			 (*needed-externs* nil))
       ,@body))
       
 (defmacro with-inner-parse-context (&body body)
    `(let ((*found-nodes* (make-hash-table))
 			 (*line-number* 0)
+          (*parsed-header* nil)
 			 (*parser-imported-predicates* nil)
 			 (*parser-exported-predicates* nil))
       ,@body))
@@ -668,14 +757,17 @@
       (let* ((lexer (simple-stream-lexer #'read-source-line
                                   #'meld-lexer
                                   :stream input-stream)))
-		(in-directory (pathname (directory-namestring (pathname file)))
-         (handler-case (parse-with-lexer lexer meld-parser)
-				(yacc-parse-error (c) (error (make-condition 'parse-failure-error
-					:text (tostring "unexpected terminal ~S (value ~S)"
-												(yacc-parse-error-terminal c)
-												(yacc-parse-error-value c))
-				:line *line-number*))))
-				))))
+      (let ((new-dir (if (eq #\/ (char file 0)) (directory-namestring (pathname file))
+                          (concatenate 'string (directory-namestring *default-pathname-defaults*)
+                               (directory-namestring (pathname file))))))
+         (in-directory (pathname new-dir)
+            (handler-case (parse-with-lexer lexer meld-parser)
+               (yacc-parse-error (c) (error (make-condition 'parse-failure-error
+                  :text (tostring "in file ~a: unexpected terminal ~S (value ~S)"
+                                       file
+                                       (yacc-parse-error-terminal c)
+                                       (yacc-parse-error-value c))
+               :line *line-number*)))))))))
    
 (defun parse-string (str)
    "Parses a string of Meld code."
@@ -702,5 +794,8 @@
                   :initial-value ast)))
 
 (defun parse-meld-file (file)
+   (setf *has-exists-p* nil)
    (with-parse-context
-      (parse-meld-file-rec file)))
+      (let ((ast (parse-meld-file-rec file)))
+         (ast-prepare ast *seen-subgoals*)
+         ast)))

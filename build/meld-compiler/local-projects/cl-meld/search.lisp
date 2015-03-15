@@ -54,6 +54,7 @@
                         (aux (assignment-expr expr)))
 							((agg-construct-p expr)
 								(aux (agg-construct-body expr))
+								(aux (agg-construct-head0 expr))
 								(aux (agg-construct-head expr)))
                      ((if-p expr)
                         (aux (if-cmp expr))
@@ -64,8 +65,11 @@
                      ((int-p expr) nil)
                      ((float-p expr) nil)
                      ((host-id-p expr) nil)
+                     ((host-p expr) nil)
+                     ((thread-id-p expr) nil)
                      ((nil-p expr) nil)
                      ((world-p expr) nil)
+                     ((cpus-p expr) nil)
                      ((addr-p expr) nil)
                      ((argument-p expr) nil)
 							((get-constant-p expr) nil)
@@ -108,6 +112,21 @@
       (remove-duplicates vars :test #'equal)))
       
 (defun all-variable-names (expr) (mapcar #'var-name (all-variables expr)))
+
+(defun expr-uses-var-p (expr var)
+   (let (found)
+      (iterate-expr #'(lambda (x)
+                       (cond
+                        ((subgoal-p x)
+                         (let ((dest (subgoal-get-remote-dest x)))
+                          (when (and dest (var-eq-p dest var))
+                           (setf found t)
+                           :stop)))
+                        ((and (var-p x) (var-eq-p x var))
+                         (setf found t)
+                         :stop)))
+                     expr)
+      found))
 
 (defun valid-assignment-p (vars) #'(lambda (a) (tree-subsetp (all-variable-names (assignment-expr a)) vars)))
 (defun select-valid-assignments (body subgoals &optional (base-vars nil))
@@ -166,7 +185,7 @@
 								#L(constraint-by-var2 var !1)
 								#L(var-p (op-op1 !1)))))
 				(when ret2
-					(values (first ret2) (op-op1 (constraint-expr (first ret)))))))))
+					(values (first ret2) (op-op1 (constraint-expr (first ret2)))))))))
 
 (defun find-not-constraints (body)
 	(find-constraints body #L(not-p !1)))
@@ -207,8 +226,9 @@
 	nil)
 	
 (defun subgoals-in-list-have-var-p (ls var)
+   "Check if subgoals 'var' as an argument (except the first)."
 	(do-subgoals ls (:args args)
-		(dolist (arg args)
+		(dolist (arg (rest args))
 			(when (var-eq-p arg var)
 				(return-from subgoals-in-list-have-var-p t))))
 	nil)		
@@ -253,6 +273,8 @@
 		((callf-p expr) nil)
 		((cons-p expr) nil)
 		((world-p expr) nil)
+      ((cpus-p expr) nil)
+      ((host-p expr) nil)
 		((struct-p expr) nil)
 		((struct-val-p expr) nil)
 		((if-p expr) 
@@ -307,7 +329,7 @@
 				(when ret
 					(make-tail ret))))
 		(t
-			(warn "-----NOT CONSIDERING ~a as constant-----" expr)
+			(warn "-----Not considering ~a as constant-----" expr)
 			nil)))
 			
 (defmacro compute-arith-expr (expr c1 c2 op)
@@ -345,6 +367,11 @@
 					(:minus (compute-arith-expr expr c1 c2 -))
 					(:mul (compute-arith-expr expr c1 c2 *))
 					(:div (compute-arith-expr expr c1 c2 /))
+					(:or (let* ((e1 (op-op1 expr))
+								(e2 (op-op2 expr))
+								(c1 (compute-constant-expr e1))
+								(c2 (compute-constant-expr c2)))
+							(make-bool (or (bool-val c1) (bool-val c2)))))
 					(:lesser (make-bool (< (int-float-val c1) (int-float-val c2))))
 					(:lesser-equal (make-bool (<= (int-float-val c1) (int-float-val c2))))
 					(:equal (cond

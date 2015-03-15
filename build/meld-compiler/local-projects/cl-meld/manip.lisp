@@ -14,7 +14,7 @@
 ;; available operations
 (define-makes :plus :minus :mul :mod :div
       :lesser :lesser-equal :greater :greater-equal
-      :equal :assign :not-equal :or)
+      :equal :assign :not-equal :or :and)
 
 (defmacro define-is-p (&rest symbs)
    `(on-top-level
@@ -26,14 +26,14 @@
 (define-is-p :bool :int :float :var :plus :minus :mul :div :mod
             :equal :not-equal
             :lesser :lesser-equal :greater :greater-equal
-            :convert-float :world :colocated
+            :convert-float :world :cpus :colocated :host
             :constraint :extern :aggregate
             :true :false :not :head
             :tail :cons :call :callf :test-nil :addr
-            :nil :host-id :or)
+            :nil :host-id :thread-id :or :and)
       
 (defun op-p (val)
-   (any (plus-p minus-p mul-p div-p mod-p not-equal-p equal-p lesser-p lesser-equal-p greater-p greater-equal-p or-p) val))
+   (any (plus-p minus-p mul-p div-p mod-p not-equal-p equal-p lesser-p lesser-equal-p greater-p greater-equal-p or-p and-p) val))
 
 (defun make-call (name args) `(:call ,name ,args))
 (defun call-name (call) (second call))
@@ -114,30 +114,46 @@
 (defun option-has-tag-p (opts opt) (some #L(tagged-p !1 opt) opts))
 
 ;; to take the home node from the first subgoal or agg-construct
-(defun first-host-node (list)
-   "Returns the home body of a body list.
-   Note that other things other than subgoals may be present"
-   (do-subgoals list (:args args)
-      (return-from first-host-node (first args))))
-      
-(defun clause-head-host-node (clause)
-   "Returns the host node of a clause.
-   Looks first on the head and then on the body."
-   (let ((head-node (first-host-node (clause-head clause))))
-      (if head-node
-         head-node
-         (first-host-node (clause-body clause)))))
+(defun find-host-nodes (clause)
+   "Returns first node and thread (if any) from a clause."
+   (let (first-thread first-node)
+      (with-clause clause (:body body :head head)
+         (do-subgoals (if (get-subgoals body) body head) (:name name :args args)
+            (let ((def (lookup-definition name)))
+               (with-definition def (:types types)
+                (let ((fst (first types)))
+                  (if (or (type-node-p fst) (type-addr-p fst))
+                     (unless first-node
+                      (setf first-node (first args)))
+                     (unless first-thread
+                      (when (type-thread-p fst)
+                         (setf first-thread (first args)))))))))
+         (unless first-node
+            (dolist (a (get-assignments (clause-body clause)))
+             (with-assignment a (:expr e :var var)
+               (when (and (host-p e) (not first-node))
+                  (setf first-node var))))))
+      (values first-node first-thread)))
 
-(defun clause-body-host-node (clause)
-   (first-host-node (clause-body clause)))
-   
-(defun clause-host-node (clause)
-   "Returns the host node of a clause.
-   Looks first on the body and then on the head."
-   (let ((host (clause-body-host-node clause)))
-      (if host
-         host
-         (clause-head-host-node clause))))
+(defun find-host-nodes-head-only (head)
+   "Returns first node and thread (if any) from a clause."
+   (let (first-node first-thread)
+      (do-subgoals head (:name name :args args)
+         (let ((def (lookup-definition name)))
+            (with-definition def (:types types)
+             (let ((fst (first types)))
+               (if (or (type-addr-p fst) (type-node-p fst))
+                  (unless first-node
+                   (setf first-node (first args))))
+                  (unless first-thread
+                   (when (type-thread-p fst)
+                      (setf first-thread (first args))))))))
+      (values first-node first-thread)))
+
+(defun clause-host-thread (clause)
+   (multiple-value-bind (host thread) (find-host-nodes clause)
+      (declare (ignore host))
+      thread))
 
 (defun make-definition (name typs options) `(:definition ,name ,typs ,options))
 (defun definition-p (def) (tagged-p def :definition))
@@ -162,6 +178,16 @@
    (definition-add-option def `(,name ,@rest)))
 (defun definition-set-cyclical (def) (definition-add-option def :cycle))
 (defun definition-is-cyclical-p (def) (definition-has-option-p def :cycle))
+(defun definition-set-thread (def) (definition-add-option def :thread))
+(defun definition-is-thread-p (def) (definition-has-option-p def :thread))
+(defun definition-set-update (def updates count)
+   (definition-add-tagged-option def :update (list updates count)))
+(defun definition-is-update-p (def)
+   (definition-get-tagged-option def :update))
+(defun definition-get-update-count (def)
+   (second (definition-get-tagged-option def :update)))
+(defun definition-get-update-definition (def)
+   (first (definition-get-tagged-option def :update)))
 
 (defun definition-set-local-agg (def)
    (definition-add-option def :local-agg))
@@ -171,6 +197,14 @@
    (definition-add-tagged-option def :strat level))
 (defun definition-get-strata (def)
    (definition-get-tagged-option def :strat))
+(defun definition-set-linear-id (def id)
+   (definition-add-tagged-option def :id2 id))
+(defun definition-set-persistent-id (def id)
+   (definition-add-tagged-option def :id2 id))
+(defun definition-get-linear-id (def)
+   (definition-get-tagged-option def :id2))
+(defun definition-get-persistent-id (def)
+   (definition-get-tagged-option def :id2))
 
 (defun is-init-p (def)
    (definition-has-option-p def :init-tuple))
@@ -178,6 +212,8 @@
    (definition-has-option-p def :route))
 (defun is-linear-p (def)
    (definition-has-option-p def :linear))
+(defun is-persistent-p (def)
+   (not (is-linear-p def)))
 (defun is-action-p (def)
    (definition-has-option-p def :action))
 (defun is-reverse-route-p (def)
@@ -200,7 +236,7 @@
 (defun subgoal-match-p (sub1 sub2)
    (equal (subgoal-name sub1) (subgoal-name sub2)))
 
-(defun make-aggregate (agg typ mod) `(:aggregate ,agg ,typ ,mod))
+(defun make-aggregate (agg typ &optional mod) `(:aggregate ,agg ,typ ,mod))
 (defun aggregate-agg (agg) (second agg))
 (defun aggregate-type (agg) (third agg))
 
@@ -229,11 +265,12 @@
    (with-definition def (:types typs)
       (some #'aggregate-p typs)))
 
-(defun make-extern (name ret-type types &optional id) `(:extern ,name ,ret-type ,types ,id))
+(defun make-extern (name ret-type types &optional id poly-p) `(:extern ,name ,ret-type ,types ,id ,poly-p))
 (defun extern-name (ext) (second ext))
 (defun extern-ret-type (ext) (third ext))
 (defun extern-types (ext) (fourth ext))
 (defun extern-id (ext) (fifth ext))
+(defun extern-poly-p (ext) (sixth ext))
 
 (defun make-constraint (expr &optional (priority 0)) (list :constraint expr priority))
 (defun constraint-expr (ls) (second ls))
@@ -242,6 +279,10 @@
 (defun set-constraint-expr (constraint new-expr)
    (setf (second constraint) new-expr))
 (defsetf constraint-expr set-constraint-expr)
+
+(defun complex-const-p (s)
+ (and (struct-p s)
+  (every #'literal-p (struct-list s))))
 
 (defun literal-p (s)
 	(or (int-p s) (float-p s)
@@ -345,6 +386,7 @@
 	(setf (first expr) :float))
 
 (defun make-host-id () '(:host-id :type-addr))
+(defun make-thread-id () '(:thread-id :type-thread))
 
 (defun make-convert-float (expr) `(:convert-float ,expr :type-float))
 (defun convert-float-expr (flt) (second flt))
@@ -369,6 +411,8 @@
 (defsetf struct-val-var set-struct-val-var)
 
 (defun make-world () (list :world))
+(defun make-cpus () (list :cpus))
+(defun make-host () (list :host))
 
 (defun make-var (var &optional typ) `(:var ,(if (stringp var) (str->sym var) var) ,@(if typ `(,typ) nil)))      
 (defun var-name (val) (second val))
@@ -416,29 +460,37 @@
 (defun set-comprehension-left (comp left)
 	(setf (second comp) left))
 (defsetf comprehension-left set-comprehension-left)
+(defun set-comprehension-right (comp right)
+   (setf (third comp) right))
+(defsetf comprehension-right set-comprehension-right)
 
 ;;;; AGGREGATES
 
-(defun make-agg-spec (op var) `(:agg-spec ,op ,var))
+(defun make-agg-spec (op var &optional args) `(:agg-spec ,op ,var ,args))
 (defun agg-spec-p (x) (tagged-p x :agg-spec))
 (defun agg-spec-op (x) (second x))
 (defun agg-spec-var (x) (third x))
+(defun agg-spec-args (x) (fourth x))
 
-(defun make-agg-construct (spec vlist body &optional head)
-   `(:agg-construct ,spec ,vlist ,body ,head))
+(defun make-agg-construct (spec vlist body &optional head head0)
+   `(:agg-construct ,spec ,vlist ,body ,head ,head0))
 (defun agg-construct-p (x) (tagged-p x :agg-construct))
 (defun agg-construct-specs (a) (second a))
 (defun agg-construct-vlist (a) (third a))
 (defun agg-construct-body (a) (fourth a))
 (defun agg-construct-head (a) (fifth a))
+(defun agg-construct-head0 (a) (sixth a))
 (defun agg-construct-spec-vars (a) (mapcar #'agg-spec-var (agg-construct-specs a)))
 
+(defun set-agg-construct-vlist (c new)
+	(setf (third c) new))
+(defsetf agg-construct-vlist set-agg-construct-vlist)
 (defun set-agg-construct-body (c body)
 	(setf (fourth c) body))
 (defsetf agg-construct-body set-agg-construct-body)
-(defun set-agg-construct-vlist (c new)
-	(setf (fifth c) new))
-(defsetf agg-construct-vlist set-agg-construct-vlist)
+(defun set-agg-construct-head0 (c body)
+	(setf (sixth c) body))
+(defsetf agg-construct-head0 set-agg-construct-head0)
 
 ;;;; EXISTS
 
@@ -475,7 +527,14 @@
 	(subgoal-add-option subgoal `(,opt ,arg)))
 (defun subgoal-add-route (sub route)
 	(assert (var-p route))
-	(subgoal-add-option sub `(:route ,route)))
+   (subgoal-add-tagged-option sub :route route))
+(defun subgoal-get-remote-dest (subgoal)
+   (first (subgoal-get-tagged-option subgoal :route)))
+
+(defun subgoal-set-thread (sub)
+   (subgoal-add-option sub :thread))
+(defun subgoal-is-thread-p (sub)
+   (subgoal-has-option-p sub :thread))
 	
 (defun subgoal-get-tagged-option (subgoal opt)
    (let ((res (find-if #L(tagged-p !1 opt) (subgoal-options subgoal))))
@@ -489,8 +548,6 @@
 	(subgoal-add-tagged-option subgoal :min var))
 (defun subgoal-has-random-p (subgoal)
 	(subgoal-has-option-p subgoal :random))
-(defun subgoal-get-remote-dest (subgoal)
-   (first (subgoal-get-tagged-option subgoal :route)))
 (defun subgoal-get-min-variable (subgoal)
 	(let ((ret (subgoal-get-tagged-option subgoal :min)))
 		(when ret
@@ -509,7 +566,7 @@
 (defun subgoal-is-const-p (subgoal)
 	(with-subgoal subgoal (:args args)
 		; we want to ignore constants in this case (faster loading)
-		(every #L(and (const-p !1) (not (get-constant-p !1))) args)))
+		(every #L(and (or (complex-const-p !1) (const-p !1)) (not (get-constant-p !1))) args)))
 (defun subgoal-add-delay (subgoal delay)
 	(assert (and (numberp delay) (> delay 0)))
 	(subgoal-add-tagged-option subgoal :delay delay))
@@ -541,6 +598,9 @@
 (defun lookup-definition (pred &optional (defs *definitions*))
    (find-if #L(string-equal pred (definition-name !1)) defs))
 
+(defun lookup-subgoal-definition (subgoal &optional (defs *definitions*)) 
+   (lookup-definition (subgoal-name subgoal) defs))
+
 (defun lookup-def-id (def-name)
    (do-definitions (:id id :name name)
       (if (string-equal name def-name) (return-from lookup-def-id id))))
@@ -553,15 +613,13 @@
 (defun const-definition-name (const) (second const))
 (defun const-definition-expr (const) (third const))
 
-(defun lookup-const (name)
-	(find-if #L(string-equal name (constant-name !1)) *consts*))
-
 (defun has-constraints-p (subgoals) (some #'constraint-p subgoals))
 (defun has-assignments-p (subgoals) (some #'assignment-p subgoals))
    
 (defun op-to-string (op)
    (case op
 		(:or "||")
+      (:and "&&")
       (:plus "+")
       (:minus "-")
       (:mul "*")
@@ -579,7 +637,7 @@
    
 (defun eq-arith-p (sym) (eq-or sym :plus :minus :mul :div :mod))
 (defun eq-num-cmp-p (sym) (eq-or sym :lesser :lesser-equal :greater :greater-equal))
-(defun eq-cmp-p (sym) (eq-or sym :equal :not-equal :lesser :lesser-equal :greater :greater-equal :or))
+(defun eq-cmp-p (sym) (eq-or sym :equal :not-equal :lesser :lesser-equal :greater :greater-equal :or :and))
 
 ;; imports
 (defun make-import (imp as file) `(:import ,imp ,as ,file))

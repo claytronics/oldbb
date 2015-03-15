@@ -6,9 +6,10 @@
 (defun check-home-argument (name typs)
    (when (null typs)
       (error 'type-invalid-error :text (concatenate 'string name " has no arguments")))
-   (unless (type-addr-p (first typs))
-      (error 'type-invalid-error
-         :text (concatenate 'string "first argument of tuple " name " must be of type 'node'"))))
+   (let ((fst (first typs)))
+      (unless (or (type-addr-p fst) (type-thread-p fst) (type-node-p fst))
+         (error 'type-invalid-error
+            :text (concatenate 'string "first argument of tuple " name " must be of type 'node'")))))
          
 (defun no-types-p (ls) (null ls))
 
@@ -24,16 +25,31 @@
 		((and (listp t2) (not (listp t1)) (eq t1 (first t2))) t1)
 		((and (listp t1) (not (listp t2))) nil)
 		((and (not (listp t2)) (listp t2)) nil)
+      ((and (type-node-p t1) (type-node-p t2))
+        (let ((a (type-node-type t1))
+              (b (type-node-type t2)))
+         (if (string-equal a b)
+          t1 nil)))
+      ((and (type-addr-p t1) (type-node-p t2)) t2)
+      ((and (type-node-p t1) (type-addr-p t2)) t1)
 		((and (type-list-p t1) (type-list-p t2))
 		 (let* ((sub1 (type-list-element t1))
 				  (sub2 (type-list-element t2))
 				  (merged (merge-type sub1 sub2)))
 			(if merged
 				(make-list-type merged))))
+      ((and (type-array-p t1) (type-array-p t2))
+       (let* ((sub1 (type-array-element t1))
+              (sub2 (type-array-element t2))
+              (merged (merge-type sub1 sub2)))
+        (if merged
+         (make-array-type merged))))
 		((and (type-struct-p t1) (type-struct-p t2))
 			(let ((l1 (type-struct-list t1))
 					(l2 (type-struct-list t2)))
 				(cond
+               ((eq l2 :all) t1)
+               ((eq l1 :all) t2)
 					((not (= (length l1) (length l2))) nil)
 					(t
 						(let ((result
@@ -72,7 +88,10 @@
 							(let ((merged-type (merge-type t11 t22)))
 								(when merged-type
 									`(,(make-list-type merged-type))))))
-					(t `(,(merge-type t1 t2))))))
+					(t
+                (let ((merged (merge-type t1 t2)))
+                  (when merged
+                   `(,merged)))))))
 		((= (length ls) 1)
 			(let ((t1 (first ls)))
 				(if (eq t1 :all)
@@ -83,14 +102,45 @@
 						(intersection ls types)))))
 		((= (length types) 1)
 			(let ((t2 (first types)))
-				(if (eq t2 :all)
-					ls
-					(intersection ls types))))
-		(t (intersection ls types))))
+            (cond
+             ((eq t2 :all) ls)
+             ((type-list-p t2)
+              (let* ((t21 (type-list-element t2))
+                     (list-types (filter #'type-list-p ls))
+                     (elements (mapcar #'type-list-element list-types))
+                     (merged (loop for element in elements
+                                   append (let ((m (merge-types (list element) (list t21))))
+                                                (when m
+                                                   (list (make-list-type (first m))))))))
+               merged))
+             (t
+					(intersection ls types)))))
+		(t (intersection ls types :test #'equal))))
    
 (defparameter *constraints* nil)
 (defparameter *defined* nil)
 (defparameter *defined-in-context* nil)
+(defparameter *node-constraints* nil)
+
+(defmacro with-node-type-context (&body body)
+   `(let ((*node-constraints* (make-hash-table)))
+      ,@body))
+
+(defun add-node-constraint (addr typ)
+   (multiple-value-bind (type-found found-p) (gethash (addr-num addr) *node-constraints*)
+      (cond
+       ((not (or (type-addr-p typ) (type-node-p typ)))
+         (error 'type-invalid-error :text (tostring "add-node-constraint: invalid node type ~a" typ)))
+       (found-p
+         (let ((result (merge-type type-found typ)))
+          (unless result
+           (error 'type-invalid-error :text (tostring "add-node-constraint: could not merge types '~a' and '~a' for node ~a"
+                                             (type-to-string type-found) (type-to-string typ) (addr-num addr))))
+          (setf (gethash (addr-num addr) *node-constraints*) result)
+          result))
+       (t
+        (setf (gethash (addr-num addr) *node-constraints*) typ)
+        typ))))
 
 (defmacro with-typecheck-context (&body body)
    `(let ((*defined* nil)
@@ -118,8 +168,11 @@
 
 (defun set-type (expr typs)
    (let ((typ (list (try-one typs))))
+      (when (and (one-elem-p typs)
+                  (not (has-all-type-p typs)))
+         (setf *program-types* (add-type-to-typelist *program-types* (first typs))))
       (cond
-         ((or (nil-p expr) (world-p expr) (host-id-p expr)) (setf (cdr expr) typ))
+         ((or (nil-p expr) (host-p expr) (cpus-p expr) (world-p expr) (host-id-p expr)) (setf (cdr expr) typ))
          ((or (var-p expr) (bool-p expr) (int-p expr) (float-p expr) (string-constant-p expr) (tail-p expr) (head-p expr)
                (not-p expr) (test-nil-p expr) (addr-p expr) (convert-float-p expr)
 					(get-constant-p expr) (struct-p expr))
@@ -134,10 +187,12 @@
 (defun force-constraint (var new-types)
    (multiple-value-bind (types ok) (gethash var *constraints*)
       (when ok
-			(setf new-types (merge-types types new-types))
-			(when (no-types-p new-types)
-            (error 'type-invalid-error :text
-                  (tostring "Type error in variable ~a: new constraint are types ~a but variable is set as ~a" var new-types types))))
+         (let ((old-types new-types))
+            (setf new-types (merge-types types new-types))
+            (when (no-types-p new-types)
+               (error 'type-invalid-error :text
+                     (tostring "Type error in variable ~a: new constraint are types '~a' but variable is set as '~a'"
+                         var (type-to-string (first old-types)) (type-to-string (first types)))))))
       (set-var-constraint var new-types)))
 
 (defun set-var-constraint (var new-types)
@@ -171,6 +226,54 @@
 	(if (is-all-type-p forced-types)
 		forced-types
 		(mapcar #'type-struct-list (filter #'type-struct-p forced-types))))
+
+(defun unify-types (typ concrete-type concrete-template)
+   "Unify 'typ' by matching the concrete-template with concrete-type."
+   (cond
+    ((eq concrete-template :all)
+     (subst concrete-type :all typ :test #'equal))
+    ((type-list-p concrete-template)
+     (unify-types typ (type-list-element concrete-type) (type-list-element concrete-template)))
+    ((type-array-p concrete-template)
+     (unify-types typ (type-array-element concrete-type) (type-array-element concrete-template)))
+    ((type-struct-p concrete-template)
+     (cond
+      ((eq (type-struct-list concrete-template) :all)
+       (subst (type-struct-list concrete-type) :all typ :test #'equal))
+      (t
+        (loop for conc in (type-struct-list concrete-type)
+              for temp in (type-struct-list concrete-template)
+              do (setf typ (unify-types typ conc temp)))
+        typ)))
+    (t typ)))
+
+(defun unify-arg-types (arg-types template-ret ret-types)
+   (unless (has-all-type-p template-ret)
+      (return-from unify-arg-types arg-types))
+   (cond
+    ((and (one-elem-p ret-types)
+         (not (has-all-type-p ret-types)))
+     (let ((f (first ret-types)))
+        (loop for arg in arg-types
+               collect (unify-types arg f template-ret))))
+    (t arg-types)))
+
+(defun find-all-type (template concrete)
+   (cond
+    ((eq template :all) concrete)
+    ((type-list-p template) (find-all-type (type-list-element template) (type-list-element concrete)))
+    ((type-array-p template) (find-all-type (type-array-element template) (type-array-element concrete)))
+    ((type-struct-p template)
+     (when (eq (type-struct-list template) :all)
+      (return-from find-all-type concrete))
+     (loop for temp in (type-struct-list template)
+           for conc in (type-struct-list concrete)
+           do (let ((x (find-all-type temp conc)))
+               (when x
+                (return-from find-all-type x))))
+     (assert nil))
+    (t
+     nil)))
          
 (defun get-type (expr forced-types body-p)
 	(assert (not (null forced-types)))
@@ -178,25 +281,46 @@
 	(labels ((do-get-type (expr forced-types)
             (cond
 					((string-constant-p expr) (merge-types forced-types '(:type-string)))
-					((host-id-p expr)
-						(merge-types forced-types '(:type-addr)))
+               ((addr-p expr)
+                  (when (one-elem-p forced-types)
+                     (let ((ty (first forced-types)))
+                      (cond
+                       ((is-all-type-p forced-types)
+                        (add-node-constraint expr :type-addr)
+                        '(:type-addr))
+                       ((type-addr-p ty)
+                        (add-node-constraint expr ty)
+                        '(:type-addr))
+                       ((type-node-p ty)
+                        (add-node-constraint expr ty)
+                        `(,ty))
+                       (t nil)))))
+					((or (host-p expr) (host-id-p expr))
+                  (when (one-elem-p forced-types)
+                     (let ((ty (first forced-types)))
+                      (cond
+                       ((is-all-type-p forced-types) '(:type-addr))
+                       ((type-addr-p ty) '(:type-addr))
+                       ((type-node-p ty) `(,ty))
+                       (t nil)))))
                ((var-p expr)
 						(cond
 							(body-p
 								(variable-is-defined expr)
-								(force-constraint (var-name expr) forced-types))
+								(let ((ret (force-constraint (var-name expr) forced-types)))
+                         ret))
 							(t
 								(when (not (variable-defined-p expr))
 									(error 'type-invalid-error :text
 												(tostring "variable ~a is not defined" (var-name expr))))
-								(force-constraint (var-name expr) forced-types))))
+                        (let ((ret (force-constraint (var-name expr) forced-types)))
+                         ret))))
 					((bool-p expr) (merge-types forced-types '(:type-bool)))
                ((int-p expr) (let ((new-types (merge-types forced-types '(:type-int :type-float))))
 											(if (one-elem-this new-types :type-float)
 												(transform-int-to-float expr))
 											new-types))
                ((float-p expr) (merge-types forced-types '(:type-float)))
-               ((addr-p expr) (merge-types forced-types '(:type-addr)))
 					((argument-p expr) (merge-types forced-types '(:type-string)))
 					((get-constant-p expr)
 						(with-get-constant expr (:name name)
@@ -232,10 +356,28 @@
 								(error 'type-invalid-error :text
 									(tostring "external call ~a has invalid number of arguments (should have ~a arguments)"
 										extern (length (extern-types extern)))))
-							(loop for typ in (extern-types extern)
-                           for arg in (call-args expr)
-                           do (get-type arg `(,typ) body-p))
-                     (merge-types forced-types `(,(extern-ret-type extern)))))
+                     (let* ((ret-types (merge-types forced-types `(,(extern-ret-type extern))))
+                            (arg-types (extern-types extern))
+                            (unified-arg-types (unify-arg-types arg-types (extern-ret-type extern) ret-types)))
+                        (loop for typ in unified-arg-types
+                              for arg in (call-args expr)
+                              do (get-type arg `(,typ) body-p))
+                        (let (change (concrete-arg-types (mapcar #'expr-type (call-args expr))))
+                           (loop for i from 0 upto (1- (length concrete-arg-types))
+                                 for template-arg-type in arg-types
+                                 do (let ((concrete-type (nth i concrete-arg-types)))
+                                       (when (and (not (has-all-type-p concrete-type))
+                                                   (has-all-type-p template-arg-type))
+                                          (setf change t)
+                                          (setf ret-types (loop for ret-type in ret-types
+                                                                collect (unify-types ret-type concrete-type template-arg-type)))
+                                          (setf concrete-arg-types (loop for ty in concrete-arg-types
+                                                                         collect (unify-types ty concrete-type template-arg-type))))))
+                           (when change
+                              (loop for typ in concrete-arg-types
+                                    for arg in (call-args expr)
+                                    do (get-type arg `(,typ) body-p))))
+                        ret-types)))
                ((let-p expr)
                   (if (variable-defined-p (let-var expr))
                      (error 'type-invalid-error :text (tostring "Variable ~a in LET is already defined" (let-var expr))))
@@ -261,6 +403,7 @@
                   (merge-types forced-types '(:type-float)))
                ((nil-p expr) (merge-types forced-types *list-types*))
                ((world-p expr) (merge-types '(:type-int) forced-types))
+               ((cpus-p expr) (merge-types '(:type-int) forced-types))
 					((struct-val-p expr)
 						(let* ((idx (struct-val-idx expr))
 							    (var (struct-val-var expr)) ;; var is already typed
@@ -291,6 +434,8 @@
                          (head-types (get-type head base-types body-p))
 								 (list-head-types (mapcar #'make-list-type head-types))
                          (new-types (merge-types list-head-types forced-types)))
+                     ;(warn "types ~a base-types ~a head-types ~a list-head-types ~a new-types ~a" forced-types
+                     ; base-types head-types list-head-types new-types)
 							(let ((tail-type (get-type tail new-types body-p)))
 									(when tail-type
 										;; re-updated head-type
@@ -336,7 +481,7 @@
                (t (error 'type-invalid-error :text (tostring "get-type: Unknown expression ~a" expr))))))
       (let ((types (do-get-type expr forced-types)))
          (when (no-types-p types)
-            (error 'type-invalid-error :text (tostring "Type error in expression ~a: wanted types ~a ~a" expr forced-types types)))
+            (error 'type-invalid-error :text (tostring "Type error in expression ~a: wanted types ~a but got ~a" expr forced-types types)))
          (set-type expr types)
          types)))
       
@@ -385,6 +530,8 @@
       (dolist2 (arg args) (forced-type (definition-arg-types definition))
 			(assert arg)
          (let ((type-ret (get-type arg `(,forced-type) body-p)))
+            (unless type-ret
+               (error 'type-invalid-error :text (tostring "subgoal argument ~a from subgoal ~a~a has no type." arg name args)))
 				(unless (one-elem-p type-ret)
             	(error 'type-invalid-error :text (tostring "type error ~a type ~a" arg type-ret)))))))
 
@@ -407,9 +554,29 @@
 			(do-constraints (agg-construct-body c) (:expr expr)
 		     (do-type-check-constraints expr))
 			(optimize-agg-construct-constraints c clause)
-			(do-agg-specs (agg-construct-specs c) (:op op :var to)
+         (type-check-clause-head-assignments (agg-construct-head0 c))
+			(type-check-all-subgoals-and-conditionals (agg-construct-head0 c))
+         ;; replace spec variable's types.
+			(do-agg-specs (agg-construct-specs c) (:op op :var to :args args)
 				(case op
-					(:min
+               (:custom
+                  (let* ((fun (first args))
+                         (start (second args))
+                         (vtype (get-var-constraint (var-name to)))
+                         (start-type (get-type start vtype nil))
+                         (extern (lookup-external-definition fun))
+                         (ret-type (extern-ret-type extern))
+                         (args-type (extern-types extern)))
+                   (assert (one-elem-p vtype))
+                   (set-type to vtype)
+                   (unless (and (every #L(equal !1 ret-type) args-type)
+                                 (= (length args-type) 2))
+                     (error 'type-invalid-error :text (tostring "External function ~a must have equal types." fun)))
+                   (set-type start start-type)
+                   (let ((res (merge-type (first vtype) ret-type)))
+                     (unless res
+                        (error 'type-invalid-error :text (tostring "Types ~a and ~a from external ~a do not match." (first vtype) ret-type fun))))))
+					((:min :sum)
 						(let* ((vtype (get-var-constraint (var-name to))))
 							(assert (= 1 (length vtype)))
 							(set-type to vtype)
@@ -423,14 +590,18 @@
 					(:count
 						(variable-is-defined to)
 						(set-type to '(:type-int))
-						(set-var-constraint (var-name to) '(:type-int)))))
+						(set-var-constraint (var-name to) '(:type-int)))
+               (otherwise
+                (error 'type-invalid-error :text (tostring "Not handling operator ~a" op)))))
+         (type-check-clause-head-assignments (agg-construct-head c))
 			(type-check-all-subgoals-and-conditionals (agg-construct-head c))
 			(cleanup-assignments-from-agg-construct c)
 			(optimize-subgoals (agg-construct-head c) (append (clause-body clause) (agg-construct-body c)))
+			(optimize-subgoals (agg-construct-head0 c) (append (clause-body clause) (agg-construct-body c)))
 			(cleanup-assignments-from-agg-construct c)
 			(let ((new-ones *defined-in-context*)
 					(target-variables (mapcar #'var-name (agg-construct-vlist c))))
-              (do-agg-specs (agg-construct-specs c) (:op op :var to)
+              (do-agg-specs (agg-construct-specs c) (:op op :var to :args args)
 					(when (or (eq op :sum)
 				   			 (eq op :collect)
 								 (eq op :count)
@@ -665,7 +836,7 @@
 (defun add-variable-head ()
    (do-rules (:clause clause)
       (add-variable-head-clause clause))
-   (do-axioms (:clause clause)
+   (do-all-var-axioms (:clause clause)
       (add-variable-head-clause clause)))
       
 (defun do-type-check-comprehension (comp clause)
@@ -679,17 +850,19 @@
             (unless (subsetp target-variables new-ones)
                (error 'type-invalid-error :text (tostring "Comprehension ~a is not using enough variables ~a ~a" comp target-variables new-ones)))))))
 
-(defun do-type-check-exists (vars body)
+(defun do-type-check-exists (vars body clause)
 	(extend-typecheck-context
 		(dolist (var vars)
 			(force-constraint (var-name var) '(:type-addr))
       	(variable-is-defined var))
-		(do-subgoals body (:name name :args args :options options)
-			(do-type-check-subgoal name args options :body-p nil))))
+      (do-type-check-head body clause :axiom-p nil)))
       
-(defun type-check-body (clause host axiom-p)
+(defun type-check-body (clause host thread axiom-p)
 	(do-subgoals (clause-body clause) (:name name :args args :options options)
-      (do-type-check-subgoal name args options :body-p t))
+      (handler-case
+         (do-type-check-subgoal name args options :body-p t)
+         (type-invalid-error (c) (error 'type-invalid-error :text
+                                  (tostring "In clause ~a~%~a" (clause-to-string clause) (text c))))))
    (do-agg-constructs (clause-body clause) (:agg-construct c)
       (do-type-check-agg-construct c t clause))
    (transform-clause-constants clause)
@@ -726,13 +899,18 @@
 		(setf (comprehension-left comp) new-left)))
 		
 (defun cleanup-assignments-from-agg-construct (agg)
-	(let ((new-body (remove-unneeded-assignments (agg-construct-body agg) (agg-construct-head agg))))
+	(let ((new-body (remove-unneeded-assignments (agg-construct-body agg) (append (agg-construct-head0 agg) (agg-construct-head agg)))))
    	(do-type-check-assignments new-body)
 		(setf (agg-construct-body agg) new-body)))
 		
 (defun type-check-clause-head-subgoals (clause-head &key axiom-p)
 	(do-subgoals clause-head (:name name :args args :options options)
       (do-type-check-subgoal name args options :axiom-p axiom-p)))
+
+(defun type-check-clause-head-assignments (clause-head)
+   ;; transforms equal constraints to assignments
+   (create-assignments clause-head)
+	(do-type-check-assignments clause-head))
 
 (defun do-type-check-head (head clause &key axiom-p)
 	(type-check-clause-head-subgoals head :axiom-p axiom-p)
@@ -741,26 +919,35 @@
 	(do-agg-constructs head (:agg-construct c)
 		(do-type-check-agg-construct c nil clause))
 	(do-exists head (:var-list vars :body body)
-		(do-type-check-exists vars body)
+		(do-type-check-exists vars body clause)
 		(optimize-subgoals body (clause-body clause)))
 	(do-conditionals head (:conditional cond)
+      (optimize-conditional cond (clause-body clause))
 		(do-type-check-conditional cond clause :axiom-p axiom-p)))
 
-(defun type-check-all-except-body (clause host &key axiom-p)
-	(when (and axiom-p (not (variable-defined-p host)))
+(defun type-check-all-except-body (clause host thread &key axiom-p)
+	(when (and host axiom-p (not (variable-defined-p host)))
 		(variable-is-defined host))
+   (when (and thread axiom-p (not (variable-defined-p thread)))
+       (variable-is-defined thread))
 	(do-type-check-head (clause-head clause) clause :axiom-p axiom-p))
 		
 (defun optimize-subgoals (subgoals ass-constrs)
 	(let ((ass (get-assignments ass-constrs))
 			(constrs (get-constraints ass-constrs)))
 		(do-subgoals subgoals (:args args :subgoal sub)
-			(let ((new-args (mapcar #L(optimize-expr !1 ass constrs) (rest args))))
-				(setf (subgoal-args sub) (cons (first args) new-args))))))
+			(let ((new-args (mapcar #L(optimize-expr !1 ass constrs) args)))
+				(setf (subgoal-args sub) new-args)))))
+
+(defun optimize-conditional (cond body)
+   (let ((ass (get-assignments body))
+         (constrs (get-constraints body)))
+    (setf (conditional-cmp cond) (optimize-expr (conditional-cmp cond) ass constrs))))
 		
-(defun type-check-body-and-head (clause host &key axiom-p)
-	(type-check-body clause host axiom-p)
-	(type-check-all-except-body clause host :axiom-p axiom-p)
+(defun type-check-body-and-head (clause host thread &key axiom-p)
+	(type-check-body clause host thread axiom-p)
+   (type-check-clause-head-assignments (clause-head clause))
+	(type-check-all-except-body clause host thread :axiom-p axiom-p)
 	(optimize-subgoals (clause-head clause) (clause-body clause))
 	;; we may need to re-check subgoals again because of optimizations
 	(type-check-clause-head-subgoals (clause-head clause) :axiom-p axiom-p)
@@ -793,16 +980,15 @@
 	      (do-type-check-constraints expr)))
 	(optimize-comprehension-constraints comp clause)
 	(with-comprehension comp (:right right)
+      (type-check-clause-head-assignments right)
 		(type-check-all-subgoals-and-conditionals right)
 		(optimize-subgoals (recursively-get-subgoals right) (append (comprehension-left comp) (clause-body clause))))
 	(cleanup-assignments-from-comprehension comp))
 						
 (defun type-check-clause (clause axiom-p)
 	(with-typecheck-context
-		(let ((host (first-host-node (clause-body clause))))
-			(unless host
-				(setf host (first-host-node (clause-head clause))))
-			(type-check-body-and-head clause host :axiom-p axiom-p))
+      (multiple-value-bind (host thread) (find-host-nodes clause)
+			(type-check-body-and-head clause host thread :axiom-p axiom-p))
 		;; add :random to every subgoal with such variable
 		(when (clause-has-random-p clause)
 			(let ((var (clause-get-random-variable clause)))
@@ -864,74 +1050,6 @@
 									(equal arg2 other-var))))))
 				args1 args2))
 
-(defun find-same-subgoal (ls sub constraints)
-	(when (subgoal-is-remote-p sub)
-		(return-from find-same-subgoal nil))
-	(with-subgoal sub (:name name :args args)
-		(do-subgoals ls (:name other :args args-other :subgoal sub-other)
-			(when (and (string-equal name other)
-							(not (subgoal-is-remote-p sub-other)))
-				(when (test-same-arguments-p args args-other constraints)
-					(return-from find-same-subgoal sub-other)))))
-	nil)
-	
-(defun find-persistent-rule (clause)
-	"Returns T if we just use persistent facts in the rule and if any linear
-	facts are used, then are re-derived in the head of the rule."
-	(with-clause clause (:body body :head head)
-		(let ((tmp-head (get-subgoals head))
-				(constraints (get-constraints body))
-				(mark-subgoals nil)
-				(to-remove nil)
-				(linear-fail nil))
-			(do-subgoals body (:name name :subgoal sub)
-				(let ((def (lookup-definition name)))
-					(when (is-linear-p def)
-						(cond
-							((subgoal-is-reused-p sub) )
-							(t
-								(let ((found (find-same-subgoal tmp-head sub constraints)))
-									(cond
-										(found
-											(push sub mark-subgoals)
-											(push found to-remove)
-											(setf tmp-head (remove found tmp-head)))
-										(t (setf linear-fail t)))))))))
-			(dolist (sub to-remove)
-				(setf (clause-head clause) (delete sub (clause-head clause))))
-			(dolist (sub mark-subgoals)
-				(subgoal-set-reused sub))
-			(unless linear-fail
-				(do-subgoals body (:name name :subgoal sub)
-					(when (subgoal-is-reused-p sub)
-						(let ((def (lookup-definition name)))
-							(unless (is-reused-p def)
-								(definition-set-reused def)))))))))
-
-(defun rule-is-persistent-p (clause)
-	"Returns T if we just use persistent facts in the rule and if any linear
-	facts are used, then are re-derived in the head of the rule."
-	(with-clause clause (:body body :head head)
-		(when (or (get-comprehensions head)
-					 (get-agg-constructs head))
-			(return-from rule-is-persistent-p nil))
-		(let ((tmp-head (get-subgoals head)))
-			(do-subgoals body (:name name :subgoal sub)
-				(let ((def (lookup-definition name)))
-					(when (and (is-linear-p def)
-									(not (subgoal-is-reused-p sub)))
-						(return-from rule-is-persistent-p nil)))))
-		t))
-		
-(defun find-persistent-rules ()
-	(do-rules (:clause clause :head head)
-		(unless (clause-head-is-recursive-p head)
-			(find-persistent-rule clause)))
-	(do-rules (:clause clause :head head)
-		(unless (clause-head-is-recursive-p head)
-			(when (rule-is-persistent-p clause)
-				(clause-set-persistent clause)))))
-
 (defun find-action-problems ()
    "Build rule dependency graph and check if an action
    can be derived in rules that dependent on each other.
@@ -976,46 +1094,77 @@
                      (multiple-value-bind (ls found-p) (gethash rule rgraph)
                         (dolist (new-rule ls)
                            (dfs new-rule))))))))))))
+
+(defun collect-basic-types ()
+	(setf *program-types* nil)
+	(do-definitions (:types types)
+		(dolist (ty types)
+			(setf *program-types* (add-type-to-typelist *program-types* (arg-type ty)))))
+	(do-constant-list *consts* (:type typ)
+		(setf *program-types* (add-type-to-typelist *program-types* typ)))
+	(do-externs *externs* (:types types :ret-type ret)
+		(setf *program-types* (add-type-to-typelist *program-types* ret))
+		(dolist (typ types)
+			(setf *program-types* (add-type-to-typelist *program-types* typ))))
+	(do-functions *functions* (:ret-type typ :args args)
+		(setf *program-types* (add-type-to-typelist *program-types* typ))
+		(dolist (arg args)
+			(setf *program-types* (add-type-to-typelist *program-types* (var-type arg))))))
 					
 (defun type-check ()
-	(do-definitions (:name name :types typs)
-      (check-home-argument name typs))
-	(check-repeated-definitions)
-	(dolist (const *consts*)
-		(type-check-const const))
-	(dolist (fun *functions*)
-		(type-check-function fun))
-	(do-externs *externs* (:name name :ret-type ret-type :types types)
-		(let ((extern (lookup-external-definition name)))
-			(unless extern
-				(error 'type-invalid-error :text (tostring "could not found external definition ~a" name)))
-			(unless (type-eq-p ret-type (extern-ret-type extern))
-				(error 'type-invalid-error :text
-					(tostring "external function return types do not match: ~a and ~a"
-						ret-type (extern-ret-type extern))))
-			(dolist2 (t1 types) (t2 (extern-types extern))
-				(unless (type-eq-p t1 t2)
-					(error 'type-invalid-error :text
-						(tostring "external function argument types do not match: ~a and ~a"
-							t1 t2))))))
-	(dolist (name *exported-predicates*)
-		(let ((def (lookup-definition name)))
-			(unless def
-				(error 'type-invalid-error :text (tostring "exported predicate ~a was not found" name)))))
-   (add-variable-head)
-   (do-all-rules (:clause clause)
-      (type-check-clause clause nil))
-	(do-const-axioms (:subgoal sub)
-		(with-subgoal sub (:name name :args args :options opts)
-			(do-type-check-subgoal name args opts :axiom-p t)))
-   (do-all-axioms (:clause clause)
-      (type-check-clause clause t))
-	;; remove unneeded constants
-	(let (to-remove)
-		;; constants that are really constant do not need to be stored anymore since their values have been computed
-		(dolist (const *consts*)
-			(with-constant const (:name name :expr expr)
-				(when (expr-is-constant-p expr nil nil)
-					(push const to-remove))))
-		(delete-all *consts* to-remove))
-   (find-action-problems))
+   (with-node-type-context
+      (do-definitions (:name name :types typs :definition def)
+         (check-home-argument name typs))
+      (check-repeated-definitions)
+      (do-index-list *directives* (:name name :field field)
+       (let ((def (lookup-definition name)))
+        (unless def
+         (error 'type-invalid-error :text
+          (tostring "Cannot find definition ~a from index directive" name)))
+        (unless (and (>= (length (definition-types def)) field)
+                     (not (= field 0)))
+         (error 'type-invalid-error :text
+          (tostring "Field ~a from index in ~a does not exist" field name)))))
+      (dolist (const *consts*)
+         (type-check-const const))
+      (dolist (fun *functions*)
+         (type-check-function fun))
+      (do-externs *externs* (:name name :ret-type ret-type :types types)
+         (let ((extern (lookup-external-definition name)))
+            (unless extern
+               (error 'type-invalid-error :text (tostring "could not found external definition ~a" name)))
+            (unless (type-eq-p ret-type (extern-ret-type extern))
+               (error 'type-invalid-error :text
+                  (tostring "external function return types do not match: ~a and ~a"
+                     ret-type (extern-ret-type extern))))
+            (dolist2 (t1 types) (t2 (extern-types extern))
+               (unless (type-eq-p t1 t2)
+                  (error 'type-invalid-error :text
+                     (tostring "external function argument types do not match: ~a and ~a"
+                        t1 t2))))))
+      (dolist (name *exported-predicates*)
+         (let ((def (lookup-definition name)))
+            (unless def
+               (error 'type-invalid-error :text (tostring "exported predicate ~a was not found" name)))))
+      (add-variable-head)
+      (collect-basic-types) ;; collect all basic types from predicates, funs and constants.
+      (do-all-rules (:clause clause)
+         (handler-case
+            (type-check-clause clause nil)
+            (type-invalid-error (c) (error 'type-invalid-error :text
+                                     (tostring "In clause ~a~%~a" (clause-to-string clause) (text c))))))
+      (do-all-const-axioms (:subgoal sub)
+         (with-subgoal sub (:name name :args args :options opts)
+            (do-type-check-subgoal name args opts :axiom-p t)
+            (optimize-subgoals (list sub) nil)))
+      (do-all-var-axioms (:clause clause)
+         (type-check-clause clause t))
+      ;; remove unneeded constants
+      (let (to-remove)
+         ;; constants that are really constant do not need to be stored anymore since their values have been computed
+         (dolist (const *consts*)
+            (with-constant const (:name name :expr expr)
+               (when (expr-is-constant-p expr nil nil)
+                  (push const to-remove))))
+         (delete-all *consts* to-remove))
+      (find-action-problems)))

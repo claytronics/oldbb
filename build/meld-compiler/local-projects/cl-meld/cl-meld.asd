@@ -20,8 +20,8 @@
 		 						             "macros"
 		 						             "manip"
 		 						             "conf"
-												 "priorities"))
-		 			(:file "priorities"
+												 "directives"))
+		 			(:file "directives"
 								:depends-on ("package"
 												 "macros"
 												 "util"
@@ -88,6 +88,7 @@
 		 			                      "optimize"
 		 			                      "typecheck"
 		 			                      "output"
+                                     "bt2c"
 		 			                      "context"
 		 			                      "stratification"))
 		 			(:file "stratification"
@@ -97,7 +98,7 @@
 		 			                      "localize"
 		 			                      "typecheck"
 		 			                      "conf"
-												 "priorities"
+												 "directives"
 												 "context"))
 		 			(:file "models/base"
 		 			         :depends-on ("manip"
@@ -115,6 +116,9 @@
 		 			                      "stratification"
 		 			                      "external"
 												 "models/base"))
+               (:file "bt2c"
+                        :depends-on ("output"
+                                     "package"))
 		 			(:file "optimize"
 		 			         :depends-on ("manip"
 		 			                      "util"

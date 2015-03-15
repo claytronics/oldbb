@@ -20,8 +20,6 @@
 				(push-end str *output-string-constants*)
 				(1- (length *output-string-constants*))))))
 				
-(defparameter *program-types* nil)
-
 (defmacro with-memory-stream (s &body body)
    `(let ((,s (make-in-memory-output-stream)))
       ,@body
@@ -42,8 +40,8 @@
 (defun output-int64 (int)
 	(loop for i upto 7
 		collect (ldb (byte 8 (* i 8)) int)))
-(defun output-float32 (flt) (output-int (encode-float32 (coerce flt 'float))))
-(defun output-float64 (flt) (output-int64 (encode-float64 (coerce flt 'float))))
+(defun output-float32 (flt) (output-int (encode-float32 (coerce flt 'double-float))))
+(defun output-float64 (flt) (output-int64 (encode-float64 (coerce flt 'double-float))))
 (defun output-float (flt) (output-float64 flt))
 (defun output-string (str)
 	(map 'list #'char-code str))
@@ -151,12 +149,15 @@
 	
 (defun output-call (vec call instr &optional extra-bytes)
 	(let ((extern-id (lookup-external-function-id (vm-call-name call)))
-             (args (vm-call-args call)))
-         (add-byte instr vec)
-         (add-byte (logand *extern-id-mask* extern-id) vec)
-         (add-byte (logand *reg-mask* (reg-to-byte (vm-call-dest call))) vec)
-			(output-list-bytes vec extra-bytes)
-         (output-values vec args)))
+         (typ (vm-call-type call))
+         (args (vm-call-args call)))
+      (add-byte instr vec)
+      (add-byte (logand *extern-id-mask* extern-id) vec)
+      (add-byte (logand *reg-mask* (reg-to-byte (vm-call-dest call))) vec)
+      (add-byte (lookup-type-id typ) vec)
+      (output-value-data (vm-call-gc call) vec)
+      (output-list-bytes vec extra-bytes)
+      (output-values vec args)))
 
 (defun output-calle (vec call instr &optional extra-bytes)
 	(let ((extern-id (lookup-custom-external-function-id (vm-calle-name call)))
@@ -164,6 +165,7 @@
          (add-byte instr vec)
          (add-byte (logand *extern-id-mask* extern-id) vec)
          (add-byte (logand *reg-mask* (reg-to-byte (vm-call-dest call))) vec)
+         (output-value-data (vm-call-gc call) vec)
 			(output-list-bytes vec extra-bytes)
          (output-values vec args)))
       
@@ -228,10 +230,10 @@
 			(write-offset ,vec
 				(- (length ,vec) ,pos) (- ,pos (+ ,jump-many +code-offset-size+))))))
 				
-(defun output-axiom-argument (arg vec subgoal)
+(defun output-axiom-argument (arg vec subgoal intercept)
+   (funcall intercept arg vec)
 	(cond
 		((addr-p arg)
-			(add-node-value vec)
 			(output-list-bytes vec (output-addr arg)))
 		((int-p arg)
 			(if (type-float-p (expr-type arg))
@@ -242,8 +244,11 @@
 		((nil-p arg) (add-byte #b0 vec))
 		((cons-p arg)
 			(add-byte #b1 vec)
-			(output-axiom-argument (cons-head arg) vec subgoal)
-			(output-axiom-argument (cons-tail arg) vec subgoal))
+			(output-axiom-argument (cons-head arg) vec subgoal intercept)
+			(output-axiom-argument (cons-tail arg) vec subgoal intercept))
+      ((struct-p arg)
+         (loop for x in (struct-list arg)
+               do (output-axiom-argument x vec subgoal intercept)))
 		(t (error 'output-invalid-error :text (tostring "don't know how to output this subgoal: ~a" subgoal)))))
 
 (defun constant-matches-p (iter-matches)
@@ -278,6 +283,12 @@
       (output-instrs (iterate-instrs instr) vec)
       (add-byte #b00000001 vec))) ; next
 
+(defun output-axioms (vec axioms intercept)
+ (do-subgoals axioms (:name name :args args :subgoal axiom)
+  (add-byte (logand *tuple-id-mask* (lookup-def-id name)) vec)
+  (dolist (arg args)
+   (output-axiom-argument arg vec axiom intercept))))
+
 (defun output-instr (instr vec)
    (case (instr-type instr)
       (:return (add-byte #x0 vec))
@@ -288,11 +299,9 @@
 			(write-jump vec 1
 				(add-byte #b00010100 vec)
 				(jumps-here vec)
-				(let ((axioms (vm-new-axioms-subgoals instr)))
-					(do-subgoals axioms (:name name :args args :subgoal axiom)
-						(add-byte (logand *tuple-id-mask* (lookup-def-id name)) vec)
-						(dolist (arg args)
-							(output-axiom-argument arg vec axiom))))))
+            (output-axioms vec (vm-new-axioms-subgoals instr) #'(lambda (arg vec)
+                                                                  (when (addr-p arg)
+                                                                   (add-node-value vec))))))
 		(:send-delay
 			(add-byte #b00010101 vec)
 			(add-byte (logand *reg-mask* (reg-to-byte (vm-send-delay-from instr))) vec)
@@ -331,7 +340,8 @@
 			(output-call vec instr #b00100000 (list (length (vm-call-args instr)))))
 		(:calle
 			(output-calle vec instr #b00011011 (list (length (vm-calle-args instr)))))
-      (:if (let ((reg-b (reg-to-byte (vm-if-reg instr))))
+      (:if (assert (reg-p (vm-if-reg instr)))
+      		(let ((reg-b (reg-to-byte (vm-if-reg instr))))
              (write-jump vec 2
                (add-byte #b01100000 vec)
                (add-byte (logand *reg-mask* reg-b) vec)
@@ -492,19 +502,25 @@
 		(:move-constant-to-reg
 			(output-instr-and-values vec #b01011110 (move-from instr) (move-to instr)))
 		(:cons-rrr
-			(output-instr-type-and-values vec #b01011111 (vm-cons-type instr) (vm-cons-head instr) (vm-cons-tail instr) (vm-cons-dest instr)))
+			(output-instr-type-and-values vec #b01011111 (vm-cons-type instr) (vm-cons-head instr)
+             (vm-cons-tail instr) (vm-cons-dest instr) (vm-cons-gc instr)))
 		(:cons-rff
-			(output-instr-and-values vec #b01100001 (vm-cons-head instr) (vm-cons-tail instr) (vm-cons-dest instr)))
+			(output-instr-and-values vec #b01100001 (vm-cons-head instr) (vm-cons-tail instr)
+            (vm-cons-dest instr)))
 		(:cons-frf
-			(output-instr-and-values vec #b01100010 (vm-cons-head instr) (vm-cons-tail instr) (vm-cons-dest instr)))
+			(output-instr-and-values vec #b01100010 (vm-cons-head instr) (vm-cons-tail instr)
+            (vm-cons-dest instr)))
 		(:cons-ffr
-			(output-instr-and-values vec #b01100011 (vm-cons-head instr) (vm-cons-tail instr) (vm-cons-dest instr)))
+			(output-instr-and-values vec #b01100011 (vm-cons-head instr) (vm-cons-tail instr)
+          (vm-cons-dest instr) (vm-cons-gc instr)))
 		(:cons-rrf
 			(output-instr-and-values vec #b01100100 (vm-cons-head instr) (vm-cons-tail instr) (vm-cons-dest instr)))
 		(:cons-rfr
-			(output-instr-and-values vec #b01100101 (vm-cons-head instr) (vm-cons-tail instr) (vm-cons-dest instr)))
+			(output-instr-and-values vec #b01100101 (vm-cons-head instr) (vm-cons-tail instr)
+          (vm-cons-dest instr) (vm-cons-gc instr)))
 		(:cons-frr
-			(output-instr-type-and-values vec #b01100110 (vm-cons-type instr) (vm-cons-head instr) (vm-cons-tail instr) (vm-cons-dest instr)))
+			(output-instr-type-and-values vec #b01100110 (vm-cons-type instr) (vm-cons-head instr)
+          (vm-cons-tail instr) (vm-cons-dest instr) (vm-cons-gc instr)))
 		(:cons-fff
 			(output-instr-and-values vec #b01100111 (vm-cons-head instr) (vm-cons-tail instr) (vm-cons-dest instr)))
 		(:call0
@@ -558,13 +574,66 @@
 			(output-instr-and-values vec #b10100000 (vm-add-priority-priority instr) (vm-add-priority-node instr)))
 		(:add-priority-here
 			(output-instr-and-values vec #b10100001 (vm-add-priority-priority instr)))
-		(:stop-program
+      (:set-default-priority-here
+         (output-instr-and-values vec #b10100011 (vm-set-default-priority-priority instr)))
+      (:set-default-priority
+         (output-instr-and-values vec #b10100100 (vm-set-default-priority-priority instr) (vm-set-default-priority-node instr)))
+      (:set-static-here
+         (output-instr-and-values vec #b10100101))
+      (:set-static
+         (output-instr-and-values vec #b10100110 (vm-set-static-node instr)))
+      (:set-moving-here
+         (output-instr-and-values vec #b10100111))
+      (:set-moving
+         (output-instr-and-values vec #b10101000 (vm-set-moving-node instr)))
+      (:set-affinity-here
+         (output-instr-and-values vec #b10101001 (vm-set-affinity-target instr)))
+      (:set-affinity
+         (output-instr-and-values vec #b10101010 (vm-set-affinity-target instr) (vm-set-affinity-node instr)))
+		(:cpu-static
+			(output-instr-and-values vec #b10101011 (vm-cpu-static-node instr) (vm-cpu-static-dest instr)))
+      (:move-cpus-to-reg 
+         (output-instr-and-values vec #b10101100 (move-to instr)))
+      (:set-cpu-here
+         (output-instr-and-values vec #b10101101 (vm-set-cpu-cpu instr)))
+      (:is-static
+         (output-instr-and-values vec #b10101110 (vm-is-static-node instr) (vm-is-static-dest instr)))
+      (:is-moving
+         (output-instr-and-values vec #b10101111 (vm-is-moving-node instr) (vm-is-moving-dest instr)))
+      (:facts-proved
+         (output-instr-and-values vec #b10110000 (vm-facts-proved-node instr) (vm-facts-proved-dest instr)))
+      (:remove-priority
+         (output-instr-and-values vec #b10110001 (vm-remove-priority-node instr)))
+      (:remove-priority-here
+         (output-instr-and-values vec #b10110010))
+      (:facts-consumed
+         (output-instr-and-values vec #b10110011 (vm-facts-consumed-node instr) (vm-facts-consumed-dest instr)))
+		(:thread-linear-iterate (output-iterate vec #b10110100 instr nil))
+		(:add-thread-persistent
+			(output-instr-and-values vec #b10110101 (vm-add-persistent-reg instr)))
+      (:schedule-next
+         (output-instr-and-values vec #b10110110 (vm-schedule-next-node instr)))
+		(:thread-persistent-iterate (output-iterate vec #b10110111 instr nil))
+      (:fabs
+         (output-instr-and-values vec #b10111000 (vm-fabs-float instr) (vm-fabs-dest instr)))
+      (:move-type-to-reg
+         (output-instr-and-values vec #b10111001 (make-vm-int (lookup-type-id (vm-type-get (move-from instr)))) (move-to instr)))
+      (:remote-update
+         (output-instr-and-values vec #b10000100)
+         (add-byte (logand *reg-mask* (reg-to-byte (vm-remote-update-dest instr))) vec)
+         (add-byte (lookup-def-id (definition-name (vm-remote-update-edit-definition instr))) vec)
+         (add-byte (lookup-def-id (definition-name (vm-remote-update-target-definition instr))) vec)
+         (add-byte (vm-remote-update-count instr) vec)
+         (add-byte (length (vm-remote-update-regs instr)) vec)
+         (loop for reg in (vm-remote-update-regs instr)
+               do (add-byte (logand *reg-mask* (reg-to-byte reg)) vec)))
+      (:stop-program
 			(output-instr-and-values vec #b10100010))
-		(:cpu-id
+	   (:cpu-id
 			(output-instr-and-values vec #b01111110 (vm-cpu-id-node instr) (vm-cpu-id-dest instr)))
-		(:node-priority
+	   (:node-priority
 			(output-instr-and-values vec #b01111111 (vm-node-priority-node instr) (vm-node-priority-dest instr)))
-      (:select-node
+     (:select-node
 							(when (vm-select-node-empty-p instr)
 								(return-from output-instr nil))
 							(let* ((total-nodes (number-of-nodes *nodes*))
@@ -610,15 +679,20 @@
    (dolist (instr ls)
       (output-instr instr vec)))
 
-(defmacro make-byte-code (vec &body body)
+(defmacro make-byte-code (name vec &body body)
 	`(progn
 		(let ((*node-values-positions* nil))
 			,@body
-			(list :byte-code ,vec *node-values-positions*))))
+			(list :byte-code ,name ,vec *node-values-positions*))))
 			
-(defun byte-code-vec (b) (second b))
-(defun byte-code-nodes (b) (third b))
+(defun byte-code-name (b) (second b))
+(defun byte-code-vec (b) (third b))
+(defun byte-code-nodes (b) (fourth b))
 (defun byte-code-size (b) (length (byte-code-vec b)))
+(defun byte-code-find (name ls)
+   (dolist (bc ls)
+      (when (string-equal name (byte-code-name bc))
+         (return-from byte-code-find bc))))
 
 (defun write-byte-code (stream bc)
 	(write-vec stream (byte-code-vec bc))
@@ -627,15 +701,10 @@
 		(write-int-stream stream node)))
 
 (defun output-processes ()
-   (do-processes (:instrs instrs :operation collect)
+   (do-processes (:name name :instrs instrs :operation collect)
       (let ((vec (create-bin-array)))
-			(make-byte-code vec
+			(make-byte-code name vec
          	(output-instrs instrs vec)))))
-
-(defun lookup-type-id (typ)
-	(let ((ret (position typ *program-types* :test #'equal)))
-		(assert (integerp ret))
-		ret))
 
 (defun type-to-bytes (typ)
 	(cond
@@ -644,16 +713,25 @@
       		(:type-int '(#b0000))
       		(:type-float '(#b0001))
       		(:type-addr '(#b0010))
+            ; #b0011 type-list
+            ; #b0100 type-struct
 				(:type-bool '(#b0101))
+            (:type-thread '(#b0110))
+            ; #b0111 type-array
 				(:type-string '(#b1001))
 				(otherwise (error 'output-invalid-error :text (tostring "invalid arg type: ~a" typ)))))
+      ((type-node-p typ) '(#b0010))
 		((type-list-p typ)
 			(let* ((sub (type-list-element typ))
-					 (bytes (type-to-bytes sub)))
-				`(,#b0011 ,@bytes)))
+                (id (lookup-type-id sub)))
+				`(,#b0011 ,id)))
+      ((type-array-p typ)
+         (let* ((sub (type-array-element typ))
+                (id (lookup-type-id sub)))
+          `(,#b0111 ,id)))
 		((type-struct-p typ)
 			(let ((ls (type-struct-list typ)))
-				(let ((x `(,#b0100 ,(length ls) ,@(loop for ty in ls append (type-to-bytes ty)))))
+				(let ((x `(,#b0100 ,(length ls) ,@(loop for ty in ls collect (lookup-type-id ty)))))
 					x)))
 		(t (error 'output-invalid-error :text (tostring "invalid arg type: ~a" typ)))))
 
@@ -706,6 +784,8 @@
 			(setf prop (logior prop #b00100000)))
 		(when (definition-is-cyclical-p def)
 			(setf prop (logior prop #b01000000)))
+      (when (definition-is-thread-p def)
+         (setf prop (logior prop #b10000000)))
       prop))
 
 (defparameter *max-tuple-name* 32)
@@ -783,6 +863,12 @@
          (add-byte (output-properties def) vec) ; property byte
          (add-byte (output-aggregate types) vec) ; aggregate byte
          (add-byte (output-stratification-level def) vec)
+         (let ((index (find-index-name name)))
+          (cond
+           (index
+            (add-byte (1- (index-field index)) vec))
+           (t
+            (add-byte 0 vec))))
          (add-byte (length types) vec) ; number of args
          (output-tuple-type-args types vec) ; argument type information
          (output-tuple-name name vec) ;; predicate name
@@ -791,14 +877,14 @@
 
 (defun output-consts ()
 	(let ((vec (create-bin-array)))
-		(make-byte-code vec
+		(make-byte-code "consts" vec
 			(output-instrs *consts-code* vec))))
 
 (defun output-functions ()
 	(printdbg "Processing functions")
 	(loop for code in *function-code*
 		collect (let ((vec (create-bin-array)))
-						(make-byte-code vec
+						(make-byte-code "function" vec
 							(output-instrs code vec)))))
    
 (defparameter *total-written* 0)
@@ -853,32 +939,22 @@
 	"Writes priority information."
 	(write-hexa stream 2)
 	(write-hexa stream 1) ; float
-	(let* ((order (find-if #'priority-order-p *priorities*))
-			 (static (find-if #'priority-static-p *priorities*))
-			 (byt (priority-order-bit (if order (priority-order order) :desc))))
+	(let* ((static (get-priority-static))
+          (byt (priority-order-bit (get-priority-order))))
 		(when static
 			(setf byt (logior byt #b00000010)))
 		(write-hexa stream byt))
-	(let ((prio (get-initial-priority)))
-		(write-float-stream stream (if prio prio 0.0))))
+	(write-float-stream stream (get-initial-priority)))
 		
 (defun output-data-file-info (stream)
 	(write-hexa stream 3))
-
-(defun get-initial-priority ()
-	(let ((found (find-if #'initial-priority-p *priorities*)))
-		(when found
-			(initial-priority-value found))))
 			
 (defun write-rules (stream)
-   (write-int-stream stream (1+ (length *clauses*)))
-	(let ((init-rule-str "init -o axioms"))
-		(write-int-stream stream (length init-rule-str))
-		(write-string-stream stream init-rule-str))
-   (do-rules (:clause clause)
-      (let ((str (clause-to-string clause)))
-         (write-int-stream stream (length str))
-         (write-string-stream stream str))))
+   (write-int-stream stream (length *code-rules*))
+   (loop for code-rule in *code-rules*
+         do (let ((str (rule-string code-rule)))
+               (write-int-stream stream (length str))
+               (write-string-stream stream str))))
 
 (defun output-all-rules (&optional (is-data-p nil))
 	(printdbg "Processing rules...")
@@ -887,7 +963,7 @@
 			collect
    			(let ((vec (create-bin-array))
 			 			(code (rule-code code-rule)))
-					(make-byte-code vec
+					(make-byte-code "rule" vec
 						(if (and (= count 0) is-data-p)
 								;; for data files just print the select by node instruction
 								(let* ((iterate (second (rule-code code-rule)))
@@ -897,34 +973,6 @@
 				
 (defparameter +meld-magic+ '(#x6d #x65 #x6c #x64 #x20 #x66 #x69 #x6c))
 
-(defun add-type-to-typelist (types new)
-	(if (member new types :test #'equal)
-		types
-		(cond
-			((type-list-p new)
-				(cons new (add-type-to-typelist types (type-list-element new))))
-			((type-struct-p new)
-				(dolist (x (type-struct-list new))
-					(setf types (add-type-to-typelist types x)))
-				(cons new types))
-			(t (cons new types)))))
-		
-(defun collect-all-types ()
-	(setf *program-types* nil)
-	(do-definitions (:types types)
-		(dolist (ty types)
-			(setf *program-types* (add-type-to-typelist *program-types* (arg-type ty)))))
-	(do-constant-list *consts* (:type typ)
-		(setf *program-types* (add-type-to-typelist *program-types* typ)))
-	(do-externs *externs* (:types types :ret-type ret)
-		(setf *program-types* (add-type-to-typelist *program-types* ret))
-		(dolist (typ types)
-			(setf *program-types* (add-type-to-typelist *program-types* typ))))
-	(do-functions *functions* (:ret-type typ :args args)
-		(setf *program-types* (add-type-to-typelist *program-types* typ))
-		(dolist (arg args)
-			(setf *program-types* (add-type-to-typelist *program-types* (var-type arg))))))
-
 (defun do-output-header (stream)
 	(printdbg "Processing header...")
 	(dolist (magic +meld-magic+)
@@ -933,8 +981,8 @@
 	(write-int-stream stream *minor-version*)
 	(write-hexa stream (length *definitions*))
    (write-nodes stream *nodes*)
-	(collect-all-types)
 	(write-hexa stream (length *program-types*))
+   (printdbg "Writing program types...")
 	(loop for typ in *program-types*
 			do (let ((bytes (type-to-bytes typ)))
 					(write-list-stream stream bytes)))
@@ -954,8 +1002,11 @@
 (defun do-output-descriptors (stream descriptors processes)
 	(printdbg "Processing predicates...")
 	(loop for vec-desc in descriptors
-         for bc in processes
-         do (write-int-stream stream (byte-code-size bc)) ; write code size first
+         for def in *definitions*
+         do (let ((code (byte-code-find (definition-name def) processes)))
+               (if code
+                  (write-int-stream stream (byte-code-size code)) ; write code size first
+                  (write-int-stream stream 0)))
          do (write-vec stream vec-desc)))
 
 (defun do-output-string-constants (stream)
@@ -976,20 +1027,15 @@
 (defun do-output-rules (stream rules)
 	(printdbg "Processing rules...")
 	(write-int-stream stream (length *code-rules*))
+   (assert (= (length rules) (length *code-rules*)))
 	(dolist2 (bc rules) (code-rule *code-rules*)
-	 (let* ((ids (subgoal-ids code-rule))
-			 (pers-p (persistent-p code-rule)))
+	 (let* ((ids (subgoal-ids code-rule)))
+      (assert (> (byte-code-size bc) 0))
 		(write-int-stream stream (byte-code-size bc))
 		(write-byte-code stream bc)
-		
-		(if pers-p
-			(write-hexa stream 1)
-			(write-hexa stream 0))
-		
 		(write-int-stream stream (length ids))
 		(dolist (id ids)
-			(write-hexa stream id))
-		)))
+			(write-hexa stream id)))))
 		
 (defun do-output-functions (stream functions)
 	(printdbg "Processing functions...")
@@ -1042,8 +1088,7 @@
 		;; write init-code
 		(when (> (length rules) 1)
 			(warn "Too many rules in data file"))
-		(do-output-rules stream rules)
-	))
+		(do-output-rules stream rules)))
 	
 (defun do-output-code (stream)
    (do-output-header stream)
@@ -1094,12 +1139,15 @@
          (with-output-file (stream (concatenate 'string file ".m.code"))
             (format stream "~a" (print-vm))))))
 
+(defmacro with-binary-file ((stream file) &body body)
+   `(let ((*total-written* 0))
+      (with-open-file (,stream ,file :direction :output
+                                     :if-exists :supersede
+                                     :if-does-not-exist :create
+                                     :element-type '(unsigned-byte 8))
+         ,@body)))
+
 (defun output-data-file (file)
-	(let ((*total-written* 0)
-			(byte-file (concatenate 'string file ".md")))
-		(with-open-file (stream byte-file
-								:direction :output
-								:if-exists :supersede
-								:if-does-not-exist :create
-								:element-type '(unsigned-byte 8))
+	(let ((byte-file (concatenate 'string file ".md")))
+      (with-binary-file (stream byte-file)
 			(do-output-data stream))))

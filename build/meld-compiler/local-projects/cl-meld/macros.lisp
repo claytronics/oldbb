@@ -9,8 +9,9 @@
  `(pprint (macroexpand-1 ',expr)))
  
 (defmacro tostring (&rest args)
-   `(with-output-to-string (str)
-      (format str ,@args)))
+   (alexandria:with-gensyms (stream)
+      `(with-output-to-string (,stream)
+         (format ,stream ,@args))))
 	  
 (defmacro format-keyword (control &rest arguments)
  `(alexandria:format-symbol "KEYWORD" ,control ,@arguments))
@@ -220,14 +221,6 @@
 (define-with import (imp as from))
 (define-loop import with-import do-imports (imp as from))
      
-(defmacro par-do-clauses (clauses (&key (head nil) (body nil) (clause nil)
-                                    (options nil)) &body rest)
-   (alexandria:with-gensyms (el)
-      `(par-dolist (,el ,clauses)
-         (let (,@(build-bind clause el))
-            (with-clause ,el (:head ,head :body ,body :options ,options)
-               ,@rest)))))
-               
 (defmacro do-rules ((&key head body clause options id (operation 'do)) &body rest)
    `(do-clauses *clauses* (:head ,head :body ,body :clause ,clause
                            :options ,options :id ,id :operation ,operation)
@@ -238,39 +231,52 @@
       (do-rules (:head ,head :body ,body :clause ,clause :options ,options)
          ,@rest)))
          
-(defmacro par-do-rules ((&key head body clause options) &body rest)
-   `(par-do-clauses *clauses* (:head ,head :body ,body :clause ,clause :options ,options)
-      ,@rest))
-      
-(defmacro do-axioms ((&key head body clause options id (operation 'do)) &body rest)
-   `(do-clauses *axioms* (:head ,head :body ,body :clause ,clause
+(defmacro do-node-var-axioms ((&key head body clause options id (operation 'do)) &body rest)
+   `(do-clauses *node-var-axioms* (:head ,head :body ,body :clause ,clause
                            :options ,options :id ,id :operation ,operation)
       ,@rest))
 
-(defmacro do-const-axioms ((&key subgoal) &body rest)
-	(alexandria:with-gensyms (head)
-		`(do-clauses *const-axioms* (:head ,head)
-			(do-subgoals ,head (:subgoal ,subgoal)
-				,@rest))))
-      
-(defmacro par-do-axioms ((&key head body clause options) &body rest)
-   `(par-do-clauses *axioms* (:head ,head :body ,body :clause ,clause :options ,options)
+(defmacro do-thread-var-axioms ((&key head body clause options id (operation 'do)) &body rest)
+   `(do-clauses *thread-var-axioms* (:head ,head :body ,body :clause ,clause
+                           :options ,options :id ,id :operation ,operation)
       ,@rest))
-      
-(defmacro do-all-axioms ((&key head body clause options) &body rest)
+
+(defmacro do-all-var-axioms ((&key head body clause options) &body rest)
    `(progn
-      (do-axioms (:head ,head :body ,body :clause ,clause :options ,options)
+      (do-node-var-axioms (:head ,head :body ,body :clause ,clause :options ,options)
+         ,@rest)
+      (do-thread-var-axioms (:head ,head :body ,body :clause ,clause :options ,options)
          ,@rest)))
 
+(defmacro do-node-const-axioms ((&key subgoal) &body rest)
+	(alexandria:with-gensyms (head)
+		`(do-clauses *node-const-axioms* (:head ,head)
+			(do-subgoals ,head (:subgoal ,subgoal)
+				,@rest))))
+
+(defmacro do-thread-const-axioms ((&key subgoal) &body rest)
+	(alexandria:with-gensyms (head)
+		`(do-clauses *thread-const-axioms* (:head ,head)
+			(do-subgoals ,head (:subgoal ,subgoal)
+				,@rest))))
+
+(defmacro do-all-const-axioms ((&key subgoal) &body rest)
+   `(progn
+      (do-node-const-axioms (:subgoal ,subgoal)
+         ,@rest)
+      (do-thread-const-axioms (:subgoal ,subgoal)
+         ,@rest)))
+      
 (define-term-construct subgoal #'subgoal-p (name args options))
 (define-term-construct comprehension #'comprehension-p (left right variables))
 (define-term-construct exist #'exist-p (var-list body))
 (define-term-construct constraint #'constraint-p (expr))
 (define-term-construct assignment #'assignment-p (var expr))
-(define-term-construct agg-construct #'agg-construct-p (specs vlist body head spec-vars))
-(define-term-construct agg-spec #'agg-spec-p (op var))
+(define-term-construct agg-construct #'agg-construct-p (specs vlist body head head0 spec-vars))
+(define-term-construct agg-spec #'agg-spec-p (op var args))
 (define-term-construct constant #'constant-p (name expr type))
 (define-term-construct conditional #'conditional-p (cmp term1 term2))
+(define-term-construct index #'index-p (name field))
 
 (define-with process (name instrs) :use-self-p t)
 (define-with get-constant (name))

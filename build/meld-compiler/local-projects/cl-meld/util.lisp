@@ -48,6 +48,12 @@
 
 (defun has-elem-p (list el) (ensure-bool (member el list)))
 (defun has-test-elem-p (list el test) (ensure-bool (member el list :test test)))
+(defun find-anywhere (item tree)
+   "Does item occur anywhere in tree?"
+   (if (atom tree)
+      (if (eql item tree) tree)
+      (or (find-anywhere item (first tree))
+          (find-anywhere item (rest tree)))))
 
 (defun create-hash-set (ls)
    (let ((hash (make-hash-table :test #'equal)))
@@ -67,6 +73,9 @@
     (maphash #'(lambda (key val) (setf (gethash key h2) (funcall copy-fn val)))
 	     h1)
     h2))
+
+(defun hash-keys (hash-table)
+  (loop for key being the hash-keys of hash-table collect key))
 
 (defmacro any (predicates val)
    `(or ,@(mapcar (lambda (pred) `(,pred ,val)) predicates)))
@@ -216,3 +225,20 @@
 (defun mappend (fn &rest lsts)
   "maps elements in list and finally appends all resulted lists."
   (apply #'append (apply #'mapcar fn lsts)))
+
+(defun replace-all (string part replacement &key (test #'char=))
+  "Returns a new string in which all the occurences of the part 
+is replaced with replacement."
+  (with-output-to-string (out)
+    (loop with part-length = (length part)
+          for old-pos = 0 then (+ pos part-length)
+          for pos = (search part string
+                            :start2 old-pos
+                            :test test)
+          do (write-string string out
+                           :start old-pos
+                           :end (or pos (length string)))
+          when pos do (write-string replacement out)
+          while pos)))
+
+(defun next-multiple-of-uint (x) (ceiling x 64))

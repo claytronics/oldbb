@@ -57,8 +57,6 @@
    
 (defun get-head-subgoal (clause) (first (clause-head clause)))
 (defun get-head-subgoal-name (clause) (subgoal-name (get-head-subgoal clause)))  
-(defun lookup-subgoal-definition (subgoal) 
-   (lookup-definition (subgoal-name subgoal)))
                   
 (defun group-clauses-by-head (clauses)
    (let ((hash (make-hash-table :test #'equal)))
@@ -345,7 +343,7 @@
 (defun mark-unstratified-predicates ()
 	; find new priorities before computing the priority list
 	(find-priorities)
-	(let ((priorities (assign-priorities *current-strat-level* (filter #'priority-p *priorities*))))
+	(let ((priorities (assign-priorities *current-strat-level* (filter #'priority-p *directives*))))
 		(dolist (prio priorities)
 			(let ((name (first prio))
 					(priority (rest prio)))
