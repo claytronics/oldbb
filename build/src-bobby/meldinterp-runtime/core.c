@@ -213,7 +213,7 @@ execute_call1 (const unsigned char *pc, Register *reg)
   Register *arg1 = eval_reg (arg1_index, &pc, reg); 
 
 #ifdef DEBUG_INSTRS
-  if (functionID == 0x1f)
+  if (functionID == NODE2INT_FUNC)
     /* No need to do anything for this function since VM is already *
      * considering node args as NodeID's, which are int's           */
     printf("--%d--\t CALL1 node2int/%d TO reg %d = (reg %d)\n", 
@@ -223,9 +223,8 @@ execute_call1 (const unsigned char *pc, Register *reg)
 	   getBlockId(), arg1_index, dst_index, arg1_index);
 #endif
 
-  if (functionID != 0x1f)
-    fprintf(stderr, "--%d--\t Error: call to function not implemented yet!\n", 
-	    getBlockId());
+  if (functionID != NODE2INT_FUNC)
+    fprintf(stderr, "--%d--\t Error: call to function %x not implemented yet!\n", getBlockId(), functionID);
 
   /* Do nothing for now since no function are currectly implemented */
   (void)arg1;

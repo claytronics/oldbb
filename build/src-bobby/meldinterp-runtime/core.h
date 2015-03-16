@@ -516,6 +516,9 @@ extern tuple_type TYPE_TAP;
 extern tuple_type TYPE_SETCOLOR;
 extern tuple_type TYPE_SETCOLOR2;
 
+/* ************* EXTERN FUNCTION IDs ************* */
+#define NODE2INT_FUNC 0x1c
+
 /* ************* EXTERN DECLARATIONS  ************* */
 
 extern const unsigned char meld_prog[];
