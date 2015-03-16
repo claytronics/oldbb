@@ -177,7 +177,7 @@ instructions.
 #define OLINEAR_ITER_BASE    23
 #define ORLINEAR_ITER_BASE   23
 #define ALLOC_BASE           1 + 2
-#define CALL_BASE            3 + 1
+#define CALL_BASE            5 + 1
 #define IF_BASE              1 + 1 + 4
 #define TESTNIL_BASE         1 + 1 + 1
 #define HEAD_BASE            1 + 3
@@ -247,10 +247,10 @@ instructions.
 #define CONSRFR_BASE         1 + 1 + 2 + 1
 #define CONSFRR_BASE         1 + 1 + 2 + 2 * 1
 #define CONSFFF_BASE         1 + 3 * 2
-#define CALL0_BASE           3
-#define CALL1_BASE           3 + 1
-#define CALL2_BASE           3 + 2 * 1
-#define CALL3_BASE           3 + 3 * 1
+#define CALL0_BASE           5
+#define CALL1_BASE           5 + 1
+#define CALL2_BASE           5 + 2 * 1
+#define CALL3_BASE           5 + 3 * 1
 #define MVINTSTACK_BASE      1 + 4 + 1
 #define PUSHN_BASE           1 + 1
 #define MAKE_STRUCTF_BASE    1 + 2

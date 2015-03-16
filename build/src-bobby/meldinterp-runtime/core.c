@@ -206,11 +206,15 @@ execute_call1 (const unsigned char *pc, Register *reg)
 {
   ++pc;
   byte functionID = FETCH(pc++);
-  byte dst_index = FETCH(pc++);
-  Register *dst = eval_reg (dst_index, &pc, reg); 
+
+  byte dst_index = FETCH(pc);
+  Register *dst = eval_reg (dst_index, &pc, reg);
   
+  byte return_type = FETCH(pc++);
+  byte garbage_collected = FETCH(pc++);
+
   byte arg1_index = FETCH(pc);
-  Register *arg1 = eval_reg (arg1_index, &pc, reg); 
+  Register *arg1 = eval_reg (arg1_index, &pc, reg);
 
 #ifdef DEBUG_INSTRS
   if (functionID == NODE2INT_FUNC)
@@ -222,13 +226,18 @@ execute_call1 (const unsigned char *pc, Register *reg)
     printf("--%d--\t CALL1 (some func)/%d TO reg %d = (reg %d)\n", 
 	   getBlockId(), arg1_index, dst_index, arg1_index);
 #endif
-
-  if (functionID != NODE2INT_FUNC)
+  
+  if (functionID == NODE2INT_FUNC) {
+    *dst = MELD_NODE_ID(arg1);
+  } else {
     fprintf(stderr, "--%d--\t Error: call to function %x not implemented yet!\n", getBlockId(), functionID);
+  }
 
-  /* Do nothing for now since no function are currectly implemented */
+  /* Do nothing for now since no function are currently implemented */
   (void)arg1;
   (void)dst;
+  (void) return_type;
+  (void) garbage_collected;
 }
 
 /* Similar to send, but with a delay */
@@ -1663,6 +1672,7 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 #endif
 
    if (TYPE_IS_ACTION(type)) {
+     printf("execute run action %s\n", TYPE_NAME(type));
      if(isNew > 0)
          execute_run_action0(tuple, type, isNew);
       else
