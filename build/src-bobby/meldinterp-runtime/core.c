@@ -1672,7 +1672,6 @@ void tuple_do_handle(tuple_type type, tuple_t tuple, int isNew, Register *reg)
 #endif
 
    if (TYPE_IS_ACTION(type)) {
-     printf("execute run action %s\n", TYPE_NAME(type));
      if(isNew > 0)
          execute_run_action0(tuple, type, isNew);
       else
