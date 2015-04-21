@@ -32,7 +32,7 @@
 		(if is-data-p
 			(output-data-file out)
       	(output-code out))
-      (output-c-code out)
+      ;;(output-c-code out) ;; export cpp code
       (printdbg "All done."))
    t)
 
@@ -68,18 +68,3 @@
 					(sb-ext:gc :full t)
                (return-from meld-compile-list nil)))
    t)
-
-;; this is to be removed... soon
-      
-(defun create-debug-file (prog ext)
-   (concatenate 'string "/Users/flaviocruz/Projects/meld/" prog ext))
-
-(defun comp (prog &optional (out nil))
-	(let ((output-file (if out out (pathname-name (pathname prog)))))
-   	(meld-compile (create-debug-file prog ".meld")
-                 	(create-debug-file output-file ""))))
-
-(defun comp-data (prog &optional (out nil))
-	(let ((output-file (if out out (pathname-name (pathname prog)))))
-		(meld-compile (create-debug-file prog ".meld")
-         (create-debug-file output-file "") t)))
