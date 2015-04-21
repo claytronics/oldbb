@@ -41,7 +41,7 @@ sbcl --eval "(load \"$BBASE/meld-compiler/setup\")" \
      --eval "(ql:quickload \"cl-meld\")" \
      --eval "(cl-meld:meld-compile-exit \"$FILE\" \"$OUTPUT\")" \
      --no-userinit --non-interactive --noinform --noprint \
-     --no-sysinit 2>&1 | tee $compile_file
+     --no-sysinit --dynamic-space-size 4Gb 2>&1 | tee $compile_file
 if [ $? != 0 ]; then
    rm -f $compile_file
    echo "Failed to compile file $FILE (SBCL returned an error)"
