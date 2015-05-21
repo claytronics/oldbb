@@ -3,8 +3,8 @@
 # this file sets up important environment variables
 #
 
-export BBASE=`pwd`
-export ARCH=`uname -m`-`uname -s | sed -e 's+/+-+g'`
+export BBASE=$(pwd)
+export ARCH=$(uname -m)-$(uname -s)
 if [ ! -e $BBASE/bin/arch-$ARCH ]; then
   echo "No predefined files for $ARCH.";
   echo "You must mkdir $BBASE/bin/arch-$ARCH; cd src-bobby; make build; make install";
