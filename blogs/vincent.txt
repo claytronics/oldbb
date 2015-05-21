@@ -1,3 +1,12 @@
-+ try to compile
+-+ try to compil
+	+ the compiler work
+	- compile but error in the code
+
 + learn about old simulator
-- read the spanning tree code
+
++ read the spanning tree code
+	+ mind map of the functions
+
+- mapping with coordinate
+	+ push in the VisibleSim repository ( from julien bourgeois )
+	+ measuring number of messages
