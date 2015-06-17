@@ -23,7 +23,7 @@ threadvar byte NbOfAnswer = 0;
 threadvar PRef summon;
 threadvar bool dsend[6];
 
-Timeout answerCheck;
+threadvar Timeout answerCheck;
 
 void checkAnswer(){
 
@@ -44,7 +44,9 @@ void checkAnswer(){
 
 }
 
-byte NAckHandler(void){
+byte 
+NAckHandler(void)
+{
 
 
     if(thisChunk->data[0] == NACK_ID){
@@ -65,7 +67,9 @@ byte NAckHandler(void){
 
 }
 
-byte AckHandler(void){
+byte 
+AckHandler(void)
+{
 
 
     if(thisChunk->data[0] == ACK_ID){
@@ -102,7 +106,9 @@ void SendNAck(PRef p, int id){
 
 }
 
-void SendAck(PRef p, int id){
+void 
+SendAck(PRef p, int id)
+{
 
     byte msg[17];
     msg[0] = ACK_ID;
@@ -120,7 +126,8 @@ void SendAck(PRef p, int id){
 
 }
 
-byte DiffusionHandler(void){
+byte 
+DiffusionHandler(void){
 
     if(thisChunk == NULL){return 0;}
 
@@ -149,8 +156,9 @@ byte DiffusionHandler(void){
 
 }
 
-void DiffusionID(PRef except, int id){
-
+void 
+DiffusionID(PRef except, int id)
+{
     byte msg[17];
     msg[0] = DIFFUSE_ID;
 
@@ -176,13 +184,15 @@ void DiffusionID(PRef except, int id){
 
 }
 
-void TAnswer(void){
+void TAnswer(void)
+{
+
+    blockprint(stdout, "Timeout %d\n",getGUID());
+
 
     if(NbOfAnswer != 0){
-        DiffusionID(NULL,bestId);
+        DiffusionID(0, bestId);
     }
-
-    printf("Timeout %d\n",getGUID());
 
     answerCheck.calltime = getTime() + 300;
     registerTimeout(&answerCheck);
@@ -192,25 +202,32 @@ void TAnswer(void){
 void myMain(void)
 {
 
-    delayMS(100);
+    delayMS(1000);
     
     bestId = getGUID();
     NbOfAnswer = getNeighborCount();
 
-    printf("%d got %d neighbor\n",getGUID(),NbOfAnswer);
+    blockprint(stdout, "%d got %d neighbor\n", getGUID(), NbOfAnswer);
 
     pmaster = 1;
 
-    for (int i = 0; i < 6; ++i){dsend[i] = 0;}
+    for (int i = 0; i < 6; ++i) {
+      dsend[i] = 0;
+    }
 
-    delayMS(200);
 
     answerCheck.callback = (GenericHandler)(&TAnswer);
+    delayMS(2000);
+    blockprint(stdout, "After assign callback\n");
     answerCheck.calltime = getTime() + 300;
 
-    registerTimeout(&answerCheck);
+    //registerTimeout(&answerCheck);
+    blockprint(stdout, "After register\n");
 
-    DiffusionID(NULL,bestId);
+    pauseForever();
+     blockprint(stdout, "After pause\n");
+
+    DiffusionID(0, bestId);
 
     while(1){}
 
