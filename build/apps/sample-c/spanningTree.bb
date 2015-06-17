@@ -33,7 +33,7 @@ threadvar byte isInTree = 0;
 threadvar byte isLeaf = 0;
 
 #define LEAF_CHECK_TIME	3000
-Timeout leafCheck;
+threadvar Timeout leafCheck;
 
 // COLOR NOTE: RED means not in spanning tree, BLUE in spanning tree. Leaves are GREEN.
 
@@ -43,7 +43,7 @@ void myMain(void)
  
  // init timeout
  leafCheck.callback = (GenericHandler)(&checkLeaves);
- leafCheck.calltime = getTime() + LEAF_CHECK_TIME;
+ leafCheck.calltime = getTime() + LEAF_CHECK_TIME; 
  registerTimeout(&leafCheck);
 
  // init children table

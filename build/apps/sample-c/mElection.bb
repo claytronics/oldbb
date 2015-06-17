@@ -11,61 +11,107 @@
 #include "log.bbh"
 #endif
 
-int bestId;
+threadvar int bestId;
+threadvar byte pmaster = 0;
+threadvar byte nbOfAnswer = 0;
+threadvar Timeout Answer;
+
+#define DIFFUSION_ID 2
 
 #define MYCHUNKS 12
 Chunk myChunks[MYCHUNKS];
 
-Chunk* getFree(void)
-{
-    Chunk* c;
-    int i;
-
-    for(i=0; i<MYCHUNKS; i++) {
-        c = &(myChunks[i]);
-
-        if( !chunkInUse(c) ) {
-            return c;
-        }
-    }
-
-    return NULL;
-}
-
-byte colorHandler(void)
+byte DiffusionHandler(void)
 {
     if(thisChunk == NULL) {
         return 0;
     }
 
-    setColor(YELLOW);
-    printf("%d : %d\n",bestId,this()->id);
+    byte id_handler = thisChunk->data[0];
+
+    switch(id_handler){
+
+        case DIFFUSION_ID:{
+
+            byte id = thisChunk->data[1];
+
+            if(id < bestId){
+
+                pmaster++;
+                bestId = id;
+
+            }
+
+        }break;
+
+        default:
+
+        break;
+
+    }
+
+    // setColor(BLUE);
 
     return 1;
 }
 
+void DiffusionID(PRef except, int id){
+
+    byte msg[17];
+    msg[0] = DIFFUSION_ID;
+    msg[1] = id;
+
+    for (int x = 0; x < NUM_PORTS; ++x)
+    {
+
+        if(thisNeighborhood.n[x] != VACANT && thisNeighborhood.n[x] != except){
+
+            Chunk* cChunk = getSystemTXChunk();
+
+            if(sendMessageToPort(cChunk, x, msg, 2, DiffusionHandler, NULL) == 0){
+
+                freeChunk(cChunk);
+
+            }
+
+            nbOfAnswer++;
+
+        }
+    }
+}
+
+void test(void){
+
+        setColor(BLUE);
+
+}
+
 void myMain(void)
 {
-    // setColor(RED);
+
+    delayMS(200);
 
     for(byte x=0; x < MYCHUNKS; x++) {
         myChunks[x].status = CHUNK_FREE;
     }
 
-    bestId = this()->id;
-
-    printf("BestID : %d\n",bestId);
-
-    int lock = 0;
-    char msg[17];
+    bool lockm = 0;
+    bestId = getGUID();
 
     //0 : BAS
 
     while(1){
-        
-        Chunk* cChunk = getFree();
-        msg[0] = 42;
-        sendMessageToPort(cChunk, 4, msg, 1, colorHandler, NULL);
+
+        if(lockm == 0){
+            
+            Answer.callback = (GenericHandler)(&test);
+            Answer.calltime = getTime() + 3000; 
+            registerTimeout(&Answer);
+
+            DiffusionID(NULL,bestId);
+            lockm = 1;
+
+        }
 
     }
 
