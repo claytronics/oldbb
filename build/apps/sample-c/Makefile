@@ -2,7 +2,7 @@
 # below here should be in an include file
 ##################################################
 
-SOURCE := neighbor_countV2.bb
+SOURCE := mElection.bb
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
