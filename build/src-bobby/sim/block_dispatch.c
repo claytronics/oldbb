@@ -81,6 +81,7 @@ static void* callBlockTick(Block *b)
     while(1)
     {
         usleep(1000);
+	//blockprint(stderr, "call tick\n");
         blockTick();
     }
 
