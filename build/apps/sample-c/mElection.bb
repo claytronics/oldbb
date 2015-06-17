@@ -18,8 +18,8 @@ threadvar Timeout Answer;
 
 #define DIFFUSION_ID 2
 
-#define MYCHUNKS 12
-Chunk myChunks[MYCHUNKS];
+threaddef #define MYCHUNKS 12
+threadvar Chunk myChunks[MYCHUNKS];
 
 byte DiffusionHandler(void)
 {
@@ -82,14 +82,18 @@ void DiffusionID(PRef except, int id){
 
 void test(void){
 
-        setColor(BLUE);
 
+  blockprint(stderr, "before %d\n", getGUID());
+        setColor(BLUE);
+  blockprint(stderr, "\tafter %d\n", getGUID());
 }
 
 void myMain(void)
 {
 
     delayMS(200);
+
+    blockprint(stderr, "starting");
 
     for(byte x=0; x < MYCHUNKS; x++) {
         myChunks[x].status = CHUNK_FREE;
