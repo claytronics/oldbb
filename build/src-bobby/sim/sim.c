@@ -61,13 +61,14 @@ pthread_cond_t destroycond = PTHREAD_COND_INITIALIZER;
 void blockprint(FILE* f, char* fmt, ...)
 {
   va_list ap;
-  char buffer[128];
+  char buffer[1024];
 
   va_start(ap,fmt);
-  pthread_mutex_lock(&printmutex);
 //  debuginfo(this(), buffer);
-  fprintf(f, "%s:(%s) ", nodeIDasString(this()->id, 0), buffer);
-  vfprintf(f, fmt, ap);
+//  fprintf(f, "%s:(%s) ", nodeIDasString(this()->id, 0), buffer);
+  vsprintf(buffer, fmt, ap);
+  pthread_mutex_lock(&printmutex);
+  fprintf(f, "%s:%s", nodeIDasString(this()->id, 0), buffer);
   fflush(f);
   pthread_mutex_unlock(&printmutex);
   va_end(ap);
