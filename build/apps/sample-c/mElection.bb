@@ -19,17 +19,38 @@
 
 threadvar int bestId;
 threadvar bool pmaster;
-threadvar byte NbOfAnswer = 0;
 threadvar PRef summon;
 threadvar bool dsend[6];
 
 threadvar Timeout answerCheck;
 
+byte NbOfAnswer(){
+
+    byte ret;
+
+    ret = 0;
+
+    printf("Face ");
+
+    for (int i = 0; i < 6; ++i)
+    {
+        if(dsend[i] == 1){
+            printf("%d ",i);
+            ret++;
+        }
+    }
+
+    printf("need answer, signed %d\n",getGUID());
+
+    return ret;
+
+}
+
 void checkAnswer(){
 
-    if(NbOfAnswer == 0){
+    if(NbOfAnswer() == 0){
 
-        if(pmaster == 1){
+        if(pmaster == 1 && getGUID() == bestId){
 
             printf("%d is ready !\n",getGUID());
             setColor(GREEN);
@@ -58,8 +79,7 @@ NAckHandler(void)
         printf("%d received NACK from %d !\n",getGUID(),id);
 
         pmaster = 0;
-        NbOfAnswer--;
-        dsend[faceNum(thisChunk)] = 1;
+        dsend[faceNum(thisChunk)] = 0;
         checkAnswer();
 
     }
@@ -79,8 +99,7 @@ AckHandler(void)
         id |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
         printf("%d received ACK from %d !\n",getGUID(),id);
 
-        NbOfAnswer--;
-        dsend[faceNum(thisChunk)] = 1;
+        dsend[faceNum(thisChunk)] = 0;
         checkAnswer();
 
     }
@@ -146,6 +165,12 @@ DiffusionHandler(void){
 
         }
 
+        if(id == bestId){
+
+            SendAck(faceNum(thisChunk),getGUID());
+
+        }
+
         if(id > bestId){
 
             SendNAck(faceNum(thisChunk),getGUID());
@@ -169,7 +194,7 @@ DiffusionID(PRef except, int id)
 
     for (int x = 0; x < NUM_PORTS; ++x){
 
-        if(dsend[x] == 0){
+        if(dsend[x] == 1){
 
             if(sendMessageToPort(cChunk, x, msg, 3, DiffusionHandler, NULL) == 0){
 
@@ -187,47 +212,50 @@ DiffusionID(PRef except, int id)
 void TAnswer(void)
 {
 
-    blockprint(stdout, "Timeout %d\n",getGUID());
+    if(NbOfAnswer() != 0){
 
+        DiffusionID(6, bestId);
 
-    if(NbOfAnswer != 0){
-        DiffusionID(0, bestId);
+        answerCheck.calltime = getTime() + 500 + getGUID();
+        registerTimeout(&answerCheck);
+
+        // printf("Timeut %d nb %d \n",getGUID(),NbOfAnswer);
+
     }
 
-    answerCheck.calltime = getTime() + 300;
-    registerTimeout(&answerCheck);
 
 }
 
 void myMain(void)
 {
 
-    delayMS(1000);
+    delayMS(150);
     
     bestId = getGUID();
-    NbOfAnswer = getNeighborCount();
-
-    blockprint(stdout, "%d got %d neighbor\n", getGUID(), NbOfAnswer);
 
     pmaster = 1;
 
     for (int i = 0; i < 6; ++i) {
-      dsend[i] = 0;
+
+        if(thisNeighborhood.n[i] != VACANT){
+
+            dsend[i] = 1;
+
+        }else{
+
+            dsend[i] = 0;
+
+        }
+
     }
 
+    delayMS(300);
 
     answerCheck.callback = (GenericHandler)(&TAnswer);
-    delayMS(2000);
-    blockprint(stdout, "After assign callback\n");
-    answerCheck.calltime = getTime() + 300;
-
+    answerCheck.calltime = getTime() + 500;
     registerTimeout(&answerCheck);
-    blockprint(stdout, "After register\n");
 
-    pauseForever();
-     blockprint(stdout, "After pause\n");
-
-    DiffusionID(0, bestId);
+    DiffusionID(6, bestId);
 
     while(1){}
 
