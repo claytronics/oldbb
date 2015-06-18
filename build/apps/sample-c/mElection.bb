@@ -30,17 +30,12 @@ byte NbOfAnswer(){
 
     ret = 0;
 
-    printf("Face ");
-
     for (int i = 0; i < 6; ++i)
     {
         if(dsend[i] == 1){
-            printf("%d ",i);
             ret++;
         }
     }
-
-    printf("need answer, signed %d\n",getGUID());
 
     return ret;
 
@@ -216,7 +211,7 @@ void TAnswer(void)
 
         DiffusionID(6, bestId);
 
-        answerCheck.calltime = getTime() + 500 + getGUID();
+        answerCheck.calltime = getTime() + 133 + getGUID();
         registerTimeout(&answerCheck);
 
         // printf("Timeut %d nb %d \n",getGUID(),NbOfAnswer);
@@ -229,7 +224,7 @@ void TAnswer(void)
 void myMain(void)
 {
 
-    delayMS(150);
+    delayMS(200);
     
     bestId = getGUID();
 
@@ -247,12 +242,16 @@ void myMain(void)
 
         }
 
+        delayMS(getGUID());
+
     }
 
-    delayMS(300);
+    printf("i got %d neighbors\n",NbOfAnswer());
+
+    delayMS(400);
 
     answerCheck.callback = (GenericHandler)(&TAnswer);
-    answerCheck.calltime = getTime() + 500;
+    answerCheck.calltime = getTime() + 650 + getGUID();
     registerTimeout(&answerCheck);
 
     DiffusionID(6, bestId);
