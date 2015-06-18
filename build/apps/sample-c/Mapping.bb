@@ -14,6 +14,8 @@ threadvar int distancet;
 threadvar bool Dsend[6];
 threadvar PRef except;
 
+
+
 void
 Diffusioncoordinate(PRef except, int x, int y, int z, int distancet)
 {
