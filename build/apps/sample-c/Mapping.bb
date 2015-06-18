@@ -17,8 +17,6 @@ threadvar int px;
 threadvar int py;
 threadvar int pz;
 threadvar int distancet;
-threadvar bool Dsend[6];
-
 
 byte
 CoordinateHandler(void)
@@ -27,18 +25,27 @@ CoordinateHandler(void)
 	{
 		return 0;
 	}
+
 	if(thisChunk->data[0] == DIFFUSE_COORDINATE)
 	{
-	px = (int)(thisChunk->data[2]) & 0xFF;
-	px |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
-	py = (int)(thisChunk->data[4]) & 0xFF;
-	py |= ((int)(thisChunk->data[3]) << 8) & 0xFF00;
-	pz = (int)(thisChunk->data[6]) & 0xFF;
-	pz |= ((int)(thisChunk->data[5]) << 8) & 0xFF00;
-	distancet = (int)(thisChunk->data[8]) & 0xFF;
-	distancet |= ((int)(thisChunk->data[7]) << 8) & 0xFF00;
-	printf("id:%d  x=%d y=%d z=%d distance=%d\n",getGUID(),px,py,pz,distancet);
+
+		px = (int)(thisChunk->data[2]) & 0xFF;
+		px |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
+
+		py = (int)(thisChunk->data[4]) & 0xFF;
+		py |= ((int)(thisChunk->data[3]) << 8) & 0xFF00;
+
+		pz = (int)(thisChunk->data[6]) & 0xFF;
+		pz |= ((int)(thisChunk->data[5]) << 8) & 0xFF00;
+
+		distancet = (int)(thisChunk->data[8]) & 0xFF;
+		distancet |= ((int)(thisChunk->data[7]) << 8) & 0xFF00;
+
+		printf("id:%d  x=%d y=%d z=%d distance=%d\n",getGUID(),px,py,pz,distancet);
+
 	}
+
+	return 1;
 }
 
 
@@ -48,59 +55,65 @@ DiffusionCoordinate(PRef except, int xx, int yy, int zz, int dd)
 	byte msg[17];
 	msg[0] = DIFFUSE_COORDINATE;
 
+	dd++;
+
 	Chunk* cChunk = getSystemTXChunk();
 	
 	for (int i = 0; i <NUM_PORTS; i++)
 	{
+
+		int bx = 0;
+		int by = 0;
+		int bz = 0;
+
 		if (i==0)
 		{
-		zz--;
-	//	printf("0  %d\n",zz);
+			bz = zz-1;
+			// printf("0  %d\n",zz);
 		}
 		else if (i==1)
 		{
-		yy++;
-	//	printf("1  %d\n",yy);
+			bz = yy+1;
+			// printf("1  %d\n",yy);
 		}
 		else if (i==2)
 		{
-		xx++;
-		printf("2\n");
+			bx == xx+1;
+			// printf("2\n");
 		}
 		else if (i==3)
 		{
-		xx--;
-		printf("3\n");
+			bx = xx -1;
+			// printf("3\n");
 		}
 		else if (i==4)
 		{
-		printf("4\n");
-		yy--;
+			// printf("4\n");
+			bz = yy -1;
 		}
 		else if (i==5)
 		{
-		printf("5\n");
-		zz++;
+			// printf("5\n");
+			bz = zz+1;
 		}
-		msg[1] = (byte) ((xx >> 8) & 0xFF);
-		msg[2] = (byte) (xx & 0xFF);
+
+		msg[1] = (byte) ((bx >> 8) & 0xFF);
+		msg[2] = (byte) (bx & 0xFF);
 		
-		msg[3] = (byte) ((yy >> 8) & 0xFF);
-		msg[4] = (byte) (yy & 0xFF);
+		msg[3] = (byte) ((by >> 8) & 0xFF);
+		msg[4] = (byte) (by & 0xFF);
 		
-		msg[5] = (byte) ((zz >> 8) & 0xFF);
-		msg[6] = (byte) (zz & 0xFF);
+		msg[5] = (byte) ((bz >> 8) & 0xFF);
+		msg[6] = (byte) (bz & 0xFF);
 
 		msg[7] = (byte) ((dd >> 8) & 0xFF);
 		msg[8] = (byte) (dd & 0xFF);
 
-		if(Dsend[i] == 1)
+		if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
 		{
-			if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
-			{
-				freeChunk(cChunk);
-			}
+			freeChunk(cChunk);
 		}	    
+
 	}	
 }
 
@@ -120,28 +133,12 @@ myMain(void)
 		distancet=0;
 
 		printf("id:%d  x=%d y=%d z=%d distance=%d\n",getGUID(),px,py,pz,distancet);
+
+		delayMS(400);
 	
 		//1st time diffusion
 
-		for (int j=0; j<6;j++)
-		{
-
-			if(thisNeighborhood.n[j] != VACANT)
-	   		{
-				Dsend[j] = 1;
-			}
-			else
-			{
-				Dsend[j] = 0;
-			}
-
-			delayMS(getGUID());
-
-		}
-
-		delayMS(00);
-
-		DiffusionCoordinate(NULL, px, py, pz, distancet+1);
+		DiffusionCoordinate(6, px, py, pz, distancet);
 
 	}
 
