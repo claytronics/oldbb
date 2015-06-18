@@ -32,7 +32,7 @@ CoordinateHandler(void)
 	px = (int)(thisChunk->data[2]) & 0xFF;
 	px |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
 	py = (int)(thisChunk->data[4]) & 0xFF;
-	py |= ((int)(thisChunk->data[2]) << 8) & 0xFF00;
+	py |= ((int)(thisChunk->data[3]) << 8) & 0xFF00;
 	pz = (int)(thisChunk->data[6]) & 0xFF;
 	pz |= ((int)(thisChunk->data[5]) << 8) & 0xFF00;
 	distancet = (int)(thisChunk->data[8]) & 0xFF;
@@ -48,18 +48,6 @@ DiffusionCoordinate(PRef except, int xx, int yy, int zz, int dd)
 	byte msg[17];
 	msg[0] = DIFFUSE_COORDINATE;
 
-	msg[1] = (byte) ((xx >> 8) & 0xFF);
-	msg[2] = (byte) (xx & 0xFF);
-
-	msg[3] = (byte) ((yy >> 8) & 0xFF);
-	msg[4] = (byte) (yy & 0xFF);
-
-	msg[5] = (byte) ((zz >> 8) & 0xFF);
-	msg[6] = (byte) (zz & 0xFF);
-
-	msg[7] = (byte) ((dd >> 8) & 0xFF);
-	msg[8] = (byte) (dd & 0xFF);
-
 	Chunk* cChunk = getSystemTXChunk();
 	
 	for (int i = 0; i <NUM_PORTS; i++)
@@ -67,27 +55,44 @@ DiffusionCoordinate(PRef except, int xx, int yy, int zz, int dd)
 		if (i==0)
 		{
 		zz--;
+	//	printf("0  %d\n",zz);
 		}
-		if (i==1)
+		else if (i==1)
 		{
 		yy++;
+	//	printf("1  %d\n",yy);
 		}
-		if (i==2)
+		else if (i==2)
 		{
 		xx++;
+		printf("2\n");
 		}
-		if (i==3)
+		else if (i==3)
 		{
 		xx--;
+		printf("3\n");
 		}
-		if (i==4)
+		else if (i==4)
 		{
+		printf("4\n");
 		yy--;
 		}
-		if (i==5)
+		else if (i==5)
 		{
+		printf("5\n");
 		zz++;
 		}
+		msg[1] = (byte) ((xx >> 8) & 0xFF);
+		msg[2] = (byte) (xx & 0xFF);
+		
+		msg[3] = (byte) ((yy >> 8) & 0xFF);
+		msg[4] = (byte) (yy & 0xFF);
+		
+		msg[5] = (byte) ((zz >> 8) & 0xFF);
+		msg[6] = (byte) (zz & 0xFF);
+
+		msg[7] = (byte) ((dd >> 8) & 0xFF);
+		msg[8] = (byte) (dd & 0xFF);
 
 		if(Dsend[i] == 1)
 		{
@@ -136,7 +141,7 @@ myMain(void)
 
 		delayMS(00);
 
-		DiffusionCoordinate(6, px, py, pz, distancet+1);
+		DiffusionCoordinate(NULL, px, py, pz, distancet+1);
 
 	}
 
