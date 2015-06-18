@@ -19,16 +19,28 @@ threadvar int pz;
 threadvar int distancet;
 threadvar bool Dsend[6];
 
+
 byte
-CoordinateHandler(void){
-
-	if(thisChunk == NULL){
-		freeChunk(thisChunk);
+CoordinateHandler(void)
+{
+	if(thisChunk == NULL)
+	{
+		return 0;
 	}
-
-	printf("ID Message is : %d",thisChunk->data[0]);
-
+	if(thisChunk->data[0] == DIFFUSE_COORDINATE)
+	{
+	px = (int)(thisChunk->data[2]) & 0xFF;
+	px |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
+	py = (int)(thisChunk->data[4]) & 0xFF;
+	py |= ((int)(thisChunk->data[2]) << 8) & 0xFF00;
+	pz = (int)(thisChunk->data[6]) & 0xFF;
+	pz |= ((int)(thisChunk->data[5]) << 8) & 0xFF00;
+	distancet = (int)(thisChunk->data[8]) & 0xFF;
+	distancet |= ((int)(thisChunk->data[7]) << 8) & 0xFF00;
+	printf("id:%d  x=%d y=%d z=%d distance=%d\n",getGUID(),px,py,pz,distancet);
+	}
 }
+
 
 void
 DiffusionCoordinate(PRef except, int xx, int yy, int zz, int dd)
@@ -52,6 +64,31 @@ DiffusionCoordinate(PRef except, int xx, int yy, int zz, int dd)
 	
 	for (int i = 0; i <NUM_PORTS; i++)
 	{
+		if (i==0)
+		{
+		zz--;
+		}
+		if (i==1)
+		{
+		yy++;
+		}
+		if (i==2)
+		{
+		xx++;
+		}
+		if (i==3)
+		{
+		xx--;
+		}
+		if (i==4)
+		{
+		yy--;
+		}
+		if (i==5)
+		{
+		zz++;
+		}
+
 		if(Dsend[i] == 1)
 		{
 			if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
@@ -61,7 +98,6 @@ DiffusionCoordinate(PRef except, int xx, int yy, int zz, int dd)
 		}	    
 	}	
 }
-
 
 
 void 
@@ -104,8 +140,8 @@ myMain(void)
 
 	}
 
-	
-while(1);
+
+	while(1);
 
 }
 
