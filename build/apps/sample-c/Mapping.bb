@@ -43,7 +43,7 @@ CoordinateHandler(void)
 		distancet = (int16_t)(thisChunk->data[8]) & 0xFF;
 		distancet |= ((int16_t)(thisChunk->data[7]) << 8) & 0xFF00;
 
-		printf("id:%d  x=%d y=%d z=%d distance=%d\n",getGUID(),px,py,pz,distancet);
+		printf("id:%d  x=%d y=%d z=%d dd=%d\n",getGUID(),px,py,pz,distancet);
 
 	}
 
@@ -54,13 +54,14 @@ CoordinateHandler(void)
 void
 DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 {
-	int cpp = 0;
+
 	byte msg[17];
 	msg[0] = DIFFUSE_COORDINATE;
 
 	int16_t bx = xx;
 	int16_t by = yy;
 	int16_t bz = zz;
+
 	int16_t bd = dd+1;
 
 	Chunk* cChunk = getSystemTXChunk();
@@ -68,37 +69,17 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	for (int i = 0; i <NUM_PORTS; i++)
 	{
 
-		if (i==0)
-		{
-			bz = zz -1;
-			 printf("down oldz=%d newz=%d\n",zz,bz);
+		switch(i){
+
+			case 0:
+				bz = zz+1;
+			break;
+
+			case 5:
+				bz = zz-1;
+			break;
+
 		}
-		     if (i==1)
-		{
-			by = yy+1;
-			 printf("north 1 oldy=%d newy=%d\n",yy,by);
-		}
-		     if (i==2)
-		{
-			 bx = xx +1;
-			 printf("east 2 oldx=%d newx=%d\n",xx,bx);
-		}
-		     if (i==3)
-		{
-			bx = xx -1;
-			printf("west oldx=%d newx=%d\n",xx,bx);
-		}
-		     if (i==5)
-		{
-			bz = 28  ;
-			printf("up  oldz=%d newz=%d\n",zz,bz);
-		}
-		     if (i==4)
-		{
-			by = yy -1;
-			printf("south oldy=%d newy=%d\n",yy,by);
-		}
-	
 
 		msg[1] = (byte) ((bx >> 8) & 0xFF);
 		msg[2] = (byte) (bx & 0xFF);
@@ -111,28 +92,22 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 
 		msg[7] = (byte) ((dd >> 8) & 0xFF);
 		msg[8] = (byte) (dd & 0xFF);
-		printf("x=%d y=%d z=%d message transmitted to %d\n",bx,by,bz,i);
+
+		// printf("x=%d y=%d z=%d message transmitted to %d\n",bx,by,bz,i);
 
 
 		if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
 		{
 			freeChunk(cChunk);
-			cpp ++;
 		}
-		
 
-		
+		delayMS(1);
 
-		// = xx;
-		// = yy;
-		// = zz;
-		//intf("test reinitialization x=%d y=%d z=%d nb in loop=%d\n",bx,by,bz,cpp);
-
-		printf("x=%d y=%d z=%d message sendd to %d\n",bx,by,bz,i);	    
-		bx = xx;
-		by = yy;
-		bz = zz;
-		printf("test reinitialisation x=%d y=%d z=%d\n",bx,by,bz);
+		// printf("x=%d y=%d z=%d message sendd to %d\n",bx,by,bz,i);	    
+		// bx = xx;
+		// by = yy;
+		// bz = zz;
+		// printf("test reinitialisation x=%d y=%d z=%d\n",bx,by,bz);
 		
 	
 	}	
@@ -154,7 +129,7 @@ myMain(void)
 		pz=0;
 		distancet=0;
 
-		printf("id:%d  x=%d y=%d z=%d distance=%d\n",getGUID(),px,py,pz,distancet);
+		printf("degin : id:%d x=%d y=%d z=%d distance=%d\n",getGUID(),px,py,pz,distancet);
 
 		delayMS(400);
 	
