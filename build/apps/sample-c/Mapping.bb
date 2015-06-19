@@ -62,39 +62,39 @@ DiffusionCoordinate(PRef except, int xx, int yy, int zz, int dd)
 	for (int i = 0; i <NUM_PORTS; i++)
 	{
 
-		int bx = 0;
-		int by = 0;
-		int bz = 0;
+		int bx = xx;
+		int by = yy;
+		int bz = zz;
 
 		if (i==0)
 		{
 			bz = zz-1;
-			// printf("0  %d\n",zz);
+			 printf("interface 0 oldz=%d newz=%d\n",zz,bz);
 		}
 		else if (i==1)
 		{
-			bz = yy+1;
-			// printf("1  %d\n",yy);
+			by = yy+1;
+			 printf("interface 1 oldy=%d newy=%d\n",yy,by);
 		}
 		else if (i==2)
 		{
-			bx == xx+1;
-			// printf("2\n");
+			 bx++;
+			 printf("interface 2 oldx=%d newx=%d\n",xx,bx);
 		}
 		else if (i==3)
 		{
 			bx = xx -1;
-			// printf("3\n");
+			printf("interface 3 oldx=%d newx=%d\n",xx,bx);
 		}
 		else if (i==4)
 		{
-			// printf("4\n");
-			bz = yy -1;
+			by = yy -1;
+			printf("interface 4 oldy=%d newy=%d\n",yy,by);
 		}
 		else if (i==5)
 		{
-			// printf("5\n");
 			bz = zz+1;
+			printf("interface 5 oldz=%d newz=%d\n",zz,bz);
 		}
 
 		msg[1] = (byte) ((bx >> 8) & 0xFF);
@@ -108,12 +108,19 @@ DiffusionCoordinate(PRef except, int xx, int yy, int zz, int dd)
 
 		msg[7] = (byte) ((dd >> 8) & 0xFF);
 		msg[8] = (byte) (dd & 0xFF);
+		printf("x=%d y=%d z=%d message send to %d\n",bx,by,bz,i);
 
 		if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
 		{
 			freeChunk(cChunk);
-		}	    
-
+		}
+		printf("x=%d y=%d z=%d message was send to %d\n",bx,by,bz,i);	    
+		bx = xx;
+		by = yy;
+		bz = zz;
+		printf("test reinitialization x=%d y=%d z=%d\n",bx,by,bz);
+		
+	
 	}	
 }
 
