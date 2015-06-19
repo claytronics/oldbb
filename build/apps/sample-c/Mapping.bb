@@ -58,17 +58,29 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	byte msg[17];
 	msg[0] = DIFFUSE_COORDINATE;
 
+<<<<<<< HEAD
 	dd++;
 	int16_t bx = xx;
 	int16_t by = yy;
 	int16_t bz = zz;
+=======
+	int bd = dd+1;
+	int bx = xx;
+	int by = yy;
+	int bz = zz;
+>>>>>>> c34a9ef69266fe80628b76945e052255c51e75bc
 
 	Chunk* cChunk = getSystemTXChunk();
 	
 	for (int i = 0; i <NUM_PORTS; i++)
 	{
 
+<<<<<<< HEAD
 		
+=======
+
+
+>>>>>>> c34a9ef69266fe80628b76945e052255c51e75bc
 		if (i==0)
 		{
 			bz = zz -1;
@@ -110,15 +122,23 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 		msg[5] = (byte) ((bz >> 8) & 0xFF);
 		msg[6] = (byte) (bz & 0xFF);
 
+<<<<<<< HEAD
 		msg[7] = (byte) ((dd >> 8) & 0xFF);
 		msg[8] = (byte) (dd & 0xFF);
 		printf("x=%d y=%d z=%d message transmitted to %d\n",bx,by,bz,i);
+=======
+		msg[7] = (byte) ((bd >> 8) & 0xFF);
+		msg[8] = (byte) (bd & 0xFF);
+
+		printf("x=%d y=%d z=%d dqz send to %d\n",bx,by,bz,i);
+>>>>>>> c34a9ef69266fe80628b76945e052255c51e75bc
 
 		if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
 		{
 			freeChunk(cChunk);
 			cpp ++;
 		}
+<<<<<<< HEAD
 		
 
 		
@@ -127,6 +147,14 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 		// = yy;
 		// = zz;
 		//intf("test reinitialization x=%d y=%d z=%d nb in loop=%d\n",bx,by,bz,cpp);
+=======
+
+		printf("x=%d y=%d z=%d message sendd to %d\n",bx,by,bz,i);	    
+		bx = xx;
+		by = yy;
+		bz = zz;
+		printf("test reinitialisation x=%d y=%d z=%d\n",bx,by,bz);
+>>>>>>> c34a9ef69266fe80628b76945e052255c51e75bc
 		
 	
 	}	
