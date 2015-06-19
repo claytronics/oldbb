@@ -1,3 +1,4 @@
+
 #include "handler.bbh"
 #include "block.bbh"
 #include "led.bbh"
@@ -13,14 +14,15 @@
 
 #define DIFFUSE_COORDINATE 3
 
-threadvar int px;
-threadvar int py;
-threadvar int pz;
-threadvar int distancet;
+threadvar int16_t px;
+threadvar int16_t py;
+threadvar int16_t pz;
+threadvar int16_t distancet;
 
 byte
 CoordinateHandler(void)
 {
+
 	if(thisChunk == NULL)
 	{
 		return 0;
@@ -29,17 +31,17 @@ CoordinateHandler(void)
 	if(thisChunk->data[0] == DIFFUSE_COORDINATE)
 	{
 
-		px = (int)(thisChunk->data[2]) & 0xFF;
-		px |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
+		px = (int16_t)(thisChunk->data[2]) & 0xFF;
+		px |= ((int16_t)(thisChunk->data[1]) << 8) & 0xFF00;
 
-		py = (int)(thisChunk->data[4]) & 0xFF;
-		py |= ((int)(thisChunk->data[3]) << 8) & 0xFF00;
+		py = (int16_t)(thisChunk->data[4]) & 0xFF;
+		py |= ((int16_t)(thisChunk->data[3]) << 8) & 0xFF00;
 
-		pz = (int)(thisChunk->data[6]) & 0xFF;
-		pz |= ((int)(thisChunk->data[5]) << 8) & 0xFF00;
+		pz = (int16_t)(thisChunk->data[6]) & 0xFF;
+		pz |= ((int16_t)(thisChunk->data[5]) << 8) & 0xFF00;
 
-		distancet = (int)(thisChunk->data[8]) & 0xFF;
-		distancet |= ((int)(thisChunk->data[7]) << 8) & 0xFF00;
+		distancet = (int16_t)(thisChunk->data[8]) & 0xFF;
+		distancet |= ((int16_t)(thisChunk->data[7]) << 8) & 0xFF00;
 
 		printf("id:%d  x=%d y=%d z=%d distance=%d\n",getGUID(),px,py,pz,distancet);
 
@@ -50,52 +52,54 @@ CoordinateHandler(void)
 
 
 void
-DiffusionCoordinate(PRef except, int xx, int yy, int zz, int dd)
+DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 {
+	int cpp = 0;
 	byte msg[17];
 	msg[0] = DIFFUSE_COORDINATE;
 
 	dd++;
+	int16_t bx = xx;
+	int16_t by = yy;
+	int16_t bz = zz;
 
 	Chunk* cChunk = getSystemTXChunk();
 	
 	for (int i = 0; i <NUM_PORTS; i++)
 	{
 
-		int bx = xx;
-		int by = yy;
-		int bz = zz;
-
+		
 		if (i==0)
 		{
-			bz = zz-1;
-			 printf("interface 0 oldz=%d newz=%d\n",zz,bz);
+			bz = zz -1;
+			 printf("down oldz=%d newz=%d\n",zz,bz);
 		}
-		else if (i==1)
+		     if (i==1)
 		{
 			by = yy+1;
-			 printf("interface 1 oldy=%d newy=%d\n",yy,by);
+			 printf("north 1 oldy=%d newy=%d\n",yy,by);
 		}
-		else if (i==2)
+		     if (i==2)
 		{
-			 bx++;
-			 printf("interface 2 oldx=%d newx=%d\n",xx,bx);
+			 bx = xx +1;
+			 printf("east 2 oldx=%d newx=%d\n",xx,bx);
 		}
-		else if (i==3)
+		     if (i==3)
 		{
 			bx = xx -1;
-			printf("interface 3 oldx=%d newx=%d\n",xx,bx);
+			printf("west oldx=%d newx=%d\n",xx,bx);
 		}
-		else if (i==4)
+		     if (i==5)
+		{
+			bz = 28  ;
+			printf("up  oldz=%d newz=%d\n",zz,bz);
+		}
+		     if (i==4)
 		{
 			by = yy -1;
-			printf("interface 4 oldy=%d newy=%d\n",yy,by);
+			printf("south oldy=%d newy=%d\n",yy,by);
 		}
-		else if (i==5)
-		{
-			bz = zz+1;
-			printf("interface 5 oldz=%d newz=%d\n",zz,bz);
-		}
+	
 
 		msg[1] = (byte) ((bx >> 8) & 0xFF);
 		msg[2] = (byte) (bx & 0xFF);
@@ -108,21 +112,26 @@ DiffusionCoordinate(PRef except, int xx, int yy, int zz, int dd)
 
 		msg[7] = (byte) ((dd >> 8) & 0xFF);
 		msg[8] = (byte) (dd & 0xFF);
-		printf("x=%d y=%d z=%d message send to %d\n",bx,by,bz,i);
+		printf("x=%d y=%d z=%d message transmitted to %d\n",bx,by,bz,i);
 
 		if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
 		{
 			freeChunk(cChunk);
+			cpp ++;
 		}
-		printf("x=%d y=%d z=%d message was send to %d\n",bx,by,bz,i);	    
-		bx = xx;
-		by = yy;
-		bz = zz;
-		printf("test reinitialization x=%d y=%d z=%d\n",bx,by,bz);
+		
+
+		
+
+		// = xx;
+		// = yy;
+		// = zz;
+		//intf("test reinitialization x=%d y=%d z=%d nb in loop=%d\n",bx,by,bz,cpp);
 		
 	
 	}	
 }
+
 
 
 void 
@@ -156,5 +165,5 @@ myMain(void)
 
 void userRegistration(void)
 {
-    registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);  
+	registerHandler(SYSTEM_MAIN, (GenericHandler)&myMain);  
 }
