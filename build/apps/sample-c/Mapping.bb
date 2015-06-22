@@ -51,8 +51,12 @@ CoordinateHandler(void)
 			pz = (int16_t)(thisChunk->data[6]) & 0xFF;
 			pz |= ((int16_t)(thisChunk->data[5]) << 8) & 0xFF00;
 
+<<<<<<< HEAD
 			distancet = (int)(thisChunk->data[8]) & 0xFF;
 			distancet |= ((int)(thisChunk->data[7]) << 8) & 0xFF00;
+=======
+		printf("id:%d  x=%d y=%d z=%d dd=%d\n",getGUID(),px,py,pz,distancet);
+>>>>>>> 7fa18092863e36baca64bf45e6ed6d90f6f1fb5c
 
 			printf("id:%d  x=%d y=%d z=%d distancetomaster=%d\n",getGUID(),px,py,pz,distancet);
 		
@@ -71,13 +75,14 @@ CoordinateHandler(void)
 void
 DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 {
-	int cpp = 0;
+
 	byte msg[17];
 	msg[0] = DIFFUSE_COORDINATE;
 
 	int16_t bx = xx;
 	int16_t by = yy;
 	int16_t bz = zz;
+
 	int16_t bd = dd+1;
 
 	Chunk* cChunk = getSystemTXChunk();
@@ -97,6 +102,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	for (int i = 0; i <NUM_PORTS; i++)
 	{
 
+<<<<<<< HEAD
 		if (i==0)
 		{
 			bz = zz -1;
@@ -126,8 +132,19 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 		{
 			by = yy -1;
 		//	printf("south oldy=%d newy=%d\n",yy,by);
+=======
+		switch(i){
+
+			case 0:
+				bz = zz+1;
+			break;
+
+			case 5:
+				bz = zz-1;
+			break;
+
+>>>>>>> 7fa18092863e36baca64bf45e6ed6d90f6f1fb5c
 		}
-	
 
 		msg[1] = (byte) ((bx >> 8) & 0xFF);
 		msg[2] = (byte) (bx & 0xFF);
@@ -138,22 +155,41 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 		msg[5] = (byte) ((bz >> 8) & 0xFF);
 		msg[6] = (byte) (bz & 0xFF);
 
+<<<<<<< HEAD
 		msg[7] = (byte) ((bd >> 8) & 0xFF);
 		msg[8] = (byte) (bd & 0xFF);
 	//	printf("x=%d y=%d z=%d distancetomaster=%d message transmitted to %d\n",bx,by,bz,bd,i);
 		
+=======
+		msg[7] = (byte) ((dd >> 8) & 0xFF);
+		msg[8] = (byte) (dd & 0xFF);
+
+		// printf("x=%d y=%d z=%d message transmitted to %d\n",bx,by,bz,i);
+>>>>>>> 7fa18092863e36baca64bf45e6ed6d90f6f1fb5c
 
 
 		if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
 		{
 			freeChunk(cChunk);
 		}
+<<<<<<< HEAD
 		
 		bx = xx;
 		by = yy;
 		bz = zz;
 	//	printf("test reinitialisation x=%d y=%d z=%d\n",bx,by,bz);
 		delayMS(1);	
+=======
+
+		delayMS(1);
+
+		// printf("x=%d y=%d z=%d message sendd to %d\n",bx,by,bz,i);	    
+		// bx = xx;
+		// by = yy;
+		// bz = zz;
+		// printf("test reinitialisation x=%d y=%d z=%d\n",bx,by,bz);
+		
+>>>>>>> 7fa18092863e36baca64bf45e6ed6d90f6f1fb5c
 	
 	}
 	printf("id: %d wait answer : %d\n",getGUID(),cpp);	
@@ -174,7 +210,11 @@ myMain(void)
 		distancet=0;
 //		vlock = 0;
 
+<<<<<<< HEAD
 		printf("id:%d  x=%d y=%d z=%d distancetomaster=%d\n",getGUID(),px,py,pz,distancet);
+=======
+		printf("degin : id:%d x=%d y=%d z=%d distance=%d\n",getGUID(),px,py,pz,distancet);
+>>>>>>> 7fa18092863e36baca64bf45e6ed6d90f6f1fb5c
 
 		delayMS(400);
 	
