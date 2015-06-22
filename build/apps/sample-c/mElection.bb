@@ -1,5 +1,8 @@
 //Author : vincent.connat@gmail.com
 
+//Master election based id, bagged for the moment
+//but work in some structure, need to see what blocks in others
+
 #include "handler.bbh"
 #include "block.bbh"
 #include "led.bbh"
@@ -17,15 +20,17 @@
 #define ACK_ID  3
 #define NACK_ID  4
 #define VALIDATION_ID  5
+#define VALIDATION_ACK_ID  6
 
 threadvar int bestId;
 threadvar bool pmaster;
 threadvar bool lockD;
+threadvar bool lockV;
 threadvar PRef summon;
 threadvar bool dsend[6];
+threadvar bool ranswer[6];
 
 threadvar Timeout answerCheck;
-threadvar Timeout Validation;
 
 byte NbOfAnswer(){
 
@@ -41,6 +46,48 @@ byte NbOfAnswer(){
     }
 
     return ret;
+
+}
+
+byte NbOfRAnswer(){
+
+    byte ret;
+
+    ret = 0;
+
+    for (int i = 0; i < 6; ++i)
+    {
+        if(ranswer[i] == 1){
+            ret++;
+        }
+    }
+
+    return ret;
+
+}
+
+void loadranswer(PRef except){
+
+    for (int i = 0; i < NUM_PORTS; ++i)
+    {
+
+        if(except != i){
+
+            if(thisNeighborhood.n[i] != VACANT){
+
+                ranswer[i] = 1;
+
+            }else{
+
+                ranswer[i] = 0;
+
+            }
+
+            delayMS(getGUID());
+            // if big structure with big ID, use a modulo
+
+        }
+    }
 
 }
 
@@ -63,6 +110,7 @@ void loaddsend(PRef except){
     }
 
 }
+
 byte ValidationHandler(){
 
     if(thisChunk == NULL){
@@ -72,36 +120,102 @@ byte ValidationHandler(){
 
     if(thisChunk->data[0] == VALIDATION_ID){
 
-        if(NbOfAnswer() == 0){
+        int id;
+        id = (int)(thisChunk->data[2]) & 0xFF;
+        id |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
 
-            //For sure i'm not a potential master, need to diffuse
-
-            int id;
-            id = (int)(thisChunk->data[2]) & 0xFF;
-            id |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
-
-            if(id <= bestId){
-
-                printf("%d received a validation message\n",getGUID());
-
-                //ACK for dsend or timeout + callback on SendValidation
-
-            }
-
-            setColor(YELLOW);
+        if(id < bestId){
+            
+            lockV = 1;
 
         }
 
-        if(NbOfAnswer() != 0 && pmaster ==1){
+        if(lockV && id <= bestId){
 
-            //Need create a timeout callback
-            //I can be a potential master
+            bestId = id;
+            summon = faceNum(thisChunk);
+
+            setColor(YELLOW);
+
+            loadranswer(summon);
+
+            printf("valide : %d : %d\n",getGUID(),NbOfRAnswer());
+            SendValidationMessage(summon,bestId);
+
+            lockV = 0;
+
+        }else{
+
+            //Answer i'm done with this id
+            printf("Im done : %d by %d\n",getGUID(),faceNum(thisChunk));
+
+            SendAckValidation(faceNum(thisChunk),bestId);
+
+            setColor(BLUE);
 
         }
 
     }
 
     return 1;
+}
+
+byte ValidationAckHandler(void){
+
+    if(thisChunk == NULL){
+        return 0;
+    }
+
+
+    if(thisChunk->data[0] == VALIDATION_ACK_ID){
+
+        int id;
+        id = (int)(thisChunk->data[2]) & 0xFF;
+        id |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
+
+        if(id == bestId){
+
+            ranswer[faceNum(thisChunk)] = 0;
+
+        }
+
+        if(NbOfRAnswer() == 0 && bestId != getGUID()){
+
+            SendAckValidation(summon,bestId);
+            setColor(ORANGE);
+
+        }
+
+        if(NbOfRAnswer() == 0 && bestId == getGUID()){
+
+            printf("I'm the master ! Signed : %d\n",getGUID());
+            setColor(WHITE);
+
+        }
+
+
+    }
+
+    return 1;
+
+}
+
+void SendAckValidation(PRef p, int id){
+
+    byte msg[17];
+    msg[0] = VALIDATION_ACK_ID;
+
+    msg[1] = (byte) ((id >> 8) & 0xFF);
+    msg[2] = (byte) (id & 0xFF);
+
+    Chunk* cChunk = getSystemTXChunk();
+
+    if(sendMessageToPort(cChunk, p, msg, 3, ValidationAckHandler, NULL) == 0){
+
+        freeChunk(cChunk);
+
+    }
+
 }
 
 void SendValidationMessage(PRef except, int id){
@@ -119,7 +233,7 @@ void SendValidationMessage(PRef except, int id){
     for (int p = 0; p < NUM_PORTS; ++p)
     {
 
-        if(dsend[p] == 1 && p != except){
+        if(ranswer[p] == 1 && p != except){
 
             if(sendMessageToPort(cChunk, p, msg, 3, ValidationHandler, NULL) == 0){
 
@@ -138,11 +252,11 @@ void SendValidation(PRef except, int id){
     printf("%d is a potential master\n",id);
     setColor(GREEN);
 
-    loaddsend(6);
+    loadranswer(6);
 
     SendValidationMessage(6, id);
 
-    printf("Answer : %d\n",NbOfAnswer());
+    printf("Answer : %d\n",NbOfRAnswer());
 
 }
 
@@ -324,6 +438,7 @@ void myMain(void)
     
     bestId = getGUID();
     lockD = 0;
+    lockV = 1;
     pmaster = 1;
 
     loaddsend(6);
