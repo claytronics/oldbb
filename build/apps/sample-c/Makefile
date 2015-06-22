@@ -2,7 +2,7 @@
 # below here should be in an include file
 ##################################################
 
-SOURCE := mElection.bb
+SOURCE := mElectionV2.bb
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
