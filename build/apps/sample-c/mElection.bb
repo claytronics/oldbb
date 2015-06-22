@@ -1,7 +1,7 @@
 //Author : vincent.connat@gmail.com
 
 //Master election based id, bagged for the moment
-//but work in some structure, need to see what blocks in others
+//but work in some structure, need to see what blocked in others
 
 #include "handler.bbh"
 #include "block.bbh"
@@ -135,11 +135,17 @@ byte ValidationHandler(){
             bestId = id;
             summon = faceNum(thisChunk);
 
-            setColor(YELLOW);
-
             loadranswer(summon);
 
-            printf("valide : %d : %d\n",getGUID(),NbOfRAnswer());
+            // printf("valide : %d : %d\n",getGUID(),NbOfRAnswer());
+
+            if(NbOfRAnswer() == 0){
+
+                SendAckValidation(summon,bestId);
+                setColor(RED);
+
+            }
+
             SendValidationMessage(summon,bestId);
 
             lockV = 0;
@@ -147,7 +153,7 @@ byte ValidationHandler(){
         }else{
 
             //Answer i'm done with this id
-            printf("Im done : %d by %d\n",getGUID(),faceNum(thisChunk));
+            // printf("Im done : %d by %d\n",getGUID(),faceNum(thisChunk));
 
             SendAckValidation(faceNum(thisChunk),bestId);
 
@@ -173,6 +179,7 @@ byte ValidationAckHandler(void){
         id = (int)(thisChunk->data[2]) & 0xFF;
         id |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
 
+
         if(id == bestId){
 
             ranswer[faceNum(thisChunk)] = 0;
@@ -193,6 +200,18 @@ byte ValidationAckHandler(void){
 
         }
 
+        printf("%d need %d B %d, face : ",getGUID(),NbOfRAnswer(),bestId);
+
+        for (int i = 0; i < NUM_PORTS; ++i)
+        {
+            if(ranswer[i] == 1){
+
+                printf("%d, ",i);
+
+            }
+        }
+
+        printf("\n");
 
     }
 
@@ -209,6 +228,8 @@ void SendAckValidation(PRef p, int id){
     msg[2] = (byte) (id & 0xFF);
 
     Chunk* cChunk = getSystemTXChunk();
+
+    delayMS(getGUID());
 
     if(sendMessageToPort(cChunk, p, msg, 3, ValidationAckHandler, NULL) == 0){
 
@@ -243,6 +264,8 @@ void SendValidationMessage(PRef except, int id){
 
         }
 
+        delayMS(getGUID());
+
     }
 
 }
@@ -275,7 +298,7 @@ void checkAnswer(){
 
         }else{
 
-            setColor(RED);
+            // setColor(RED);
 
         }
 
@@ -434,6 +457,7 @@ void TAnswer(void)
 void myMain(void)
 {
 
+    delayMS(2000);
     delayMS(200);
     
     bestId = getGUID();
