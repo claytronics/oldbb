@@ -16,6 +16,7 @@
 #define DISTANCE_ID 2
 #define ARE_YOU_CONNECTED_ID 3
 #define I_AM_CONNECTED_ID 4
+#define REACH_MASTER_ID 5
 
 threadvar bool lock;
 threadvar bool routine;
@@ -71,6 +72,21 @@ byte SimpleHandler(void){
 
         }break;
 
+        case REACH_MASTER_ID:{
+
+            if(getGUID() != 1){
+
+                SendSimpleMessage(REACH_MASTER_ID,toMaster);
+                setColor(GREEN);
+
+            }else{
+
+                printf("I've received the message\n");
+
+            }
+
+        }break;
+
         default:
 
         break;
@@ -96,15 +112,22 @@ void SendSimpleMessage(int MSG_ID, PRef p){
 
 void RoutineConnexion(void){
 
-    if(routine == 0){
+    // if(routine == 0){
 
-        setColor(ORANGE);
-        routine = 1;
+    //     setColor(ORANGE);
+    //     routine = 1;
 
-    }else{
+    // }else{
 
-        setColor(YELLOW);
-        routine = 0;
+    //     setColor(YELLOW);
+    //     routine = 0;
+
+    // }
+
+    if(getGUID() >= 36){
+
+        SendSimpleMessage(REACH_MASTER_ID, toMaster);
+        setColor(BLUE);
 
     }
 
@@ -123,7 +146,7 @@ void RoutineConnexion(void){
 
     }
 
-    RoutineConnexionTime.calltime = getTime() + 500 + getGUID();
+    RoutineConnexionTime.calltime = getTime() + 250 + getGUID();
     registerTimeout(&RoutineConnexionTime);
 
 }
@@ -147,7 +170,7 @@ byte DiffusionDistanceHandler(){
         GetConnected();
 
         RoutineConnexionTime.callback = (GenericHandler)(&RoutineConnexion);
-        RoutineConnexionTime.calltime = getTime() + 2000 + getGUID();
+        RoutineConnexionTime.calltime = getTime() + 500 + getGUID();
         registerTimeout(&RoutineConnexionTime);
 
     }
