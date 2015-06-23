@@ -26,6 +26,7 @@ threadvar int vlock;
 byte
 CoordinateHandler(void)
 {
+	printf("lock value:%d for id:%d\n",vlock,getGUID());
 
 	if(thisChunk == NULL)
 	{
@@ -34,13 +35,14 @@ CoordinateHandler(void)
 
 	if(thisChunk->data[0] == DIFFUSE_COORDINATE)
 	{
-	/*	if (vlock == 0)
+		if (vlock == 0)
 		{
 		printf("%d is already in map\n",getGUID());
 		}
 		else
 		{
-			vlock = 1;*/
+			vlock = 0;
+			printf("valeur lock=%d\n",vlock);
 			
 			px = (int16_t)(thisChunk->data[2]) & 0xFF;
 			px |= ((int16_t)(thisChunk->data[1]) << 8) & 0xFF00;
@@ -51,22 +53,20 @@ CoordinateHandler(void)
 			pz = (int16_t)(thisChunk->data[6]) & 0xFF;
 			pz |= ((int16_t)(thisChunk->data[5]) << 8) & 0xFF00;
 
-<<<<<<< HEAD
 			distancet = (int)(thisChunk->data[8]) & 0xFF;
 			distancet |= ((int)(thisChunk->data[7]) << 8) & 0xFF00;
-=======
-		printf("id:%d  x=%d y=%d z=%d dd=%d\n",getGUID(),px,py,pz,distancet);
->>>>>>> 7fa18092863e36baca64bf45e6ed6d90f6f1fb5c
+			
+		//	printf("lock value=%d\n",vlock);
 
 			printf("id:%d  x=%d y=%d z=%d distancetomaster=%d\n",getGUID(),px,py,pz,distancet);
 		
 			// diffusion
-		//	nodetomaster = faceNum(thisChunk);
-		//	printf("id=%d nodemaster=%d\n",getGUID(),nodetomaster);
-			DiffusionCoordinate(/*nodetomaster*/NULL,px,py,pz,distancet);
+			nodetomaster = faceNum(thisChunk);
+			printf("id=%d nodemaster=%d\n",getGUID(),nodetomaster);
+			DiffusionCoordinate(nodetomaster,px,py,pz,distancet);
 		
 		}
-//	}
+	}
 
 	return 1;
 }
@@ -78,6 +78,8 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 
 	byte msg[17];
 	msg[0] = DIFFUSE_COORDINATE;
+
+	int cpp = 0;
 
 	int16_t bx = xx;
 	int16_t by = yy;
@@ -101,50 +103,39 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 
 	for (int i = 0; i <NUM_PORTS; i++)
 	{
-
-<<<<<<< HEAD
-		if (i==0)
+		if(dsend[i] == 1 && i!=except)
 		{
-			bz = zz -1;
-		//	 printf("down oldz=%d newz=%d\n",zz,bz);
-		}
-		     if (i==1)
-		{
-			by = yy+1;
-		//	 printf("north 1 oldy=%d newy=%d\n",yy,by);
-		}
-		     if (i==2)
-		{
-			 bx = xx +1;
-		//	 printf("east 2 oldx=%d newx=%d\n",xx,bx);
-		}
-		     if (i==3)
-		{
-			bx = xx -1;
-		//	printf("west oldx=%d newx=%d\n",xx,bx);
-		}
-		     if (i==5)
-		{
-			bz = zz +1  ;
-		//	printf("up  oldz=%d newz=%d\n",zz,bz);
-		}
-		     if (i==4)
-		{
-			by = yy -1;
-		//	printf("south oldy=%d newy=%d\n",yy,by);
-=======
-		switch(i){
-
-			case 0:
-				bz = zz+1;
-			break;
-
-			case 5:
-				bz = zz-1;
-			break;
-
->>>>>>> 7fa18092863e36baca64bf45e6ed6d90f6f1fb5c
-		}
+			if (i==0)
+			{
+				bz = zz -1;
+			//	printf("down oldz=%d newz=%d\n",zz,bz);
+			}
+			if (i==1)
+			{
+				by = yy+1;
+		//	 	printf("north 1 oldy=%d newy=%d\n",yy,by);
+			}
+			if (i==2)
+			{
+				bx = xx +1;
+		//	 	printf("east 2 oldx=%d newx=%d\n",xx,bx);
+			}
+			if (i==3)
+			{
+				bx = xx -1;
+		//		printf("west oldx=%d newx=%d\n",xx,bx);
+			}
+			if (i==5)
+			{
+				bz = zz +1  ;
+		//		printf("up  oldz=%d newz=%d\n",zz,bz);
+			}
+			if (i==4)
+			{
+				by = yy -1;
+		//		printf("south oldy=%d newy=%d\n",yy,by);  
+			}
+		
 
 		msg[1] = (byte) ((bx >> 8) & 0xFF);
 		msg[2] = (byte) (bx & 0xFF);
@@ -155,42 +146,22 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 		msg[5] = (byte) ((bz >> 8) & 0xFF);
 		msg[6] = (byte) (bz & 0xFF);
 
-<<<<<<< HEAD
 		msg[7] = (byte) ((bd >> 8) & 0xFF);
 		msg[8] = (byte) (bd & 0xFF);
-	//	printf("x=%d y=%d z=%d distancetomaster=%d message transmitted to %d\n",bx,by,bz,bd,i);
-		
-=======
-		msg[7] = (byte) ((dd >> 8) & 0xFF);
-		msg[8] = (byte) (dd & 0xFF);
-
-		// printf("x=%d y=%d z=%d message transmitted to %d\n",bx,by,bz,i);
->>>>>>> 7fa18092863e36baca64bf45e6ed6d90f6f1fb5c
-
+	
+		printf("x=%d y=%d z=%d distancetomaster=%d message from id:%d transmitted to face %d\n",bx,by,bz,bd,getGUID(),i);
 
 		if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
 		{
 			freeChunk(cChunk);
 		}
-<<<<<<< HEAD
 		
 		bx = xx;
 		by = yy;
 		bz = zz;
-	//	printf("test reinitialisation x=%d y=%d z=%d\n",bx,by,bz);
-		delayMS(1);	
-=======
-
-		delayMS(1);
-
-		// printf("x=%d y=%d z=%d message sendd to %d\n",bx,by,bz,i);	    
-		// bx = xx;
-		// by = yy;
-		// bz = zz;
-		// printf("test reinitialisation x=%d y=%d z=%d\n",bx,by,bz);
-		
->>>>>>> 7fa18092863e36baca64bf45e6ed6d90f6f1fb5c
-	
+	//	printf("reinitialisation test x=%d y=%d z=%d\n",bx,by,bz);
+	    	
+	}
 	}
 	printf("id: %d wait answer : %d\n",getGUID(),cpp);	
 }
@@ -207,14 +178,10 @@ myMain(void)
 		px=0;
 		py=0;
 		pz=0;
-		distancet=0;
-//		vlock = 0;
+//		distancet=0;
+		vlock = 0;
 
-<<<<<<< HEAD
-		printf("id:%d  x=%d y=%d z=%d distancetomaster=%d\n",getGUID(),px,py,pz,distancet);
-=======
-		printf("degin : id:%d x=%d y=%d z=%d distance=%d\n",getGUID(),px,py,pz,distancet);
->>>>>>> 7fa18092863e36baca64bf45e6ed6d90f6f1fb5c
+//		printf("id:%d  x=%d y=%d z=%d distancetomaster=%d\n",getGUID(),px,py,pz,distancet);
 
 		delayMS(400);
 	
@@ -223,11 +190,15 @@ myMain(void)
 		DiffusionCoordinate(6, px, py, pz, distancet);
 
 	}
-//	else //i'm not the master
-//	{
-//		vlock = 1
-//		nodetomaster = 152512
-//	}
+	else //i'm not the master
+	{
+//		printf("test lock %d\n",vlock);
+		vlock = 1;
+//		nodetomaster = 152512;
+		printf("validation not master for id:%d lock=%d\n",getGUID(),vlock);
+	}
+	
+
 
 	while(1);
 
