@@ -91,6 +91,20 @@ CoordinateHandler(void)
 		{
 			setColor(RED);
 		}
+
+		//debug
+		if (cpp == 2)
+		{
+			setColor(ORANGE);
+		}
+		if (cpp == 1)
+		{
+			setColor(BLUE);
+		}
+		if (cpp == 3)
+		{
+			setColor(WHITE);
+		}
 	}
 
 	return 1;
@@ -133,7 +147,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 			if (i==0)
 			{
 				bz = zz -1;
-			//	printf("down oldz=%d newz=%d\n",zz,bz);
+		//		printf("down oldz=%d newz=%d\n",zz,bz);
 			}
 			if (i==1)
 			{
