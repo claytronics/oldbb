@@ -22,6 +22,7 @@
 
 #define ROUTINE_CONNEXION_MS 250
 #define ROUTINE_OPTIMIZATION_MS 2000
+#define ROUTINE_DECONNEXION_MS 250
 
 threadvar bool lock;
 threadvar bool routine;
@@ -114,7 +115,7 @@ byte SimpleHandler(void){
             recvDistance = (int)(thisChunk->data[2]) & 0xFF;
             recvDistance |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
 
-            if(recvDistance < ownDistance){
+            if(recvDistance < ownDistance || ownDistance == 0){
 
                 printf("I'm %d, my previous : %d, now %d !! Previous d %d, now : %d\n",getGUID(),toMaster,faceNum(thisChunk),ownDistance,recvDistance-1);
 
@@ -234,6 +235,24 @@ void RoutineOptimization(void){
 
 }
 
+void RoutineDeconnexion(void){
+
+    if(getGUID() != 1){
+
+        if(thisNeighborhood.n[toMaster] == VACANT){
+
+            ownDistance = 0;
+            RoutineOptimization();
+
+        }
+
+    }
+
+    RoutineDeconnexionTime.calltime = getTime() + ROUTINE_DECONNEXION_MS + getGUID();
+    registerTimeout(&RoutineDeconnexionTime);
+
+}
+
 byte DiffusionDistanceHandler(){
 
     if(thisChunk == NULL){
@@ -257,21 +276,21 @@ byte DiffusionDistanceHandler(){
         GetConnected();
 
         RoutineConnexionTime.callback = (GenericHandler)(&RoutineConnexion);
-        RoutineConnexionTime.calltime = getTime() + ROUTINE_CONNEXION_MS*2 + getGUID();
+        RoutineConnexionTime.calltime = getTime() + ROUTINE_CONNEXION_MS * 2 + getGUID();
         registerTimeout(&RoutineConnexionTime);
 
-
         RoutineOptimizationTime.callback = (GenericHandler)(&RoutineOptimization);
-        RoutineOptimizationTime.calltime = getTime() + ROUTINE_OPTIMIZATION_MS*2 + getGUID();
+        RoutineOptimizationTime.calltime = getTime() + ROUTINE_OPTIMIZATION_MS * 2 + getGUID();
         registerTimeout(&RoutineOptimizationTime);
 
-
-
+        // RoutineDeconnexionTime.callback = (GenericHandler)(&RoutineDeconnexion);
+        // RoutineDeconnexionTime.calltime = getTime() + ROUTINE_DECONNEXION_MS * 5 + getGUID();
+        // registerTimeout(&RoutineDeconnexionTime);
 
     }
 
-    return 1;
     freeChunk(thisChunk);
+    return 1;
 
 }
 
