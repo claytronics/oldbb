@@ -14,11 +14,30 @@
 #endif
 
 #define DIFFUSION_ID    2;
+#define MYCHUNKS 12
+
+// extern Chunk* thisChunk;
+Chunk myChunks[MYCHUNKS];
 
 threadvar int bestId;
 threadvar byte pmaster;
 threadvar byte answer;
 threadvar byte nei;
+
+Chunk* getFree(void)
+{
+    Chunk* c;
+    int i;
+
+    for(i=0; i<MYCHUNKS; i++) {
+        c = &(myChunks[i]);
+
+        if( !chunkInUse(c) ) {
+            return c;
+        }
+    }
+    return NULL;
+}
 
 void CheckAnswer(){
 
@@ -74,7 +93,7 @@ void DiffusionID(int id){
     msg[1] = (byte) ((id >> 8) & 0xFF);
     msg[2] = (byte) (id & 0xFF);
 
-    Chunk* cChunk = getSystemTXChunk();
+    Chunk* cChunk = getFree();
 
     for (int x = 0; x < NUM_PORTS; ++x){
 
