@@ -13,6 +13,7 @@
 #endif
 
 #define DIFFUSE_COORDINATE 3
+#define END_MAP 4
 
 threadvar bool dsend[6];
 
@@ -21,6 +22,7 @@ threadvar int16_t py;
 threadvar int16_t pz;
 threadvar int distancet;
 threadvar int nodetomaster;
+threadvar int cpp;
 threadvar int vlock;
 
 byte
@@ -38,6 +40,9 @@ CoordinateHandler(void)
 		if (vlock == 0)
 		{
 		printf("%d is already in map\n",getGUID());
+		// need to create fonction 
+		int answ = faceNum(thisChunk);
+		EndMap(answ);
 		}
 		else
 		{
@@ -64,7 +69,27 @@ CoordinateHandler(void)
 			nodetomaster = faceNum(thisChunk);
 			printf("id=%d nodemaster=%d\n",getGUID(),nodetomaster);
 			DiffusionCoordinate(nodetomaster,px,py,pz,distancet);
+			if(cpp == 0)
+			{
+				EndMap(nodetomaster);
+			}
 		
+		}
+	}
+	if(thisChunk->data[0] == END_MAP)
+	{
+		printf("block id:%d received endmap\n",getGUID());
+		cpp--;
+		printf("id: %d wait answer : %d\n",getGUID(),cpp);
+		if (cpp ==0 && getGUID()!=1 ) //except if we are the master
+		{
+			delayMS(1);
+			EndMap(nodetomaster);
+			setColor(GREEN);
+		}
+		if (cpp ==0 && getGUID()==1)
+		{
+			setColor(RED);
 		}
 	}
 
@@ -79,7 +104,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	byte msg[17];
 	msg[0] = DIFFUSE_COORDINATE;
 
-	int cpp = 0;
+
 
 	int16_t bx = xx;
 	int16_t by = yy;
@@ -164,7 +189,63 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	}
 	}
 	printf("id: %d wait answer : %d\n",getGUID(),cpp);	
+	if (cpp == 2)
+	{
+		setColor(ORANGE);
+	}
+	if (cpp == 1)
+	{
+		setColor(BLUE);
+	}
+	if (cpp == 0)
+	{
+		setColor(YELLOW); //they have finish with the map
+	}
+	if (cpp == 3)
+	{
+		setColor(WHITE);
+	}
 }
+
+void
+EndMap(int desti)
+{
+	byte msg[17];
+	msg[0] = END_MAP;
+
+	int i = desti;
+	
+	Chunk* cChunk = getSystemTXChunk();
+
+	if(sendMessageToPort(cChunk, i, msg, 1, CoordinateHandler, NULL) == 0)
+		{
+			freeChunk(cChunk);
+		}
+
+
+	printf("end map to %d from %d\n",i,getGUID());
+
+}
+
+/*
+void
+ReceptionCoordinatedata(int16_t xx, int16_t yy, int16_t zz, int idid)
+{
+
+	byte msg[17];
+	msg[0] = RECEPTION_COORDINATE_DATA;
+
+	int16_t rx = xx;
+	int16_t ry = yy;
+	int16_t rz = zz;
+	int rid = idid;
+
+	Chunk* cChunk = getSystemTXChunk();
+
+
+
+}
+*/
 
 
 
@@ -178,7 +259,7 @@ myMain(void)
 		px=0;
 		py=0;
 		pz=0;
-//		distancet=0;
+		distancet=0;
 		vlock = 0;
 
 //		printf("id:%d  x=%d y=%d z=%d distancetomaster=%d\n",getGUID(),px,py,pz,distancet);
