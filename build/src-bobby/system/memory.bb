@@ -16,8 +16,8 @@
 #define checkMemoryConsistency()
 #endif
 
-threaddef #define NUM_RXCHUNKS 96
-threaddef #define NUM_TXCHUNKS 96
+threaddef #define NUM_RXCHUNKS 24
+threaddef #define NUM_TXCHUNKS 24
 
 // types of chunks to free
 #define RXCHUNK 0
@@ -160,22 +160,25 @@ showChunks(void)
     blockprint(stderr, "RX\n");
     for (i=0; i<NUM_RXCHUNKS; i++) {
         Chunk* p = &rxChunks[i];
-        blockprint(stderr, "%d\t%s\t%s\t%d\t%p\n", 
+        blockprint(stderr, "%d\t%s\t%s\t%d\t%p\t%p\n", 
                    i,
                    chunkInUse(p)?"Used":"Free", 
                    chunkFilling(p)?"Fill":"----",
                    faceNum(p),
-                   p->callback);
+                   p->callback,
+                   *((MsgHandler*)(p->handler)));
     }
     blockprint(stderr, "TX\n");
     for (i=0; i<NUM_TXCHUNKS; i++) {
         Chunk* p = &txChunks[i];
-        blockprint(stderr, "%d\t%s\t%s\t%d\t%p\n", 
+        blockprint(stderr, "%d\t%s\t%s\t%d\t%p\t%p\t%d\n", 
                    i,
                    chunkInUse(p)?"Used":"Free", 
                    chunkFilling(p)?"Fill":"----",
                    faceNum(p),
-                   p->callback);
+                   p->callback,
+                   *((MsgHandler*)(p->handler)),
+                   p->data[0]);
     }
 
 }
