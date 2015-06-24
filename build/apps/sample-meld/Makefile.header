@@ -157,7 +157,7 @@ CINCS =
 #  -Wall...:     warning level
 #  -Wa,...:      tell GCC to pass this to the assembler.
 #    -adhlns...: create assembler listing
-CFLAGS = -g$(DEBUG)
+CFLAGS = -g$(DEBUG) -DMELD
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
@@ -166,6 +166,7 @@ CFLAGS += -Wall
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
+CFLAGS += $(CFLAGS_OPTIONS)
 #CFLAGS += -I../../../block/rev1c
 #CFLAGS += -DDEBUG=1
 #CFLAGS += -I$(TARCH)

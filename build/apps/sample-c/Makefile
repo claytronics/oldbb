@@ -2,7 +2,7 @@
 # below here should be in an include file
 ##################################################
 
-SOURCE := mElection.bb
+SOURCE := incremental.bb
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
@@ -15,6 +15,6 @@ SOURCE := mElection.bb
 
 #CFLAGS_OPTIONS = -DCLOCK_SYNC
 #CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
-#CFLAGS_OPTIONS += -DTESTING
+CFLAGS_OPTIONS += -DTESTING
 
 include Makefile.header

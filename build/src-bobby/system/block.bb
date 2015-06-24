@@ -61,6 +61,11 @@ void blockTick()
     }
   }
   executeHandlers();	
+
+#ifdef MELD
+  /* databaseConsistencyChecker(); */
+#endif
+
   blockTickRunning = 0;
   
 }
@@ -106,6 +111,10 @@ void initBlock()
 	initLogDebug();
 #endif
 
+#ifdef MELD
+	//allocate MeldVM's data structures
+	vm_alloc();
+#endif
 	delayMS(50);
 #ifdef CLOCK_SYNC
 	initClock();

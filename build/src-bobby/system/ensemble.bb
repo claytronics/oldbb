@@ -15,22 +15,22 @@
 
 threadvar Neighborhood thisNeighborhood;
 threadvar Timer ttNeighbor[6];
+/* used to ensure that two blocks cannot be both waiting infinitely for a 
+handshake from the other block */
 
 // converts a UID into a passed in character stream.  Assumes 2-byte GUIDs.
 void GUIDIntoChar(Uid id, byte * c)
 {
   c[0] = (id >> 8) & 0x00FF;
-  c[1] = (id & 0x00FF); 
+  c[1] = (id & 0x00FF);
 }
 
 // takes a passed in character array and returns a UID representing the array.  Assumes 2-byte GUIDs.
 Uid charToGUID(byte * c)
 {
   Uid tmp;
-
   tmp = (Uid)(c[0]) << 8;
   tmp |= c[1];
-
   return tmp;
 }
 

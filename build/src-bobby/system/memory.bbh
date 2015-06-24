@@ -20,6 +20,9 @@
 threaddef #define EEMEM 
 #endif
 
+#ifdef BBSIM
+void showChunks(void);
+#endif
 
 /*
     EEPROM Usage example:

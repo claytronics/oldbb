@@ -4,8 +4,4 @@ extern_functions.bb
 core.c
 core.h
 model.bbh
-set_runtime.c
-set_runtime.h
 api.h
-list_runtime.h
-list_runtime.c

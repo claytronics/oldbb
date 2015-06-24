@@ -159,9 +159,8 @@ void show_directions ()
 	char lines[num_lines][65];
 	int i, j;
 
-	// preinit
-	for (i=0; i<num_lines; i++) 
-	  memset(&(lines[i][0]), 0, 65);
+	// init lines
+	for (i=0; i<num_lines; i++) memset(&(lines[i][0]), 0, 65);
 
 	// Text to display
 	strcpy(lines[0], "Use left and middle mouse buttons to rotate scene.             ");

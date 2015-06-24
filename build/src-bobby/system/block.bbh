@@ -45,4 +45,10 @@ void pauseForever(void);
 void tellNeighborsDestroyed(Block *b);
 #endif
 
+// MELDVM PROTOS
+#ifdef MELD
+extern void vm_alloc(void);
+extern void databaseConsistencyChecker(void); 
+#endif
+
 #endif

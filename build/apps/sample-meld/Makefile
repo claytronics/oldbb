@@ -2,7 +2,11 @@
 # below here should be in an include file
 ##################################################
 
+<<<<<<< HEAD
 SOURCE := ends.meld
+=======
+SOURCE := blinkyblocks.meld
+>>>>>>> origin/mElection
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
@@ -12,5 +16,7 @@ SOURCE := ends.meld
 #BBINCLUDE += 
 #ALLO +=
 #MELDO += 
+
+#CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
 
 include Makefile.header

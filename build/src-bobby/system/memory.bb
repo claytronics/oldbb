@@ -16,8 +16,8 @@
 #define checkMemoryConsistency()
 #endif
 
-threaddef #define NUM_RXCHUNKS 24
-threaddef #define NUM_TXCHUNKS 24
+threaddef #define NUM_RXCHUNKS 96
+threaddef #define NUM_TXCHUNKS 96
 
 // types of chunks to free
 #define RXCHUNK 0
@@ -151,6 +151,35 @@ checkMemoryPool(Chunk* pool, byte num)
   return used;
 }
 
+
+#ifdef BBSIM
+void
+showChunks(void)
+{
+    int i;
+    blockprint(stderr, "RX\n");
+    for (i=0; i<NUM_RXCHUNKS; i++) {
+        Chunk* p = &rxChunks[i];
+        blockprint(stderr, "%d\t%s\t%s\t%d\t%p\n", 
+                   i,
+                   chunkInUse(p)?"Used":"Free", 
+                   chunkFilling(p)?"Fill":"----",
+                   faceNum(p),
+                   p->callback);
+    }
+    blockprint(stderr, "TX\n");
+    for (i=0; i<NUM_TXCHUNKS; i++) {
+        Chunk* p = &txChunks[i];
+        blockprint(stderr, "%d\t%s\t%s\t%d\t%p\n", 
+                   i,
+                   chunkInUse(p)?"Used":"Free", 
+                   chunkFilling(p)?"Fill":"----",
+                   faceNum(p),
+                   p->callback);
+    }
+
+}
+#endif
 
 // Can be used for further debugging if blocks often get out of memory
 /*static void

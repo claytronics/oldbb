@@ -1,4 +1,7 @@
-//Author : Vincent
+//Author : vincent.connat@gmail.com
+
+//Master election based id, bagged for the moment
+//but work in some structure, need to see what blocked in others
 
 #include "handler.bbh"
 #include "block.bbh"
@@ -16,27 +19,292 @@
 #define DIFFUSE_ID  2
 #define ACK_ID  3
 #define NACK_ID  4
+#define VALIDATION_ID  5
+#define VALIDATION_ACK_ID  6
 
 threadvar int bestId;
 threadvar bool pmaster;
-threadvar byte NbOfAnswer = 0;
+threadvar bool lockD;
+threadvar bool lockV;
 threadvar PRef summon;
 threadvar bool dsend[6];
+threadvar bool ranswer[6];
 
 threadvar Timeout answerCheck;
 
-void checkAnswer(){
+byte NbOfAnswer(){
 
-    if(NbOfAnswer == 0){
+    byte ret;
 
-        if(pmaster == 1){
+    ret = 0;
 
-            printf("%d is ready !\n",getGUID());
-            setColor(GREEN);
+    for (int i = 0; i < 6; ++i)
+    {
+        if(dsend[i] == 1){
+            ret++;
+        }
+    }
+
+    return ret;
+
+}
+
+byte NbOfRAnswer(){
+
+    byte ret;
+
+    ret = 0;
+
+    for (int i = 0; i < 6; ++i)
+    {
+        if(ranswer[i] == 1){
+            ret++;
+        }
+    }
+
+    return ret;
+
+}
+
+void loadranswer(PRef except){
+
+    for (int i = 0; i < NUM_PORTS; ++i)
+    {
+
+        if(except != i){
+
+            if(thisNeighborhood.n[i] != VACANT){
+
+                ranswer[i] = 1;
+
+            }else{
+
+                ranswer[i] = 0;
+
+            }
+
+            delayMS(getGUID());
+            // if big structure with big ID, use a modulo
+
+        }
+    }
+
+}
+
+void loaddsend(PRef except){
+
+    for (int i = 0; i < NUM_PORTS; ++i)
+    {
+
+        if(except != i){
+
+            if(thisNeighborhood.n[i] != VACANT){
+
+                dsend[i] = 1;
+                delayMS(getGUID());
+                // if big structure with big ID, use a modulo
+
+            }
+
+        }
+    }
+
+}
+
+byte ValidationHandler(){
+
+    if(thisChunk == NULL){
+        freeChunk(thisChunk);
+        return 0;
+    }
+
+    if(thisChunk->data[0] == VALIDATION_ID){
+
+        int id;
+        id = (int)(thisChunk->data[2]) & 0xFF;
+        id |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
+
+        if(id < bestId){
+            
+            lockV = 1;
+
+        }
+
+        if(lockV && id <= bestId){
+
+            bestId = id;
+            summon = faceNum(thisChunk);
+
+            loadranswer(summon);
+
+            // printf("valide : %d : %d\n",getGUID(),NbOfRAnswer());
+
+            if(NbOfRAnswer() == 0){
+
+                SendAckValidation(summon,bestId);
+                setColor(RED);
+
+            }
+
+            SendValidationMessage(summon,bestId);
+
+            lockV = 0;
 
         }else{
 
-            setColor(RED);
+            //Answer i'm done with this id
+            // printf("Im done : %d by %d\n",getGUID(),faceNum(thisChunk));
+
+            SendAckValidation(faceNum(thisChunk),bestId);
+
+            setColor(BLUE);
+
+        }
+
+    }
+
+    return 1;
+}
+
+byte ValidationAckHandler(void){
+
+    if(thisChunk == NULL){
+        return 0;
+    }
+
+
+    if(thisChunk->data[0] == VALIDATION_ACK_ID){
+
+        int id;
+        id = (int)(thisChunk->data[2]) & 0xFF;
+        id |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
+
+
+        if(id == bestId){
+
+            ranswer[faceNum(thisChunk)] = 0;
+
+        }
+
+        if(NbOfRAnswer() == 0 && bestId != getGUID()){
+
+            SendAckValidation(summon,bestId);
+            setColor(ORANGE);
+
+        }
+
+        if(NbOfRAnswer() == 0 && bestId == getGUID()){
+
+            printf("I'm the master ! Signed : %d\n",getGUID());
+            setColor(WHITE);
+
+        }
+
+        printf("%d need %d B %d, face : ",getGUID(),NbOfRAnswer(),bestId);
+
+        for (int i = 0; i < NUM_PORTS; ++i)
+        {
+            if(ranswer[i] == 1){
+
+                printf("%d, ",i);
+
+            }
+        }
+
+        printf("\n");
+
+    }
+
+    return 1;
+
+}
+
+void myFreeChunk(void)
+{
+  freeChunk(thisChunk);
+  blockprint(stderr, "Freeing Chunk\n");
+}
+
+void SendAckValidation(PRef p, int id){
+
+    byte msg[17];
+    msg[0] = VALIDATION_ACK_ID;
+
+    msg[1] = (byte) ((id >> 8) & 0xFF);
+    msg[2] = (byte) (id & 0xFF);
+
+    Chunk* cChunk = getSystemTXChunk();
+
+    delayMS(getGUID());
+
+    if(sendMessageToPort(cChunk, p, msg, 3, ValidationAckHandler, myFreeChunk) == 0){
+
+        freeChunk(cChunk);
+
+    }
+
+}
+
+void SendValidationMessage(PRef except, int id){
+
+    byte msg[17];
+    msg[0] = VALIDATION_ID;
+
+    msg[1] = (byte) ((id >> 8) & 0xFF);
+    msg[2] = (byte) (id & 0xFF);
+
+    Chunk* cChunk = getSystemTXChunk();
+
+    //Need anoter var for the real answear, not just ACK
+
+    for (int p = 0; p < NUM_PORTS; ++p)
+    {
+
+        if(ranswer[p] == 1 && p != except){
+
+            if(sendMessageToPort(cChunk, p, msg, 3, ValidationHandler, myFreeChunk) == 0){
+
+                freeChunk(cChunk);
+
+            }
+
+        }
+
+        delayMS(getGUID());
+
+    }
+
+}
+
+void SendValidation(PRef except, int id){
+
+    printf("%d is a potential master\n",id);
+    setColor(GREEN);
+
+    loadranswer(6);
+
+    SendValidationMessage(6, id);
+
+    printf("Answer : %d\n",NbOfRAnswer());
+
+}
+
+void checkAnswer(){
+
+    if(NbOfAnswer() == 0){
+
+        if(pmaster == 1 && getGUID() == bestId){
+
+            if(!lockD){
+
+                SendValidation(6,bestId);
+                lockD = 1;
+
+            }
+
+        }else{
+
+            // setColor(RED);
 
         }
 
@@ -55,11 +323,8 @@ NAckHandler(void)
         id = (int)(thisChunk->data[2]) & 0xFF;
         id |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
 
-        printf("%d received NACK from %d !\n",getGUID(),id);
-
         pmaster = 0;
-        NbOfAnswer--;
-        dsend[faceNum(thisChunk)] = 1;
+        dsend[faceNum(thisChunk)] = 0;
         checkAnswer();
 
     }
@@ -77,10 +342,7 @@ AckHandler(void)
         int id;
         id = (int)(thisChunk->data[2]) & 0xFF;
         id |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
-        printf("%d received ACK from %d !\n",getGUID(),id);
-
-        NbOfAnswer--;
-        dsend[faceNum(thisChunk)] = 1;
+        dsend[faceNum(thisChunk)] = 0;
         checkAnswer();
 
     }
@@ -98,7 +360,7 @@ void SendNAck(PRef p, int id){
 
     Chunk* cChunk = getSystemTXChunk();
 
-    if(sendMessageToPort(cChunk, p, msg, 3, NAckHandler, NULL) == 0){
+    if(sendMessageToPort(cChunk, p, msg, 3, NAckHandler, myFreeChunk) == 0){
 
         freeChunk(cChunk);
 
@@ -118,7 +380,7 @@ SendAck(PRef p, int id)
 
     Chunk* cChunk = getSystemTXChunk();
 
-    if(sendMessageToPort(cChunk, p, msg, 3, AckHandler, NULL) == 0){
+    if(sendMessageToPort(cChunk, p, msg, 3, AckHandler, myFreeChunk) == 0){
 
         freeChunk(cChunk);
 
@@ -137,12 +399,10 @@ DiffusionHandler(void){
         id = (int)(thisChunk->data[2]) & 0xFF;
         id |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
 
-        if(id < bestId){
+        if(id <= bestId){
 
             bestId = id;
-            summon = faceNum(thisChunk);
-
-            SendAck(summon,getGUID());
+            SendAck(faceNum(thisChunk),getGUID());
 
         }
 
@@ -169,9 +429,9 @@ DiffusionID(PRef except, int id)
 
     for (int x = 0; x < NUM_PORTS; ++x){
 
-        if(dsend[x] == 0){
+        if(dsend[x] == 1){
 
-            if(sendMessageToPort(cChunk, x, msg, 3, DiffusionHandler, NULL) == 0){
+            if(sendMessageToPort(cChunk, x, msg, 3, DiffusionHandler, myFreeChunk) == 0){
 
                 freeChunk(cChunk);
 
@@ -187,47 +447,37 @@ DiffusionID(PRef except, int id)
 void TAnswer(void)
 {
 
-    blockprint(stdout, "Timeout %d\n",getGUID());
+    if(NbOfAnswer() != 0){
 
+        DiffusionID(6, bestId);
 
-    if(NbOfAnswer != 0){
-        DiffusionID(0, bestId);
+        answerCheck.calltime = getTime() + 50 + getGUID();
+        registerTimeout(&answerCheck);
+
     }
-
-    answerCheck.calltime = getTime() + 300;
-    registerTimeout(&answerCheck);
 
 }
 
 void myMain(void)
 {
 
-    delayMS(1000);
+    delayMS(2000);
+    delayMS(200);
     
     bestId = getGUID();
-    NbOfAnswer = getNeighborCount();
-
-    blockprint(stdout, "%d got %d neighbor\n", getGUID(), NbOfAnswer);
-
+    lockD = 0;
+    lockV = 1;
     pmaster = 1;
 
-    for (int i = 0; i < 6; ++i) {
-      dsend[i] = 0;
-    }
+    loaddsend(6);
 
+    delayMS(450);
 
     answerCheck.callback = (GenericHandler)(&TAnswer);
-    delayMS(2000);
-    blockprint(stdout, "After assign callback\n");
-    answerCheck.calltime = getTime() + 300;
+    answerCheck.calltime = getTime() + 800 + getGUID();
+    registerTimeout(&answerCheck);
 
-    //registerTimeout(&answerCheck);
-    blockprint(stdout, "After register\n");
-
-    pauseForever();
-     blockprint(stdout, "After pause\n");
-
-    DiffusionID(0, bestId);
+    DiffusionID(6, bestId);
 
     while(1){}
 
