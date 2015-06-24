@@ -25,9 +25,12 @@ threadvar PRef nodetomaster;
 threadvar int cpp;
 threadvar int vlock;
 
+
+//handler for all type of message
 byte
 CoordinateHandler(void)
 {
+
 //	printf("lock value:%d for id:%d\n",vlock,getGUID());
 
 	if(thisChunk == NULL)
@@ -35,18 +38,19 @@ CoordinateHandler(void)
 		return 0;
 	}
 
+	//if the type of message if DIFFUSE_COORDINATE
 	if(thisChunk->data[0] == DIFFUSE_COORDINATE)
 	{
-		if (vlock == 0)
+		if (vlock == 0) //check if the block is already map
 		{
 		printf("%d is already in map\n",getGUID());
-		// need to create fonction 
 		int answ = faceNum(thisChunk);
 		EndMap(answ);
 		}
 		else
 		{
-			vlock = 0;
+			vlock = 0; //to say the block is already in the map
+		
 		//	printf("valeur lock=%d\n",vlock);
 			
 			px = (int16_t)(thisChunk->data[2]) & 0xFF;
@@ -77,6 +81,8 @@ CoordinateHandler(void)
 		
 		}
 	}
+
+	//if type of message is END_MAP
 	if(thisChunk->data[0] == END_MAP)
 	{
 		printf("block id:%d received endmap from %d\n",getGUID(),faceNum(thisChunk));
@@ -112,14 +118,14 @@ CoordinateHandler(void)
 }
 
 
+//diffuse my coordinate and my distance to all neighboor except my parent
+
 void
 DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 {
 
 	byte msg[17];
 	msg[0] = DIFFUSE_COORDINATE;
-
-	int test=except;
 
 	int16_t bx = xx;
 	int16_t by = yy;
@@ -132,7 +138,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	{
 		if(k != nodetomaster)					//test if this block is my parent
 		{
-			if(thisNeighborhood.n[k] != VACANT)
+			if(thisNeighborhood.n[k] != VACANT)		//test if you have a block on this interface
 			{
 				dsend[k] = 1;
 				cpp ++;	
@@ -143,8 +149,11 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 
 	for (int i = 0; i <NUM_PORTS; i++)
 	{
-		if(dsend[i] == 1 && i!=except)
+		if(dsend[i] == 1 && i!=except)				//if thats ok for the previous test 
+
 		{
+			
+		//change the coordinate for all differente interface
 			if (i==0)
 			{
 				bz = zz -1;
@@ -204,6 +213,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	}
 	}
 	printf("id: %d wait answer : %d\n",getGUID(),cpp);	
+	
 	//debug
 	if (cpp == 2)
 	{
@@ -250,7 +260,8 @@ myMain(void)
 {
 
 	delayMS(400);
-	if (getGUID() == 1) //im master
+	//test if i'm the master (I suppose the 1 is the master)
+	if (getGUID() == 1) 
 	{
 		px=0;
 		py=0;
@@ -267,7 +278,8 @@ myMain(void)
 		DiffusionCoordinate(6, px, py, pz, distancet);
 
 	}
-	else //i'm not the master
+	// I'm not the master
+	else 
 	{
 //		printf("test lock %d\n",vlock);
 		vlock = 1;
