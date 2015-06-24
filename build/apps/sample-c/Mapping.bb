@@ -21,14 +21,14 @@ threadvar int16_t px;
 threadvar int16_t py;
 threadvar int16_t pz;
 threadvar int distancet;
-threadvar int nodetomaster;
+threadvar PRef nodetomaster;
 threadvar int cpp;
 threadvar int vlock;
 
 byte
 CoordinateHandler(void)
 {
-	printf("lock value:%d for id:%d\n",vlock,getGUID());
+//	printf("lock value:%d for id:%d\n",vlock,getGUID());
 
 	if(thisChunk == NULL)
 	{
@@ -47,7 +47,7 @@ CoordinateHandler(void)
 		else
 		{
 			vlock = 0;
-			printf("valeur lock=%d\n",vlock);
+		//	printf("valeur lock=%d\n",vlock);
 			
 			px = (int16_t)(thisChunk->data[2]) & 0xFF;
 			px |= ((int16_t)(thisChunk->data[1]) << 8) & 0xFF00;
@@ -63,13 +63,14 @@ CoordinateHandler(void)
 			
 		//	printf("lock value=%d\n",vlock);
 
-			printf("id:%d  x=%d y=%d z=%d distancetomaster=%d\n",getGUID(),px,py,pz,distancet);
+		//	printf("id:%d  x=%d y=%d z=%d distancetomaster=%d\n",getGUID(),px,py,pz,distancet);
 		
-			// diffusion
+			// diffusion 
 			nodetomaster = faceNum(thisChunk);
 			printf("id=%d nodemaster=%d\n",getGUID(),nodetomaster);
 			DiffusionCoordinate(nodetomaster,px,py,pz,distancet);
-			if(cpp == 0)
+			
+			if(cpp == 0)// if no neighboor
 			{
 				EndMap(nodetomaster);
 			}
@@ -78,7 +79,7 @@ CoordinateHandler(void)
 	}
 	if(thisChunk->data[0] == END_MAP)
 	{
-		printf("block id:%d received endmap\n",getGUID());
+		printf("block id:%d received endmap from %d\n",getGUID(),faceNum(thisChunk));
 		cpp--;
 		printf("id: %d wait answer : %d\n",getGUID(),cpp);
 		if (cpp ==0 && getGUID()!=1 ) //except if we are the master
@@ -87,7 +88,7 @@ CoordinateHandler(void)
 			EndMap(nodetomaster);
 			setColor(GREEN);
 		}
-		if (cpp ==0 && getGUID()==1)
+		if (cpp ==0 && getGUID()==1)//if we are the master
 		{
 			setColor(RED);
 		}
@@ -118,7 +119,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	byte msg[17];
 	msg[0] = DIFFUSE_COORDINATE;
 
-
+	int test=except;
 
 	int16_t bx = xx;
 	int16_t by = yy;
@@ -127,14 +128,14 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	int16_t bd = dd+1;
 
 	Chunk* cChunk = getSystemTXChunk();
-	for (int k = 0; k < NUM_PORTS; k++)
+	for (PRef k = 0; k < NUM_PORTS; k++)
 	{
-		if(except != k )
+		if(k != nodetomaster)					//test if this block is my parent
 		{
 			if(thisNeighborhood.n[k] != VACANT)
 			{
 				dsend[k] = 1;
-				cpp ++;
+				cpp ++;	
 			}
 		}
 
@@ -188,7 +189,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 		msg[7] = (byte) ((bd >> 8) & 0xFF);
 		msg[8] = (byte) (bd & 0xFF);
 	
-		printf("x=%d y=%d z=%d distancetomaster=%d message from id:%d transmitted to face %d\n",bx,by,bz,bd,getGUID(),i);
+	//	printf("x=%d y=%d z=%d distancetomaster=%d message from id:%d transmitted to face %d\n",bx,by,bz,bd,getGUID(),i);
 
 		if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
 		{
@@ -203,6 +204,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	}
 	}
 	printf("id: %d wait answer : %d\n",getGUID(),cpp);	
+	//debug
 	if (cpp == 2)
 	{
 		setColor(ORANGE);
@@ -213,7 +215,8 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	}
 	if (cpp == 0)
 	{
-		setColor(YELLOW); //they have finish with the map
+		setColor(YELLOW); //he have finish with the map
+		EndMap(except);// test
 	}
 	if (cpp == 3)
 	{
@@ -222,7 +225,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 }
 
 void
-EndMap(int desti)
+EndMap(int desti)  //send the last message of this protocol
 {
 	byte msg[17];
 	msg[0] = END_MAP;
@@ -240,27 +243,6 @@ EndMap(int desti)
 	printf("end map to %d from %d\n",i,getGUID());
 
 }
-
-/*
-void
-ReceptionCoordinatedata(int16_t xx, int16_t yy, int16_t zz, int idid)
-{
-
-	byte msg[17];
-	msg[0] = RECEPTION_COORDINATE_DATA;
-
-	int16_t rx = xx;
-	int16_t ry = yy;
-	int16_t rz = zz;
-	int rid = idid;
-
-	Chunk* cChunk = getSystemTXChunk();
-
-
-
-}
-*/
-
 
 
 void 
@@ -289,7 +271,6 @@ myMain(void)
 	{
 //		printf("test lock %d\n",vlock);
 		vlock = 1;
-//		nodetomaster = 152512;
 		printf("validation not master for id:%d lock=%d\n",getGUID(),vlock);
 	}
 	
