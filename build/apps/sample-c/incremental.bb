@@ -62,6 +62,8 @@ threadvar Timeout RoutineConnexionTime;
 threadvar Timeout RoutineOptimizationTime;
 threadvar Timeout RoutineDeconnexionTime;
 
+threadvar int alreadySent[16];
+
 void
 GetConnected(){
 //put state of face in the Connected array
@@ -90,7 +92,8 @@ GetConnected(){
 }
 
 byte
-SimpleHandler(void){
+SimpleHandler(void)
+{
 //very simple handler
 
     if(thisChunk == NULL){
@@ -98,6 +101,8 @@ SimpleHandler(void){
       return 0;
 
     }
+
+    if (getGUID() == 8) blockprint(stderr, "Got %d from %d\n", thisChunk->data[0], faceNum(thisChunk));
 
     switch(thisChunk->data[0])
     {
@@ -140,12 +145,15 @@ SimpleHandler(void){
         }break;
 
         case WHAT_IS_YOUR_DISTANCE_ID:{
-
-            sendMyDistance(faceNum(thisChunk),ownDistance+1);
-
+	  PRef f = faceNum(thisChunk);
+	  freeChunk(thisChunk);
+	  sendMyDistance(faceNum(thisChunk),ownDistance+1);
+	  return 1;
         }break;
 
         case MY_DISTANCE_IS_ID:{
+
+	  alreadySent[faceNum(thisChunk)] = 0;
 
             int recvDistance;
             recvDistance = (int)(thisChunk->data[2]) & 0xFF;
@@ -156,7 +164,7 @@ SimpleHandler(void){
             if(recvDistance < ownDistance || ownDistance == 0)
             {
 
-                printf("I'm %d, my previous : %d, now %d !! Previous d %d, now : %d\n",getGUID(),toMaster,faceNum(thisChunk),ownDistance,recvDistance-1);
+	      blockprint(stderr, "I'm %d, my previous : %d, now %d !! Previous d %d, now : %d\n",getGUID(),toMaster,faceNum(thisChunk),ownDistance,recvDistance-1);
 
                 toMaster = faceNum(thisChunk);
                 ownDistance = recvDistance-1;
@@ -176,8 +184,19 @@ SimpleHandler(void){
 
 }
 
+
+void 
+freeMyChunk(void)
+{
+  freeChunk(thisChunk);
+}
+
+
+
+
 void
-sendMyDistance(PRef p, int sendDistance){
+sendMyDistance(PRef p, int sendDistance)
+{
 
     byte msg[17];
     msg[0] = MY_DISTANCE_IS_ID;
@@ -185,13 +204,15 @@ sendMyDistance(PRef p, int sendDistance){
     msg[1] = (byte) ((sendDistance >> 8) & 0xFF);
     msg[2] = (byte) (sendDistance & 0xFF);
 
+    if (getGUID() == 8) blockprint(stderr, "Send %d to %d\n", MY_DISTANCE_IS_ID, p);
+
     Chunk* cChunk = getSystemTXChunk();
     if (cChunk == NULL) {
       showChunks();
       exit(-1);
     }
 
-    if(sendMessageToPort(cChunk, p, msg, 4, SimpleHandler, NULL) == 0)
+    if(sendMessageToPort(cChunk, p, msg, 4, SimpleHandler, (GenericHandler)&freeMyChunk) == 0)
     {
 
         freeChunk(cChunk);
@@ -199,6 +220,7 @@ sendMyDistance(PRef p, int sendDistance){
     }
 
 }
+
 
 void
 SendSimpleMessage(int MSG_ID, PRef p){
@@ -214,7 +236,8 @@ SendSimpleMessage(int MSG_ID, PRef p){
       exit(-1);
     }
 
-    if(sendMessageToPort(cChunk, p, msg, 1, SimpleHandler, NULL) == 0)
+    if (getGUID() == 8) blockprint(stderr, "Send %d to %d\n", MSG_ID, p);
+    if(sendMessageToPort(cChunk, p, msg, 1, SimpleHandler, (GenericHandler)&freeMyChunk) == 0)
     {
 
         freeChunk(cChunk);
@@ -263,7 +286,10 @@ RoutineConnexion(void){
 }
 
 void
-RoutineOptimization(void){
+RoutineOptimization(void)
+{
+
+    if (getGUID() == 8) blockprint(stderr, "Starting RoutineOPt\n");
 
     if(getGUID() != 1)
     {
@@ -276,6 +302,12 @@ RoutineOptimization(void){
             if(Connected[i] == 1)
             {
 
+	      if (alreadySent[i] == 1) {
+		blockprint(stderr, "outstanding WIYDI to %d\n", i);
+	      }
+
+	      alreadySent[i] = 1;
+
                 SendSimpleMessage(WHAT_IS_YOUR_DISTANCE_ID, i);
 
             }
@@ -287,6 +319,10 @@ RoutineOptimization(void){
 
     }
 
+    if (getGUID() == 8) {
+      showChunks();
+      blockprint(stderr, "ENDING RoutineOPt\n");
+    }
 }
 
 void
@@ -403,6 +439,9 @@ DiffusionDistance(int sendDistance, PRef except){
 void
 myMain(void)
 {
+
+  int xx;
+  for (xx=0; xx<16; xx++) alreadySent[xx] = 0;
 
     delayMS(2000);
 
