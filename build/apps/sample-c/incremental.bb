@@ -165,7 +165,6 @@ SimpleHandler(void){
 
             if(recvDistance < ownDistance || ownDistance == 0)
             {
-
                 printf("I'm %d, my previous : %d, now %d !! Previous dis %d, now : %d\n",getGUID(),toMaster,faceNum(thisChunk),ownDistance,recvDistance-1);
 
                 toMaster = faceNum(thisChunk);
@@ -323,8 +322,7 @@ RoutineDeconnexion(void){
 
 }
 
-byte
-DiffusionDistanceHandler(){
+byte DiffusionDistanceHandler(){
 
     if(thisChunk == NULL){
         return 0;
@@ -354,11 +352,12 @@ DiffusionDistanceHandler(){
         //Start de timeout
 
         RoutineConnexionTime.callback = (GenericHandler)(&RoutineConnexion);
-        RoutineConnexionTime.calltime = getTime() + ROUTINE_CONNEXION_MS * 2 + getGUID();
+        RoutineConnexionTime.calltime = getTime() + ROUTINE_CONNEXION_MS*2 + getGUID();
         registerTimeout(&RoutineConnexionTime);
 
+
         RoutineOptimizationTime.callback = (GenericHandler)(&RoutineOptimization);
-        RoutineOptimizationTime.calltime = getTime() + ROUTINE_OPTIMIZATION_MS * 2 + getGUID();
+        RoutineOptimizationTime.calltime = getTime() + ROUTINE_OPTIMIZATION_MS*2 + getGUID();
         registerTimeout(&RoutineOptimizationTime);
 
         //Some blocks vanished when this line was uncommented, need to fix that 
@@ -366,11 +365,11 @@ DiffusionDistanceHandler(){
         RoutineDeconnexionTime.callback = (GenericHandler)(&RoutineDeconnexion);
         RoutineDeconnexionTime.calltime = getTime() + ROUTINE_DECONNEXION_MS * 5 + getGUID();
         registerTimeout(&RoutineDeconnexionTime);
-
+        
     }
 
-    freeChunk(thisChunk);
     return 1;
+    freeChunk(thisChunk);
 
 }
 
