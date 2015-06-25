@@ -8,10 +8,6 @@ Descritpion :
     - maintaining an access to the master
     - optimize the path to the master
 
-need to fix : 
-
-    - need to fix after a deconnexion
-
 */
 
 #include "handler.bbh"
@@ -35,6 +31,8 @@ need to fix :
 #define REACH_MASTER_ID 5
 #define WHAT_IS_YOUR_DISTANCE_ID 6
 #define MY_DISTANCE_IS_ID 7
+#define OUT_OF_NETWORK_ID 8
+#define NEED_NEW_DISTANCE_ID 9
 
 //Timer for the routine
 
@@ -45,6 +43,7 @@ need to fix :
 threadvar bool lock;
 threadvar bool routine;
 threadvar bool reachmaster;
+threadvar bool outOf;
 threadvar int ownDistance;
 
 // The path to the master
@@ -56,6 +55,11 @@ threadvar PRef Connected[6];
 threadvar Timeout RoutineConnexionTime;
 threadvar Timeout RoutineOptimizationTime;
 threadvar Timeout RoutineDeconnexionTime;
+
+void SendSimpleMessage(int MSG_ID, PRef p);
+byte DiffusionDistanceHandler(void);
+void sendMyDistance(PRef p, int sendDistance);
+void DiffusionDistance(int sendDistance, PRef except);
 
 void
 freeMyChunk(){
@@ -109,7 +113,7 @@ SimpleHandler(void){
         {
 
             //if i've received a are you connected and not appear to the network
-            if(ownDistance == 0){
+            if(ownDistance == 0 && !outOf){
 
                 SendSimpleMessage(I_AM_CONNECTED_ID, faceNum(thisChunk));
 
@@ -191,6 +195,25 @@ SimpleHandler(void){
         }
         break;
 
+        case OUT_OF_NETWORK_ID:
+        {
+
+            if(!outOf){
+
+                printf("Out of the network\n");
+                ownDistance = 0;
+                lock = 0;
+                outOf = 1;
+                for (int i = 0; i < NUM_PORTS; ++i)
+                {
+                    SendSimpleMessage(OUT_OF_NETWORK_ID,i);
+                }
+
+            }
+
+        }
+        break;
+
         default:
 
         break;
@@ -245,11 +268,9 @@ void
 RoutineConnexion(void){
 //Send a message when see a connexion in empty face via VACANT
 
-
-    if(getGUID() > 36 && !reachmaster)
+    if(getGUID() > 10 && !reachmaster)
     {
-
-        //This is just to see the path to the master
+        //This is just to see the path to the master with some blocks added
 
         SendSimpleMessage(REACH_MASTER_ID, toMaster);
         setColor(BLUE);
@@ -274,8 +295,12 @@ RoutineConnexion(void){
 
     }
 
-    RoutineConnexionTime.calltime = getTime() + ROUTINE_CONNEXION_MS + getGUID();
-    registerTimeout(&RoutineConnexionTime);
+    if(lock){
+
+        RoutineConnexionTime.calltime = getTime() + ROUTINE_CONNEXION_MS + getGUID();
+        registerTimeout(&RoutineConnexionTime);
+
+    }
 
 }
 
@@ -313,15 +338,25 @@ RoutineOptimization(void){
 void
 RoutineDeconnexion(void){
 
- //Made the inverse of the connexion routine, and force an otpimization to find a new path to the master
+    //Made the inverse of the connexion routine, and force an otpimization to find a new path to the master
 
     if(getGUID() != 1)
     {
 
-        if(thisNeighborhood.n[toMaster] == VACANT){
+        if(thisNeighborhood.n[toMaster] == VACANT && !outOf){
 
             ownDistance = 0;
             lock = 0;
+            outOf = 1;
+
+            printf("Deco routine\n");
+
+            GetConnected();
+
+            for (int i = 0; i < NUM_PORTS; ++i)
+            {
+                SendSimpleMessage(OUT_OF_NETWORK_ID,i);
+            }
 
             // We can force the Routine Optimization for a better quality of service
             // RoutineOptimization();
@@ -345,7 +380,9 @@ byte DiffusionDistanceHandler(){
     {
 
         lock = 1;
-        setColor(YELLOW);
+        setColor(PINK);
+
+        printf("%d in Diffusion\n",getGUID());
 
         int recvDistance;
         recvDistance = (int)(thisChunk->data[2]) & 0xFF;
@@ -357,26 +394,33 @@ byte DiffusionDistanceHandler(){
 
         DiffusionDistance(ownDistance+1,toMaster);
 
-        printf("%d distance is %d\n",getGUID(),ownDistance);
-
         //Load the Connected array
         GetConnected();
 
         //Start timeout for every routine
 
-        RoutineConnexionTime.callback = (GenericHandler)(&RoutineConnexion);
-        //doubling the timing to be sure the neighbors are well initialized
+        
+
+        if(!outOf){
+
+            RoutineConnexionTime.callback = (GenericHandler)(&RoutineConnexion);
+
+            RoutineOptimizationTime.callback = (GenericHandler)(&RoutineOptimization);
+            RoutineOptimizationTime.calltime = getTime() + ROUTINE_OPTIMIZATION_MS*2 + getGUID();
+            registerTimeout(&RoutineOptimizationTime);
+
+            RoutineDeconnexionTime.callback = (GenericHandler)(&RoutineDeconnexion);
+            RoutineDeconnexionTime.calltime = getTime() + ROUTINE_DECONNEXION_MS * 5 + getGUID();
+            registerTimeout(&RoutineDeconnexionTime);
+            
+            outOf = 0;
+
+        }
+        
         RoutineConnexionTime.calltime = getTime() + ROUTINE_CONNEXION_MS*2 + getGUID();
+        //doubling the timing to be sure the neighbors are well initialized
         registerTimeout(&RoutineConnexionTime);
 
-        RoutineOptimizationTime.callback = (GenericHandler)(&RoutineOptimization);
-        RoutineOptimizationTime.calltime = getTime() + ROUTINE_OPTIMIZATION_MS*2 + getGUID();
-        registerTimeout(&RoutineOptimizationTime);
-
-        RoutineDeconnexionTime.callback = (GenericHandler)(&RoutineDeconnexion);
-        RoutineDeconnexionTime.calltime = getTime() + ROUTINE_DECONNEXION_MS * 5 + getGUID();
-        registerTimeout(&RoutineDeconnexionTime);
-        
     }
 
     return 1;
@@ -387,7 +431,7 @@ byte DiffusionDistanceHandler(){
 void
 DiffusionDistance(int sendDistance, PRef except){
 
-    // Send distance to every neighbors except, the "except"
+    // Send distance to every neighbors except, the "except", it mean the interface who sent to this block the message
 
     byte msg[17];
     msg[0] = DISTANCE_ID;
