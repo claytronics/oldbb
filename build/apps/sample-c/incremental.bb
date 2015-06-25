@@ -59,6 +59,7 @@ threadvar Timeout RoutineDeconnexionTime;
 
 void
 freeMyChunk(){
+//free the chunk
 
     freeChunk(thisChunk);
 
@@ -104,18 +105,23 @@ SimpleHandler(void){
     switch(thisChunk->data[0])
     {
 
-        case ARE_YOU_CONNECTED_ID:{
+        case ARE_YOU_CONNECTED_ID:
+        {
 
+            //if i've received a are you connected and not appear to the network
             if(ownDistance == 0){
 
                 SendSimpleMessage(I_AM_CONNECTED_ID, faceNum(thisChunk));
 
             }
 
-        }break;
+        }
+        break;
 
-        case I_AM_CONNECTED_ID:{
+        case I_AM_CONNECTED_ID:
+        {
 
+            //if the new block answer, send him a distance and an "interface" to reach the master
             if(lock && ownDistance != 0 && faceNum(thisChunk) != toMaster){
 
                 DiffusionDistance(ownDistance+1,toMaster);
@@ -123,9 +129,11 @@ SimpleHandler(void){
 
             }
 
-        }break;
+        }
+        break;
 
-        case REACH_MASTER_ID:{
+        case REACH_MASTER_ID:
+        {
 
             // It's just a exemple of how to use the toMaster variable
 
@@ -143,9 +151,13 @@ SimpleHandler(void){
 
             }
 
-        }break;
+        }
+        break;
 
-        case WHAT_IS_YOUR_DISTANCE_ID:{
+        case WHAT_IS_YOUR_DISTANCE_ID:
+        {
+
+            //the block can reach the master, he send his distance
 
             if(lock && ownDistance != 0 && faceNum(thisChunk) != toMaster){
 
@@ -153,15 +165,17 @@ SimpleHandler(void){
 
             }
 
-        }break;
+        }
+        break;
 
-        case MY_DISTANCE_IS_ID:{
+        case MY_DISTANCE_IS_ID:
+        {
 
             int recvDistance;
             recvDistance = (int)(thisChunk->data[2]) & 0xFF;
             recvDistance |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
 
-            //if ownDistance is 0 it mean we are disconnected from toMaster
+            //if ownDistance is 0 it mean we are disconnected from toMaster or not currently connected to
 
             if(recvDistance < ownDistance || ownDistance == 0)
             {
@@ -174,7 +188,8 @@ SimpleHandler(void){
 
             }
 
-        }break;
+        }
+        break;
 
         default:
 
@@ -189,6 +204,7 @@ SimpleHandler(void){
 
 void
 sendMyDistance(PRef p, int sendDistance){
+// Send ownDistance to p
 
     byte msg[17];
     msg[0] = MY_DISTANCE_IS_ID;
@@ -208,12 +224,11 @@ sendMyDistance(PRef p, int sendDistance){
 }
 
 void
-SendSimpleMessage(int MSG_ID, PRef p){
-
+SendSimpleMessage(int msg_id, PRef p){
 // Just a simple sender of messages
 
     byte msg[17];
-    msg[0] = MSG_ID;
+    msg[0] = msg_id;
 
     Chunk* cChunk = getSystemTXChunk();
 
@@ -228,11 +243,10 @@ SendSimpleMessage(int MSG_ID, PRef p){
 
 void
 RoutineConnexion(void){
-
 //Send a message when see a connexion in empty face via VACANT
 
 
-    if(getGUID() > 5 && !reachmaster)
+    if(getGUID() > 36 && !reachmaster)
     {
 
         //This is just to see the path to the master
@@ -251,7 +265,7 @@ RoutineConnexion(void){
 
             if(thisNeighborhood.n[i] != VACANT)
             {
-
+                //if a neighbor is now not vacant, ask for answer
                 SendSimpleMessage(ARE_YOU_CONNECTED_ID, i);
 
             }
@@ -268,10 +282,14 @@ RoutineConnexion(void){
 void
 RoutineOptimization(void){
 
+//Routine executed every ROUTINE_OPTIMIZATION_MS
+
     if(getGUID() != 1)
     {
 
         GetConnected();
+
+        //Ask every blocks connected for their owndistance
 
         for (int i = 0; i < NUM_PORTS; ++i)
         {
@@ -279,11 +297,6 @@ RoutineOptimization(void){
             if(Connected[i] == 1)
             {
 
-                if(getGUID() == 4){
-
-                    printf("Opti from face %d\n",i);
-
-                }
                 SendSimpleMessage(WHAT_IS_YOUR_DISTANCE_ID, i);
 
             }
@@ -300,8 +313,7 @@ RoutineOptimization(void){
 void
 RoutineDeconnexion(void){
 
-    //Made the inverse of the connexion routine, and force an otpimization to find a new path to the master
-
+ //Made the inverse of the connexion routine, and force an otpimization to find a new path to the master
 
     if(getGUID() != 1)
     {
@@ -311,6 +323,7 @@ RoutineDeconnexion(void){
             ownDistance = 0;
             lock = 0;
 
+            // We can force the Routine Optimization for a better quality of service
             // RoutineOptimization();
 
         }
@@ -339,6 +352,7 @@ byte DiffusionDistanceHandler(){
         recvDistance |= ((int)(thisChunk->data[1]) << 8) & 0xFF00;
 
         ownDistance = recvDistance;
+        //toMaster is our "path to the master"
         toMaster = faceNum(thisChunk);
 
         DiffusionDistance(ownDistance+1,toMaster);
@@ -346,21 +360,18 @@ byte DiffusionDistanceHandler(){
         printf("%d distance is %d\n",getGUID(),ownDistance);
 
         //Load the Connected array
-
         GetConnected();
 
-        //Start de timeout
+        //Start timeout for every routine
 
         RoutineConnexionTime.callback = (GenericHandler)(&RoutineConnexion);
+        //doubling the timing to be sure the neighbors are well initialized
         RoutineConnexionTime.calltime = getTime() + ROUTINE_CONNEXION_MS*2 + getGUID();
         registerTimeout(&RoutineConnexionTime);
-
 
         RoutineOptimizationTime.callback = (GenericHandler)(&RoutineOptimization);
         RoutineOptimizationTime.calltime = getTime() + ROUTINE_OPTIMIZATION_MS*2 + getGUID();
         registerTimeout(&RoutineOptimizationTime);
-
-        //Some blocks vanished when this line was uncommented, need to fix that 
 
         RoutineDeconnexionTime.callback = (GenericHandler)(&RoutineDeconnexion);
         RoutineDeconnexionTime.calltime = getTime() + ROUTINE_DECONNEXION_MS * 5 + getGUID();
@@ -413,6 +424,8 @@ myMain(void)
 
     delayMS(2000);
 
+
+    //The master is the block number 1
     if(getGUID() == 1)
     {
 
