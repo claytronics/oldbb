@@ -86,7 +86,7 @@ CoordinateHandler(void)
 	//if type of message is END_MAP
 	if(thisChunk->data[0] == END_MAP)
 	{
-		printf("block id:%d received endmap from %d\n",getGUID(),faceNum(thisChunk));
+		printf("block id:%d received endmap from %d\ and my except is %dn",getGUID(),faceNum(thisChunk),nodetomaster);
 		cpp--;
 		printf("id: %d wait answer : %d\n",getGUID(),cpp);
 
@@ -140,7 +140,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	for (PRef k = 0; k < NUM_PORTS; k++)
 	{
 
-		if(thisNeighborhood.n[k] != VACANT && k != except)		//test if you have a block on this interface
+		if(thisNeighborhood.n[k] != VACANT && k != except)		//test if you have a block on this interface and he is not my parent
 		{
 			dsend[k] = 1;
 			cpp ++;	
@@ -154,7 +154,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 
 		{
 
-			printf("message from %d to interface %d\n",getGUID(),i);
+			printf("message from %d to interface %d my master is %d\n",getGUID(),i,nodetomaster);
 			
 		//change the coordinate for all differente interface
 			if (i==0)
