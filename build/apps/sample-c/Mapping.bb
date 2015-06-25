@@ -90,7 +90,7 @@ CoordinateHandler(void)
 		cpp--;
 		printf("id: %d wait answer : %d\n",getGUID(),cpp);
 
-		if (cpp == 0 && getGUID() != 1) //except if we are the master
+		if (cpp == 0 && getGUID() != 1) //if we are not the master
 		{
 			delayMS(1);
 			EndMap(nodetomaster);
@@ -153,6 +153,8 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 		if(dsend[i] == 1) //if thats ok for the previous test 
 
 		{
+
+			printf("message from %d to interface %d\n",getGUID(),i);
 			
 		//change the coordinate for all differente interface
 			if (i==0)
@@ -200,7 +202,9 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 		msg[8] = (byte) (bd & 0xFF);
 	
 	//	printf("x=%d y=%d z=%d distancetomaster=%d message from id:%d transmitted to face %d\n",bx,by,bz,bd,getGUID(),i);
-
+		
+		if (i != nodetomaster)
+		{
 		if(sendMessageToPort(cChunk, i, msg, 9, CoordinateHandler, NULL) == 0)
 		{
 			freeChunk(cChunk);
@@ -211,6 +215,7 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 		bz = zz;
 	//	printf("reinitialisation test x=%d y=%d z=%d\n",bx,by,bz);
 	    	
+		}
 		}
 	}
 	// printf("id: %d wait answer : %d\n",getGUID(),cpp);	
@@ -224,11 +229,10 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	{
 		setColor(BLUE);
 	}
-	// if (cpp == 0)
-	// {
-	// 	setColor(YELLOW); //he have finish with the map
-	// 	EndMap(except); // test
-	// }
+	if (cpp == 0)
+	{
+	 	setColor(ORANGE); //he have finish with the map
+	}	
 	if (cpp == 3)
 	{
 		setColor(WHITE);
@@ -239,22 +243,20 @@ void
 EndMap(int desti)  //send the last message of this protocol
 {
 
-	setColor(PINK);
+	setColor(PURPLE);
 
 	byte msg[17];
 	msg[0] = END_MAP;
-
-	int i = desti;
 	
 	Chunk* cChunk = getSystemTXChunk();
 
-	if(sendMessageToPort(cChunk, i, msg, 1, CoordinateHandler, NULL) == 0)
+	if(sendMessageToPort(cChunk, desti, msg, 1, CoordinateHandler, NULL) == 0)
 		{
 			freeChunk(cChunk);
 		}
 
 
-	printf("end map to %d from %d\n",i,getGUID());
+	printf("end map to %d from %d\n",desti,getGUID());
 
 }
 
