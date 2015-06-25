@@ -41,17 +41,16 @@ CoordinateHandler(void)
 	//if the type of message if DIFFUSE_COORDINATE
 	if(thisChunk->data[0] == DIFFUSE_COORDINATE)
 	{
-		if (vlock == 0) //check if the block is already map
+		if (vlock == 0) //check if the block is already mapped
 		{
-		printf("%d is already in map\n",getGUID());
-		int answ = faceNum(thisChunk);
-		EndMap(answ);
+			printf("%d is already in map\n",getGUID());
+			EndMap(faceNum(thisChunk));
 		}
 		else
 		{
 			vlock = 0; //to say the block is already in the map
 		
-		//	printf("valeur lock=%d\n",vlock);
+			//	printf("valeur lock=%d\n",vlock);
 			
 			px = (int16_t)(thisChunk->data[2]) & 0xFF;
 			px |= ((int16_t)(thisChunk->data[1]) << 8) & 0xFF00;
@@ -65,16 +64,18 @@ CoordinateHandler(void)
 			distancet = (int)(thisChunk->data[8]) & 0xFF;
 			distancet |= ((int)(thisChunk->data[7]) << 8) & 0xFF00;
 			
-		//	printf("lock value=%d\n",vlock);
+			//	printf("lock value=%d\n",vlock);
 
-		//	printf("id:%d  x=%d y=%d z=%d distancetomaster=%d\n",getGUID(),px,py,pz,distancet);
+			//	printf("id:%d  x=%d y=%d z=%d distancetomaster=%d\n",getGUID(),px,py,pz,distancet);
 		
 			// diffusion 
+
 			nodetomaster = faceNum(thisChunk);
 			printf("id=%d nodemaster=%d\n",getGUID(),nodetomaster);
+
 			DiffusionCoordinate(nodetomaster,px,py,pz,distancet);
 			
-			if(cpp == 0)// if no neighboor
+			if(cpp == 0) // if no neighboor
 			{
 				EndMap(nodetomaster);
 			}
@@ -88,13 +89,15 @@ CoordinateHandler(void)
 		printf("block id:%d received endmap from %d\n",getGUID(),faceNum(thisChunk));
 		cpp--;
 		printf("id: %d wait answer : %d\n",getGUID(),cpp);
-		if (cpp ==0 && getGUID()!=1 ) //except if we are the master
+
+		if (cpp == 0 && getGUID() != 1) //except if we are the master
 		{
 			delayMS(1);
 			EndMap(nodetomaster);
 			setColor(GREEN);
 		}
-		if (cpp ==0 && getGUID()==1)//if we are the master
+
+		if (cpp == 0 && getGUID()==1)//if we are the master
 		{
 			setColor(RED);
 		}
@@ -136,20 +139,18 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	Chunk* cChunk = getSystemTXChunk();
 	for (PRef k = 0; k < NUM_PORTS; k++)
 	{
-		if(k != nodetomaster)					//test if this block is my parent
+
+		if(thisNeighborhood.n[k] != VACANT && k != except)		//test if you have a block on this interface
 		{
-			if(thisNeighborhood.n[k] != VACANT)		//test if you have a block on this interface
-			{
-				dsend[k] = 1;
-				cpp ++;	
-			}
+			dsend[k] = 1;
+			cpp ++;	
 		}
 
 	}
 
 	for (int i = 0; i <NUM_PORTS; i++)
 	{
-		if(dsend[i] == 1 && i!=except)				//if thats ok for the previous test 
+		if(dsend[i] == 1) //if thats ok for the previous test 
 
 		{
 			
@@ -210,9 +211,9 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 		bz = zz;
 	//	printf("reinitialisation test x=%d y=%d z=%d\n",bx,by,bz);
 	    	
+		}
 	}
-	}
-	printf("id: %d wait answer : %d\n",getGUID(),cpp);	
+	// printf("id: %d wait answer : %d\n",getGUID(),cpp);	
 	
 	//debug
 	if (cpp == 2)
@@ -223,11 +224,11 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 	{
 		setColor(BLUE);
 	}
-	if (cpp == 0)
-	{
-		setColor(YELLOW); //he have finish with the map
-		EndMap(except);// test
-	}
+	// if (cpp == 0)
+	// {
+	// 	setColor(YELLOW); //he have finish with the map
+	// 	EndMap(except); // test
+	// }
 	if (cpp == 3)
 	{
 		setColor(WHITE);
@@ -237,6 +238,9 @@ DiffusionCoordinate(PRef except, int16_t xx, int16_t yy, int16_t zz, int16_t dd)
 void
 EndMap(int desti)  //send the last message of this protocol
 {
+
+	setColor(PINK);
+
 	byte msg[17];
 	msg[0] = END_MAP;
 
