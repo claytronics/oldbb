@@ -10,7 +10,7 @@ Descritpion :
 
 need to fix : 
 
-    - chuck isn't free somewhere
+    - need to fix after a deconnexion
 
 */
 
@@ -27,11 +27,6 @@ need to fix :
 #include "log.bbh"
 #endif
 
-void SendSimpleMessage(int MSG_ID, PRef p);
-byte DiffusionDistanceHandler(void);
-void sendMyDistance(PRef p, int sendDistance);
-void DiffusionDistance(int sendDistance, PRef except);
-
 // Messages ID
 
 #define DISTANCE_ID 2
@@ -43,8 +38,8 @@ void DiffusionDistance(int sendDistance, PRef except);
 
 //Timer for the routine
 
-#define ROUTINE_CONNEXION_MS 250
-#define ROUTINE_OPTIMIZATION_MS 2000
+#define ROUTINE_CONNEXION_MS 50
+#define ROUTINE_OPTIMIZATION_MS 1000
 #define ROUTINE_DECONNEXION_MS 250
 
 threadvar bool lock;
@@ -62,7 +57,12 @@ threadvar Timeout RoutineConnexionTime;
 threadvar Timeout RoutineOptimizationTime;
 threadvar Timeout RoutineDeconnexionTime;
 
-threadvar int alreadySent[16];
+void
+freeMyChunk(){
+
+    freeChunk(thisChunk);
+
+}
 
 void
 GetConnected(){
@@ -92,17 +92,14 @@ GetConnected(){
 }
 
 byte
-SimpleHandler(void)
-{
+SimpleHandler(void){
 //very simple handler
 
     if(thisChunk == NULL){
-      showChunks();
-      return 0;
+
+        return 0;
 
     }
-
-    if (getGUID() == 8) blockprint(stderr, "Got %d from %d\n", thisChunk->data[0], faceNum(thisChunk));
 
     switch(thisChunk->data[0])
     {
@@ -111,7 +108,7 @@ SimpleHandler(void)
 
             if(ownDistance == 0){
 
-                SendSimpleMessage(I_AM_CONNECTED_ID,faceNum(thisChunk));
+                SendSimpleMessage(I_AM_CONNECTED_ID, faceNum(thisChunk));
 
             }
 
@@ -119,8 +116,12 @@ SimpleHandler(void)
 
         case I_AM_CONNECTED_ID:{
 
-            DiffusionDistance(ownDistance+1,toMaster);
-            GetConnected();
+            if(lock && ownDistance != 0 && faceNum(thisChunk) != toMaster){
+
+                DiffusionDistance(ownDistance+1,toMaster);
+                GetConnected();
+
+            }
 
         }break;
 
@@ -145,15 +146,16 @@ SimpleHandler(void)
         }break;
 
         case WHAT_IS_YOUR_DISTANCE_ID:{
-	  PRef f = faceNum(thisChunk);
-	  freeChunk(thisChunk);
-	  sendMyDistance(faceNum(thisChunk),ownDistance+1);
-	  return 1;
+
+            if(lock && ownDistance != 0 && faceNum(thisChunk) != toMaster){
+
+                sendMyDistance(faceNum(thisChunk),ownDistance+1);
+
+            }
+
         }break;
 
         case MY_DISTANCE_IS_ID:{
-
-	  alreadySent[faceNum(thisChunk)] = 0;
 
             int recvDistance;
             recvDistance = (int)(thisChunk->data[2]) & 0xFF;
@@ -164,10 +166,12 @@ SimpleHandler(void)
             if(recvDistance < ownDistance || ownDistance == 0)
             {
 
-	      blockprint(stderr, "I'm %d, my previous : %d, now %d !! Previous d %d, now : %d\n",getGUID(),toMaster,faceNum(thisChunk),ownDistance,recvDistance-1);
+                printf("I'm %d, my previous : %d, now %d !! Previous dis %d, now : %d\n",getGUID(),toMaster,faceNum(thisChunk),ownDistance,recvDistance-1);
 
                 toMaster = faceNum(thisChunk);
-                ownDistance = recvDistance-1;
+
+                setColor(ORANGE);
+                ownDistance = recvDistance;
 
             }
 
@@ -184,19 +188,8 @@ SimpleHandler(void)
 
 }
 
-
-void 
-freeMyChunk(void)
-{
-  freeChunk(thisChunk);
-}
-
-
-
-
 void
-sendMyDistance(PRef p, int sendDistance)
-{
+sendMyDistance(PRef p, int sendDistance){
 
     byte msg[17];
     msg[0] = MY_DISTANCE_IS_ID;
@@ -204,13 +197,7 @@ sendMyDistance(PRef p, int sendDistance)
     msg[1] = (byte) ((sendDistance >> 8) & 0xFF);
     msg[2] = (byte) (sendDistance & 0xFF);
 
-    if (getGUID() == 8) blockprint(stderr, "Send %d to %d\n", MY_DISTANCE_IS_ID, p);
-
     Chunk* cChunk = getSystemTXChunk();
-    if (cChunk == NULL) {
-      showChunks();
-      exit(-1);
-    }
 
     if(sendMessageToPort(cChunk, p, msg, 4, SimpleHandler, (GenericHandler)&freeMyChunk) == 0)
     {
@@ -221,7 +208,6 @@ sendMyDistance(PRef p, int sendDistance)
 
 }
 
-
 void
 SendSimpleMessage(int MSG_ID, PRef p){
 
@@ -231,12 +217,7 @@ SendSimpleMessage(int MSG_ID, PRef p){
     msg[0] = MSG_ID;
 
     Chunk* cChunk = getSystemTXChunk();
-    if (cChunk == NULL) {
-      showChunks();
-      exit(-1);
-    }
 
-    if (getGUID() == 8) blockprint(stderr, "Send %d to %d\n", MSG_ID, p);
     if(sendMessageToPort(cChunk, p, msg, 1, SimpleHandler, (GenericHandler)&freeMyChunk) == 0)
     {
 
@@ -252,14 +233,14 @@ RoutineConnexion(void){
 //Send a message when see a connexion in empty face via VACANT
 
 
-    if(getGUID() >= 36 && !reachmaster)
+    if(getGUID() > 5 && !reachmaster)
     {
 
         //This is just to see the path to the master
 
         SendSimpleMessage(REACH_MASTER_ID, toMaster);
         setColor(BLUE);
-        //reachmaster = 1;
+        reachmaster = 1;
 
     }
 
@@ -286,10 +267,7 @@ RoutineConnexion(void){
 }
 
 void
-RoutineOptimization(void)
-{
-
-    if (getGUID() == 8) blockprint(stderr, "Starting RoutineOPt\n");
+RoutineOptimization(void){
 
     if(getGUID() != 1)
     {
@@ -302,12 +280,11 @@ RoutineOptimization(void)
             if(Connected[i] == 1)
             {
 
-	      if (alreadySent[i] == 1) {
-		blockprint(stderr, "outstanding WIYDI to %d\n", i);
-	      }
+                if(getGUID() == 4){
 
-	      alreadySent[i] = 1;
+                    printf("Opti from face %d\n",i);
 
+                }
                 SendSimpleMessage(WHAT_IS_YOUR_DISTANCE_ID, i);
 
             }
@@ -319,10 +296,6 @@ RoutineOptimization(void)
 
     }
 
-    if (getGUID() == 8) {
-      showChunks();
-      blockprint(stderr, "ENDING RoutineOPt\n");
-    }
 }
 
 void
@@ -330,13 +303,16 @@ RoutineDeconnexion(void){
 
     //Made the inverse of the connexion routine, and force an otpimization to find a new path to the master
 
+
     if(getGUID() != 1)
     {
 
         if(thisNeighborhood.n[toMaster] == VACANT){
 
             ownDistance = 0;
-            RoutineOptimization();
+            lock = 0;
+
+            // RoutineOptimization();
 
         }
 
@@ -348,11 +324,9 @@ RoutineDeconnexion(void){
 }
 
 byte
-DiffusionDistanceHandler(void)
-{
+DiffusionDistanceHandler(){
 
     if(thisChunk == NULL){
-      showChunks();
         return 0;
     }
 
@@ -371,6 +345,8 @@ DiffusionDistanceHandler(void)
 
         DiffusionDistance(ownDistance+1,toMaster);
 
+        printf("%d distance is %d\n",getGUID(),ownDistance);
+
         //Load the Connected array
 
         GetConnected();
@@ -387,9 +363,9 @@ DiffusionDistanceHandler(void)
 
         //Some blocks vanished when this line was uncommented, need to fix that 
 
-        // RoutineDeconnexionTime.callback = (GenericHandler)(&RoutineDeconnexion);
-        // RoutineDeconnexionTime.calltime = getTime() + ROUTINE_DECONNEXION_MS * 5 + getGUID();
-        // registerTimeout(&RoutineDeconnexionTime);
+        RoutineDeconnexionTime.callback = (GenericHandler)(&RoutineDeconnexion);
+        RoutineDeconnexionTime.calltime = getTime() + ROUTINE_DECONNEXION_MS * 5 + getGUID();
+        registerTimeout(&RoutineDeconnexionTime);
 
     }
 
@@ -410,10 +386,6 @@ DiffusionDistance(int sendDistance, PRef except){
     msg[2] = (byte) (sendDistance & 0xFF);
 
     Chunk* cChunk = getSystemTXChunk();
-    if (cChunk == NULL) {
-      showChunks();
-      exit(-1);
-    }
 
     for (int x = 0; x < NUM_PORTS; ++x)
     {
@@ -421,7 +393,7 @@ DiffusionDistance(int sendDistance, PRef except){
         if(x != except)
         {
 
-            if(sendMessageToPort(cChunk, x, msg, 4, DiffusionDistanceHandler, NULL) == 0)
+            if(sendMessageToPort(cChunk, x, msg, 4, DiffusionDistanceHandler, (GenericHandler)&freeMyChunk) == 0)
             {
 
                 freeChunk(cChunk);
@@ -439,9 +411,6 @@ DiffusionDistance(int sendDistance, PRef except){
 void
 myMain(void)
 {
-
-  int xx;
-  for (xx=0; xx<16; xx++) alreadySent[xx] = 0;
 
     delayMS(2000);
 
