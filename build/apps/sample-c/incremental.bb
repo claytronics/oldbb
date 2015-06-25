@@ -403,7 +403,7 @@ DiffusionDistance(int sendDistance, PRef except){
         if(x != except)
         {
 
-            if(sendMessageToPort(cChunk, x, msg, 4, DiffusionDistanceHandler, (GenericHandler)&freeMyChunk) == 0)
+            if(sendMessageToPort(cChunk, x, msg, 4, DiffusionDistanceHandler, NULL) == 0)
             {
 
                 freeChunk(cChunk);
