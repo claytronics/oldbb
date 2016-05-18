@@ -1,0 +1,25 @@
+include #direction.meld
+include #coordinate.meld
+include #color.meld
+
+type initial(node).
+type inTarget(node, max int).
+
+const b_false = 0.
+const b_true = 1.
+
+/* Axioms */
+!inTarget(A,b_false).
+node2int(A) = 1 -o !initial(A).
+!initial(A) -o !coordinate(A,0,0,0).
+
+/* Target Map Description */
+/* 2x2x2 cube */
+!coordinate(A,0,0,Z), Z >= -1, Z <= 0  -o !inTarget(A,b_true).
+!coordinate(A,1,0,Z),  Z >= -1, Z <= 0 -o !inTarget(A,b_true).
+!coordinate(A,0,-1,Z), Z >= -1, Z <= 0 -o !inTarget(A,b_true).
+!coordinate(A,1,-1,Z), Z >= -1, Z <= 0 -o !inTarget(A,b_true).
+
+/* Update Color */
+!inTarget(A,b_false) -o !setColor2(A,red).
+!inTarget(A,b_true) -o !setColor2(A,green).

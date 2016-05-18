@@ -1,0 +1,7 @@
+
+const bottom = 0.
+const north = 1.
+const east = 2.
+const west = 3.
+const south = 4.
+const up = 5.
