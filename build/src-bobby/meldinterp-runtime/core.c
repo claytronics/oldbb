@@ -25,7 +25,7 @@ execution.
 - Handling aggregates.
 *******************************************************************************/
 
-#define DEBUG_INSTRS
+//#define DEBUG_INSTRS
 /* #define DEBUG_ALLOCS */
 #define inline 
 
