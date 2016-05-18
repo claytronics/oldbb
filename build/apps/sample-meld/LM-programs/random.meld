@@ -1,0 +1,3 @@
+include #color.meld
+
+!setColor2(A,randint(num_colors)).

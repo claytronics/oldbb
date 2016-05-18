@@ -517,7 +517,10 @@ extern tuple_type TYPE_SETCOLOR;
 extern tuple_type TYPE_SETCOLOR2;
 
 /* ************* EXTERN FUNCTION IDs ************* */
+#define RANDINT_FUNC 0x1
 #define NODE2INT_FUNC 0x1c
+#define POW2_FUNC 0x1e
+#define SQRT_FUNC 0x1f
 
 /* ************* EXTERN DECLARATIONS  ************* */
 

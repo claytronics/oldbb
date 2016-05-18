@@ -25,7 +25,7 @@ execution.
 - Handling aggregates.
 *******************************************************************************/
 
-//#define DEBUG_INSTRS
+#define DEBUG_INSTRS
 /* #define DEBUG_ALLOCS */
 #define inline 
 
@@ -217,23 +217,53 @@ execute_call1 (const unsigned char *pc, Register *reg)
   Register *arg1 = eval_reg (arg1_index, &pc, reg);
 
 #ifdef DEBUG_INSTRS
-  if (functionID == NODE2INT_FUNC)
+  switch (functionID) {
+  case NODE2INT_FUNC:
     /* No need to do anything for this function since VM is already *
      * considering node args as NodeID's, which are int's           */
     printf("--%d--\t CALL1 node2int/%d TO reg %d = (reg %d)\n", 
 	   getBlockId(), arg1_index, dst_index, arg1_index);
-  else
-    printf("--%d--\t CALL1 (some func)/%d TO reg %d = (reg %d)\n", 
+    break;
+  case RANDINT_FUNC:
+    printf("--%d--\t CALL1 randint/%d TO reg %d = (reg %d)\n", 
 	   getBlockId(), arg1_index, dst_index, arg1_index);
+    break;
+  case SQRT_FUNC:
+    printf("--%d--\t CALL1 sqrt/%d TO reg %d = (reg %d)\n", 
+	   getBlockId(), arg1_index, dst_index, arg1_index);
+    break;
+  case POW2_FUNC:
+    printf("--%d--\t CALL1 pow2/%d TO reg %d = (reg %d)\n", 
+	   getBlockId(), arg1_index, dst_index, arg1_index);
+    break;
+  default:
+   printf("--%d--\t CALL1 (some func)/%d TO reg %d = (reg %d)\n", 
+	  getBlockId(), arg1_index, dst_index, arg1_index);
+  }
 #endif
   
-  if (functionID == NODE2INT_FUNC) {
+  switch (functionID) {
+  case NODE2INT_FUNC: 
     *dst = MELD_NODE_ID(arg1);
-  } else {
-    fprintf(stderr, "--%d--\t Error: call to function %x not implemented yet!\n", getBlockId(), functionID);
+    break;
+  case RANDINT_FUNC:
+    *dst = rand() % MELD_INT(arg1);
+    break;
+  case SQRT_FUNC: {
+    meld_float r = sqrt(MELD_FLOAT(arg1));
+    *dst = MELD_CONVERT_FLOAT(r);
+  }
+    break;
+  case POW2_FUNC: {
+    meld_float r = pow(MELD_FLOAT(arg1),2.0);
+    *dst = MELD_CONVERT_FLOAT(r);
+  }
+    break;
+ default:
+   fprintf(stderr, "--%d--\t Error: call to function %x not implemented yet!\n", getBlockId(), functionID);
   }
 
-  /* Do nothing for now since no function are currently implemented */
+  /* Do nothing for now since only few functions are currently implemented */
   (void)arg1;
   (void)dst;
   (void) return_type;

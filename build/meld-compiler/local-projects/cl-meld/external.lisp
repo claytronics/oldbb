@@ -68,6 +68,8 @@
 (define-external-function "cpu-id" :type-int '(:type-addr))
 (define-external-function "node2int" :type-int '(:type-addr))
 (define-external-function "intpower" :type-int '(:type-int :type-int))
+(define-external-function "pow2" :type-float '(:type-float))
+(define-external-function "sqrt" :type-float '(:type-float))
 (define-external-function "lsort" '(:type-list :all) '((:type-list :all)) :poly-p t)
 (define-external-function "lremoveduplicates" '(:type-list :all) '((:type-list :all)) :poly-p t)
 (define-external-function "degeneratevector" '(:type-list :type-int) '(:type-int :type-int))
