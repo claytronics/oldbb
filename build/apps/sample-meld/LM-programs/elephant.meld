@@ -3,7 +3,8 @@ include #puzzle.meld
 /* belongs to the target shape */
 !initial(A) -o !coordinate(A,-2,-2,0).
 
-!coordinate(A,-2,-2,Z), Z >= 0, Z <= 1  -o !inTarget(A,b_true).
+//!coordinate(A,-2,-2,Z), Z >= 0, Z <= 1  -o !inTarget(A,b_true).
+!coordinate(A,-2,-2,1) -o !inTarget(A,b_true).
 !coordinate(A,-1,-2,Z), Z >= 0, Z <= 1 -o !inTarget(A,b_true).
 !coordinate(A,-1,-1,Z), Z >= 0, Z <= 1 -o !inTarget(A,b_true).
 !coordinate(A,-1,0,Z), Z >= 0, Z <= 1 -o !inTarget(A,b_true).
