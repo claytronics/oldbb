@@ -8,6 +8,7 @@
 #endif
 
 threadvar int blockTickRunning = 0;
+extern void vm_alloc(void);
 
 int accelReady=0;
 
@@ -95,6 +96,11 @@ void initBlock()
 
 	initSystemMessage();
 	initEnsemble();
+
+#ifdef MELD
+	//allocate MeldVM's data structures
+	vm_alloc();
+#endif
 
 	initBlockTick();		// HW INITIALIZATION ROUTINE
 

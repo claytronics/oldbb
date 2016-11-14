@@ -22,6 +22,10 @@ threadtype typedef struct _neighbor_t {	Uid n[NUM_PORTS]; } Neighborhood;
 
 threadextern Neighborhood thisNeighborhood;
 
+/* used to ensure that two blocks cannot be both waiting infinitely for a 
+handshake from the other block */
+threadvar byte ignoredHandshakeCount[NUM_PORTS];
+
 byte getNeighborCount(void);
 
 // simple functions to access GUID of geographic neighbors

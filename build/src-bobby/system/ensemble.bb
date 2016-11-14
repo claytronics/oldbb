@@ -308,7 +308,7 @@ byte handleNeighborMessage(void)
       {
 	// have we already received an ACK to our own NEIGHBOR_MSG?  If not, respond
 	if ( ((ttNeighbor[faceNum(thisChunk)]).period 
-	      != NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD) 
+	      != NEIGHBOR_HANDSHAKE_TIMEOUT_PERIOD)
 	|| ignoredHandshakeCount[faceNum(thisChunk)] > 1)
 	  {
 	    // build a neighbor handshake packet

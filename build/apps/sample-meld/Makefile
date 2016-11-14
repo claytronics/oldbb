@@ -11,8 +11,9 @@ SOURCE := blinkyblocks.meld
 #MELDCSRC   +=
 #BBINCLUDE += 
 #ALLO +=
-#MELDO += 
+#MELDO +=
 
+#CFLAGS_OPTIONS = -DCLOCK_SYNC
 #CFLAGS_OPTIONS += -DLOG_DEBUG  -Wl,-u,vfprintf -lprintf_flt -lm
 
 include Makefile.header
