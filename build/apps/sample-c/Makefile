@@ -2,7 +2,8 @@
 # below here should be in an include file
 ##################################################
 
-SOURCE := mElection.bb
+SOURCE := colorChange.bb
+#SOURCE := setID_ensemble.bb
 
 # add any extra of yours here
 #ALLBBSRC  += color.bb
