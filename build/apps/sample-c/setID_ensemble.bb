@@ -1,6 +1,6 @@
 #include "block.bbh"
 
-threadvar hasMoreThanTwoNeighbors;
+threadvar byte hasMoreThanTwoNeighbors;
 
 byte sendNextID(PRef nextBlock, uint16_t nextID);
 void setFirstBlockID(void);
