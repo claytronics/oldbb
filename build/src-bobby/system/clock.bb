@@ -247,9 +247,6 @@ handleClockSyncMessage(void)
 		  election.electing = 0;
 		  if (id == getGUID())
 		    {
-#ifdef ELECTION_PERF_EVAL  
-		      election.backTime = getTime();
-#endif
 		      setLeader();
 		    }
 		  else
