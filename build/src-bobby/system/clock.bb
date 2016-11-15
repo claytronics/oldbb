@@ -67,9 +67,10 @@ initClock(void)
   ATOMIC_BLOCK(ATOMIC_RESTORESTATE)
   {
 #endif
+    election.electing = 0;
+    initLeaderElectionVariables();
     initGlobalClock();
-    initClockChunkPool();
-    initLeaderElectionVariables();    
+    initClockChunkPool();    
     scheduleLeaderElection();
     PRINT_BBSIM("%u init \n", getGUID());
 #ifndef BBSIM
@@ -189,7 +190,6 @@ handleClockSyncMessage(void)
 	  
 	  PRINT_BBSIM("%u GO MESSAGE FROM %u\n", getGUID(),id);
 	  
-	  election.maxSystemClock = setMaxSystemClock(thisChunk, election.maxSystemClock);
 	  if (!election.electing)
 	    {
 	      deregisterTimeout(&election.timeOut);
@@ -200,7 +200,10 @@ handleClockSyncMessage(void)
 	      	election.electing = 1;
 	      }
 	    }
-			
+
+	  election.maxSystemClock =
+	    setMaxSystemClock(thisChunk, election.maxSystemClock);
+	  
 	  if (id == election.id)
 	    {
 	      sendBackMsg(faceNum(thisChunk), 0, election.maxSystemClock);
@@ -582,8 +585,9 @@ scheduleLeaderElection(void)
   if (!election.electing)
     {
       deregisterTimeout(&election.timeOut);
-      //srand(getGUID()+getTime());
-      election.timeOut.calltime = getTime() + LEADER_ELECTION_TIMEOUT; // + rand()%50;	
+      srand(getGUID());
+      Time delay =  rand() % 100;
+      election.timeOut.calltime = getTime() + LEADER_ELECTION_TIMEOUT + delay;	
       election.timeOut.callback = (GenericHandler)(&startLeaderElection);
       registerTimeout(&election.timeOut);
     }
@@ -654,18 +658,18 @@ broadcastGoMsg(PRef p, uint16_t id, uint16_t l, syncData_t m)
 
 static void
 initLeaderElectionVariables(void) {
-  //if (!election.electing) {
-  election.parent = UNDEFINED_PARENT;
-  election.electing = 0;
-  election.id = getGUID();
-  election.level = 0;
-  setSlave();
-  initSTChildren(election.children);
-  election.maxSystemClock.localTime = getTime();
-  election.maxSystemClock.globalTime = getEstimatedGlobalClock(&globalClock);
-  // reinit clock
-  initGlobalClock();
-  //}
+  if (!election.electing) {
+    election.parent = UNDEFINED_PARENT;
+    election.electing = 0;
+    election.id = getGUID();
+    election.level = 0;
+    setSlave();
+    initSTChildren(election.children);
+    election.maxSystemClock.localTime = getTime();
+    election.maxSystemClock.globalTime = getEstimatedGlobalClock(&globalClock);
+    // reinit clock
+    initGlobalClock();
+  }
 }
 
 static void
@@ -675,6 +679,7 @@ startLeaderElection(void)
     initLeaderElectionVariables();
     election.electing = 1;
     election.nbNeededAnswers = broadcastGoMsg(255, getGUID(),0, election.maxSystemClock);
+
     if (election.nbNeededAnswers == 0) 
       {
 	election.electing = 0;
