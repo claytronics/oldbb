@@ -8,6 +8,8 @@
 #include "hostserial.h"
 #include "logtable.h"
 
+//#define MESSAGE_DEBUG
+
 // seconds
 #define READ_TIMEOUT 2
 
@@ -83,15 +85,21 @@ Chunk* Chunk::read() {
 	  //cout << "CHECKSUM OK" << endl;
 	  // not a duplicate packet		
 	  if((msgCnt == 0) || (parityNew != parityLast)) {  // add to global receive queue
-	    if (data[0] == LOG_MSG) {
-	      //cout << "log " << endl;
+
+#ifdef MESSAGE_DEBUG
+	    switch(data[0]) {
+	    case LOG_MSG:
+	      cerr << "log " << endl;
 	      //cout << (char*) data+7 << endl;
 	      //cout << (char*) (data) << endl;
-	    } else if (data[0] == 0x01 ) {
-	      cout << "neighbor" << endl;
-	    } else {
-	      cout << "unknown" << endl;
+	      break;
+	    case NEIGHBOR_MSG:
+	      cerr << "neighbor" << endl;
+	      break;
+	    default:
+	      cerr << "unknown" << endl;
 	    }
+#endif
 	    // flip the parity
 	    parityLast = parityNew;
 	    msgCnt++;

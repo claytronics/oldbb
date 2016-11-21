@@ -36,13 +36,15 @@
 #define FD_MASK         0xFE
 #define FD              0x12
 
-// Log system
-#define LOG_MSG					0x50
+// Message types
+#define NEIGHBOR_MSG 			0x01
+#define LOG_MSG				0x50
 
+// Log system
 #define LOG_I_AM_HOST			0x01
 #define LOG_PATH_TO_HOST		0x02
-#define LOG_NEED_PATH_TO_HOST	0x03
-#define LOG_DATA				0x04
+#define LOG_NEED_PATH_TO_HOST	        0x03
+#define LOG_DATA			0x04
 #define LOG_CMD			        0x05
 #define LOG_OUT_OF_MEMORY               0x06
 #define LOG_ASSERT                      0x07
