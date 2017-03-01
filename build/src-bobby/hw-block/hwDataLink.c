@@ -171,7 +171,7 @@ void sendToBuffer(PRef p, Chunk* c, byte parity)
 
     // send checksum
 	// escape it
-    if( isSpecial(val) ) 
+    if( isSpecial(checksum) ) 
     {
         push(ESCAPE, &(port[p].tx));
         push(checksum^ESCAPE_CHAR, &(port[p].tx));
