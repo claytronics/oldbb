@@ -14,6 +14,8 @@ uint8_t colors[NUM_COLORS+2][3] = {
 {0xFF, 0xFF, 0xFF}, // white
 {0xFF, 0x00, 0xFF}, // purple
 {0xFF, 0x00, 0x2D}, // pink
+{0x4B, 0x00, 0xB0}, // indigo
+{0x8B, 0x45, 0x13}, // saddlebrown
 #else
 {0xFF, 0x00, 0x00}, // red
 {0xE1, 0x2D, 0x00}, // orange
@@ -39,7 +41,7 @@ uint8_t colors[NUM_COLORS+2][3] = {
 
 threadvar byte 		currentRGB[3];
 threadvar Color 	currentColor;
-threadvar Intensity 	currentIntensity = INTENSITY_MAX;
+threadvar Intensity 	currentIntensity = INTENSITY_DEFAULT;
 
 Color getColor()
 {
