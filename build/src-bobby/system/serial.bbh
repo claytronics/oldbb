@@ -5,7 +5,7 @@
 #include "queues.bbh"
 
 threadtype typedef uint8_t PRef;
-threadtype enum portReferences { DOWN, NORTH, EAST, WEST, SOUTH, UP, NUM_PORTS };
+threadtype enum portReferences { DOWN, NORTH, EAST, WEST, SOUTH, UP, NUM_PORTS, UNDEFINED_PORT = 255 };
 
 threadtype typedef struct _port_t { PRef pnum; SendChunkQueue sq; ReceiveChunkQueue rq; CircBuf rx; CircBuf tx; } Port;
 
