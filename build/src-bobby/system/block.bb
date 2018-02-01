@@ -7,7 +7,17 @@
 #include "log.bbh"
 #endif
 
+#define RANDOMIZE_PORT_CHECK
+
+#ifdef RANDOMIZE_PORT_CHECK
+#define GET_PORT_INDEX(i) (portMap[(i+tmp) % NUM_PORTS])
+threadvar PRef portMap[NUM_PORTS];
+#else
+#define GET_PORT_INDEX(i) (i)			    
+#endif
+
 threadvar int blockTickRunning = 0;
+
 extern void vm_alloc(void);
 
 int accelReady=0;
@@ -20,6 +30,10 @@ int accelReady=0;
 void blockTick()
 {
   byte i;
+
+#ifdef RANDOMIZE_PORT_CHECK
+  byte j, tmp;
+#endif
   
 #ifdef BBSIM
   if (this()->destroyed == 1) {
@@ -41,19 +55,40 @@ void blockTick()
   checkTimeout();
   
   checkTimer();
+
+#ifdef RANDOMIZE_PORT_CHECK
+  // randomly swap two port refs in the map
+  i = rand() % NUM_PORTS;
+  j = rand() % NUM_PORTS;
+  tmp = portMap[i];
+  portMap[i] = portMap[j];
+  portMap[j] = tmp; 
+#endif
+
+#ifdef RANDOMIZE_PORT_CHECK
+  tmp = rand() % (UINT8_MAX - NUM_PORTS); // used by macro GET_PORT_INDEX
+#endif
   
-  for(i = 0; i < NUM_PORTS; ++i)
-    {
-      // read from serial
-      processBuffer(i);
-      
-      // active messaging (handle at most one per port)
-      handleOneMessage();
-      
-      //send packets/ACKS
-      sendOnSerial(i);
-    }
+  for(i = 0; i < NUM_PORTS; ++i) {
+    // read from serial
+    processBuffer(GET_PORT_INDEX(i));
+  }
+
+  for(i = 0; i < NUM_PORTS; ++i) {   
+    // active messaging (handle at most 6 messages)
+    handleOneMessage();
+  }
+
+#ifdef RANDOMIZE_PORT_CHECK
+  tmp = rand() % (UINT8_MAX - NUM_PORTS); // used by macro GET_PORT_INDEX
+#endif
+
+  for(i = 0; i < NUM_PORTS; ++i) {
+    //send packets/ACKS
+    sendOnSerial(GET_PORT_INDEX(i));
+  }
   
+  // why is this called twice ?
   executeHandlers();	
   if(accelReady){
     if(newAccelData()){
@@ -69,50 +104,58 @@ void blockTick()
 // Ties all the horrifying subfunctions together into one simple function
 void initBlock()
 {
-	//software initialization
-	initHandlers();
 
-	//hardware related initialization
-	initTime();
+#ifdef RANDOMIZE_PORT_CHECK
+  // init local variables
+  byte i = 0;
+  for(i = 0; i < NUM_PORTS; ++i) {
+    portMap[i] = i;
+  }
+#endif
+  
+  //software initialization
+  initHandlers();
 
-	initializeMemory();
+  //hardware related initialization
+  initTime();
 
-	initPorts();
+  initializeMemory();
+
+  initPorts();
 
 #ifdef DEBUG
-	initDebug();
-    	//printf("System Debug Enabled\r\n");
+  initDebug();
+  //printf("System Debug Enabled\r\n");
 #endif
 
-	initDataLink();	
+  initDataLink();	
 
-   	initHWLED();
-	//initAudio();
+  initHWLED();
+  //initAudio();
 
-	initSystemMessage();
-	initEnsemble();
+  initSystemMessage();
+  initEnsemble();
 
 #ifdef MELD
-	//allocate MeldVM's data structures
-	vm_alloc();
+  //allocate MeldVM's data structures
+  vm_alloc();
 #endif
 
-	initBlockTick();		// HW INITIALIZATION ROUTINE
+  initBlockTick();		// HW INITIALIZATION ROUTINE
 
-	initHWAccel();
-	accelReady=1;
+  initHWAccel();
+  accelReady=1;
 
 #ifdef LOG_DEBUG
-	initLogDebug();
+  initLogDebug();
 #endif
 
-	delayMS(50);
 #ifdef CLOCK_SYNC
-	initClock();
+  initClock();
 #endif
 
 #ifndef BBSIM
-    initHWMic();
+  initHWMic();
 #endif
 }
 
