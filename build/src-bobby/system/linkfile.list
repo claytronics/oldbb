@@ -1,5 +1,7 @@
 accelerometer.bb
 audio.bb
+bbassert.bb
+bfsTree.bb
 block.bb
 block_config.bb
 boot.bb
@@ -22,6 +24,8 @@ span.bb
 system.bb
 accelerometer.bbh
 audio.bbh
+bbassert.bbh
+bfsTree.bbh
 block.bbh
 block_config.bbh
 boot.bbh
@@ -44,4 +48,3 @@ serial.bbh
 span.bbh
 system.bbh
 myassert.h
-

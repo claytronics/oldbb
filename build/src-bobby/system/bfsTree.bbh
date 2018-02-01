@@ -1,0 +1,64 @@
+#ifndef BFS_TREE_H_
+#define BFS_TREE_H_
+
+#include "ensemble.bbh" // def of Uid
+#include "memory.bbh" // def of Chunk
+
+// MSG FORMAT:
+threaddef #define BFS_ID_INDEX 0
+threaddef #define BFS_ROOT_INDEX 1
+threaddef #define BFS_DISTANCE_INDEX 3
+threaddef #define BFS_HEIGHT_INDEX 4
+threaddef #define BFS_SIZE_INDEX 5
+
+threaddef #define BFS_GO_DATA_INDEX 4
+threaddef #define BFS_BACK_DATA_INDEX 6
+
+threaddef #define BFS_CONV_BOOL_INDEX 1
+threaddef #define BFS_BROADCAST_DATA_INDEX 2
+
+threaddef #define BFS_CONV_HEIGHT_INDEX 1
+threaddef #define BFS_CONV_SIZE_INDEX 2
+threaddef #define BFS_CONV_DATA_INDEX 3
+
+#define MAX_DISTANCE UINT8_MAX 
+threadtype typedef byte distance_t;
+threadtype typedef byte sysSize_t;
+
+threadtype typedef struct _BFStraversal BFSTraversal_t;
+threadtype typedef struct _tree tree_t;
+
+threadtype typedef void(*BFSGenericHandler)(void);
+threadtype typedef void(*BFSStatusHandler)(BFSTraversal_t *);
+threadtype typedef void(*BFSChildHandler)(Chunk*);
+threadtype typedef void(*BFSDataHandler)(byte*,byte);
+
+threadtype typedef struct _BFSCallbacks {BFSChildHandler bfsGoVisit; BFSChildHandler addChild; BFSChildHandler removeChild; BFSGenericHandler reset; BFSDataHandler fillBFSGoData; BFSDataHandler fillBFSBackData; BFSStatusHandler terminationHandler;} BFSCallbacks_t;
+
+threadtype typedef struct _BCCallbacks {BFSChildHandler broadcastVisit; BFSChildHandler convergecastVisit; BFSDataHandler fillBroadcastData; BFSDataHandler fillConvergecastData; BFSStatusHandler terminationHandler;} BCCallbacks_t;
+
+threadtype typedef struct _BC {byte waiting; distance_t height; sysSize_t size; PRef farthest; BCCallbacks_t callbacks;} BC_t;
+
+typedef struct _tree {Uid root; distance_t distance; PRef parent; byte children[NUM_PORTS]; BC_t broadConv;} tree_t;
+
+typedef struct _BFStraversal {tree_t tree; byte id; byte electing; byte finished; byte waiting[NUM_PORTS]; sysSize_t sysSize; sysSize_t branchSize[NUM_PORTS]; distance_t branchHeight[NUM_PORTS]; byte prevGoAcked[NUM_PORTS]; BFSCallbacks_t callbacks;} BFSTraversal_t;
+
+// Leader Election + BFS Tree
+void initBFSTraversal(BFSTraversal_t *bfs);
+void resetBFSTraversal(BFSTraversal_t *bfs);
+byte registerBFSTraversal(BFSTraversal_t *bfs);
+
+sysSize_t getSysSize(BFSTraversal_t *bfs);
+distance_t getHeight(BFSTraversal_t *bfs);
+
+void takePartInBFS(Chunk *c);
+void setBFSRoot(BFSTraversal_t *bfs);
+byte getBFSNumChildren(BFSTraversal_t *bfs);
+
+void startBFSTraversal(BFSTraversal_t *bfs);
+
+// Broadcast + Convergecast
+void startBFSBroadcast(BFSTraversal_t *bfs, byte convergecast);
+void startBFSConvergecast(BFSTraversal_t *bfs);
+
+#endif
