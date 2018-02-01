@@ -80,17 +80,21 @@ initClock(void)
 #endif
 }
 
+#ifdef LOG_DEBUG
 static Time
 getClockForTime(globalClock_t *g,Time t)
 {
   return  round((double)t*g->speedAvg) + g->offset;
 }
+#endif
 
+#ifdef CLOCK_SYNC
 static Time
 getEstimatedGlobalClock(globalClock_t *g)
 {
   return round((double)getTime()*g->speedAvg) + g->offset;
 }
+#endif
 
 static Time
 getAClock(globalClock_t *g) {
@@ -150,8 +154,10 @@ handleClockSyncMessage(void)
 	  Time receiveTime = getReceiveTime(thisChunk);
 	  Time estimatedGlobalTime = sendTime + ESTIMATED_TRANSMISSION_DELAY;
 	  globalClock_t *g = &globalClock;
+#ifdef LOG_DEBUG	  
           Time currentEstimation = getClockForTime(g,receiveTime);
-
+#endif
+	  
 	  if (election.electing) {
 	    break;
 	  }
