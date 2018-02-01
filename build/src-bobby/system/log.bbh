@@ -18,14 +18,20 @@ threadextern PRef toHost;
 // Send a log message containing the string passed as argument to the host
 // NOTE: a string longer than 10 bytes will require 2 chunks to be sent!
 // usage example: char s[10];
-//                snprintf(s, 150*sizeof(char), "It works!");
+//                snprintf(s, 10*sizeof(char), "It works!");
 //                printDebug(s);
 byte printDebug(char*s);
 
 // To use in case block does not have a path to host yet
 // Blocks message sending until it knows how to communicate with host
 byte blockingPrintDebug(char *s);
-//
+
+// Checks for log connection. Returns true if a path (next hop only) to the host is known.
+byte isConnectedToLog(void);
+
+// Emit a "hello" log
+void logHello(void);
+
 ////////////////// END PUBLIC FUNCTIONS ////////////////////
 
 //////////////////// SYSTEM FUNCTIONS /////////////////////

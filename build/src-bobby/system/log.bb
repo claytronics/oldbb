@@ -97,12 +97,16 @@ byte printDebug(char* str) {
 
 byte blockingPrintDebug(char *s)
 {
-  while(toHost == UNDEFINED_HOST)
-    {
+  while(toHost == UNDEFINED_HOST) {
       delayMS(1);
-    }
+  }
   return printDebug(s);
 }
+
+byte isConnectedToLog(void) {
+  return (toHost != UNDEFINED_HOST);
+}
+
 ////////////////// END PUBLIC FUNCTIONS ///////////////////
 
 //////////////////// SYSTEM FUNCTIONS /////////////////////
@@ -117,22 +121,24 @@ void initLogDebug(void)
   PCConnection = 0;
 	
   /*buf[0] = LOG_MSG;
-  buf[1] = LOG_NEED_PATH_TO_HOST;
-  byte p;*/
-	
+    buf[1] = LOG_NEED_PATH_TO_HOST;
+    byte p;*/
+
+#ifndef NON_BLOCKING_LOGGING_SYSTEM
   setColor(ORANGE); // to remember to the user that the block is waiting
-  while(toHost == UNDEFINED_HOST)
-    {
-      /* for( p = 0; p < NUM_PORTS; p++)
-	{
-	  if ((thisNeighborhood.n[p] == VACANT))
-	    {
-	      continue;
-	    }
-	  sendLogChunk(p, buf, 2, __LINE__);
-	  }*/
-      delayMS(500);
-    }
+  while(toHost == UNDEFINED_HOST) {
+    /* for( p = 0; p < NUM_PORTS; p++)
+       {
+       if ((thisNeighborhood.n[p] == VACANT))
+       {
+       continue;
+       }
+       sendLogChunk(p, buf, 2, __LINE__);
+       }*/
+    delayMS(1);
+  }
+#endif
+  
   srand(getGUID());
 }
 
@@ -238,16 +244,16 @@ void
 commandHandler(void)
 {
   switch (thisChunk->data[2]) {
-    case COLOR_SET:
-      callHandler(EVENT_COMMAND_RECEIVED);
-      break;
-    case SET_ID:
-      callHandler(EVENT_COMMAND_RECEIVED);
-      break;
-    case ENSEMBLE_RESET:
-      callHandler(EVENT_COMMAND_RECEIVED);
-      break;
-    }
+  case COLOR_SET:
+    callHandler(EVENT_COMMAND_RECEIVED);
+    break;
+  case SET_ID:
+    callHandler(EVENT_COMMAND_RECEIVED);
+    break;
+  case ENSEMBLE_RESET:
+    callHandler(EVENT_COMMAND_RECEIVED);
+    break;
+  }
 }
 
 byte 
@@ -258,37 +264,45 @@ handleLogMessage(void)
       return 0;
     }
 
-  switch(thisChunk->data[1])
-    {
+  switch(thisChunk->data[1]) {
     case LOG_I_AM_HOST:
-	  setColor(WHITE);
+#ifndef NON_BLOCKING_LOGGING_SYSTEM
+      setColor(WHITE);
+#endif
       toHost = faceNum(thisChunk);			
       PCConnection = 1;
       spreadPathToHost(faceNum(thisChunk));
       break;
-    case LOG_PATH_TO_HOST:
+
+  case LOG_PATH_TO_HOST:
       if (toHost == UNDEFINED_HOST) {
-      setColor(WHITE);
+#ifndef NON_BLOCKING_LOGGING_SYSTEM
+	setColor(WHITE);
+#endif
 	toHost = faceNum(thisChunk);
 	spreadPathToHost(faceNum(thisChunk));
       }
       break;
       /*case LOG_NEED_PATH_TO_HOST:
-      if (toHost != UNDEFINED_HOST) {
+	if (toHost != UNDEFINED_HOST) {
 	sendPathToHost(faceNum(thisChunk));
-      }
-      break;*/
-    case LOG_DATA:
+	}
+	break;*/
+
+  case LOG_DATA:
       if(toHost != UNDEFINED_HOST) {
 	forwardToHost(thisChunk);
       }
-      break;		
+      break;
+      
     case LOG_CMD:
       commandHandler();
       break;
+      
     case LOG_ASSERT:
       if(toHost != UNDEFINED_HOST) forwardToHost(thisChunk);
       break;
+      
     case LOG_OUT_OF_MEMORY:
       if(toHost != UNDEFINED_HOST) forwardToHost(thisChunk);
       break;
@@ -308,14 +322,14 @@ static Chunk* getLogChunk(void)
   byte i = 0;
   Chunk *cp = NULL;
   for(i = 0; i < NUM_LOG_CHUNK ; i++) {
-     // check top bit to indicate usage
-     cp = &logChunkPool[i];
-     if(!chunkInUse(cp) ) {
-		// indicate in use
-        cp->status = CHUNK_USED;
-        cp->next = NULL;
-        return cp;
-     }
+    // check top bit to indicate usage
+    cp = &logChunkPool[i];
+    if(!chunkInUse(cp) ) {
+      // indicate in use
+      cp->status = CHUNK_USED;
+      cp->next = NULL;
+      return cp;
+    }
   }
   return NULL;
 }
@@ -352,3 +366,10 @@ static byte getSize(char* str) {
 }
 
 ////////////////// END SYSTEM FUNCTIONS ///////////////////
+
+void logHello(void) {
+  char s[7];
+  snprintf(s, 7*sizeof(char), "Hello!");
+  s[6] = '\0';
+  printDebug(s);
+}
