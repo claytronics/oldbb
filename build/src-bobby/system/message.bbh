@@ -37,7 +37,6 @@
 byte sendMessageToUid(Chunk * c, Uid dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb);
 byte sendMessageToPort(Chunk * c, PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb);
 
-
 // ----------- SEND SYSTEM MESSAGE to PORT
 //
 // Probably shouldn't be used by a user, but needed by various sytem routines.
@@ -45,6 +44,10 @@ byte sendMessageToPort(Chunk * c, PRef dest, byte * msg, byte length, MsgHandler
 //     allocated chunks rather than a user allocated chunk
 byte sendSystemMessage(PRef dest, byte * msg, byte length, MsgHandler mh, GenericHandler cb);
 void initSystemMessage(void);
+
+// ---------- USER MESSAGES
+byte sendUserMessage(PRef dest, byte *data, byte length, MsgHandler mh, GenericHandler cb);
+byte broadcastUserMessage(PRef ignore, byte *data, byte length, MsgHandler mh,  GenericHandler cb);
 
 // ----------- ASSERT
 #ifdef TESTING 

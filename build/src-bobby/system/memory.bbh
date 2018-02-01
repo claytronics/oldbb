@@ -129,5 +129,9 @@ Chunk* getSystemTXChunk(void);
 // returns: pointer-mem available, null-out of memory
 // Chunk* getSendChunk(void);
 
+// User chunks (dynamically allocated)
+Chunk* getUserChunk(void);
+void freeUserChunk(Chunk *c);
+
 #endif
 

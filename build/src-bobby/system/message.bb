@@ -123,6 +123,49 @@ void initSystemMessage()
 
 }
 
+
+byte sendUserMessage(PRef dest, byte *data, byte length, MsgHandler mh, GenericHandler cb) {
+  
+  if(dest < NUM_PORTS) {
+      // set it to appropriate chunk
+      Chunk *c = getUserChunk();
+            
+      // in use - can't send
+      if( c == NULL ) {
+	  return 0;
+      }
+            
+      if(setupChunk(c,dest,data,length,mh,cb) == 0) {
+	freeUserChunk(c);
+	return 0;
+      }
+      queueChunk(c);
+      return 1;
+  }
+  
+  return 0;
+}
+
+byte broadcastUserMessage(PRef ignore, byte *data, byte length, MsgHandler mh,  GenericHandler cb) {
+  byte p, s;
+  byte sent = 0;
+  
+  for(p = 0; p < NUM_PORTS; ++p) {
+
+    if (p == ignore) {
+      continue;
+    }
+
+    s = sendUserMessage(p,data,length,mh,cb);
+
+    if (s) {
+      sent++;
+    }
+   
+  }
+  return sent;
+}
+
 #ifdef TESTING
 void _assert
 (byte condition, byte fn, int ln)

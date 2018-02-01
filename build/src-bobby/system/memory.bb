@@ -194,6 +194,16 @@ _checkMemoryConsistency(byte cfn, int cln)
   //if (used > 12) sendOOM(cln);
 #endif 
 }
+
+
+Chunk* getUserChunk(void) {
+    return calloc(sizeof(Chunk), 1);
+}
+
+void freeUserChunk(Chunk *c) {
+    free(c);
+}
+
 ////////////////// END PUBLIC FUNCTIONS ///////////////////
 
 #endif
