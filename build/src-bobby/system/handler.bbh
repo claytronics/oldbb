@@ -58,16 +58,20 @@ EVENT_PACKET_RECEIVED,			// 20	called when a user packet has been received
 
 EVENT_COMMAND_RECEIVED,			// 21	called when a log command has been received
 
-USER_EVENT_0,					// 22
-USER_EVENT_1,					// 23
-USER_EVENT_2,					// 24
-USER_EVENT_3,					// 25
-USER_EVENT_4,					// 26
-USER_EVENT_5,					// 27
-USER_EVENT_6,					// 28
-USER_EVENT_7,					// 29
-USER_EVENT_8,					// 30
-USER_EVENT_9,					// 31
+NEW_TIME_MASTER_EVENT,			// 22 called when the time master has been elected (clock synchronization)
+
+LOST_TIME_MASTER_EVENT,			// 23 called when the time master has been lost (clock synchronization)
+
+USER_EVENT_0,					// 24
+USER_EVENT_1,					// 25
+USER_EVENT_2,					// 26
+USER_EVENT_3,					// 27
+USER_EVENT_4,					// 28
+USER_EVENT_5,					// 29
+USER_EVENT_6,					// 30
+USER_EVENT_7,					// 31
+USER_EVENT_8,					// 32
+USER_EVENT_9,					// 33
 };
 
 

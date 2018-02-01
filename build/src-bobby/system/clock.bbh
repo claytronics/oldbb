@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "serial.bbh"
 #include "hardwaretime.bbh"
+#include "handler.bbh"
 
 #define ESTIMATED_TRANSMISSION_DELAY 6
 #define NUM_CALIBRATION	5
@@ -20,26 +21,26 @@
 // clock message format: 
 
 // <CLOCK_SYNC_MSG> <CLOCK_INFO> <Send Time> <Receive Time>
+
+//Clock sync: 0
+//clock info: 1
+//Send time: 2-5
+//receive time: 6-9
+//id: 10-11
+//level: 12-13
+//max clock: 14-17
+
 #define SEND_TIME_INDEX 2
-#define RECEIVE_TIME_INDEX (SEND_TIME_INDEX+sizeof(Time))
+#define RECEIVE_TIME_INDEX 6
 
-// USED FOR TESTING PURPOSE
-#define MODE_INDEX (NUM_HOPS_INDEX+sizeof(byte))
-
-// 	Parameters: <id (2 bytes)> <level (2 bytes)>
 #define TIME_LEADER_ELECTION_GO_MSG 1
-#define ID_INDEX  (RECEIVE_TIME_INDEX+sizeof(Time))
-#define LEVEL_INDEX (ID_INDEX+sizeof(uint16_t))
-#define MAX_CLOCK_INDEX (LEVEL_INDEX+sizeof(uint16_t))
-
-// 	Parameters: <id (2 bytes)> <answer (1 byte)>
 #define TIME_LEADER_ELECTION_BACK_MSG 2
-#define ANSWER_INDEX (ID_INDEX+sizeof(uint16_t))
+#define ID_INDEX 10
+#define LEVEL_INDEX 12
+#define ANSWER_INDEX 12
+#define MAX_CLOCK_INDEX 14
 
 #define CLOCK_INFO 3
-#define REQUEST_CLOCK_SYNC 4
-#define TEST_GO_TRAVERSAL 11
-#define TEST_BACK_TRAVERSAL 12
 
 void initClock(void);
 

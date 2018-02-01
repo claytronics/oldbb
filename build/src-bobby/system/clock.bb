@@ -20,6 +20,8 @@ threadtype typedef struct _globalClock {syncData_t syncData[NUM_SYNC_DATA]; long
 
 static byte synchronizeNeighbors(void);
 static void initGlobalClock(void);
+static void resetGlobalClock(void);
+static void setMaxReach(globalClock_t *g);
 static void initSyncData(syncData_t *d);
 static double computeSpeedAvg(globalClock_t *g, Time gl, Time ll);
 static Time getSendTime(Chunk *c);
@@ -68,8 +70,8 @@ initClock(void)
   {
 #endif
     election.electing = 0;
-    initLeaderElectionVariables();
     initGlobalClock();
+    initLeaderElectionVariables();
     initClockChunkPool();    
     scheduleLeaderElection();
     PRINT_BBSIM("%u init \n", getGUID());
@@ -104,10 +106,16 @@ getClock(void) {
   return getAClock(&globalClock);
 }
 
+static void
+setMaxReach(globalClock_t *g) {
+  Time now = getAClock(g);
+  g->maxReach = fmax(now, g->maxReach);
+}
+
 byte
 isTimeLeader(void)
 {
-  return election.leader;
+  return (election.leader == 1);
 }
 
 uint16_t
@@ -144,9 +152,11 @@ handleClockSyncMessage(void)
 	  globalClock_t *g = &globalClock;
           Time currentEstimation = getClockForTime(g,receiveTime);
 
-	  //long int offset; double speedAvg; Time maxReach; long unsigned int numSync; Time lastSync; long int offsetHW; PRef syncChildren[NUM_PORTS];
-	  // now, to avoid run backward	
-	  g->maxReach = fmax(getAClock(g), g->maxReach);	  
+	  if (election.electing) {
+	    break;
+	  }
+	  
+	  setMaxReach(g);
 	  g->numSync++;
 
 	  //PRINT_BBSIM("block %u: clock info\n", getGUID());
@@ -160,18 +170,17 @@ handleClockSyncMessage(void)
 	    g->syncData[0].globalTime = estimatedGlobalTime;
 	    g->syncData[0].localTime = receiveTime;
 	  } else {
-	    Time o = estimatedGlobalTime - receiveTime;
-	    g->maxReach = fmax(getTime()+o, g->maxReach);
 	    computeSpeedAvg(g, estimatedGlobalTime, receiveTime);
 	  }
 #endif
 	  // constant offset, no skew
-	  //g->offsetHW = estimatedGlobalTime - receiveTime;	
+	  //g->offsetHW = estimatedGlobalTime - receiveTime;
 	  // constant skew, no drift
 	  g->offsetHW = estimatedGlobalTime - round(g->speedAvg*(double)receiveTime);
 
 	  synchronizeNeighbors();
 
+	  PRINT_BBSIM("received:%lu,global:%lu\n", estimatedGlobalTime, getClock());
 #ifdef LOG_DEBUG
 	  if ((rand() % 4) == 0) {
 	    char s[90];
@@ -200,14 +209,11 @@ handleClockSyncMessage(void)
 	      	election.electing = 1;
 	      }
 	    }
-
-	  election.maxSystemClock =
-	    setMaxSystemClock(thisChunk, election.maxSystemClock);
 	  
-	  if (id == election.id)
-	    {
+	  if (id == election.id) {
 	      sendBackMsg(faceNum(thisChunk), 0, election.maxSystemClock);
-	    }
+	  }
+	  
 	  if (id < election.id)
 	    {
 	      election.id = id;
@@ -238,12 +244,13 @@ handleClockSyncMessage(void)
 	  
 	  PRINT_BBSIM("%u BACK MESSAGE FOR %u\n", getGUID(),id);
 
-	  election.maxSystemClock = setMaxSystemClock(thisChunk, election.maxSystemClock);
 	  if (id == election.id)
 	    {
 	      election.nbNeededAnswers--;
 	      election.children[faceNum(thisChunk)] = thisChunk->data[ANSWER_INDEX];
 	      globalClock.syncChildren[faceNum(thisChunk)] = thisChunk->data[ANSWER_INDEX];
+
+	      election.maxSystemClock = setMaxSystemClock(thisChunk, election.maxSystemClock);
 	      
 	      if (election.nbNeededAnswers == 0)
 		{
@@ -304,8 +311,7 @@ isAClockSyncMessage(Chunk *c)
  *****************************************************/
 
 static void
-initGlobalClock() {
-  
+initGlobalClock() {  
   globalClock_t *g = &globalClock;
   //long int offset; double speedAvg; Time maxReach; long unsigned int numSync; Time lastSync; long int offsetHW; PRef syncChildren[NUM_PORTS];
   g->offset = 0;
@@ -315,6 +321,14 @@ initGlobalClock() {
   g->lastSync = 0;
   g->offsetHW = 0;
   initSTChildren(g->syncChildren);
+  initSyncData(g->syncData);
+}
+
+static void
+resetGlobalClock(void) {
+  globalClock_t *g = &globalClock;
+  setMaxReach(g);
+  g->numSync = 0;
   initSyncData(g->syncData);
 }
 
@@ -533,6 +547,7 @@ computeSpeedAvg(globalClock_t *g, Time gl, Time ll)
 
   xAvg = xAvg/i;
   yAvg = yAvg/i;
+  
   for (i=0;i<NUM_SYNC_DATA; i++) {
     if (g->syncData[i].localTime == 0) {
       break;
@@ -552,10 +567,17 @@ computeSpeedAvg(globalClock_t *g, Time gl, Time ll)
 
 static void
 setLeader(void) {
-  // Just in case, but should be the max value of the system (so the local max as well)
-  //localClockMaxReach = fmax(getMaxSystemClock(maxSystemClock), getClock());
-  //initGlobalClock();
 
+   globalClock_t *g = &globalClock;
+  double estimatedGlobalTime = getMaxSystemClock(election.maxSystemClock);
+  double clockNowWithOffset = round(g->speedAvg*(double)getTime());
+  
+  g->offset = estimatedGlobalTime - clockNowWithOffset;
+  // insert send time: round(g->speedAvg*(double)getTime()) + g->offsetHW;
+  // slaves: g->offsetHW = estimatedGlobalTime - round(g->speedAvg*(double)receiveTime);
+  g->offsetHW = g->offset;
+  setMaxReach(g);
+  
   election.leader = 1;
   syncProcess.round = 0;
 
@@ -568,6 +590,8 @@ setLeader(void) {
   registerTimer(&(syncProcess.timer));
   enableTimer(syncProcess.timer);
 
+  // Trigger event new time master
+  triggerHandler(NEW_TIME_MASTER_EVENT);
 }
 
 static void
@@ -600,6 +624,8 @@ scheduleLeaderElection(void)
 static Time
 getMaxSystemClock(syncData_t m)
 {
+  // o = L_now - L_r
+  // M_now = M_r + o
   int32_t off = getTime() - m.localTime;
   return m.globalTime + off;
 }
@@ -633,7 +659,8 @@ static byte
 sendBackMsg(PRef p, byte a, syncData_t m)
 {
   byte data[DATA_SIZE];
-	
+  
+  memset(data,0,DATA_SIZE);
   data[0] = CLOCK_SYNC_MSG;
   data[1] = TIME_LEADER_ELECTION_BACK_MSG;
   GUIDIntoChar(election.id, &(data[ID_INDEX]));
@@ -646,12 +673,12 @@ static byte
 broadcastGoMsg(PRef p, uint16_t id, uint16_t l, syncData_t m)
 {
   byte data[DATA_SIZE];
-	
+
+  memset(data,0,DATA_SIZE);
   data[0] = CLOCK_SYNC_MSG;
   data[1] = TIME_LEADER_ELECTION_GO_MSG;
   GUIDIntoChar(id, &(data[ID_INDEX]));
   GUIDIntoChar(l+1, &(data[LEVEL_INDEX]));
-  insertMaxSystemClock(data, m);
   return broadcastClockChunk(p, data, DATA_SIZE);
 }
 
@@ -665,10 +692,12 @@ initLeaderElectionVariables(void) {
     election.level = 0;
     setSlave();
     initSTChildren(election.children);
+    
     election.maxSystemClock.localTime = getTime();
-    election.maxSystemClock.globalTime = getEstimatedGlobalClock(&globalClock);
-    // reinit clock
-    initGlobalClock();
+    election.maxSystemClock.globalTime = getClock();
+    resetGlobalClock();
+    
+    triggerHandler(LOST_TIME_MASTER_EVENT);
   }
 }
 
