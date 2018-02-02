@@ -57,10 +57,10 @@ static void startElection(void);
 static void resetElection(void);
 static void scheduleElection(void);
 static void initElection(void);
-static void abc2HandleNeighborChange();
+static void abc2HandleNeighborChange(void);
 
 // BFS handlers:
-static void bfsReset();
+static void bfsReset(void);
 static void bfsGoVisit(Chunk *c);
 static void bfsAddChild(Chunk *c);
 static void bfsRemoveChild(Chunk *c);
@@ -127,7 +127,7 @@ static void initABCCenterV2(void) {
   _bfs->callbacks.terminationHandler = (BFSStatusHandler) &bfsTerminationHandler;
 }
 
-void updateDistancesBC() {
+void updateDistancesBC(void) {
   role_t r = GET_ROLE(abc2.iteration);
 
   if (r == B) {
@@ -191,7 +191,7 @@ static void scheduleElection(void) {
    }
 }
 
-static void abc2HandleNeighborChange() {
+static void abc2HandleNeighborChange(void) {
   if (!abc2.electing) {
     scheduleElection();
   } // else aie ... (case not handled yet!)
@@ -249,7 +249,7 @@ static void centerElected(void) {
 
 /** BFS Handlers **/
 
-static void bfsReset() {
+static void bfsReset(void) {
   PRef p = 0;
  
   for (p = 0; p < NUM_PORTS; p++) {
@@ -562,7 +562,7 @@ static void sendLocalLog(void) {
   byte r = localLog.role;
   
   if (r == A || r == CENTER) {
-    snprintf(s, 49*sizeof(char), "r: %u, s: %u, t: %u", r, GET_NUM_STEP(localLog.iteration), localLog.end - localLog.start);
+    snprintf(s, 49*sizeof(char), "r: %u, s: %u, t: %lu", r, GET_NUM_STEP(localLog.iteration), (long unsigned int) (localLog.end - localLog.start));
     s[49] = '\0';
 #ifdef BBSIM
     printf("%u: %s\n", getGUID(),s);
