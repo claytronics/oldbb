@@ -6,6 +6,8 @@
 #define BFS_DEBUG_PRINT(...) //printf(__VA_ARGS__)
 #define BC_DEBUG_PRINT(...) //printf(__VA_ARGS__)
 
+#define __MY_FILENAME__ "bfsTree.bbh"
+
 threaddef #define NUM_MAX_REGISTERED_BFS_TRAVERSALS 10
 threadvar byte numRegisteredBFSTravs = 0;
 threadvar BFSTraversal_t *traversals[NUM_MAX_REGISTERED_BFS_TRAVERSALS];

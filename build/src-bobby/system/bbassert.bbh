@@ -1,7 +1,7 @@
 #ifndef _BBASSERT_H_
 #define _BBASSERT_H_
 
-#define bbassert(e) ((e) ? (void)0 : _bbassert(__FILE__, __LINE__,#e))
+#define bbassert(e) ((e) ? (void)0 : _bbassert(__MY_FILENAME__, __LINE__,#e))
 
 void _bbassert(char *file, int ln, char* exp);
 

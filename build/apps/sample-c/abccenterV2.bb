@@ -7,6 +7,8 @@
 threaddef #define GET_MIN(a,b) ((a) < (b) ? (a) : (b))
 threaddef #define GET_MAX(a,b) ((a) > (b) ? (a) : (b))
 			       
+#define __MY_FILENAME__ "abccenterV2.bbh"
+			       
 #define ABC_CENTER_V2_DEBUG_PRINT(...) printf(__VA_ARGS__)
 #define GET_NUM_STEP(i) (i/3 + 1)
 #define GET_ROLE(i) (i%3)

@@ -10,13 +10,11 @@
 
 #include "../hw-api/hwMemory.h" // getGUID
 
-static char* _basename(char *file);
-
 void _bbassert (char *file, int ln, char* exp) {
   char s[100];
   byte i = 0;
   
-  snprintf(s, 100*sizeof(char), "Assert failed %s (%s:%d)",exp,_basename(file),ln);
+  snprintf(s, 100*sizeof(char), "Assert failed %s (%s:%d)",exp,file,ln);
   s[99] = '\0';
 
   while(1) {
@@ -38,20 +36,3 @@ void _bbassert (char *file, int ln, char* exp) {
     i = (i+1) % 15;
   }
 }
-
-static char* _basename(char *file) {
-  uint16_t len = strlen(file);
-  uint16_t i = len-1;
-  char *p = file+i;
-  
-  while (p != file) {
-    if (*p == '/') {
-      p++;
-      break;
-    }
-    p--;
-  }
-
-  return p;
-}
-
