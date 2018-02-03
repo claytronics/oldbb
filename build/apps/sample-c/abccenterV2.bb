@@ -262,6 +262,7 @@ static void bfsGoVisit(Chunk *c) {
   byte i = c->data[ABC_CENTER_V2_BFS_HEADER_ITERATION_INDEX];
 
   if (!abc2.electing) {
+    if (i != 0) {return;}
     startElection();
   }
   
@@ -472,7 +473,7 @@ void myMain(void) {
   initElection();
   initABCCenterV2();
   scheduleElection();
-  
+ 
   while (1) {
 #ifdef NON_BLOCKING_LOGGING_SYSTEM
     if (localLog.iteration != UNDEFINED_ITERATION && !localLog.sent) {
