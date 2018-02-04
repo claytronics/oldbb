@@ -104,6 +104,11 @@ void blockTick()
 // Ties all the horrifying subfunctions together into one simple function
 void initBlock()
 {
+  initHWLED();
+
+  setIntensity(INTENSITY_DEFAULT);
+ 
+  setColor(WHITE); // decrease intensity
 
 #ifdef RANDOMIZE_PORT_CHECK
   // init local variables
@@ -130,7 +135,6 @@ void initBlock()
 
   initDataLink();	
 
-  initHWLED();
   //initAudio();
 
   initSystemMessage();
@@ -158,4 +162,3 @@ void initBlock()
   initHWMic();
 #endif
 }
-
