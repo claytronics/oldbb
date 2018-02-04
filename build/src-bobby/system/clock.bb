@@ -733,8 +733,25 @@ startLeaderElection(void)
 /******************************************************
  * Chunk Management Functions
  *****************************************************/
-threaddef #define NUM_CLOCK_CHUNK 50
 
+#ifdef DYNAMIC_CHUNK_ALLOCATION
+static void
+initClockChunkPool(void) {}
+
+static Chunk*
+getClockChunk(void)
+{
+  return getDynamicChunk();
+}
+
+static void 
+freeClockChunk(void)
+{
+  freeChunk(thisChunk); // memory free if DYNAMIC_CHUNK_ALLOCaTION flag is set
+}
+
+#else
+threaddef #define NUM_CLOCK_CHUNK 35
 threadvar Chunk clockChunkPool[NUM_CLOCK_CHUNK];
 
 static void
@@ -770,6 +787,7 @@ getClockChunk(void) {
   }
   return NULL;
 }
+#endif
 
 static byte
 sendClockChunk(PRef p, byte *d, byte s)
@@ -780,7 +798,7 @@ sendClockChunk(PRef p, byte *d, byte s)
   if (c == NULL) {
     return 0;
   }
-  if (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeClockChunk) == 0) {
+  if (sendMessageToPort(c, p, d, s, (MsgHandler)RES_SYS_HANDLER, (GenericHandler)&freeClockChunk) == 0) { 
     freeChunk(c);
     return 0;
   }

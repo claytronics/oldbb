@@ -129,6 +129,12 @@ Chunk* getSystemTXChunk(void);
 // returns: pointer-mem available, null-out of memory
 // Chunk* getSendChunk(void);
 
+// Dynamic chunk management
+// returns a dynamically allocated chunk
+Chunk* getDynamicChunk(void);
+// loops through and frees all connected chunks in list
+void freeDynamicChunk(Chunk *c);
+
 // User chunks (dynamically allocated)
 Chunk* getUserChunk(void);
 void freeUserChunk(Chunk *c);

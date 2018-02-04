@@ -23,18 +23,21 @@ threaddef #define NUM_TXCHUNKS 24
 #define RXCHUNK 0
 #define TXCHUNK 1
 
+#ifndef DYNAMIC_CHUNK_ALLOCATION
 threadvar byte numFreeChunks;
 threadvar char allocated;	/* track num chunks allocated, signed val  */
 threadvar Chunk rxChunks[NUM_RXCHUNKS];
 threadvar Chunk txChunks[NUM_TXCHUNKS];
+#endif
 
 threadvar blockConf EEMEM nv_conf;
 threadvar blockConf conf;
 
 //////////////////// PUBLIC FUNCTIONS /////////////////////
 // set-up memory
-void initializeMemory(void)
-{
+void initializeMemory(void) {
+    
+#ifndef DYNAMIC_CHUNK_ALLOCATION
     uint8_t i;
 
     // clear all status bits and next pointers
@@ -54,18 +57,22 @@ void initializeMemory(void)
 
     // init allocation counters
     allocated = 0;
-
+#endif
+    
     // load config data
     //TODO: re-enable
     //restore(&conf, &nv_conf, sizeof(blockConf));
 }
 
 // this loops through and frees all connected Chunks in the list.
-void freeChunk(Chunk * c)
-{
-  Chunk * tmp;	
-
-  checkMemoryConsistency();
+void freeChunk(Chunk * c) {
+    
+#ifdef DYNAMIC_CHUNK_ALLOCATION
+    freeDynamicChunk(c);
+#else
+    Chunk * tmp;	
+    
+    checkMemoryConsistency();
   while(c != NULL) {
     if(chunkInUse(c)) {
       c->status = CHUNK_FREE;
@@ -78,11 +85,14 @@ void freeChunk(Chunk * c)
     c->next = NULL;
     c = tmp;
   }
+#endif
 }
 
 //static 
-Chunk* getSystemChunk(byte which)
-{
+Chunk* getSystemChunk(byte which) {
+#ifdef DYNAMIC_CHUNK_ALLOCATION
+    return getDynamicChunk();
+#else
     checkMemoryConsistency();
     int8_t i;
     Chunk*  current;
@@ -120,7 +130,8 @@ Chunk* getSystemChunk(byte which)
     assert(allocated >= NUM_TXCHUNKS);
 #endif    
     checkMemoryConsistency();
-    return NULL;  
+    return NULL;
+#endif
 }
 
 // return pointer to free memory Chunk
@@ -139,7 +150,10 @@ getSystemTXChunk(void)
 static byte 
 checkMemoryPool(Chunk* pool, byte num)
 {
-  byte used = 0;
+#ifdef DYNAMIC_CHUNK_ALLOCATION
+    return 0;
+#else
+    byte used = 0;
   byte i = 0;
   for( i=0; i<num; i++ ) {
     Chunk* cp = &(pool[i]);
@@ -149,6 +163,7 @@ checkMemoryPool(Chunk* pool, byte num)
 #endif
   }
   return used;
+#endif
 }
 
 
@@ -181,6 +196,7 @@ sendOOM(int cln)
 void 
 _checkMemoryConsistency(byte cfn, int cln)
 {
+#ifndef DYNAMIC_CHUNK_ALLOCATION
   int used = checkMemoryPool(rxChunks, NUM_RXCHUNKS);
   used += checkMemoryPool(txChunks, NUM_TXCHUNKS);
 #ifdef TESTING
@@ -192,16 +208,34 @@ _checkMemoryConsistency(byte cfn, int cln)
       }
   }
   //if (used > 12) sendOOM(cln);
-#endif 
+#endif
+#endif
 }
 
+// Dynamic chunk management
+Chunk* getDynamicChunk(void) {
+    Chunk *c = calloc(sizeof(Chunk),1);
+    return c;
+}
+
+void freeDynamicChunk(Chunk *c) {
+    Chunk *cur = c, *tmp = NULL;
+    
+    while(cur != NULL) {
+        tmp = cur;
+        cur = cur->next;
+        tmp->next = NULL;
+        free(tmp);
+    }
+}
 
 Chunk* getUserChunk(void) {
-    return calloc(sizeof(Chunk), 1);
+    Chunk *c = getDynamicChunk();
+    return c;
 }
 
 void freeUserChunk(Chunk *c) {
-    free(c);
+    freeDynamicChunk(c);
 }
 
 ////////////////// END PUBLIC FUNCTIONS ///////////////////

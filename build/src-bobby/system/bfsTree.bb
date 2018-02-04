@@ -26,10 +26,10 @@ static void forwardBFSBack(BFSTraversal_t *bfs);
 static void sendBFSAckGo(void);
 static void sendBFSDelete(BFSTraversal_t * bfs, PRef dest, Uid root, distance_t d);
 
-static void handle_BFS_SP_GO(void);
-static void handle_BFS_SP_ACK_GO(void);
-static void handle_BFS_SP_BACK(void);
-static void handle_BFS_SP_DELETE(void);
+static byte handle_BFS_SP_GO(void);
+static byte handle_BFS_SP_ACK_GO(void);
+static byte handle_BFS_SP_BACK(void);
+static byte handle_BFS_SP_DELETE(void);
 
 // Broadcast + convergecast			     
 		     
@@ -37,8 +37,8 @@ static void broadcastBFSChildren(BFSTraversal_t *bfs, byte *data);
 static void sendBFSConvergecast(BFSTraversal_t *bfs);
 static void checkBFSConvergecastEnd(BFSTraversal_t *bfs);
   
-static void handle_BFS_BROADCAST(void);
-static void handle_BFS_CONVERGECAST(void);
+static byte handle_BFS_BROADCAST(void);
+static byte handle_BFS_CONVERGECAST(void);
 
 // default empty callbacks
 static void defaultBFSGenericHandler(void) {}
@@ -101,9 +101,7 @@ void resetBFSTraversal(BFSTraversal_t *bfs) {
 
 byte registerBFSTraversal(BFSTraversal_t *bfs) {
 
-  if (bfs == NULL) {
-    return 0;
-  }
+  bbassert(bfs);
 
   if (numRegisteredBFSTravs+1 < NUM_MAX_REGISTERED_BFS_TRAVERSALS) {
     traversals[numRegisteredBFSTravs] = bfs;
@@ -119,10 +117,12 @@ byte registerBFSTraversal(BFSTraversal_t *bfs) {
 
 void takePartInBFS(Chunk *c) {
   BFSTraversal_t *bfs = GET_BFS(c);
+
   Uid root = charToGUID(&(c->data[BFS_ROOT_INDEX]));
   bfs->tree.root = root;
   bfs->tree.distance = MAX_DISTANCE;
   bfs->tree.parent = UNDEFINED_PORT;
+  bfs->finished = 0;
 }
 
 void setBFSRoot(BFSTraversal_t *bfs) {
@@ -219,7 +219,9 @@ void broadcastBFSGo(BFSTraversal_t *bfs) {
 void sendBFSGo(PRef d, BFSTraversal_t *bfs) {
 
   if (bfs->prevGoAcked[d]) {
-    byte data[DATA_SIZE] = {0};
+    byte data[DATA_SIZE];
+    
+    memset(data,0,DATA_SIZE);
     
     bfs->prevGoAcked[d] = 0;
     data[BFS_ID_INDEX] = bfs->id;
@@ -230,7 +232,7 @@ void sendBFSGo(PRef d, BFSTraversal_t *bfs) {
     bfs->callbacks.fillBFSGoData(data,BFS_GO_DATA_INDEX);
     
     // send Chunk
-    sendUserMessage(d, data, DATA_SIZE, (MsgHandler)& handle_BFS_SP_GO, (GenericHandler)&freeUserChunk);
+    sendUserMessage(d, data, DATA_SIZE, (MsgHandler)& handle_BFS_SP_GO, (GenericHandler)&defaultUserMessageCallback);
   }
   
   bfs->waiting[d] = 1;
@@ -238,8 +240,10 @@ void sendBFSGo(PRef d, BFSTraversal_t *bfs) {
 
 
 void forwardBFSBack(BFSTraversal_t *bfs) {
-  byte data[DATA_SIZE] = {0};
-    
+  byte data[DATA_SIZE];
+  
+  memset(data,0,DATA_SIZE);
+
   data[BFS_ID_INDEX] = bfs->id;
   GUIDIntoChar(bfs->tree.root, &(data[BFS_ROOT_INDEX]));
   data[BFS_DISTANCE_INDEX] = bfs->tree.distance-1;
@@ -251,26 +255,28 @@ void forwardBFSBack(BFSTraversal_t *bfs) {
   bfs->callbacks.fillBFSBackData(data,BFS_BACK_DATA_INDEX);
   
   // send Chunk
-  sendUserMessage(bfs->tree.parent, data, DATA_SIZE, (MsgHandler)& handle_BFS_SP_BACK, (GenericHandler)&freeUserChunk);
+  sendUserMessage(bfs->tree.parent, data, DATA_SIZE, (MsgHandler)& handle_BFS_SP_BACK, (GenericHandler)&defaultUserMessageCallback);
 }
 
 void sendBFSAckGo(void) {
   PRef dest = faceNum(thisChunk);
-  sendUserMessage(dest, thisChunk->data, DATA_SIZE, (MsgHandler)& handle_BFS_SP_ACK_GO, (GenericHandler)&freeUserChunk);  
+  sendUserMessage(dest, thisChunk->data, DATA_SIZE, (MsgHandler)& handle_BFS_SP_ACK_GO, (GenericHandler)&defaultUserMessageCallback);  
 }
 
 void sendBFSDelete(BFSTraversal_t * bfs, PRef dest, Uid root, distance_t d) {
-  byte data[DATA_SIZE] = {0};
+  byte data[DATA_SIZE];
+
+  memset(data,0,DATA_SIZE);
   
   data[BFS_ID_INDEX] = bfs->id;
   GUIDIntoChar(root, &(data[BFS_ROOT_INDEX]));
   data[BFS_DISTANCE_INDEX] = d;
   
   // send Chunk
-  sendUserMessage(dest, data, DATA_SIZE, (MsgHandler)& handle_BFS_SP_DELETE, (GenericHandler)&freeUserChunk);
+  sendUserMessage(dest, data, DATA_SIZE, (MsgHandler)& handle_BFS_SP_DELETE, (GenericHandler)&defaultUserMessageCallback);
 }
 
-void handle_BFS_SP_ACK_GO(void) {
+byte handle_BFS_SP_ACK_GO(void) {
   PRef from = faceNum(thisChunk);
   BFSTraversal_t *bfs = GET_BFS(thisChunk);
   Uid root = charToGUID(&(thisChunk->data[BFS_ROOT_INDEX]));
@@ -286,20 +292,22 @@ void handle_BFS_SP_ACK_GO(void) {
     if (bfs->tree.parent != from)
       sendBFSGo(from,bfs);
   }
+
+  return 1;
 }
 
-void handle_BFS_SP_GO(void) {
+byte handle_BFS_SP_GO(void) {
   PRef from = faceNum(thisChunk);
   BFSTraversal_t *bfs = GET_BFS(thisChunk);
   Uid root = charToGUID(&(thisChunk->data[BFS_ROOT_INDEX]));
   distance_t distance = thisChunk->data[BFS_DISTANCE_INDEX]+1;
 
   //bbassert(!bfs->finished);
-
-  BFS_DEBUG_PRINT("%u: BFS_GO electing %u, root %u (vs %u), distance %u (vs %u)\n",getGUID(),bfs->electing, root,bfs->tree.root,distance,bfs->tree.distance);
   
   bfs->callbacks.bfsGoVisit(thisChunk);
-
+  
+  BFS_DEBUG_PRINT("%u: BFS_GO electing %u, root %u (vs %u), distance %u (vs %u)\n",getGUID(),bfs->electing, root,bfs->tree.root,distance,bfs->tree.distance);
+  
   // ackGo
   sendBFSAckGo();
   
@@ -337,9 +345,11 @@ void handle_BFS_SP_GO(void) {
   } else if (root == bfs->tree.root) {
     sendBFSDelete(bfs,from,root,distance-1);
   }
+
+  return 1;
 }
 
-void handle_BFS_SP_BACK(void) {
+byte handle_BFS_SP_BACK(void) {
   PRef from = faceNum(thisChunk);
   BFSTraversal_t *bfs = GET_BFS(thisChunk);
   Uid root = charToGUID(&(thisChunk->data[BFS_ROOT_INDEX]));
@@ -365,9 +375,11 @@ void handle_BFS_SP_BACK(void) {
     checkAndForwardBFSBack(bfs);
   }
 
+  return 1;
+
 }
 
-void handle_BFS_SP_DELETE(void) {
+byte handle_BFS_SP_DELETE(void) {
   PRef from = faceNum(thisChunk);
   BFSTraversal_t *bfs = GET_BFS(thisChunk);
   Uid root = charToGUID(&(thisChunk->data[BFS_ROOT_INDEX]));
@@ -389,6 +401,8 @@ void handle_BFS_SP_DELETE(void) {
 
     checkAndForwardBFSBack(bfs);
   }
+
+  return 1;
 }
 
 
@@ -396,8 +410,9 @@ void handle_BFS_SP_DELETE(void) {
 
 // User functions
 void startBFSBroadcast(BFSTraversal_t *bfs, byte convergecast) {
-  byte data[DATA_SIZE] = {0};  
-
+  byte data[DATA_SIZE];
+  
+  memset(data,0,DATA_SIZE);
   data[BFS_ID_INDEX] = bfs->id;
   data[BFS_CONV_BOOL_INDEX] = convergecast;
 
@@ -426,7 +441,7 @@ void broadcastBFSChildren(BFSTraversal_t *bfs, byte *data) {
 
   for (p = 0; p < NUM_PORTS; p++) {
     if (bfs->tree.children[p]) {
-      byte s = sendUserMessage(p, data, DATA_SIZE, (MsgHandler)&handle_BFS_BROADCAST, (GenericHandler)&freeUserChunk);
+      byte s = sendUserMessage(p, data, DATA_SIZE, (MsgHandler)&handle_BFS_BROADCAST, (GenericHandler)&defaultUserMessageCallback);
       bbassert(s);
       if (convergecast) {
 	bfs->tree.broadConv.waiting++;
@@ -436,7 +451,9 @@ void broadcastBFSChildren(BFSTraversal_t *bfs, byte *data) {
 }
 
 void sendBFSConvergecast(BFSTraversal_t *bfs) {
-  byte data[DATA_SIZE] = {0};
+  byte data[DATA_SIZE];
+
+  memset(data,0,DATA_SIZE);
 
   data[BFS_ID_INDEX] = bfs->id;
 
@@ -445,7 +462,7 @@ void sendBFSConvergecast(BFSTraversal_t *bfs) {
 
   bfs->tree.broadConv.callbacks.fillConvergecastData(data,BFS_CONV_DATA_INDEX);
   
-  sendUserMessage(bfs->tree.parent, data, DATA_SIZE, (MsgHandler)&handle_BFS_CONVERGECAST, (GenericHandler)&freeUserChunk);
+  sendUserMessage(bfs->tree.parent, data, DATA_SIZE, (MsgHandler)&handle_BFS_CONVERGECAST, (GenericHandler)&defaultUserMessageCallback);
 }
 
 void checkBFSConvergecastEnd(BFSTraversal_t *bfs) {
@@ -459,7 +476,7 @@ void checkBFSConvergecastEnd(BFSTraversal_t *bfs) {
 }
 
 // Message handlers
-void handle_BFS_BROADCAST(void) {
+byte handle_BFS_BROADCAST(void) {
   BFSTraversal_t *bfs = GET_BFS(thisChunk);
   byte convergecast = thisChunk->data[BFS_CONV_BOOL_INDEX];
 
@@ -477,9 +494,11 @@ void handle_BFS_BROADCAST(void) {
   if(convergecast) {
     checkBFSConvergecastEnd(bfs);
   }
+
+  return 1;
 }
 
-void handle_BFS_CONVERGECAST(void) {
+byte handle_BFS_CONVERGECAST(void) {
   BFSTraversal_t *bfs = GET_BFS(thisChunk);
   byte from = faceNum(thisChunk);
 
@@ -500,4 +519,6 @@ void handle_BFS_CONVERGECAST(void) {
   
   bfs->tree.broadConv.callbacks.convergecastVisit(thisChunk);
   checkBFSConvergecastEnd(bfs);
+
+  return 1;
 }

@@ -1,5 +1,8 @@
 #include "message.bbh"
 #include "led.bbh"
+#include "bbassert.bbh"
+
+#define __MY_FILENAME__ "message.bb"
 
 #ifdef TESTING
 #define FILENUM 3
@@ -132,7 +135,7 @@ byte sendUserMessage(PRef dest, byte *data, byte length, MsgHandler mh, GenericH
             
       // in use - can't send
       if( c == NULL ) {
-	  return 0;
+	return 0;
       }
             
       if(setupChunk(c,dest,data,length,mh,cb) == 0) {
@@ -152,7 +155,7 @@ byte broadcastUserMessage(PRef ignore, byte *data, byte length, MsgHandler mh,  
   
   for(p = 0; p < NUM_PORTS; ++p) {
 
-    if (p == ignore) {
+    if (thisNeighborhood.n[p] == VACANT || p == ignore) {
       continue;
     }
 
@@ -164,6 +167,10 @@ byte broadcastUserMessage(PRef ignore, byte *data, byte length, MsgHandler mh,  
    
   }
   return sent;
+}
+
+void defaultUserMessageCallback(void) {
+  freeUserChunk(thisChunk);
 }
 
 #ifdef TESTING

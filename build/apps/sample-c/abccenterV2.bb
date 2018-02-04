@@ -1,6 +1,5 @@
 #include <stdlib.h> // min
 #include "block.bbh"
-#include "clock.bbh"
 #include "bbassert.bbh"
 #include "bfsTree.bbh"
 
@@ -9,7 +8,7 @@ threaddef #define GET_MAX(a,b) ((a) > (b) ? (a) : (b))
 			       
 #define __MY_FILENAME__ "abccenterV2.bbh"
 			       
-#define ABC_CENTER_V2_DEBUG_PRINT(...) printf(__VA_ARGS__)
+#define ABC_CENTER_V2_DEBUG_PRINT(...) //printf(__VA_ARGS__)
 #define GET_NUM_STEP(i) (i/3 + 1)
 #define GET_ROLE(i) (i%3)
 #define LOCAL_GRADIENT GET_MAX(abc2.distancesBC.B,abc2.distancesBC.C)
@@ -28,7 +27,7 @@ threaddef #define DEBUG_SET_COLOR(c) setColor(c)
 #define ABC_CENTER_V2_SYS_SIZE_INDEX 0
 #define ABC_CENTER_V2_ITERATION_INDEX 1
 
-#define ABC_CENTER_V2_TIMEOUT_MS 2000
+#define ABC_CENTER_V2_TIMEOUT_MS 600
 
 threadtype enum roleID_t {A = 0, B, C, CENTER, UNDEFINED_ROLE = 255};
 threaddef #define UNDEFINED_ITERATION 255
@@ -79,9 +78,9 @@ static void bcFillConvergecastData(byte *data, byte l);
 static void bcTerminationHandler(BFSTraversal_t *bfs);
 
 // msg handlers
-static void handle_NEXT(void);
-static void handle_ELECTED(void);
-static void handle_ELECTION_END(void);
+static byte handle_NEXT(void);
+static byte handle_ELECTED(void);
+static byte handle_ELECTION_END(void);
 
 // msg senders
 static void sendABCCenterV2Msg(PRef p, byte *data, byte size, MsgHandler handler);
@@ -121,12 +120,14 @@ static void initABCCenterV2(void) {
   localLog.sent = 0;
   
   // init BFS
+  resetBFSTraversal(_bfs);
+  
   _bfs->electing = 1;
-  _bfs->tree.root = getGUID();
-  _bfs->tree.distance = 0;
-  _bfs->tree.parent = UNDEFINED_PORT;
   _bfs->sysSize = 0;
+  setBFSRoot(_bfs);
+  
   _bfs->callbacks.terminationHandler = (BFSStatusHandler) &bfsTerminationHandler;
+  
 }
 
 void updateDistancesBC(void) {
@@ -144,16 +145,25 @@ void updateDistancesBC(void) {
 
 static void endElection(void) {
   bbassert(abc2.electing);
-  localLog.end = getTime();
   abc2.electing = 0;
 }
 
 static void startElection(void) {
   if (!abc2.electing) {
+    byte d = getNeighborCount();
+    
+    ABC_CENTER_V2_DEBUG_PRINT("%u: start ABC-Center!\n",getGUID());
+    deregisterTimeout(&bfsTimeOut);
     resetElection();
     abc2.electing = 1;
     localLog.start = getTime();
-    startBFSTraversal(_bfs);
+
+    if (d == 0) {
+      endElection();
+      centerElected();
+    } else {
+      startBFSTraversal(_bfs);
+    }
   }
 }
 
@@ -163,6 +173,8 @@ static void initElection(void) { // called once
   bfsTimeOut.callback = (GenericHandler)(&startElection);
   
   _bfs = malloc(sizeof(BFSTraversal_t));
+
+  bbassert(_bfs);
   
   initBFSTraversal(_bfs);
   registerBFSTraversal(_bfs);
@@ -195,8 +207,12 @@ static void scheduleElection(void) {
 
 static void abc2HandleNeighborChange(void) {
   if (!abc2.electing) {
+    ABC_CENTER_V2_DEBUG_PRINT("%u: neighbor change!\n",getGUID());
     scheduleElection();
-  } // else aie ... (case not handled yet!)
+  } else {
+    // else aie ... (case not handled yet!)
+    bbassert(0);
+  }
 }
 
 static void bfsTerminationHandler(BFSTraversal_t *bfs) {
@@ -207,7 +223,8 @@ static void bfsTerminationHandler(BFSTraversal_t *bfs) {
   updateDistancesBC();
   
   if (abc2.iteration == 0) {
-    _bfs->electing = 0;    
+    _bfs->electing = 0;
+    localLog.end = getTime();
     bfs->tree.broadConv.callbacks.terminationHandler = (BFSStatusHandler) &A1_Elected;   
     startBFSBroadcast(bfs,1);
     return;
@@ -244,7 +261,8 @@ static void A1_Elected(BFSTraversal_t *bfs) {
 
 static void centerElected(void) {
   debugSetRole(CENTER,abc2.iteration);
-  
+
+  localLog.end = getTime();
   abc2.electing = 0;
   broadcastElectionEnd(UNDEFINED_PORT);
 }
@@ -264,11 +282,10 @@ static void bfsGoVisit(Chunk *c) {
   byte i = c->data[ABC_CENTER_V2_BFS_HEADER_ITERATION_INDEX];
 
   if (!abc2.electing) {
-    if (i != 0) {return;}
+    if (i != 0) {return;} // restart only if this is not an old message
     startElection();
   }
   
-
   if (i > abc2.iteration) {    
     abc2.iteration = i;
     ABC_CENTER_V2_DEBUG_PRINT("%u : %u iteration\n", getGUID(), abc2.iteration);
@@ -384,7 +401,7 @@ static void bcTerminationHandler(BFSTraversal_t *bfs) {
 }
 
 /** Msg handlers **/
-static void handle_NEXT(void) {  
+static byte handle_NEXT(void) {  
   PRef p = argmax(abc2.childrenMaxCandidateDistance);
   
   _bfs->sysSize =  thisChunk->data[ABC_CENTER_V2_SYS_SIZE_INDEX];
@@ -420,9 +437,11 @@ static void handle_NEXT(void) {
   } else {
     sendNext(p);
   }
+
+  return 1;
 }
 
-static void handle_ELECTED(void) {
+static byte handle_ELECTED(void) {
   if (abc2.candidate == 1) {
     endElection();
     centerElected();
@@ -430,25 +449,29 @@ static void handle_ELECTED(void) {
     PRef p = argmin(abc2.childrenMinCandidateGradient);
     sendElected(p);
   }
+
+  return 1;
 }
 
-static void handle_ELECTION_END(void) {
+static byte handle_ELECTION_END(void) {
   if (abc2.electing == 1) {
     PRef p = faceNum(thisChunk);
     endElection();
     broadcastElectionEnd(p);
   }
+  
+  return 1;
 }
 
 /** msg senders **/
 
 static void sendABCCenterV2Msg(PRef p, byte *data, byte size, MsgHandler handler) {
-  sendUserMessage(p, data, size, handler, (GenericHandler)&freeUserChunk);
+  sendUserMessage(p, data, size, handler, (GenericHandler)&defaultUserMessageCallback);
 }
 
 static void sendNext(PRef p) {
   int size = 1;
-  byte data[1]= {0};
+  byte data[1];
 
   data[ABC_CENTER_V2_SYS_SIZE_INDEX] = _bfs->sysSize;
   
@@ -457,16 +480,18 @@ static void sendNext(PRef p) {
 
 static void sendElected(PRef p) {
   int size = 1;
-  byte data[1]= {0}; // empty message ok? to check in firmware code
+  byte data[1]; // empty message ok? to check in firmware code
+  data[0] = 0;
+  
   sendABCCenterV2Msg(p,data,size,(MsgHandler)&handle_ELECTED);
 }
 
 static void broadcastElectionEnd(PRef ignore) {
   int size = 1;
-  byte data[1]= {0}; // 0-byte message could be ok. But ok in firmware?
+  byte data[1]; // 0-byte message could be ok. But ok in firmware?
                     // to check!
-
-  broadcastUserMessage(ignore,data,size,(MsgHandler)&handle_ELECTION_END, (GenericHandler)&freeUserChunk);
+  data[0] = 0;
+  broadcastUserMessage(ignore,data,size,(MsgHandler)&handle_ELECTION_END, (GenericHandler)&defaultUserMessageCallback);
 }
 
 /** MAIN **/
@@ -475,21 +500,28 @@ void myMain(void) {
   initElection();
   initABCCenterV2();
   scheduleElection();
- 
+  
   while (1) {
+
+#ifdef BBSIM
+    if (localLog.iteration != UNDEFINED_ITERATION && !localLog.sent) {
+      sendLocalLog();
+      localLog.sent = 1;
+    }
+#else
+    
+#ifdef LOG_DEBUG
 #ifdef NON_BLOCKING_LOGGING_SYSTEM
     if (localLog.iteration != UNDEFINED_ITERATION && !localLog.sent) {
-#ifdef LOG_DEBUG
       if (isConnectedToLog()) {
-#endif
 	sendLocalLog();
 	localLog.sent = 1;
-#ifdef LOG_DEBUG
       }
-#endif
     }
 #endif
-    delayMS(500);
+#endif
+#endif
+    delayMS(50);
   }
 }
 
@@ -498,9 +530,7 @@ void userRegistration(void) {
   registerHandler(EVENT_NEIGHBOR_CHANGE, (GenericHandler)&abc2HandleNeighborChange);
 }
 
-
 /** Tools **/
-
 byte argmin(byte* d) {
   PRef p = 0, mp = 0;
   for (p = 1; p < NUM_PORTS; p++) {
@@ -569,9 +599,7 @@ static void sendLocalLog(void) {
     s[49] = '\0';
 #ifdef BBSIM
     printf("%u: %s\n", getGUID(),s);
-#endif
-  
-#ifdef LOG_DEBUG
+#else
     printDebug(s);
 #endif
   }

@@ -312,13 +312,27 @@ handleLogMessage(void)
 
 // --------------- CHUNK MANAGEMENT
 
+#ifdef DYNAMIC_CHUNK_ALLOCATION
+
+static Chunk*
+getLogChunk(void)
+{
+  return getDynamicChunk();
+}
+
+static void 
+freeLogChunk(void)
+{
+  freeDynamicChunk(thisChunk);
+}
+
+#else
+
 threaddef #define NUM_LOG_CHUNK 35
 threadvar Chunk logChunkPool[NUM_LOG_CHUNK];
 
 static Chunk* getLogChunk(void)
-{
-  //Chunk *p = getSystemTXChunk();
-  //return p;
+{  
   byte i = 0;
   Chunk *cp = NULL;
   for(i = 0; i < NUM_LOG_CHUNK ; i++) {
@@ -340,6 +354,7 @@ freeLogChunk(void)
   freeChunk(thisChunk);
   thisChunk->status = CHUNK_FREE;
 }
+#endif
 
 // ------------- UTILITY
 

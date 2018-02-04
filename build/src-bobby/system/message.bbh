@@ -48,6 +48,7 @@ void initSystemMessage(void);
 // ---------- USER MESSAGES
 byte sendUserMessage(PRef dest, byte *data, byte length, MsgHandler mh, GenericHandler cb);
 byte broadcastUserMessage(PRef ignore, byte *data, byte length, MsgHandler mh,  GenericHandler cb);
+void defaultUserMessageCallback(void);
 
 // ----------- ASSERT
 #ifdef TESTING 

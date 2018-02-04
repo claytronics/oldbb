@@ -11,14 +11,14 @@
 #include "led.bbh"
 
 #ifdef LOG_DEBUG
-  #include "log.bbh"
+#include "log.bbh"
 #endif
-  #ifdef CLOCK_SYNC
-  #include "clock.bbh"
+#ifdef CLOCK_SYNC
+#include "clock.bbh"
 #endif
 #ifdef TESTING
-  #define FILENUM 2
-  #include "message.bbh"
+#define FILENUM 2
+#include "message.bbh"
 #endif
 
 // global receive queue for packets
@@ -34,7 +34,7 @@ threadvar Chunk* thisChunk;
 // default message handler - does nothing
 byte defaultMsgHandler(void)
 {
-    return 1;
+  return 1;
 }
 
 // handler for reserved system mesages
@@ -42,47 +42,47 @@ byte defaultMsgHandler(void)
 //   running different programs to communicate at the system level.
 byte reservedSystemHandler(void)
 {
-    // bogus
-    if(thisChunk == NULL) {
-        return 0;
-    }
+  // bogus
+  if(thisChunk == NULL) {
+    return 0;
+  }
   
-    // find msg type and check
-    switch( thisChunk->data[0] )
+  // find msg type and check
+  switch( thisChunk->data[0] )
     {
-        case JUMP_BOOTLOADER: // CRC for this message: 0x2A
-        {
-	        int i = 1;
+    case JUMP_BOOTLOADER: // CRC for this message: 0x2A
+      {
+	int i = 1;
 	
-	        // check msg consistency
-	        while( i < DATA_SIZE ) {
-	            if( thisChunk->data[i] != (JUMP_BOOTLOADER ^ i) ) {
-	                // invalid bootloader packet, break and do nothing
-	                break;
-	            }
-	            i++;
-	        }
-	        // consistent
-    	    jumpToBootSection();
-        }
-        case NEIGHBOR_MSG:
-            handleNeighborMessage();
-            break;
+	// check msg consistency
+	while( i < DATA_SIZE ) {
+	  if( thisChunk->data[i] != (JUMP_BOOTLOADER ^ i) ) {
+	    // invalid bootloader packet, break and do nothing
+	    break;
+	  }
+	  i++;
+	}
+	// consistent
+	jumpToBootSection();
+      }
+    case NEIGHBOR_MSG:
+      handleNeighborMessage();
+      break;
 #ifdef LOG_DEBUG
-        case LOG_MSG:
-			handleLogMessage();
-			break;
+    case LOG_MSG:
+      handleLogMessage();
+      break;
 #endif
 #ifdef CLOCK_SYNC
-		case CLOCK_SYNC_MSG:
-			handleClockSyncMessage();
-			break;
+    case CLOCK_SYNC_MSG:
+      handleClockSyncMessage();
+      break;
 #endif
-        default:
-            break;
+    default:
+      break;
     }
   
-    return 0;
+  return 0;
 }
 
 // removes the first packet from the send queue and
@@ -92,60 +92,60 @@ byte reservedSystemHandler(void)
 // output:  1-success, 0-failure
 byte removeFromSq(PRef p, byte response)
 {
-    // empty or bad
-    if( (p >= NUM_PORTS) || (port[p].sq.head == NULL) ) 
+  // empty or bad
+  if( (p >= NUM_PORTS) || (port[p].sq.head == NULL) ) 
     {
-        return 0;
+      return 0;
     }
 
-    BB_LOCK(SQ_LOCK)
+  BB_LOCK(SQ_LOCK)
 
     // get the first Chunk
     thisChunk = port[p].sq.head;
 
-    // move the head of the queue
-    port[p].sq.head = thisChunk->next;
+  // move the head of the queue
+  port[p].sq.head = thisChunk->next;
 
-    // tail was pointing to head, remove tail as well
-    if( port[p].sq.head == NULL ) 
+  // tail was pointing to head, remove tail as well
+  if( port[p].sq.head == NULL ) 
     {
-        port[p].sq.tail   = NULL;
-        port[p].sq.flags &= ~CHUNK_READY;
+      port[p].sq.tail   = NULL;
+      port[p].sq.flags &= ~CHUNK_READY;
     }
-    // otherwise, leave it to what it was pointing to
+  // otherwise, leave it to what it was pointing to
 
-    BB_UNLOCK(SQ_LOCK)
+  BB_UNLOCK(SQ_LOCK)
 
     // remove thisChunk's references to queue
     thisChunk->next = NULL;
 
-    if(thisChunk->callback != NULL)
+  if(thisChunk->callback != NULL)
     {
-        // set response type for callback
-        setChunkResponse(thisChunk, response);
+      // set response type for callback
+      setChunkResponse(thisChunk, response);
 	
-        // execute callback to clear memory and other user actions
-        (thisChunk->callback)();
+      // execute callback to clear memory and other user actions
+      (thisChunk->callback)();
     }
 
-    // we assume that the callback has freed memory
-    thisChunk = NULL;
-    return 1;
+  // we assume that the callback has freed memory
+  thisChunk = NULL;
+  return 1;
 }
 
 // flush a send queue (used when retries fails)
 void flushSendQueue(PRef p)
 {
 #ifdef LOG_DEBUG
-	if (isHostPort(p)) {
-		removeFromSq(p, MSG_RESP_NOREPLY); // ONLY ONE
-		return;
-	}
+  if (isHostPort(p)) {
+    removeFromSq(p, MSG_RESP_NOREPLY); // ONLY ONE
+    return;
+  }
 #endif
-    if(p < NUM_PORTS)
+  if(p < NUM_PORTS)
     {
-        // flush buffer (call all callbacks as if all messages failed)
-        while( removeFromSq(p, MSG_RESP_NOREPLY) );
+      // flush buffer (call all callbacks as if all messages failed)
+      while( removeFromSq(p, MSG_RESP_NOREPLY) );
     }
 }
 ///////////////// END PROTECTED FUNCTIONS /////////////////
@@ -198,15 +198,15 @@ byte setupChunk(Chunk* c, PRef p, byte * msg, byte length, MsgHandler mh, Generi
 byte queueChunk(Chunk* c)
 {
  
-    // null Chunk
-    if(c == NULL)
+  // null Chunk
+  if(c == NULL)
     {
-        return 0;    
+      return 0;    
     }
     
-    byte p = faceNum(c);
+  byte p = faceNum(c);
     
-    if(p < NUM_PORTS)
+  if(p < NUM_PORTS)
     {
 #ifdef DEBUG
 #if DEBUG == 5 // UP
@@ -244,37 +244,37 @@ byte queueChunk(Chunk* c)
 #error Invalid DEBUG option chosen - use a face enum.
 #endif
 
-        if(p == DEBUGPORT)
+      if(p == DEBUGPORT)
         {
-            freeChunk(c);
-            return 0;
+	  freeChunk(c);
+	  return 0;
         }
 #endif    
     
-        BB_LOCK(SQ_LOCK)
+      BB_LOCK(SQ_LOCK)
 
         // add to queue - queue empty
         if( port[p].sq.head == NULL ) 
-        {
+	  {
             port[p].sq.head = c;
-        }
-        // queue has stuff
+	  }
+      // queue has stuff
         else 
-        {
+	  {
             port[p].sq.tail->next = c;
-        }
-        // add to tail and update flags
-        port[p].sq.tail   = c;
-        port[p].sq.flags |= CHUNK_READY;
+	  }
+      // add to tail and update flags
+      port[p].sq.tail   = c;
+      port[p].sq.flags |= CHUNK_READY;
 
-        BB_UNLOCK(SQ_LOCK)
+      BB_UNLOCK(SQ_LOCK)
 
         return 1;
     }
-    else
+  else
     {
-        freeChunk(c);
-        return 0;
+      freeChunk(c);
+      return 0;
     }
 }
 
@@ -283,45 +283,45 @@ byte queueChunk(Chunk* c)
 //          0 - no new messages
 byte handleOneMessage()
 {
-    // set the global chunk that needs to be processed by the handler
-    thisChunk = nextPacket();
+  // set the global chunk that needs to be processed by the handler
+  thisChunk = nextPacket();
 
-    // no packet, no action
-    if( thisChunk == NULL )
+  // no packet, no action
+  if( thisChunk == NULL )
     {
-        return 0;
+      return 0;
     }
 
-    // call handler
-    if( *((MsgHandler*)thisChunk->handler) == RES_SYS_HANDLER ) 
+  // call handler
+  if( *((MsgHandler*)thisChunk->handler) == RES_SYS_HANDLER ) 
     {
-	    reservedSystemHandler();
+      reservedSystemHandler();
     }
-    else 
+  else 
     {
-	    (*((MsgHandler*)(thisChunk->handler)))();
+      (*((MsgHandler*)(thisChunk->handler)))();
     }
 
-    // set flag to send ACK
-    port[faceNum(thisChunk)].sq.flags |= setAck(thisChunk);
+  // set flag to send ACK
+  port[faceNum(thisChunk)].sq.flags |= setAck(thisChunk);
 
-    // free the rx chunk
-    freeChunk(thisChunk);
+  // free the rx chunk
+  freeChunk(thisChunk);
 
-    // reset the global chunk since memory is no longer valid
-    thisChunk = NULL;
+  // reset the global chunk since memory is no longer valid
+  thisChunk = NULL;
 
-    return 1;
+  return 1;
 }
 
 // initialization
 void initDataLink()
 {
-    initHWDataLink();
+  initHWDataLink();
 
-    globalRq.head  = NULL;
-    globalRq.tail  = NULL;
-    globalRq.flags = 0;
+  globalRq.head  = NULL;
+  globalRq.tail  = NULL;
+  globalRq.flags = 0;
 }
 ////////////////// END PUBLIC FUNCTIONS ///////////////////
 
