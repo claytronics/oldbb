@@ -97,5 +97,15 @@ Intensity getIntensity()
 
 void initLED()
 {
-	initHWLED();
+  initHWLED();
+}
+
+void turnOnLED()
+{
+  setIntensity(currentIntensity);
+}
+
+void turnOffLED()
+{
+  setLED(currentRGB[0], currentRGB[1], currentRGB[2], INTENSITY_MIN);
 }

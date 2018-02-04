@@ -32,4 +32,8 @@ void setLED(byte, byte, byte, Intensity);	// low-level routine to set arbitrary 
 
 void initLED(void);				// sets up PWM registers for LEDs
 
+void turnOnLED(void);
+
+void turnOffLED(void);
+
 #endif
