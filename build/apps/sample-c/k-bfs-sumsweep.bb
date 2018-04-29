@@ -26,7 +26,17 @@ threaddef #define DEBUG_SET_COLOR(c) setColor(c)
 
 #define K_BFS_SUMSWEEP_TIMEOUT_MS 600
 
+// default
 #define K_BFS_SUMSWEEP_K 10
+
+// line,dumbbell: 3
+//#define K_BFS_SUMSWEEP_K 3
+
+// square: 5
+//#define K_BFS_SUMSWEEP_K 5
+
+// cube: 7
+//#define K_BFS_SUMSWEEP_K 7
 
 #define CENTER_VERSION
 
