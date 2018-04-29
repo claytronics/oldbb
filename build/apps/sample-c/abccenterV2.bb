@@ -6,12 +6,14 @@
 threaddef #define GET_MIN(a,b) ((a) < (b) ? (a) : (b))
 threaddef #define GET_MAX(a,b) ((a) > (b) ? (a) : (b))
 			       
-#define __MY_FILENAME__ "abccenterV2.bbh"
+#define __MY_FILENAME__ "abccenterV2.bb"
 			       
 #define ABC_CENTER_V2_DEBUG_PRINT(...) //printf(__VA_ARGS__)
 #define GET_NUM_STEP(i) (i/3 + 1)
 #define GET_ROLE(i) (i%3)
-#define LOCAL_GRADIENT GET_MAX(abc2.distancesBC.B,abc2.distancesBC.C)
+
+//#define LOCAL_GRADIENT GET_MAX(abc2.distancesBC.B,abc2.distancesBC.C)
+#define LOCAL_GRADIENT (abs((int32_t)abc2.distancesBC.B - (int32_t)abc2.distancesBC.C))
 			       
 threaddef #define DEBUG_SET_COLOR(c) setColor(c)
 
@@ -230,6 +232,8 @@ static void bfsTerminationHandler(BFSTraversal_t *bfs) {
     return;
   }
 
+  ABC_CENTER_V2_DEBUG_PRINT("%u: ecc: %u\n", getGUID(), getHeight(bfs));
+   
   // A and B:
   r = GET_ROLE(abc2.iteration);
   if (r == A || r == B) {
@@ -244,7 +248,7 @@ static void bfsTerminationHandler(BFSTraversal_t *bfs) {
 }
 
 static void A1_Elected(BFSTraversal_t *bfs) {
-  
+
   debugSetRole(A,abc2.iteration);
   
   bfs->sysSize = bfs->tree.broadConv.size;
@@ -359,12 +363,13 @@ static void bcBroadcastVisit(Chunk *c) {
 
   resetBCData();
   
-  if (LOCAL_GRADIENT > g) {
+  if (abc2.candidate && LOCAL_GRADIENT > g) {
     abc2.candidate = 0; abc2.numCandidates = 0;
   }
 
-  ABC_CENTER_V2_DEBUG_PRINT("%u mingradient = %u, gradient = %u, candidate = %u, candidates = %u\n", getGUID(), g, LOCAL_GRADIENT, abc2.candidate, abc2.numCandidates);
-  
+  if (abc2.candidate) {
+    ABC_CENTER_V2_DEBUG_PRINT("%u mingradient = %u, gradient = %u, candidate = %u, candidates = %u\n", getGUID(), g, LOCAL_GRADIENT, abc2.candidate, abc2.numCandidates);
+  }
 }
 
 static void bcConvergecastVisit(Chunk *c) {
@@ -379,6 +384,9 @@ static void bcFillBroadcastData(byte *data, byte l) {
   
   data[ABC_CENTER_V2_BC_GMIN_INDEX] = abc2.childrenMinCandidateGradient[p];
   resetBCData();
+  
+  bbassert(abc2.iteration == 0 || abc2.candidate == 0);
+  bbassert(abc2.iteration == 0 || abc2.numCandidates == 0);
 }
 
 static void bcFillConvergecastData(byte *data, byte l) {
@@ -395,7 +403,7 @@ static void bcTerminationHandler(BFSTraversal_t *bfs) {
   if (abc2.numCandidates > 2) {
     sendNext(nextHopToGMin);
   } else {
-    ABC_CENTER_V2_DEBUG_PRINT("%u a winner need to be contacted\n", getGUID());
+    ABC_CENTER_V2_DEBUG_PRINT("%u a winner needs to be contacted (%u candidates)\n", getGUID(),abc2.numCandidates);
     sendElected(nextHopToGMin);
   }
 }
@@ -408,11 +416,12 @@ static byte handle_NEXT(void) {
   
   if (abc2.iteration == 0) { // A1
     p = _bfs->tree.broadConv.farthest;
-  } else if (GET_ROLE(abc2.iteration) == C) {
+  } else if (GET_ROLE(abc2.iteration) == C) { // other A's
     
     p = argmin(abc2.childrenMinCandidateGradient);
     
-    if (p != UNDEFINED_PORT && abc2.childrenMinCandidateGradient[p] > LOCAL_GRADIENT) {
+    if (p != UNDEFINED_PORT &&
+	abc2.childrenMinCandidateGradient[p] > LOCAL_GRADIENT) {
       p = UNDEFINED_PORT;
     }
     
@@ -426,7 +435,7 @@ static byte handle_NEXT(void) {
     abc2.iteration++;
     debugSetRole(GET_ROLE(abc2.iteration),abc2.iteration);
 
-    if (GET_ROLE(abc2.iteration) != 0) { // B or C
+    if (GET_ROLE(abc2.iteration) != A) { // B or C
       abc2.candidate = 0;
     }
 
@@ -447,6 +456,7 @@ static byte handle_ELECTED(void) {
     centerElected();
   } else {
     PRef p = argmin(abc2.childrenMinCandidateGradient);
+    bbassert(p != UNDEFINED_PORT);
     sendElected(p);
   }
 
@@ -521,7 +531,7 @@ void myMain(void) {
 #endif
 #endif
 #endif
-    delayMS(50);
+    delayMS(5);
   }
 }
 
@@ -591,10 +601,11 @@ void debugSetRole(role_t role, byte iteration) {
 }
 
 static void sendLocalLog(void) {
-  char s[50];
   byte r = localLog.role;
   
-  if (r == A || r == CENTER) {
+  if (r == CENTER) {
+    char s[50];
+    
     snprintf(s, 49*sizeof(char), "r: %u, s: %u, t: %lu", r, GET_NUM_STEP(localLog.iteration), (long unsigned int) (localLog.end - localLog.start));
     s[49] = '\0';
 #ifdef BBSIM
