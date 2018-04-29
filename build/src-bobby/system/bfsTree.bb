@@ -6,7 +6,9 @@
 #define BFS_DEBUG_PRINT(...) //printf(__VA_ARGS__)
 #define BC_DEBUG_PRINT(...) //printf(__VA_ARGS__)
 
-#define __MY_FILENAME__ "bfsTree.bbh"
+#define USE_DATALINK_LAYER_ACK
+
+#define __MY_FILENAME__ "bfsTree.bb"
 
 threaddef #define NUM_MAX_REGISTERED_BFS_TRAVERSALS 10
 threadvar byte numRegisteredBFSTravs = 0;
@@ -31,8 +33,9 @@ static byte handle_BFS_SP_ACK_GO(void);
 static byte handle_BFS_SP_BACK(void);
 static byte handle_BFS_SP_DELETE(void);
 
+static void bfsSPGoAckCallback(void);
+
 // Broadcast + convergecast			     
-		     
 static void broadcastBFSChildren(BFSTraversal_t *bfs, byte *data);
 static void sendBFSConvergecast(BFSTraversal_t *bfs);
 static void checkBFSConvergecastEnd(BFSTraversal_t *bfs);
@@ -232,7 +235,13 @@ void sendBFSGo(PRef d, BFSTraversal_t *bfs) {
     bfs->callbacks.fillBFSGoData(data,BFS_GO_DATA_INDEX);
     
     // send Chunk
-    sendUserMessage(d, data, DATA_SIZE, (MsgHandler)& handle_BFS_SP_GO, (GenericHandler)&defaultUserMessageCallback);
+    sendUserMessage(d, data, DATA_SIZE, (MsgHandler)& handle_BFS_SP_GO,
+#ifdef USE_DATALINK_LAYER_ACK
+		    (GenericHandler)&bfsSPGoAckCallback
+#else
+		    (GenericHandler)&defaultUserMessageCallback
+#endif
+		    );
   }
   
   bfs->waiting[d] = 1;
@@ -281,10 +290,10 @@ byte handle_BFS_SP_ACK_GO(void) {
   BFSTraversal_t *bfs = GET_BFS(thisChunk);
   Uid root = charToGUID(&(thisChunk->data[BFS_ROOT_INDEX]));
   distance_t distance = thisChunk->data[BFS_DISTANCE_INDEX];
-
-  bbassert(!bfs->prevGoAcked[from]);
-
+  
   BFS_DEBUG_PRINT("%d: BFS ACK_GO root %u distance %u from %u\n",getGUID(),root,distance,GET_GUID_FROM_PORT(from));
+  
+  bbassert(!bfs->prevGoAcked[from]);
   
   bfs->prevGoAcked[from] = 1;
   
@@ -307,9 +316,11 @@ byte handle_BFS_SP_GO(void) {
   bfs->callbacks.bfsGoVisit(thisChunk);
   
   BFS_DEBUG_PRINT("%u: BFS_GO electing %u, root %u (vs %u), distance %u (vs %u)\n",getGUID(),bfs->electing, root,bfs->tree.root,distance,bfs->tree.distance);
-  
+
+#ifndef USE_DATALINK_LAYER_ACK
   // ackGo
   sendBFSAckGo();
+#endif
   
   if ((bfs->electing == 1) &&
       (root < bfs->tree.root)) {
@@ -403,6 +414,13 @@ byte handle_BFS_SP_DELETE(void) {
   }
 
   return 1;
+}
+
+
+void bfsSPGoAckCallback(void) {
+  bbassert(chunkResponseType(thisChunk) == MSG_RESP_ACK); // good reception
+  handle_BFS_SP_ACK_GO(); // ack like ACK_GO message
+  defaultUserMessageCallback(); // to free the chunk
 }
 
 
